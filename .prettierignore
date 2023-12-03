@@ -2,4 +2,10 @@
 /dist
 /coverage
 /.nx/cache
+/documentation
 .angular
+
+# Prettier doesn't work with these files
+**/*.js
+**/*.json
+**/*.ts

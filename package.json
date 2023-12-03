@@ -2,7 +2,14 @@
   "name": "@portfolio-v2/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx serve portfolio-v2 -o",
+    "build": "nx build portfolio-v2",
+    "clean": "nx reset",
+    "test": "nx run-many --target=test --parallel=5 --runInBand",
+    "lint": "nx run-many --target=lint --parallel=5 && nx run-many --target=stylelint --parallel=5",
+    "compodoc": "npx compodoc -p tsconfig.doc.json"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~17.0.0",
@@ -28,6 +35,7 @@
     "@angular/cli": "~17.0.0",
     "@angular/compiler-cli": "~17.0.0",
     "@angular/language-service": "~17.0.0",
+    "@compodoc/compodoc": "^1.1.23",
     "@nx/cypress": "17.1.3",
     "@nx/eslint": "17.1.3",
     "@nx/eslint-plugin": "17.1.3",
