@@ -1,1 +1,265 @@
 /* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+@charset "UTF-8";
+@import '~bootstrap/dist/css/bootstrap.css';
+@import '~font-awesome/css/font-awesome.css';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #fff;
+    color: #0A192F;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+}
+body h1, body h2, body h3, body h4, body h5, body h6 {
+    color: #0A192F;
+    font-family: 'Montserrat', sans-serif;    
+    font-style: normal;
+    line-height: 1.5;
+    margin: 0 0 8px;
+}
+h1 {
+    font-size: 26px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 22px;
+}
+h4 {
+    font-size: 20px;
+}
+h5 {
+    font-size: 18px;
+}
+h6 {
+    font-size: 16px;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    color: #0A192F;
+}
+p a {
+    color: #0A192F;
+}
+p {
+    line-height: 24px;
+    margin-bottom: 10px;
+}
+a {
+    color: #0A192F;
+    text-decoration: none;
+}
+a:hover, a:focus, a:active {
+    outline: none;
+    text-decoration: none;
+}
+ul {
+    margin-bottom: 0;
+}
+figure {
+    margin-bottom: 6px;
+    position: relative;
+}
+img {
+    height: auto;
+    max-width: 100%;
+}
+strong {
+    color: #0A192F;
+}
+iframe {
+    border: none;
+    display: flex;
+    width: 100%;
+}
+select {
+    background-color: #f0eef0;
+    border: 1px solid #dfdfdf;
+    color: #0A192F;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 300;
+    height: 40px;
+    padding: 8px 12px;
+    width: 100%;
+}
+label {
+    color: #6c8391;
+    display: block;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+button {
+    border: none;
+}
+
+input[type="submit"] {
+    outline: none;
+}
+form p {
+    display: flex;
+    position: relative;
+}
+form p span i {
+    color: #474747;
+    left: 16px;
+    position: absolute;
+    top: 13px;
+}
+option {
+    padding: 5px 15px;
+}
+li {
+    line-height: 28px;
+    list-style: inside none disc;
+    list-style: none;
+}
+ul ul {
+    margin-left: 20px;
+}
+ol {
+    float: none;
+    list-style: outside none decimal;
+    padding-left: 15px;
+}
+ol ol {
+    margin-left: 20px;
+}
+ol li {
+    list-style: outside none decimal;
+    width: 100%;
+}
+table {
+    background-color: transparent;
+    max-width: 100%;
+}
+th {
+    text-align: left;
+}
+table {
+    margin-bottom: 15px;
+    width: 100%;
+}
+table > thead > tr > th, table > tbody > tr > th, table > tfoot > tr > th, table > thead > tr > td, table > tbody > tr > td, table > tfoot > tr > td {
+    border: 1px solid #dddddd;
+    line-height: 1.5;
+    padding-left: 3px;
+    text-align: center;
+    vertical-align: top;
+}
+table thead tr th {
+    border-top: 1px solid #dddddd;
+    text-align: center;
+    text-transform: capitalize;
+}
+.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
+    border-top: 1px solid #dddddd;
+}
+table > thead > tr > th {
+    border-bottom: 2px solid #dddddd;
+    vertical-align: bottom;
+}
+table > caption + thead > tr:first-child > th, table > colgroup + thead > tr:first-child > th, table > thead:first-child > tr:first-child > th, table > caption + thead > tr:first-child > td, table > colgroup + thead > tr:first-child > td, table > thead:first-child > tr:first-child > td {
+    border-bottom: 0 none;
+}
+table > tbody + tbody {
+    border-top: 2px solid #dddddd;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 6px 10px;
+}
+p ins {
+    color: #999;
+}
+dl dd   { margin-left: 20px; }
+address { font-style: italic; }
+/*CSS*/
+.mr-auto, .mx-auto {
+    margin-right: auto!important;
+}
+
+.ml-auto, .mx-auto {
+    margin-left: auto!important;
+}
+
+.pw-main-section {
+    display: flex;
+    width: 100%;    
+    position: relative;
+}
+
+.pw-main-wrapper, .pw-main-content
+{
+    display: flex;
+    position: relative;
+    width: 100%;
+    flex-direction: column;
+}
+.pw-main-wrapper { overflow: hidden; }
+
+/*header-wrapper*/
+.navbar,.navbar-nav li a {
+    padding: 0 !important;
+    transition: all 0.4s ease-in-out;
+    position: relative;
+    color: #F5F5F5;
+}
+.navbar-nav li { margin-left: 32px; }
+.navbar-nav li a.active,
+.navbar-nav li.active a,
+.navbar-nav li:hover a { color: #fff; }
+.navbar-nav li:hover a:before,
+.navbar-nav li a.active:before {
+    left: 0;
+    width: 100%;
+}
+.navbar-nav li a:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    transition: all 0.4s ease-in-out;
+    background-color: #FACF5A;
+}
+.pw-header-wrap {
+    transition: all 0.4s ease-in-out;
+    position: fixed;
+    z-index: 99;
+    left: 0;
+    width: 100%;
+    top: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 46px 126px;
+    background-color: #35495E;
+}
+.container {max-width: 1280px; }
+.pw-sticky .pw-header-wrap {
+    padding: 10px 126px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.header-btn {
+    width: 100%;
+    max-width: 144px;
+    height: 59px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #0A192F;
+    transition: all 0.4s ease-in-out;
+}
+.header-btn:hover {
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
