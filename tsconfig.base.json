@@ -14,7 +14,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@portfolio-v2/landing_banner": [
+        "libs/portfolio_functions/landing_banner/src/index.ts"
+      ]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
