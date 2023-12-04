@@ -1,0 +1,113 @@
+/*CSS*/
+.pw-main-section {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+.pw-main-wrapper,.pw-main-content,
+#pw-footer {
+    display: flex;
+    position: relative;
+    width: 100%;
+    flex-direction: column;
+}
+.pw-main-wrapper { overflow: hidden; }
+
+h2 {
+    font-size: 24px;
+}
+
+/*section-title*/
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+.section-title h2 {
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 49px;
+    text-transform: uppercase;
+    margin: 0;
+}
+.section-title p {
+    margin: 20px auto 0;
+    max-width: 55%;
+}
+
+.container 
+{ 
+    max-width: 1280px;
+    margin-top: 5%;
+}
+
+.disabled { pointer-events: none; opacity: 0.7; }
+
+/*featured-project-full*/
+.featured-project-full {
+    background-color: #F5F5F5;
+    padding: 100px 0 40px;
+}
+/*featured-project*/
+.featured-project > ul > li {
+    margin-bottom: 60px;
+    padding: 0 78px;
+}
+.featured-project figure {
+    position: relative;
+    margin: 0;
+    padding: 40px 0 0;
+    display: flex;
+}
+.featured-project > ul > li:nth-child(even) img { margin-left: unset; margin-right: auto; }
+.featured-project img {
+    max-width: 740px;
+    width: 100%;
+    margin-left: auto;
+}
+.featured-project > ul > li:nth-child(even) figcaption {
+    right: 0;
+    left: unset;
+}
+.featured-project figcaption {
+    max-width: 530px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.16);
+    background-color: rgba(0,53,102,0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 36px;
+    transition: all 0.4s ease-in-out;
+}
+.featured-project figure:hover figcaption {
+    background-color: rgba(0,53,102,0.9);
+}
+.featured-project h3 {
+    color: #ADE8F4;
+    margin: 0 0 20px;
+    line-height: 29px;
+    font-weight: 600;
+}
+.featured-project p {
+    margin: 0 0 20px;
+    color: #f5f5f5;
+}
+.featured-project span {
+    display: block;
+    line-height: 24px;
+    color: #f5f5f5;
+    margin-bottom: 20px;
+}
+.featured-project span strong{color: #f5f5f5;}
+.links {
+    display: flex;
+    margin: 0;
+}
+.links li { margin-right: 46px; }
+.links li a {
+    transition: all 0.4s ease-in-out;
+    display: inline-block;
+}
+.links li a:hover { transform: scale(1.2); }

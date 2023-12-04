@@ -33,7 +33,7 @@
     top: 4px;
     width: 14px;
     height: 14px;
-    /* background-image: url('images/list-shape.svg'); */
+    background-image: url('images/list-shape.svg');
     background-repeat: no-repeat;
     background-size: contain;
 }
