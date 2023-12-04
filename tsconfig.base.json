@@ -18,6 +18,9 @@
       "@portfolio-v2/about_me": [
         "libs/portfolio_functions/about_me/src/index.ts"
       ],
+      "@portfolio-v2/experience": [
+        "libs/portfolio_functions/experience/src/index.ts"
+      ],
       "@portfolio-v2/landing_banner": [
         "libs/portfolio_functions/landing_banner/src/index.ts"
       ],
