@@ -5,10 +5,11 @@ import { AboutMeComponent } from 'libs/portfolio_functions/about_me/src/lib/abou
 import { SkillsComponent } from 'libs/portfolio_functions/skills/src/lib/skills/skills.component';
 import { ExperienceComponent } from 'libs/portfolio_functions/experience/src/lib/experience/experience.component';
 import { FeaturedProjectsComponent } from 'libs/portfolio_functions/featured_projects/src/lib/featured_projects/featured_projects.component';
+import { PortfolioComponent } from 'libs/portfolio_functions/portfolio/src/lib/portfolio/portfolio.component';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, FeaturedProjectsComponent],
+  imports: [RouterModule, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, FeaturedProjectsComponent, PortfolioComponent],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

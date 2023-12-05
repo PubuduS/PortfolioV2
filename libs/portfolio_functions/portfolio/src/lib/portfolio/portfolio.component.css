@@ -1,0 +1,76 @@
+/*CSS*/
+.pw-main-section {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+.pw-main-wrapper,.pw-main-content,
+.pw-main-wrapper { overflow: hidden; }
+
+h2 {
+    font-size: 24px;
+}
+
+/*section-title*/
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+.section-title h2 {
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 49px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.container {
+    max-width: 1280px;
+    margin-top: 5%;
+}
+
+.pw-sticky .pw-header-wrap {
+    padding: 10px 126px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+/*projects-full*/
+.projects-full {
+    background-color: #35495E;
+    padding: 100px 0 40px;
+}
+.projects-full .section-title h2 { color: #ADE8F4; }
+.my-projects ul {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.my-projects img { margin-bottom: 20px; transition: all 0.4s ease-in-out; }
+.my-projects ul li:hover img { transform: scaleX(-1); }
+.my-projects h3 {
+    margin: 0 0 16px;
+    font-size: 24px;
+    line-height: 29px;
+    color: #f5f5f5;
+}
+.my-projects p {
+    margin: 0;
+    line-height: 19px;
+    color: #f5f5f5;
+}
+.my-projects ul li {
+    margin: 0 0 60px;
+    flex: 0 0 33.333%;
+    text-align: center;
+    color: #f5f5f5;
+}
+.my-projects ul li:nth-child(2) a,
+.my-projects ul li:nth-child(5) a,
+.my-projects ul li:nth-child(7) a,
+.my-projects ul li:nth-child(8) a {margin:0 auto;}
+.my-projects ul li:nth-child(3n) a {margin-left: auto;}
+.my-projects ul li a {
+    max-width: 310px;
+    display: block;
+}
+

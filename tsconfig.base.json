@@ -27,6 +27,9 @@
       "@portfolio-v2/landing_banner": [
         "libs/portfolio_functions/landing_banner/src/index.ts"
       ],
+      "@portfolio-v2/portfolio": [
+        "libs/portfolio_functions/portfolio/src/index.ts"
+      ],
       "@portfolio-v2/skills": ["libs/portfolio_functions/skills/src/index.ts"]
     }
   },

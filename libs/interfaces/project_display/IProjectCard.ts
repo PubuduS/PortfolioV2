@@ -9,3 +9,9 @@ export interface IProjectCard
     documentationURL?: string,
     screenshotURL?: string    
 }
+
+export interface IProjectView {
+    imageURL: string;
+    viewHeading: string;
+    viewDescription: string;
+}
