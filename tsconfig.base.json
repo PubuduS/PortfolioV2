@@ -18,6 +18,9 @@
       "@portfolio-v2/about_me": [
         "libs/portfolio_functions/about_me/src/index.ts"
       ],
+      "@portfolio-v2/certifications": [
+        "libs/portfolio_functions/certifications/src/index.ts"
+      ],
       "@portfolio-v2/education": [
         "libs/portfolio_functions/education/src/index.ts"
       ],
@@ -33,7 +36,12 @@
       "@portfolio-v2/portfolio": [
         "libs/portfolio_functions/portfolio/src/index.ts"
       ],
-      "@portfolio-v2/skills": ["libs/portfolio_functions/skills/src/index.ts"]
+      "@portfolio-v2/skills": [
+        "libs/portfolio_functions/skills/src/index.ts"
+      ],
+      "@portfolio-v2/interfaces/certificate": [
+        "libs/interfaces/certificate_display/ICertificateCard"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

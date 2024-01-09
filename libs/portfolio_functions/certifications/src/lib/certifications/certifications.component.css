@@ -1,0 +1,37 @@
+/*certifications-full*/
+.certifications-full {
+    background-color: #0A192F;
+    padding: 100px 0 40px;
+}
+.certifications-wrap ul li { padding: 0 61px; margin-bottom: 60px; }
+.certifications-wrap section {
+    padding: 86px 32px 26px;
+    border: 2px solid #ADE8F4;
+    border-radius: 20px;
+    color: #f5f5f5;
+    position: relative;
+    margin: 61px 0 0;
+}
+.certifications-wrap section:hover img { transform: scale(0.9); }
+.certifications-wrap section img {
+    position: absolute;
+    left: 32px;
+    top: -61px;
+    transition: all 0.4s ease-in-out;
+}
+.certifications-wrap section h3 {
+    font-size: 20px;
+    line-height: 24px;
+    margin: 0 0 20px;
+    color: #fff;
+}
+.certifications-wrap section p a {
+    color: #61F8D5;
+}
+.certifications-wrap section p a:hover { text-decoration: underline; }
+.certifications-full .section-title h2,
+.get-in-touchfull .section-title h2 {color: #ADE8F4;}
+.certifications-wrap section p {
+    margin: 0 0 20px;
+    line-height: 19px;
+}
