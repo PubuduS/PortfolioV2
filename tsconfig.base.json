@@ -24,6 +24,9 @@
       "@portfolio-v2/contact": [
         "libs/portfolio_functions/contact/src/index.ts"
       ],
+      "@portfolio-v2/cover_letter": [
+        "libs/portfolio_functions/cover_letter/src/index.ts"
+      ],
       "@portfolio-v2/education": [
         "libs/portfolio_functions/education/src/index.ts"
       ],

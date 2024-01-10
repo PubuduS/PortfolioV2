@@ -9,11 +9,13 @@ import { PortfolioComponent } from '@portfolio-v2/portfolio';
 import { EducationComponent } from '@portfolio-v2/education';
 import { CertificationsComponent } from '@portfolio-v2/certifications';
 import { ContactComponent } from '@portfolio-v2/contact';
+import { CoverLetterComponent } from '@portfolio-v2/cover_letter';
 
 @Component({
   standalone: true,
   imports: [RouterModule, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, 
-            FeaturedProjectsComponent, PortfolioComponent, EducationComponent, CertificationsComponent, ContactComponent],
+            FeaturedProjectsComponent, PortfolioComponent, EducationComponent, CertificationsComponent, 
+            ContactComponent, CoverLetterComponent],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
