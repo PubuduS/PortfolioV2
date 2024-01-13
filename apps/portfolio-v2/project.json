@@ -20,7 +20,7 @@
           "apps/portfolio-v2/src/assets"
         ],
         "styles": ["apps/portfolio-v2/src/styles.css"],
-        "scripts": []
+        "scripts": ["apps/portfolio-v2/src/assets/scripts/flower.js"]
       },
       "configurations": {
         "production": {

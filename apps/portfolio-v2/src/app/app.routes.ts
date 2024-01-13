@@ -6,7 +6,7 @@ export const appRoutes: Route[] = [
     { path: 'skills', loadComponent: () => import('@portfolio-v2/skills').then(mod => mod.SkillsComponent) },
     { path: 'experience', loadComponent: () => import('@portfolio-v2/experience').then(mod => mod.ExperienceComponent) },
     { path: 'portfolio', loadComponent: () => import('@portfolio-v2/portfolio').then(mod => mod.PortfolioComponent) },
-    { path: 'education', loadComponent: () => import('@portfolio-v2/education').then(mod => mod.EducationComponent) },
+    { path: 'education', loadComponent: () => import('@portfolio-v2/education_main').then(mod => mod.EducationMainComponent) },
     { path: 'coverletter', loadComponent: () => import('@portfolio-v2/cover_letter').then(mod => mod.CoverLetterComponent) },
     { path: 'contact', loadComponent: () => import('@portfolio-v2/contact').then(mod => mod.ContactComponent) },
     { path: '', redirectTo: 'home', pathMatch: 'full' },

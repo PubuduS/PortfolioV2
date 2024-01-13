@@ -30,6 +30,9 @@
       "@portfolio-v2/education": [
         "libs/portfolio_functions/education/src/index.ts"
       ],
+      "@portfolio-v2/education_main": [
+        "libs/portfolio_functions/education_main/src/index.ts"
+      ],
       "@portfolio-v2/experience": [
         "libs/portfolio_functions/experience/src/index.ts"
       ],
