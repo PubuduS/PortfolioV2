@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { LandingBannerComponent } from '@portfolio-v2/landing_banner';
 import { AboutMeComponent } from '@portfolio-v2/about_me';
 import { SkillsComponent } from '@portfolio-v2/skills';
@@ -14,7 +14,7 @@ import { PageNotFoundComponent } from '@portfolio-v2/page_not_found';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, 
+  imports: [RouterModule, RouterOutlet, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, 
             FeaturedProjectsComponent, PortfolioComponent, EducationComponent, CertificationsComponent, 
             ContactComponent, CoverLetterComponent, PageNotFoundComponent],
   selector: 'portfolio-v2-root',

@@ -10,37 +10,35 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" data-scroll="home">Home</a>
+              <a [routerLink]="['/home']">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-scroll="about">About Me</a>
+              <a [routerLink]="['/aboutme']">About Me</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-scroll="skills">Skills</a>
+              <a [routerLink]="['/skills']">Skills</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-scroll="experience">Experience</a>
+              <a [routerLink]="['/experience']">Experience</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-scroll="protfolio">Portfolio</a>
+              <a [routerLink]="['/portfolio']">Portfolio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-scroll="education">Education</a>
+              <a [routerLink]="['/education']">Education</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" target="_blank">Resume</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-toggle="modal" data-target="#exampleModal">Cover Letter</a>
+              <a [routerLink]="['/coverletter']">Cover Letter</a>
             </li>
-            <li class="nav-item contact">
-              <!-- <a class="header-btn bottom-scroll">Contact</a> -->
-            </li>
+            <!-- <li class="nav-item contact">            
+            </li> -->
           </ul>
         </div>
       </nav>
-      <a class="header-btn ml-auto bottom-scroll">Contact</a>  
+      <a class="header-btn ml-auto" [routerLink]="['/contact']">Contact</a>  
     </header>
   </div>
-  <!--// Header \\-->
- <portfolio-v2-page-not-found></portfolio-v2-page-not-found>
+ <router-outlet></router-outlet>
