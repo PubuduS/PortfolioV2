@@ -1,22 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { LandingBannerComponent } from '@portfolio-v2/landing_banner';
-import { AboutMeComponent } from '@portfolio-v2/about_me';
-import { SkillsComponent } from '@portfolio-v2/skills';
-import { ExperienceComponent } from '@portfolio-v2/experience';
+import { RouterModule, RouterLink, RouterOutlet } from '@angular/router';
 import { FeaturedProjectsComponent } from '@portfolio-v2/featured_projects';
-import { PortfolioComponent } from '@portfolio-v2/portfolio';
 import { EducationComponent } from '@portfolio-v2/education';
 import { CertificationsComponent } from '@portfolio-v2/certifications';
-import { ContactComponent } from '@portfolio-v2/contact';
-import { CoverLetterComponent } from '@portfolio-v2/cover_letter';
-import { PageNotFoundComponent } from '@portfolio-v2/page_not_found';
+
 
 @Component({
   standalone: true,
-  imports: [RouterModule, RouterOutlet, LandingBannerComponent, AboutMeComponent, SkillsComponent, ExperienceComponent, 
-            FeaturedProjectsComponent, PortfolioComponent, EducationComponent, CertificationsComponent, 
-            ContactComponent, CoverLetterComponent, PageNotFoundComponent],
+  imports: [RouterModule, RouterOutlet, RouterLink, FeaturedProjectsComponent, EducationComponent, CertificationsComponent ],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

@@ -12,5 +12,5 @@
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
-  ]
+, "../../libs/portfolio_services/weather/weather.service.spec.ts", "../../libs/portfolio_services/errorMsg/error.service.spec.ts"  ]
 }

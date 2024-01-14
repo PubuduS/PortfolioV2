@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IProjectCard } from 'libs/interfaces/project_display/IProjectCard';
-import { IconURLs, IconURLType } from 'libs/const/icons';
+import { IProjectCard } from '@portfolio-v2/interfaces';
+import { IconURLs, IconURLType } from '@portfolio-v2/const';
 
 @Component({
   selector: 'portfolio-v2-featured-projects',

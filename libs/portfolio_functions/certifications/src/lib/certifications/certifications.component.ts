@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ICertificateCard } from '@portfolio-v2/interfaces/certificate';
+import { ICertificateCard } from '@portfolio-v2/interfaces';
 
 @Component({
   selector: 'portfolio-v2-certifications',

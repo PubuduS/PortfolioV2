@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IProjectView } from 'libs/interfaces/project_display/IProjectCard';
+import { IProjectView } from '@portfolio-v2/interfaces';
 
 @Component({
   selector: 'portfolio-v2-portfolio',

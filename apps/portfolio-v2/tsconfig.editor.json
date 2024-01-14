@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../libs/portfolio_services/weather/weather.service.spec.ts", "../../libs/portfolio_services/weather/weather.service.ts", "../../libs/portfolio_services/errorMsg/error.service.spec.ts", "../../libs/portfolio_services/errorMsg/error.service.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }
