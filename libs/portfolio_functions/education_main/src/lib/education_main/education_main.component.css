@@ -1,5 +1,5 @@
 body {
-    background: #131b21;
+    background-color: #131b21;
   }
   
   .flower-container {
@@ -10,12 +10,10 @@ body {
   }
   
   svg#flower-frame {
-    height: 90vh;
+    min-height: 71vh;
     width: 100%;
   }
-  
-  
-  
+    
   #Footer_group_1_,
   [id^=PinkFlowerGroup],
   [id^=BaseGroup] path,

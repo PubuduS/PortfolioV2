@@ -205,6 +205,10 @@ div{
   color: aqua;
 }
 
+.quote span {
+  padding-left:1% !important;
+}
+
 body {
   height: 100vh;
   display: flex;
