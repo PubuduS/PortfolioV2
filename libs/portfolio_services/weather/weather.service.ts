@@ -22,7 +22,7 @@ export class WeatherService {
   private readonly iconExtention: string = '.svg';
 
   public weatherData: Signal<IWeather | undefined> = computed(() => this.weatherForcast().data);
-  public weatherError: Signal<String | undefined> = computed(() => this.weatherForcast().error);
+  public weatherError: Signal<string | undefined> = computed(() => this.weatherForcast().error);
 
   public weatherAnimationPath = computed(() => {
     return `${this.weatherIconBasePath}` + ( this.weatherData()?.iconCode ?? '01d' ) + `${this.iconExtention}`;
