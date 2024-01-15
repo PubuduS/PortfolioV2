@@ -263,3 +263,6 @@ address { font-style: italic; }
     background-color: #fff;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

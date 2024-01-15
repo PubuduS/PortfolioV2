@@ -1,17 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IProjectView } from '@portfolio-v2/interfaces';
+import { MatButtonModule } from '@angular/material/button';
+import { ProjectCardComponent } from '@portfolio-v2/project_card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { GetdataService } from '@portfolio-v2/services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'portfolio-v2-portfolio',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule, MatDialogModule, ProjectCardComponent],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.css',
 })
 export class PortfolioComponent {
 
+  private router = inject(Router);
+  private dataService  = inject(GetdataService);
+
   readonly toolTip: string = 'Click here to see more';
+
+  readonly featured: IProjectView = {
+    imageURL: 'assets/images/project_icons/Trophy_Ico.png',
+    viewHeading: 'Featured Projects',
+    viewDescription: 'These are some of my most important projects',
+  }
 
   readonly auditor: IProjectView = {
     imageURL: 'assets/images/project_icons/Auditor_Ico.png',
@@ -53,6 +67,17 @@ export class PortfolioComponent {
     imageURL: 'assets/images/project_icons/Exporter_Ico.png',
     viewHeading: 'ETL to CSV Exporter',
     viewDescription: 'Windows performance analyzer',
+  }
+
+  constructor(public dialog: MatDialog) {}
+  
+  public openDialog(selection: string) {
+    this.dataService.setSelectedRecord(selection);
+    this.dialog.open(ProjectCardComponent);
+  }
+
+  public goToFeaturedPRojectsPage(): void {
+    this.router.navigate(['featured-projects']);
   }
 
 }

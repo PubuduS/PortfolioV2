@@ -5,9 +5,13 @@ export interface IProjectCard
     tools: string;
     imageURL: string;
     githubURL?: string,
+    gitDisable?: boolean,
     demoURL?: string,
+    demoDisable?: boolean,
     documentationURL?: string,
-    screenshotURL?: string    
+    docDisable?: boolean,
+    screenshotURL?: string,
+    ssDisable?: boolean
 }
 
 export interface IProjectView {

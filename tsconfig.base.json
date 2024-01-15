@@ -50,6 +50,9 @@
       "@portfolio-v2/portfolio": [
         "libs/portfolio_functions/portfolio/src/index.ts"
       ],
+      "@portfolio-v2/project_card": [
+        "libs/portfolio_functions/project_card/src/index.ts"
+      ],
       "@portfolio-v2/services": ["libs/portfolio_services/index.ts"],
       "@portfolio-v2/skills": ["libs/portfolio_functions/skills/src/index.ts"],
       "@portfolio-v2/weather_display": [

@@ -8,19 +8,28 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/portfolio-v2",
         "index": "apps/portfolio-v2/src/index.html",
         "main": "apps/portfolio-v2/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/portfolio-v2/tsconfig.app.json",
         "assets": [
           "apps/portfolio-v2/src/favicon.ico",
           "apps/portfolio-v2/src/assets"
         ],
-        "styles": ["apps/portfolio-v2/src/styles.css"],
-        "scripts": ["apps/portfolio-v2/src/assets/scripts/flower.js"]
+        "styles": [
+          "@angular/material/prebuilt-themes/indigo-pink.css",
+          "apps/portfolio-v2/src/styles.css"
+        ],
+        "scripts": [
+          "apps/portfolio-v2/src/assets/scripts/flower.js"
+        ]
       },
       "configurations": {
         "production": {
@@ -69,7 +78,9 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
         "lintFilePatterns": [
           "apps/portfolio-v2/**/*.ts",
@@ -79,7 +90,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "apps/portfolio-v2/jest.config.ts"
       }

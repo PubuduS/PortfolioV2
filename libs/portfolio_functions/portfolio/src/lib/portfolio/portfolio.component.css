@@ -45,7 +45,8 @@ h2 {
     justify-content: center;
     flex-wrap: wrap;
 }
-.my-projects img { margin-bottom: 20px; transition: all 0.4s ease-in-out; }
+.my-projects button { margin-bottom: 20%; }
+.my-projects img { margin-top: 40%; transition: all 0.4s ease-in-out; }
 .my-projects ul li:hover img { transform: scaleX(-1); }
 .my-projects h3 {
     margin: 0 0 16px;

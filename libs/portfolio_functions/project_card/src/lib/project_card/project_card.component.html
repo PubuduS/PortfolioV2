@@ -1,0 +1,26 @@
+<div class="card-model">
+    <h1 mat-dialog-title>{{dataRecord.heading}}</h1>
+    <mat-dialog-content class="mat-typography">
+    
+    <div class="row">
+        <div class="col-md-4">
+            <img src={{dataRecord.imageURL}}>
+        </div>
+    
+        <div class="col-md-8 description" >
+            <section>        
+                <p>{{dataRecord.description}}</p>
+                <p>Technologies: <b>{{dataRecord.tools}}</b></p>
+            </section>
+        </div> 
+    </div>
+
+          
+    </mat-dialog-content>
+    <mat-dialog-actions class="btnGroup" align="end">      
+      <a mat-button class="btn" disabled={{dataRecord.gitDisable}} href={{dataRecord.githubURL}} target="_blank"><mat-icon>code</mat-icon>CodeBase</a>
+      <a mat-button class="btn" disabled={{dataRecord.demoDisable}} href={{dataRecord.demoURL}} target="_blank"><mat-icon>ondemand_video</mat-icon>YouTube</a>
+      <a mat-button class="btn" disabled={{dataRecord.ssDisable}} href={{dataRecord.screenshotURL}} target="_blank"><mat-icon>screenshot_monitor</mat-icon>ScreenShots</a>
+      <a mat-button class="btn" disabled={{dataRecord.docDisable}} href={{dataRecord.documentationURL}} target="_blank"><mat-icon>document_scanner</mat-icon>Documentation</a>
+    </mat-dialog-actions>
+</div>
