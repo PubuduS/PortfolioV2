@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IProjectCard } from '../../interfaces';
+import { IProjectCard, IPublicationDetails } from '../../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -111,7 +111,51 @@ export class GetdataService {
     },
   ];
 
-  private portfolioDataMap: {[key: string]: IProjectCard} = {
+  private readonly publicationDetails: IPublicationDetails[] = [
+    {
+      title: 'ARWalker: A Virtual Walking Companion Application',
+      authors: 'Pubudu Wijesooriya, Aaron Likens, Nick Stergiou, and Spyridon Mastorakis',
+      abstarct: 'Extended Reality (XR) technologies, including Augmented Reality (AR), have attracted significant attention over the past few years and have been utilized in several fields, including education, healthcare, and manufacturing. In this paper, we aim to explore the use of AR in the field of biomechanics and human movement through the development of ARWalker, which is an AR application that features virtual walking companions (avatars). Research participants walk in close synchrony with the virtual companions, whose gait exhibits properties found in the gait of young and healthy adults. As a result, research participants can train their gait to the gait of the avatar, thus regaining the healthy properties of their gait and reducing the risk of falls. ARWalker can especially help older adults and individuals with diseases, who exhibit pathological gait thus being more prone to falls. We implement a prototype of ARWalker and evaluate its systems performance while running on a Microsoft Hololens 2 headset.',
+      citation: 'Pubudu Wijesooriya, Likens, A. D., Stergiou, N., & Spyridon Mastorakis. (2023). ARWalker: A Virtual Walking Companion Application. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2311.07502'
+    },
+    {
+      title: 'Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application Store',
+      authors: 'Pubudu Wijesooriya, Sheikh Muhammad Farjad, Nick Stergiou, and Spyridon Mastorakis',
+      abstarct: 'Augmented Reality (AR) based on Head-Mounted Displays (HMDs) has gained significant traction over the recent years. Nevertheless, it remains unclear what AR HMD-based applications have been developed over the years and what their system performance is when they are run on HMDs. In this paper, we aim to shed light into this direction. Our study focuses on the applications available on the Microsoft Hololens application store given the wide use of the Hololens headset. Our study has two major parts: (i) we collect metadata about the applications available on the Microsoft Hololens application store to understand their characteristics (e.g., categories, pricing, permissions requested, hardware and software compatibility); and (ii) we interact with these applications while running on a Hololens 2 headset and collect data about systems-related metrics (e.g., memory and storage usage, time spent on CPU and GPU related operations) to investigate the systems performance of applications. Our study has resulted in several interesting findings, which we share with the research community.',
+      citation: 'Pubudu Wijesooriya, Sheikh Muhammad Farjad, Stergiou, N., & Spyridon Mastorakis. (2023). Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application  Store. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2303.07523'
+    },
+    {
+      title: 'Use of Mixed Reality to Provide Gait Rehabilitation',
+      authors: 'Pubudu Wijesooriya, Advisor: Dr. Spyridon Mastorakis',
+      abstarct: 'Gait disorders are a common issue affecting millions of people worldwide regardless\
+      of age. In addition to reducing mobility, gait disorders increase the risk of falling, and\
+      can adversely affect the quality of life. Therefore, gait training is an essential aspect\
+      of well-being, especially for the elderly population. To address this problem, many\
+      systems have been developed. In this study, we present a novel method to provide gait\
+      training. We present two portable mixed reality systems designed to aid gait training\
+      for individuals with gait disabilities.\
+      The first system uses an avatar to provide visual cues to the patient. It relies on the\
+      proteus effect and complexity matching to restore the natural gait. The proteus effect\
+      refers to the phenomenon where individuals adopt the characteristics of their virtual\
+      avatars. Complexity matching is the tendency to synchronize movements by matching\
+      others\' complexity. Both theories are backed by credible scientific evidence. Our pilot\
+      study showed that this approach is effective in restoring gait patterns. The system is\
+      currently undergoing large-scale human trials to evaluate its feasibility further.\
+      A second system provides rhythmic visual cues through a moving bar, and the user\
+      must match their foot placement accordingly. As the rhythm changes, users are required\
+      to strike with their left heel when the bar reaches the top level and with their right heel\
+      when it hits the bottom level. Pilot studies supported by similar research have also\
+      shown promising results, and we are currently conducting large-scale human trials to\
+      evaluate the system\'s effectiveness further.\
+      Both systems are designed to help patients with gait disabilities and provide implicit\
+      learning. We aim to provide them with cost-effective, self-training methods to\
+      restore their gait. The results of this study could have significant implications for the\
+      rehabilitation of individuals with gait disabilities.',
+      citation: 'Wijesooriya, P. (2023, May 3). Use of Mixed Reality to Provide Gait Rehabilitation.'
+    }
+  ];
+
+  private readonly portfolioDataMap: {[key: string]: IProjectCard} = {
     auditor: this.portfolioData[0],
     gameboy: this.portfolioData[1],
     sorting: this.portfolioData[2],
@@ -121,8 +165,10 @@ export class GetdataService {
     etlExporter: this.portfolioData[6],
   }
 
-  public getPortfolioData(record: string): IProjectCard {
-    return this.portfolioDataMap[record];
+  private readonly publicationDataMap: {[key: string]: IPublicationDetails} = {
+    ARWalker: this.publicationDetails[0],
+    HLStore: this.publicationDetails[1],
+    Thesis: this.publicationDetails[2]
   }
 
   public setSelectedRecord(selected: string): void {
@@ -131,5 +177,13 @@ export class GetdataService {
 
   public getSelectedRecord(): string {
     return this.selectedRecord;
+  }
+
+  public getPortfolioData(record: string): IProjectCard {
+    return this.portfolioDataMap[record];
+  }
+
+  public getPublicationDetail(record: string): IPublicationDetails {
+    return this.publicationDataMap[record];
   }
 }

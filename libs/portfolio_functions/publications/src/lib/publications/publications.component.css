@@ -1,0 +1,50 @@
+/*education-full*/
+.publications-full {
+    background-color: #FACF5A;
+    padding: 100px 0 40px;
+    padding-top: 10%;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+p {
+    text-align: justify;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 2%;
+}
+
+mat-card-title {
+    text-align: center;
+}
+
+/*section-title*/
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+.section-title h2 {
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 49px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.publication-card {
+    max-width: 400px;
+}  
+
+.btnGroup {
+    margin-left: 15%;
+}
+
+.publication-card{
+    margin-left: 2%;
+}
+
