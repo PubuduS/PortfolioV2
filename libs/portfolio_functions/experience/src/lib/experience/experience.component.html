@@ -8,67 +8,43 @@
                 </div>
                 <div class="tabs-wrapper fadeIn" data-t-show="3">
                     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                      <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="experience/#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">University of Nebraska Omaha</a>
-                      <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="experience/#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Sencore.Inc</a>
-                      <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="experience/#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Peace Lutheran Early Childhood Center</a>
-                      <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="experience/#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Student Worker Larson Commons</a>
-                      <a class="nav-link" id="v-pills-setting-tab" data-toggle="pill" href="experience/#v-pills-setting" role="tab" aria-controls="v-pills-setting" aria-selected="false">Java Institute</a>
+                        
+                        <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill"
+                           role="tab" (click)="displaySelected('election')"
+                           aria-selected="false">Election Systems and Software</a>
+
+                        <a class="nav-link" id="v-pills-home-tab1" data-toggle="pill"
+                            role="tab"  (click)="displaySelected('uno')"
+                            aria-selected="true">University of Nebraska Omaha</a>
+
+                        <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill"
+                            role="tab" aria-controls="v-pills-profile" (click)="displaySelected('sencore')"
+                            aria-selected="false">Sencore.Inc</a>
+
+                        <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill"
+                            role="tab" (click)="displaySelected('peace')"
+                            aria-selected="false">Peace Lutheran Early Childhood Center</a>
+
+                        <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill"
+                            role="tab"  (click)="displaySelected('larson')"
+                            aria-selected="false">Student Worker Larson Commons</a>
+
+                        <a class="nav-link" id="v-pills-setting-tab" data-toggle="pill"
+                            role="tab" (click)="displaySelected('java')"
+                            aria-selected="false">Java Institute</a>
                     </div>
+
                     <div class="tab-content" id="v-pills-tabContent">
-                      <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                          <h3>Graduate Research Assistant University of Nebraska Omaha</h3>
-                          <span>2021 - 2023 (2 Years)</span>
-                          <p>Designed and developed a HoloLens 2 Mixed Reality application that provides gait training for patients with gait disorders.</p>
-                          <ul class="list-style-one">
-                              <li>The application analyzes the environment around the user and spawns an avatar that can intelligently navigate around the environment. When the user follows the avatar, the system analyzes the user's walking pattern and assigned a score. Based on the score, it can early identify neural and motor-related disorders and also can help the user with gait training.</li>
-                              <li>This project is a massive collaborative project with multiple departments including medical science, biomechanics, and computer science with over millions of funding (Award Number: P20GM109090)</li>
-                              <li>Translated and optimized algorithms written in Matlab to C# and evaluate the accuracy.</li>
-                              <li>Created a dev journal and extensive technical documentation for future open source development.</li>
-                              <li>Awarded <b>$5000</b> Graduate Research and Creative Activity(GRACA) fellowship of the University of Nebraska at Omaha for Summer 2022.</li>
-                              <li>Utilized <b>Git, Github Actions</b> and <b>Jenkins with AWS S3 Bucket</b> for version control and CICD Pipeline; <b>C#, Unity, MRTK</b> and <b>Visual Studio</b> to create MR application for HoloLens 2; <b>Doxygen and JIRA</b> to generate documentation and management of the software development life cycle.</li>
-                          </ul>
-                      </div>
-                      <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                          <h3>Software Engineer (C++) Sencore.Inc</h3>
-                          <span>2019 - 2021 (1.5 Years)</span>
-                          <p>Contributed to the development and optimization of Sencore MRD5800 and MRD7000 advanced modular decoder product lines, as well as associated sub-brands.</p>
-                          <ul class="list-style-one">
-                              <li>Engineered and implemented a centralized authentication system using TACACS+ and PAM modules for MRD5800 unit and sub brands; enabling units to connect to centralized remote authentication server to grant access and perform AAA functionalities.</li>
-                              <li>Programmed a portable Java Auditor software to parse through frequencies and log matrices into a CSV file for each channel.</li>
-                              <li>Evaluated a legacy codebase to identify inefficiencies and integrate enhancements.</li>
-                              <li>Utilized a wide variety of technologies throughout operations, including <b>C++, JIRA, Visual Studio Code, Git, Gerrit, PAM, TACACS+, SCons build system, Subversion, JS, ARM AT91 Micro-controllers, Debian GNU/Linux, TeamCity, MIBs, Java SE 8, Netbeans and cURL, Cross-Compilation, Bash, and Doxygen;</b></li>
-                              <li>Utilized <b>Git, Subversion</b> and <b>Gerrit</b> for version control and code review; <b>Python, Scons, Bash</b> and <b>Teamcity</b> to cross-compilation and build system; <b>MIBs</b> to allow remote configurations of the settings; <b>JAVA SE 8, Netbeans</b> and <b>cURL</b> to create auditor software; <b>Doxygen</b> to generate documentation of the software.</li>
-                          </ul>
-                      </div>
-                      <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-                          <h3><a target="_blank" href="http://www.peacebrookings.org/">Peace Lutheran Early Childhood Center.</a></h3>
-                          <span>2018 - 2019 (1 Years)</span>
-                          <p>This is my senior capstone project for final year in South Dakota State University.</p>
-                          <ul class="list-style-one">
-                              <li>Assisted the Center with updating and maintaining their web software to effectively track the attendance of over 200 students and staff members.</li>
-                              <li>Learned Agile development, reverse engineering, database normalization, OOP designing, and PHP in order to effectively complete tasks.</li>
-                              <li>Created technical documents to monitor progress.</li>
-                          </ul>
-                      </div>
-                      <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
-                          <h3>Student Worker Larson Commons</h3>
-                          <span>2018 - 2019 (9 Months)</span>
-                          <ul class="list-style-one">
-                              <li>Liaised with colleagues to provide service in a timely manner to boost efficiency of dining hall operations.</li>
-                              <li>Provided exceptional service to students and staff frequenting the dining hall.</li>
-                              <li>Maintained consistent communications with colleagues and senior management to exchange updates on operations.</li>
-                              <li>Learned to balance work duties with academic responsibilities.</li>
-                          </ul>
-                      </div>
-                      <div class="tab-pane fade" id="v-pills-setting" role="tabpanel" aria-labelledby="v-pills-setting-tab">
-                        <h3>Software Engineer (JAVA) Java Institute</h3>
-                        <span>2014 - 2015 (1 Years)</span>
-                        <p>Engineered an inventory control software for Sapna, a small business in Sri Lanka, to streamline inventory management processes.</p>
-                        <ul class="list-style-one">
-                            <li>Identified and addressed common issues of low-level inventory control software, troubleshooting to resolve these issues and achieve full functionality.</li>
-                            <li>Enhanced my working knowledge of SQL and Java tools, as well as OOP concepts, through completion of project tasks.</li>
-                        </ul>
-                      </div>
+                        <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="v-pills-home-tab"
+                            *ngIf="experience">
+                            <h3>{{experience.position}}</h3>
+                            <span>{{experience.timePeriod}} ( {{ yearsOfExperience}} )</span>
+                            <p>{{experience.shortDescription}}</p>
+                            <ul class="list-style-one" *ngFor="let point of experience.points">
+                                <li>{{point}}</li>
+                            </ul>
+                        </div>
+
                     </div>
                 </div>
             </div>
