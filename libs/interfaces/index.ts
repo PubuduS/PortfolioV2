@@ -4,3 +4,5 @@ export { ICertificateCard } from './certificate_display/ICertificateCard';
 export { IProjectCard, IProjectView } from './project_display/IProjectCard';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
 export { IExperience } from './experience/IExperience';
+export { ISocialInfor } from './social/ISocialInfor';
+export { ICompanyValidatorMsgs, IManagerValidatorMsgs, IEmailValidatorMsgs, ISenderNameValidatorMsgs, IMessageValidatorMsgs } from './validator_msgs/IValidatorErrorMsg';

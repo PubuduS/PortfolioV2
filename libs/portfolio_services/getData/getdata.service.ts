@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IProjectCard, IPublicationDetails } from '../../interfaces';
+import { IProjectCard, IPublicationDetails, ISocialInfor } from '../../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,12 @@ export class GetdataService {
   constructor() { }
 
   private selectedRecord: string = '';
+
+  private readonly socialInfor: ISocialInfor = {
+    linkedin: 'https://www.linkedin.com/in/pubudu-wijesooriya/',
+    github: 'https://github.com/PubuduS/',
+    email: 'pubudusupun@gmail.com'
+  }
 
   private readonly portfolioData: IProjectCard[] = [
     {
@@ -185,5 +191,9 @@ export class GetdataService {
 
   public getPublicationDetail(record: string): IPublicationDetails {
     return this.publicationDataMap[record];
+  }
+
+  public getSocialInfor(): ISocialInfor {
+    return this.socialInfor;
   }
 }
