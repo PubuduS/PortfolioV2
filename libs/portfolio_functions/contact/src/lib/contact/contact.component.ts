@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GetdataService } from '@portfolio-v2/services';
 import { ISocialInfor, IEmailValidatorMsgs, ISenderNameValidatorMsgs, IMessageValidatorMsgs } from '@portfolio-v2/interfaces';
+import { ContactPopupComponent } from '@portfolio-v2/contact_popup';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'portfolio-v2-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ContactPopupComponent],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })
 export class ContactComponent implements OnInit {
   private dataService = inject(GetdataService);
   private formBuilder = inject(FormBuilder);
+  private dialog = inject(MatDialog);
 
   public contactForm!: FormGroup;
 
@@ -50,6 +53,14 @@ export class ContactComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(this.nameMinLen), Validators.maxLength(this.nameMaxLen), Validators.pattern(this.nameRegexPattern)]],
         message: ['', [Validators.required, Validators.minLength(this.msgMinLen), Validators.maxLength(this.msgMaxLen)]]
       });
+  }
+
+  public openDialog(email: string) {     
+    this.dialog.open(ContactPopupComponent, {
+      data: {
+        emailAddr: email
+      }
+    });
   }
 
   public sendEmail(): void {

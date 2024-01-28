@@ -1,0 +1,20 @@
+.card-model{
+    background-color: #35495E;
+}
+
+#title {
+  text-align: center;
+  color: white;
+}
+
+.row{
+    color: white;
+}
+
+.description {
+    margin-top: 6%;    
+}
+
+.email {
+    font-weight:bolder
+}
