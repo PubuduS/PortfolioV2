@@ -3,6 +3,6 @@ export interface IExperience {
     timePeriod: string,
     shortDescription: string,
     points: string[],
-    startDate?: Date,
-    endDate?: Date
+    startDate: Date,
+    endDate: Date
 }

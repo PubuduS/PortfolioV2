@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IExperience } from '@portfolio-v2/interfaces';
+import { GetdatetimeService } from '@portfolio-v2/services';
 
 @Component({
   selector: 'portfolio-v2-experience',
@@ -11,7 +12,8 @@ import { IExperience } from '@portfolio-v2/interfaces';
 })
 export class ExperienceComponent {
 
-  public selected: string = null ?? 'election';  
+  public selected: string = null ?? 'election';
+  private dateTimeService = inject(GetdatetimeService);
 
   public readonly experienceList: IExperience[] = [
     {
@@ -134,31 +136,19 @@ export class ExperienceComponent {
     java: this.experienceList[5]
   }
 
-  // This need more improvement and adjustments
-  // TODO!!! Move this to DateTime Service.
-  private calculateYearsOfExperience(experience: IExperience): void {
-    if(experience.endDate && experience.startDate) {
-      const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25; // considering leap years
-      const differenceInMilliseconds = experience.endDate.getTime() - experience.startDate.getTime();
-      const differenceInYears = differenceInMilliseconds / millisecondsInYear;
-      
-      const result = Math.abs((Math.round(differenceInYears * 10) / 10));
-
-      if( result > 1.0) {
-        this.yearsOfExperience = `${result.toString()} Years`;
-      }
-      else {
-        this.yearsOfExperience = `${result.toString()} Year`;
-      }
-    }
-    
-  }
-
   public displaySelected(selection: string): void {
     if(selection) {
       this.selected = selection;
     }    
     this.experience = this.experienceDataMap[this.selected];
-    this.calculateYearsOfExperience(this.experience);
+       
+    const result = this.dateTimeService.getYearsOfExperience(this.experience.startDate, this.experience.endDate);
+
+    if( result > 1.0) {
+      this.yearsOfExperience = `${result.toString()} Years`;
+    }
+    else {
+      this.yearsOfExperience = `${result.toString()} Year`;
+    }
   }
 }

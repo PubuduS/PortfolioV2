@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GetdatetimeService } from '@portfolio-v2/services';
 
 @Component({
   selector: 'portfolio-v2-landing-banner',
@@ -11,6 +12,8 @@ import { CommonModule } from '@angular/common';
 export class LandingBannerComponent implements OnInit {
   bannerImageSrc: string = "assets/images/banners/Spring_Banner.gif";
 
+  private dateTimeService = inject(GetdatetimeService);
+
   ngOnInit(): void 
   {
     this.getSeasonalBanner();
@@ -18,8 +21,8 @@ export class LandingBannerComponent implements OnInit {
   
   getSeasonalBanner(): string
   {
-    // eslint-disable-next-line prefer-const
-    let month: number = 9;
+    
+    const month: number = this.dateTimeService.getMonth();
 
     if( month <= 3 || month === 12 )
     {

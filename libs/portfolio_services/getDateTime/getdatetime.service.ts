@@ -47,4 +47,24 @@ export class GetdatetimeService {
   public getMonth(): number {
     return this.month;
   }
+
+  private calculateYearsOfExperience(startDate: Date, endDate: Date): number {
+
+    let value: number = 1;
+    if(startDate && endDate) {
+      // considering leap years
+      const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25;
+      const differenceInMilliseconds = endDate.getTime() - startDate.getTime();
+      const differenceInYears = differenceInMilliseconds / millisecondsInYear;
+      
+      const result = Math.abs((Math.round(differenceInYears * 10) / 10));
+      value = result;
+    }
+    
+    return value;
+  }
+
+  public getYearsOfExperience(startDate: Date, endDate: Date): number {
+    return this.calculateYearsOfExperience(startDate, endDate);
+  }
 }
