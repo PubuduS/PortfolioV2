@@ -2,8 +2,16 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetdataService, GetdatetimeService } from '@portfolio-v2/services';
 import { ISocialInfor, IManagerValidatorMsgs, ICompanyValidatorMsgs } from '@portfolio-v2/interfaces';
+import  Docxtemplater  from 'docxtemplater';
+import  PizZip  from 'pizzip';
+import  PizZipUtils  from 'pizzip/utils/index.js';
+import  { saveAs } from 'file-saver';
+
+function loadFile(url: string, callback: { (error: Error | null, content: string): void; (err: Error, data: string): void; }) {
+  PizZipUtils.getBinaryContent(url, callback);
+}
 
 @Component({
   selector: 'portfolio-v2-cover-letter',
@@ -17,6 +25,7 @@ export class CoverLetterComponent implements OnInit {
   private dataService = inject(GetdataService);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
+  private dateTimeService = inject(GetdatetimeService); 
 
   public coverLetterForm!: FormGroup;
 
@@ -63,8 +72,47 @@ export class CoverLetterComponent implements OnInit {
     this.router.navigate(['contact']);
   }
 
-  public generateLetter(): void {
+  public onSubmit(): void {
     
-  }
+    const formValues = this.coverLetterForm.value;
+    let manager = formValues.managerName;
+    const date = this.dateTimeService.getDate();
 
+    if(manager=='' || manager==undefined || manager == null) {
+      manager = 'Hiring Committee'
+    }
+
+    loadFile( 
+      'assets/CoverLetter/PubuduCoverLetter.docx',
+      function (error: Error | null, content: string) {
+        if (error) {
+          throw error;
+        }
+        const zip = new PizZip(content);
+        const doc = new Docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+        doc.setData({
+          Date: date,
+          Manager: manager,
+          Position: formValues.position,
+          Company: formValues.company,
+        });
+        try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+        } catch (error) {          
+          console.log(JSON.stringify({ error: error }));
+        }
+        const out = doc.getZip().generate({
+          type: 'blob',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        // Output the document using Data-URI
+        saveAs(out, 'PWijesooriya_Cover_Letter.docx');
+      }
+    );
+  }  
 }
