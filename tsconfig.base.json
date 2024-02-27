@@ -50,6 +50,9 @@
       "@portfolio-v2/page_not_found": [
         "libs/portfolio_functions/page_not_found/src/index.ts"
       ],
+      "@portfolio-v2/party_mode": [
+        "libs/portfolio_functions/party_mode/src/index.ts"
+      ],
       "@portfolio-v2/portfolio": [
         "libs/portfolio_functions/portfolio/src/index.ts"
       ],

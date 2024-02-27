@@ -1,0 +1,79 @@
+.entire-container {
+    animation: 1s ease-in-out infinite color-change;
+  }
+  
+  .my-pic
+  {
+    border-radius: 50%;
+    width: 300px;
+    animation: rotation 2s infinite linear;
+  }
+  
+  @keyframes color-change {
+    0% {
+      background-color: teal;
+    }
+    20% {
+      background-color: gold;
+    }
+    40% {
+      background-color: red;
+    }
+    60% {
+      background-color: violet;
+    }
+    80% {
+      background-color: green;
+    }
+    100% {
+      background-color: blue;
+    }
+  }
+  
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  #title {
+    margin-top: 7.9%;
+  }
+  
+  .Intro-desc1 {
+    animation-name: textzoom;
+    animation-duration: 7s;
+  }
+
+  .Intro-desc2 {
+    animation-name: textzoom2;
+    animation-duration: 7s;
+    animation-delay: 7s;
+  }
+
+  @keyframes textzoom {
+    0% {
+        font-size: 25px;
+    }
+    50% {
+        font-size: 50px;
+    }
+    100% {
+        font-size: 25px;
+    }    
+  }
+
+  @keyframes textzoom2 {
+    0% {
+        font-size: 25px;
+    }
+    50% {
+        font-size: 50px;
+    }
+    100% {
+        font-size: 25px;
+    }
+  }
