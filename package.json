@@ -8,7 +8,8 @@
     "clean": "nx reset",
     "test": "nx run-many --target=test --parallel=5 --runInBand",
     "lint": "nx run-many --target=lint --parallel=5 && nx run-many --target=stylelint --parallel=5",
-    "compodoc": "npx compodoc -p tsconfig.doc.json"
+    "compodoc": "npx compodoc -p tsconfig.doc.json",
+    "e2e-tests": "nx run portfolio-v2-e2e:e2e --watch"
   },
   "private": true,
   "dependencies": {
