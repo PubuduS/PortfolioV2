@@ -7,3 +7,4 @@ export { IExperience } from './experience/IExperience';
 export { ISocialInfor } from './social/ISocialInfor';
 export { ICompanyValidatorMsgs, IManagerValidatorMsgs, IEmailValidatorMsgs, ISenderNameValidatorMsgs, IMessageValidatorMsgs } from './validator_msgs/IValidatorErrorMsg';
 export { ISkills } from './skills/ISkills';
+export { IAboutMe } from './about_me/IAboutMe';
