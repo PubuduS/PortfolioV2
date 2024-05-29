@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { IPublicationDetails } from '@portfolio-v2/interfaces';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/services';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -14,6 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './publication_detail.component.css',
 })
 export class PublicationDetailComponent {
-  private dataService = inject(GetdataService);
+  private dataService = inject(GetDataService);
   public readonly pubDetail: IPublicationDetails = this.dataService.getPublicationDetail(this.dataService.getSelectedRecord());
 }

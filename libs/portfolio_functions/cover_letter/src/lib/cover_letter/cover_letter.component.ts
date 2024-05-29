@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GetdataService, GetdatetimeService } from '@portfolio-v2/services';
+import { GetDataService, GetDateTimeService } from '@portfolio-v2/services';
 import { ISocialInfor, IManagerValidatorMsgs, ICompanyValidatorMsgs } from '@portfolio-v2/interfaces';
 import  Docxtemplater  from 'docxtemplater';
 import  PizZip  from 'pizzip';
@@ -22,10 +22,10 @@ function loadFile(url: string, callback: { (error: Error | null, content: string
 })
 export class CoverLetterComponent implements OnInit {
 
-  private dataService = inject(GetdataService);
+  private dataService = inject(GetDataService);
   private router = inject(Router);
   private formBuilder = inject(FormBuilder);
-  private dateTimeService = inject(GetdatetimeService); 
+  private dateTimeService = inject(GetDateTimeService);
 
   public coverLetterForm!: FormGroup;
 
@@ -73,7 +73,7 @@ export class CoverLetterComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    
+
     const formValues = this.coverLetterForm.value;
     let manager = formValues.managerName;
     const date = this.dateTimeService.getDate();
@@ -82,7 +82,7 @@ export class CoverLetterComponent implements OnInit {
       manager = 'Hiring Committee'
     }
 
-    loadFile( 
+    loadFile(
       'assets/CoverLetter/PubuduCoverLetter.docx',
       function (error: Error | null, content: string) {
         if (error) {
@@ -102,7 +102,7 @@ export class CoverLetterComponent implements OnInit {
         try {
           // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
           doc.render();
-        } catch (error) {          
+        } catch (error) {
           console.log(JSON.stringify({ error: error }));
         }
         const out = doc.getZip().generate({
@@ -114,5 +114,5 @@ export class CoverLetterComponent implements OnInit {
         saveAs(out, 'PWijesooriya_Cover_Letter.docx');
       }
     );
-  }  
+  }
 }

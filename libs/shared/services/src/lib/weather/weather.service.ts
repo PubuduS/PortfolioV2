@@ -2,32 +2,53 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, catchError, map, of, tap } from 'rxjs';
-import { IWeather } from '../../interfaces';
-import { IResult } from '../../interfaces';
-import { ErrorService } from '../../portfolio_services/errorMsg/error.service';
+import { IWeather, IResult } from '@portfolio-v2/interfaces';
+import { ErrorService } from '../error-message/error.service';
 
+/**
+ * Get weather service
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class WeatherService {
 
+  /** HTTP client */
   private http = inject(HttpClient);
+
+   /** Error service */
   private errService = inject(ErrorService);
+
+   /** Latitude */
   private readonly latitude: number = 41.257160;
+
+   /** Longitude */
   private readonly longitude: number = -95.995102;
+
+   /** API Key */
   private readonly apiKey: string = 'd686291342bdd228fd2e1801a7800ff1';
+
+   /** Open Weather URL */
   private readonly openweatherURL: string = `https://api.openweathermap.org/data/2.5/weather?lat=${this.latitude}&lon=${this.longitude}&appid=${this.apiKey}&units=imperial`;
 
+   /** Weather icon base path */
   private readonly weatherIconBasePath: string = 'assets/images/weatherIcons/';
+
+   /** Icon extention */
   private readonly iconExtention: string = '.svg';
 
+   /** Weather data */
   public weatherData: Signal<IWeather | undefined> = computed(() => this.weatherForcast().data);
+
+   /** Weather error */
   public weatherError: Signal<string | undefined> = computed(() => this.weatherForcast().error);
 
-  public weatherAnimationPath = computed(() => {
+   /** Weather animation path */  public weatherAnimationPath = computed(() => {
     return `${this.weatherIconBasePath}` + ( this.weatherData()?.iconCode ?? '01d' ) + `${this.iconExtention}`;
   });
 
+  /** Weather data observable */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private weatherData$: Observable<IResult<IWeather>> = this.http.get<any>(this.openweatherURL)
   .pipe(
     tap( p => console.log(p)),
@@ -43,12 +64,11 @@ export class WeatherService {
     catchError(err => of({
       data: {},
       error: this.errService.formatHttpError(err)
-    } as IResult<IWeather>))  
+    } as IResult<IWeather>))
   );
 
+  /** Weather forcast*/
   private weatherForcast = toSignal(this.weatherData$, {
     initialValue: (  { data: {} } as IResult<IWeather> )
   });
-
-
 }

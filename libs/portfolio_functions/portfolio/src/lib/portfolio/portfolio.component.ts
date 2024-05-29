@@ -4,7 +4,7 @@ import { IProjectView } from '@portfolio-v2/interfaces';
 import { MatButtonModule } from '@angular/material/button';
 import { ProjectCardComponent } from '@portfolio-v2/project_card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/services';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 export class PortfolioComponent {
 
   private router = inject(Router);
-  private dataService  = inject(GetdataService);
+  private dataService  = inject(GetDataService);
 
   readonly toolTip: string = 'Click here to see more';
 
@@ -70,7 +70,7 @@ export class PortfolioComponent {
   }
 
   constructor(public dialog: MatDialog) {}
-  
+
   public openDialog(selection: string) {
     this.dataService.setSelectedRecord(selection);
     this.dialog.open(ProjectCardComponent);

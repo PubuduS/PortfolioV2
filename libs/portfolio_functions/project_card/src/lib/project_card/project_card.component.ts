@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/services';
 import { IProjectCard } from '@portfolio-v2/interfaces';
 
 @Component({
@@ -14,7 +14,7 @@ import { IProjectCard } from '@portfolio-v2/interfaces';
   styleUrl: './project_card.component.css',
 })
 export class ProjectCardComponent {
-  private dataService = inject(GetdataService);
+  private dataService = inject(GetDataService);
 
   public readonly dataRecord: IProjectCard = this.dataService.getPortfolioData(this.dataService.getSelectedRecord());
 }

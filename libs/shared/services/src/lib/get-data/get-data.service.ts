@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
-import { IProjectCard, IPublicationDetails, ISocialInfor } from '../../interfaces';
+import { IProjectCard, IPublicationDetails, ISocialInfor } from '@portfolio-v2/interfaces';
 
+/**
+ * Get Data Searvice
+ * TODO: These will soon move to database
+ */
 @Injectable({
   providedIn: 'root'
 })
-export class GetdataService {
-
-  constructor() { }
-
+export class GetDataService {
+  /** Selected record */
   private selectedRecord: string = '';
 
+  /** Social information */
   private readonly socialInfor: ISocialInfor = {
     linkedin: 'https://www.linkedin.com/in/pubudu-wijesooriya/',
     github: 'https://github.com/PubuduS/',
     email: 'pubudusupun@gmail.com'
   }
 
+  /** Portfolio data map */
   private readonly portfolioData: IProjectCard[] = [
     {
       heading: 'Auditor Tool',
@@ -117,6 +121,7 @@ export class GetdataService {
     },
   ];
 
+  /** Publication details */
   private readonly publicationDetails: IPublicationDetails[] = [
     {
       title: 'ARWalker: A Virtual Walking Companion Application',
@@ -161,6 +166,7 @@ export class GetdataService {
     }
   ];
 
+  /** Portfolio data map */
   private readonly portfolioDataMap: {[key: string]: IProjectCard} = {
     auditor: this.portfolioData[0],
     gameboy: this.portfolioData[1],
@@ -171,28 +177,56 @@ export class GetdataService {
     etlExporter: this.portfolioData[6],
   }
 
+  /** Publication data map */
   private readonly publicationDataMap: {[key: string]: IPublicationDetails} = {
     ARWalker: this.publicationDetails[0],
     HLStore: this.publicationDetails[1],
     Thesis: this.publicationDetails[2]
   }
 
+  /**
+   * @inheritdoc
+   */
+  constructor() {}
+
+  /**
+   * Setter for record selection
+   * @param selected selected record
+   */
   public setSelectedRecord(selected: string): void {
     this.selectedRecord = selected;
   }
 
+  /**
+   * Getter for record selection
+   * @returns seelcted record
+   */
   public getSelectedRecord(): string {
     return this.selectedRecord;
   }
 
+  /**
+   * Getter for portfolio data
+   * @param record data
+   * @returns project card data model
+   */
   public getPortfolioData(record: string): IProjectCard {
     return this.portfolioDataMap[record];
   }
 
+  /**
+   * Getter for publications data
+   * @param record data
+   * @returns publication details data model
+   */
   public getPublicationDetail(record: string): IPublicationDetails {
     return this.publicationDataMap[record];
   }
 
+  /**
+   * Getter for social media information
+   * @returns social media information data model
+   */
   public getSocialInfor(): ISocialInfor {
     return this.socialInfor;
   }

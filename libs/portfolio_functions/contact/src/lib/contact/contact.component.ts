@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/services';
 import { ISocialInfor, IEmailValidatorMsgs, ISenderNameValidatorMsgs, IMessageValidatorMsgs } from '@portfolio-v2/interfaces';
 import { ContactPopupComponent } from '@portfolio-v2/contact_popup';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,14 +14,14 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './contact.component.css',
 })
 export class ContactComponent implements OnInit {
-  private dataService = inject(GetdataService);
+  private dataService = inject(GetDataService);
   private formBuilder = inject(FormBuilder);
   private dialog = inject(MatDialog);
 
   public contactForm!: FormGroup;
 
   public readonly socialInfor: ISocialInfor = this.dataService.getSocialInfor();
-  
+
   public readonly nameMinLen: number = 2;
   public readonly nameMaxLen: number = 12;
   public readonly nameRegexPattern: string = '^[a-zA-Z]+$';
@@ -55,7 +55,7 @@ export class ContactComponent implements OnInit {
       });
   }
 
-  public openDialog(email: string) {     
+  public openDialog(email: string) {
     this.dialog.open(ContactPopupComponent, {
       data: {
         emailAddr: email

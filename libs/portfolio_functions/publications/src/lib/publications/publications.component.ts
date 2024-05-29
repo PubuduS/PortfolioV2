@@ -6,7 +6,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { IPublication } from '@portfolio-v2/interfaces';
 import { PublicationDetailComponent } from '@portfolio-v2/publication_detail';
-import { GetdataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/services';
 
 @Component({
   selector: 'portfolio-v2-publications',
@@ -17,7 +17,7 @@ import { GetdataService } from '@portfolio-v2/services';
 })
 export class PublicationsComponent {
   private dialog = inject(MatDialog);
-  private dataService = inject(GetdataService);
+  private dataService = inject(GetDataService);
 
   public readonly publicationList : IPublication[] = [
     {
@@ -52,8 +52,8 @@ export class PublicationsComponent {
     }
   ];
 
-  public openDialog(selection: string) {  
-    this.dataService.setSelectedRecord(selection);  
+  public openDialog(selection: string) {
+    this.dataService.setSelectedRecord(selection);
     this.dialog.open(PublicationDetailComponent);
   }
 }

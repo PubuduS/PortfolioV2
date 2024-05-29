@@ -65,7 +65,7 @@
       "@portfolio-v2/publications": [
         "libs/portfolio_functions/publications/src/index.ts"
       ],
-      "@portfolio-v2/services": ["libs/portfolio_services/index.ts"],
+      "@portfolio-v2/services": ["libs/shared/services/src/index.ts"],
       "@portfolio-v2/skills": ["libs/portfolio_functions/skills/src/index.ts"],
       "@portfolio-v2/weather_display": [
         "libs/portfolio_functions/weather_display/src/index.ts"

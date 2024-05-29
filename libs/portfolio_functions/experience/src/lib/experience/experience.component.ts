@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IExperience } from '@portfolio-v2/interfaces';
-import { GetdatetimeService } from '@portfolio-v2/services';
+import { GetDateTimeService } from '@portfolio-v2/services';
 
 @Component({
   selector: 'portfolio-v2-experience',
@@ -13,7 +13,7 @@ import { GetdatetimeService } from '@portfolio-v2/services';
 export class ExperienceComponent {
 
   public selected: string = null ?? 'election';
-  private dateTimeService = inject(GetdatetimeService);
+  private dateTimeService = inject(GetDateTimeService);
 
   public readonly experienceList: IExperience[] = [
     {
@@ -83,7 +83,7 @@ export class ExperienceComponent {
       startDate: new Date("2019-09-01"),
       endDate: new Date("2021-02-01")
     },
-    
+
     {
       position: 'Part-Time Web Developer at Peace Lutheran Early Childhood Center.',
       timePeriod: '2018 - 2019',
@@ -96,7 +96,7 @@ export class ExperienceComponent {
       startDate: new Date("2018-01-01"),
       endDate: new Date("2019-08-01")
     },
-    
+
     {
       position: 'Student Worker (Part-Time) at Larson Commons',
       timePeriod: '2018 - 2019',
@@ -139,9 +139,9 @@ export class ExperienceComponent {
   public displaySelected(selection: string): void {
     if(selection) {
       this.selected = selection;
-    }    
+    }
     this.experience = this.experienceDataMap[this.selected];
-       
+
     const result = this.dateTimeService.getYearsOfExperience(this.experience.startDate, this.experience.endDate);
 
     if( result > 1.0) {
