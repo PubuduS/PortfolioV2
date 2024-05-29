@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, Signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, catchError, map, of, tap } from 'rxjs';
-import { IWeather, IResult } from '@portfolio-v2/interfaces';
+import { IWeather, IResult, OpenWeatherResponse } from '@portfolio-v2/interfaces';
 import { ErrorService } from '../error-message/error.service';
 
 /**
@@ -48,8 +48,7 @@ export class WeatherService {
   });
 
   /** Weather data observable */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private weatherData$: Observable<IResult<IWeather>> = this.http.get<any>(this.openweatherURL)
+  private weatherData$: Observable<IResult<IWeather>> = this.http.get<OpenWeatherResponse>(this.openweatherURL)
   .pipe(
     tap( p => console.log(p)),
     map( p => ({data: {
