@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { IPublicationDetails } from '@portfolio-v2/interfaces';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [CommonModule, MatDialogModule, ClipboardModule, MatIconModule],
   templateUrl: './publication_detail.component.html',
   styleUrl: './publication_detail.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicationDetailComponent {
   private dataService = inject(GetDataService);

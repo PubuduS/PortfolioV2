@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ICertificateCard } from '@portfolio-v2/interfaces';
 
@@ -8,6 +8,7 @@ import { ICertificateCard } from '@portfolio-v2/interfaces';
   imports: [CommonModule],
   templateUrl: './certifications.component.html',
   styleUrl: './certifications.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CertificationsComponent {
   public readonly certificate_icon_URL: string = 'assets/images/certificate_Icon/certificate.png';
@@ -29,7 +30,7 @@ export class CertificationsComponent {
       organization: 'Udemy',
       credentialID: 'None',
       certification: 'In Progress',
-      description: 'This is a introductory level course about AWS.',      
+      description: 'This is a introductory level course about AWS.',
     },
     {
       title: 'Object Oriented Programming in Java',

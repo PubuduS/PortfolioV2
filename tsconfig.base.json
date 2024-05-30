@@ -56,6 +56,7 @@
       "@portfolio-v2/portfolio": [
         "libs/portfolio_functions/portfolio/src/index.ts"
       ],
+      "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
       "@portfolio-v2/project_card": [
         "libs/portfolio_functions/project_card/src/index.ts"
       ],

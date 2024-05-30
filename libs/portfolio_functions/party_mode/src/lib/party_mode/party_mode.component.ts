@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -7,5 +7,6 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './party_mode.component.html',
   styleUrl: './party_mode.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PartyModeComponent {}
