@@ -84,7 +84,7 @@ export class GetDateTimeService {
    */
   private calculateYearsOfExperience(startDate: Date, endDate: Date): number {
 
-    let value: number = 1;
+    let value = 1;
     if(startDate && endDate) {
       // considering leap years
       const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25;

@@ -3,8 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/pages/src",
   "prefix": "portfolio-v2",
-  "tags": ["pages"],
   "projectType": "library",
+  "tags": ["pages"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
@@ -14,11 +14,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/pages//**/*.ts", "libs/pages//**/*.html"]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }

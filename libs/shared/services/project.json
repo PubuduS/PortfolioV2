@@ -3,8 +3,8 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/services/src",
   "prefix": "portfolio-v2",
-  "tags": ["services"],
   "projectType": "library",
+  "tags": ["services"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
@@ -14,14 +14,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "libs/shared/services/**/*.ts",
-          "libs/shared/services/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }

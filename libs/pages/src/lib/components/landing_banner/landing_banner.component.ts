@@ -14,7 +14,7 @@ import { GetDateTimeService } from '@portfolio-v2/services';
 export class LandingBannerComponent implements OnInit {
 
   /** Banner image */
-  public bannerImageSrc: string = "assets/images/banners/Spring_Banner.gif";
+  public bannerImageSrc = "assets/images/banners/Spring_Banner.gif";
 
   /** Date Time Service */
   private dateTimeService = inject(GetDateTimeService);

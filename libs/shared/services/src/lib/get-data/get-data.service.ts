@@ -10,7 +10,7 @@ import { IProjectCard, IPublicationDetails, ISocialInfor } from '@portfolio-v2/i
 })
 export class GetDataService {
   /** Selected record */
-  private selectedRecord: string = '';
+  private selectedRecord = '';
 
   /** Social information */
   private readonly socialInfor: ISocialInfor = {
@@ -183,11 +183,6 @@ export class GetDataService {
     HLStore: this.publicationDetails[1],
     Thesis: this.publicationDetails[2]
   }
-
-  /**
-   * @inheritdoc
-   */
-  constructor() {}
 
   /**
    * Setter for record selection

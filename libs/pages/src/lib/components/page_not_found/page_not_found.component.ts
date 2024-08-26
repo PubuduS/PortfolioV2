@@ -14,10 +14,10 @@ import { Subscription, interval, tap } from 'rxjs';
 export class PageNotFoundComponent implements OnInit, OnDestroy {
 
   /** Is left GIF visible */
-  public isLeftGIFVisible: boolean = true;
+  public isLeftGIFVisible = true;
 
   /** Is right GIF visible */
-  public isRightGIFVisible: boolean = true;
+  public isRightGIFVisible = true;
 
   /** Subscription */
   public sub!: Subscription;

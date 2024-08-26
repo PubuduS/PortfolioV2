@@ -136,7 +136,7 @@ export class ExperienceComponent {
   public experience: IExperience = null ?? this.experienceList[0];
 
   /** Number of years of experience */
-  public yearsOfExperience: string = '1 Year';
+  public yearsOfExperience = '1 Year';
 
   /** Experience data map */
   private readonly experienceDataMap: {[key: string]: IExperience} = {
