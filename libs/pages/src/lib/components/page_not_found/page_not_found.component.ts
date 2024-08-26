@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { Subscription, interval, tap } from 'rxjs';
 
@@ -14,10 +14,10 @@ import { Subscription, interval, tap } from 'rxjs';
 export class PageNotFoundComponent implements OnInit, OnDestroy {
 
   /** Is left GIF visible */
-  public isLeftGIFVisible = true;
+  public isLeftGIFVisible = signal(true);
 
   /** Is right GIF visible */
-  public isRightGIFVisible = true;
+  public isRightGIFVisible = signal(false);
 
   /** Subscription */
   public sub!: Subscription;
@@ -47,8 +47,8 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
     this.sub = interval(this.visibilityTimer)
     .pipe(
       tap(() => {
-        this.isLeftGIFVisible = !this.isLeftGIFVisible;
-        this.isRightGIFVisible = !this.isLeftGIFVisible;
+        this.isLeftGIFVisible.set(!this.isLeftGIFVisible());
+        this.isRightGIFVisible.set(!this.isLeftGIFVisible());
         console.log(`left ${this.isLeftGIFVisible}: right ${this.isRightGIFVisible}`);
       })
     ).subscribe();

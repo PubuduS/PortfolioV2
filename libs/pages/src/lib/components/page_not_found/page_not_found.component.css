@@ -41,17 +41,16 @@ h2{
 }
 
 .gifimgLeft{
- position: relative; 
+ position: relative;
  margin-top: 15%;
  margin-left: 65%;
  transform: scaleX(1);
 }
 
 .gifimgRight{
-position: relative; 
- margin-bottom: 115%;
- margin-left: 1%;
- top: -52%;
+position: relative;
+margin-top: 15%;
+margin-left: 2%;
  transform: scaleX(-1);
 }
 
