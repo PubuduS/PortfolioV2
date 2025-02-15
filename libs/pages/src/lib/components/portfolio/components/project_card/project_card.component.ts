@@ -19,7 +19,7 @@ import { IProjectCard } from '@portfolio-v2/interfaces';
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './project_card.component.html',
-  styleUrl: './project_card.component.css',
+  styleUrl: './project_card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectCardComponent {

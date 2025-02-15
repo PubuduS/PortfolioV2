@@ -16,7 +16,7 @@ import {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './featured_projects.component.html',
-  styleUrl: './featured_projects.component.css',
+  styleUrl: './featured_projects.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedProjectsComponent {

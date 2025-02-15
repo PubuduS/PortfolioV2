@@ -30,7 +30,7 @@ import { ContactPopupComponent } from './components/contact_popup/contact_popup.
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ContactPopupComponent],
   templateUrl: './contact.component.html',
-  styleUrl: './contact.component.css',
+  styleUrl: './contact.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent implements OnInit {

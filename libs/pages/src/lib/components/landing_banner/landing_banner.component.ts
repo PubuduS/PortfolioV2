@@ -14,7 +14,7 @@ import { GetDateTimeService } from '@portfolio-v2/services';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './landing_banner.component.html',
-  styleUrl: './landing_banner.component.css',
+  styleUrl: './landing_banner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingBannerComponent implements OnInit {

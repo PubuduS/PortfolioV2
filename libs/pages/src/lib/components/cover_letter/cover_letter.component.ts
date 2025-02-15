@@ -46,7 +46,7 @@ function loadFile(url: string, callback: {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cover_letter.component.html',
-  styleUrl: './cover_letter.component.css',
+  styleUrl: './cover_letter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverLetterComponent implements OnInit {

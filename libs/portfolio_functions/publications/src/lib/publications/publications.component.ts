@@ -31,7 +31,7 @@ import { GetDataService } from '@portfolio-v2/services';
     PublicationDetailComponent,
   ],
   templateUrl: './publications.component.html',
-  styleUrl: './publications.component.css',
+  styleUrl: './publications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicationsComponent {

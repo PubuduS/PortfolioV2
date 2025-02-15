@@ -26,7 +26,7 @@ import { PartyModeComponent } from '@portfolio-v2/party_mode';
   ],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   /** Page title */

@@ -17,7 +17,7 @@ import { IWeather } from '@portfolio-v2/interfaces';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './weather_display.component.html',
-  styleUrl: './weather_display.component.css',
+  styleUrl: './weather_display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherDisplayComponent {

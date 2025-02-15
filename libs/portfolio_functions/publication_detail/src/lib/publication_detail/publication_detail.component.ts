@@ -19,7 +19,7 @@ import { GetDataService } from '@portfolio-v2/services';
   standalone: true,
   imports: [CommonModule, MatDialogModule, ClipboardModule, MatIconModule],
   templateUrl: './publication_detail.component.html',
-  styleUrl: './publication_detail.component.css',
+  styleUrl: './publication_detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicationDetailComponent {

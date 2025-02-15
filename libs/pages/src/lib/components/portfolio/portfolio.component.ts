@@ -23,7 +23,7 @@ import { ProjectCardComponent } from './components/project_card/project_card.com
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatDialogModule, ProjectCardComponent],
   templateUrl: './portfolio.component.html',
-  styleUrl: './portfolio.component.css',
+  styleUrl: './portfolio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PortfolioComponent {

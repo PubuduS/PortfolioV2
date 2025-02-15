@@ -14,7 +14,7 @@ import { IAboutMe } from '@portfolio-v2/interfaces';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './about_me.component.html',
-  styleUrl: './about_me.component.css',
+  styleUrl: './about_me.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutMeComponent {

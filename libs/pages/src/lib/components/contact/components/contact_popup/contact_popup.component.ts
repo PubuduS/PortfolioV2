@@ -21,7 +21,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatDialogModule, MatIconModule, ClipboardModule],
   templateUrl: './contact_popup.component.html',
-  styleUrl: './contact_popup.component.css',
+  styleUrl: './contact_popup.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactPopupComponent {
@@ -29,7 +29,7 @@ export class ContactPopupComponent {
    * constructor
    * @param dialogRef Dialog ref
    * @param data data
-   * @param data.emailAddr
+   * @param data.emailAddr email address
    */
   constructor(
     public dialogRef: MatDialogRef<ContactPopupComponent>,

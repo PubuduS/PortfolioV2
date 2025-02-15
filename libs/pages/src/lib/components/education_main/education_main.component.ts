@@ -14,7 +14,7 @@ declare function FlowerAnimation(): void;
   standalone: true,
   imports: [CommonModule],
   templateUrl: './education_main.component.html',
-  styleUrl: './education_main.component.css',
+  styleUrl: './education_main.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EducationMainComponent implements OnInit {

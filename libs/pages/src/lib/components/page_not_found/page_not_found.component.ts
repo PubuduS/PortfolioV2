@@ -21,7 +21,7 @@ import {
   standalone: true,
   imports: [CommonModule, NgFor],
   templateUrl: './page_not_found.component.html',
-  styleUrl: './page_not_found.component.css',
+  styleUrl: './page_not_found.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageNotFoundComponent implements OnInit, OnDestroy {

@@ -12,7 +12,7 @@ import { ISkills } from '@portfolio-v2/interfaces';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './skills.component.html',
-  styleUrl: './skills.component.css',
+  styleUrl: './skills.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsComponent {

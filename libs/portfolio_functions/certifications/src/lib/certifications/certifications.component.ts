@@ -14,7 +14,7 @@ import { ICertificateCard } from '@portfolio-v2/interfaces';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './certifications.component.html',
-  styleUrl: './certifications.component.css',
+  styleUrl: './certifications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CertificationsComponent {

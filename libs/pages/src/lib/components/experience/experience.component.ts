@@ -17,7 +17,7 @@ import { GetDateTimeService } from '@portfolio-v2/services';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './experience.component.html',
-  styleUrl: './experience.component.css',
+  styleUrl: './experience.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceComponent {

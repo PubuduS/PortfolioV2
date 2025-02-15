@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './party_mode.component.html',
-  styleUrl: './party_mode.component.css',
+  styleUrl: './party_mode.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PartyModeComponent {}

@@ -21,7 +21,7 @@
         ],
         "styles": [
           "@angular/material/prebuilt-themes/indigo-pink.css",
-          "apps/portfolio-v2/src/styles.css"
+          "apps/portfolio-v2/src/styles.scss"
         ],
         "scripts": ["apps/portfolio-v2/src/assets/scripts/flower.js"]
       },
