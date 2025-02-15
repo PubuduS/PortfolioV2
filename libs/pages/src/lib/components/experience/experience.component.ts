@@ -7,7 +7,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { IExperience } from '@portfolio-v2/interfaces';
-import { GetDateTimeService } from '@portfolio-v2/services';
+import { GetDateTimeService } from '@portfolio-v2/shared/services';
 
 /**
  * Experience page

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { GetDateTimeService } from '@portfolio-v2/services';
+import { GetDateTimeService } from '@portfolio-v2/shared/services';
 
 /** Landing page */
 @Component({

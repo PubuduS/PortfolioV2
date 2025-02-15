@@ -13,7 +13,7 @@ import {
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
-import { GetDataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/shared/services';
 import {
   ISocialInfor,
   IEmailValidatorMsgs,

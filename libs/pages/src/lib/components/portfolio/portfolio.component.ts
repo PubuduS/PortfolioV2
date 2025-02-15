@@ -11,7 +11,7 @@ import {
 } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-import { GetDataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/shared/services';
 import { IProjectView } from '@portfolio-v2/interfaces';
 import { ProjectCardComponent } from './components/project_card/project_card.component';
 

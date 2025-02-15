@@ -20,7 +20,7 @@ import { saveAs } from 'file-saver';
 import {
   GetDataService,
   GetDateTimeService,
-} from '@portfolio-v2/services';
+} from '@portfolio-v2/shared/services';
 import {
   ISocialInfor,
   IManagerValidatorMsgs,

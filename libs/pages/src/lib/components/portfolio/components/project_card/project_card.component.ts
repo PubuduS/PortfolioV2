@@ -8,7 +8,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { GetDataService } from '@portfolio-v2/services';
+import { GetDataService } from '@portfolio-v2/shared/services';
 import { IProjectCard } from '@portfolio-v2/interfaces';
 
 /**

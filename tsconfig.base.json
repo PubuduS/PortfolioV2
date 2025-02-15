@@ -16,62 +16,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@portfolio-v2/about_me": [
-        "libs/portfolio_functions/about_me/src/index.ts"
-      ],
-      "@portfolio-v2/certifications": [
-        "libs/portfolio_functions/certifications/src/index.ts"
-      ],
       "@portfolio-v2/const": ["libs/const/index.ts"],
-      "@portfolio-v2/contact": [
-        "libs/portfolio_functions/contact/src/index.ts"
-      ],
-      "@portfolio-v2/contact_popup": [
-        "libs/portfolio_functions/contact_popup/src/index.ts"
-      ],
-      "@portfolio-v2/cover_letter": [
-        "libs/portfolio_functions/cover_letter/src/index.ts"
-      ],
-      "@portfolio-v2/education": [
-        "libs/portfolio_functions/education/src/index.ts"
-      ],
-      "@portfolio-v2/education_main": [
-        "libs/portfolio_functions/education_main/src/index.ts"
-      ],
-      "@portfolio-v2/experience": [
-        "libs/portfolio_functions/experience/src/index.ts"
-      ],
-      "@portfolio-v2/featured_projects": [
-        "libs/portfolio_functions/featured_projects/src/index.ts"
-      ],
       "@portfolio-v2/interfaces": ["libs/interfaces/index.ts"],
-      "@portfolio-v2/landing_banner": [
-        "libs/portfolio_functions/landing_banner/src/index.ts"
-      ],
-      "@portfolio-v2/page_not_found": [
-        "libs/portfolio_functions/page_not_found/src/index.ts"
-      ],
-      "@portfolio-v2/party_mode": [
-        "libs/portfolio_functions/party_mode/src/index.ts"
-      ],
-      "@portfolio-v2/portfolio": [
-        "libs/portfolio_functions/portfolio/src/index.ts"
-      ],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
-      "@portfolio-v2/project_card": [
-        "libs/portfolio_functions/project_card/src/index.ts"
-      ],
-      "@portfolio-v2/publication_detail": [
-        "libs/portfolio_functions/publication_detail/src/index.ts"
-      ],
-      "@portfolio-v2/publications": [
-        "libs/portfolio_functions/publications/src/index.ts"
-      ],
-      "@portfolio-v2/services": ["libs/shared/services/src/index.ts"],
-      "@portfolio-v2/skills": ["libs/portfolio_functions/skills/src/index.ts"],
-      "@portfolio-v2/weather_display": [
-        "libs/portfolio_functions/weather_display/src/index.ts"
-      ]
+      "@portfolio-v2/shared/services": ["libs/shared/src/lib/services/index.ts"],
+      "@portfolio-v2/shared/components": ["libs/shared/src/lib/components/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
