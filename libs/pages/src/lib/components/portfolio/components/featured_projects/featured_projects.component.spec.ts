@@ -1,4 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+} from '@angular/core/testing';
+
 import { FeaturedProjectsComponent } from './featured_projects.component';
 
 describe('FeaturedProjectsComponent', () => {

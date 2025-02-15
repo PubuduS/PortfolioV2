@@ -5,10 +5,9 @@ import { Injectable } from '@angular/core';
  * Error format service
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ErrorService {
-
   /**
    * Format http error response
    * @param err error response

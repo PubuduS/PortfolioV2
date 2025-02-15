@@ -1,6 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
-import { CommonModule, NgFor } from '@angular/common';
-import { Subscription, interval, tap } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
+  CommonModule,
+  NgFor,
+} from '@angular/common';
+import {
+  Subscription,
+  interval,
+  tap,
+} from 'rxjs';
 
 /** Page not found error page */
 @Component({
@@ -12,7 +25,6 @@ import { Subscription, interval, tap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageNotFoundComponent implements OnInit, OnDestroy {
-
   /** Is left GIF visible */
   public isLeftGIFVisible = signal(true);
 
@@ -25,10 +37,10 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
   /** Quote array */
   private readonly quotesArray: string[] = [
     "99 bugs in my code, 99 bugs in my code... Take one down, fix em' around, 404 bugs in my code",
-    "Error 404. Your Haiku could not be found",
+    'Error 404. Your Haiku could not be found',
     "Webpages? Where we're going, we don't need webpages",
     "The page you're looking for is on a coffee break. It needs its caffeine fix to get back online.",
-    "How do we know we exist?"
+    'How do we know we exist?',
   ];
 
   /** Random quote index */
@@ -43,23 +55,22 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
   /**
    * @inheritdoc
    */
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.sub = interval(this.visibilityTimer)
-    .pipe(
-      tap(() => {
-        this.isLeftGIFVisible.set(!this.isLeftGIFVisible());
-        this.isRightGIFVisible.set(!this.isLeftGIFVisible());
-        console.log(`left ${this.isLeftGIFVisible}: right ${this.isRightGIFVisible}`);
-      })
-    ).subscribe();
+      .pipe(
+        tap(() => {
+          this.isLeftGIFVisible.set(!this.isLeftGIFVisible());
+          this.isRightGIFVisible.set(!this.isLeftGIFVisible());
+          console.log(`left ${this.isLeftGIFVisible}: right ${this.isRightGIFVisible}`);
+        }),
+      ).subscribe();
     console.log(this.randomQuote);
   }
 
   /** @inheritdoc */
-  ngOnDestroy(): void {
-    if(this.sub) {
+  public ngOnDestroy(): void {
+    if (this.sub) {
       this.sub.unsubscribe();
     }
   }
-
 }

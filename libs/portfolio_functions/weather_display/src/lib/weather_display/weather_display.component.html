@@ -1,15 +1,14 @@
 <div class="weather-panel" *ngIf="!weatherErr()">
-    <div class="row">
-        <div class="col-md-4">
-            <img class="weatherAnim" [src]="weatherIcon()"/>            
-        </div>
-        <div class="col-md-8">
-            <p class="weather-info">In Omaha</p>
-            <p class="weather-info">🌡️ {{weatherData()?.temprature}} F </p>
-            <p class="weather-info">🍃 {{weatherData()?.windSpeed}} mph</p>
-            <p class="weather-info">💧 {{weatherData()?.humidity}}%</p>
-            <p class="weather-info">👀 {{weatherData()?.description}}</p>
-        </div>
-
+  <div class="row">
+    <div class="col-md-4">
+      <img class="weatherAnim" [src]="weatherIcon()" />
     </div>
+    <div class="col-md-8">
+      <p class="weather-info">In Omaha</p>
+      <p class="weather-info">🌡️ {{ weatherData()?.temprature }} F</p>
+      <p class="weather-info">🍃 {{ weatherData()?.windSpeed }} mph</p>
+      <p class="weather-info">💧 {{ weatherData()?.humidity }}%</p>
+      <p class="weather-info">👀 {{ weatherData()?.description }}</p>
+    </div>
+  </div>
 </div>

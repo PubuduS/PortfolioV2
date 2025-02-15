@@ -1,82 +1,120 @@
-
 <!--// Main Section \\-->
 <div class="pw-main-section cover-letter-full" id="contact">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="section-title">
-                    <h2>Cover Letter Generator</h2>
-                </div>
-            </div>
-            <div class="col-md-5 fadeLeft bottom" data-t-show="3">
-                <div class="contact-detail">
-                    <p>Please fill in this information to generate my cover letter.</p>
-                    <h2>Follow Me</h2>
-                    <ul class="social">
-                        <li><a href={{this.socialInfor.linkedin}} target="_blank" class="fa fa-linkedin"></a></li>
-                        <li><a href={{this.socialInfor.github}} target="_blank" class="fa fa-github"></a></li>
-                        <li><a (click)="goToContactPage()" class="fa fa-envelope"></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-7 fadeRight bottom" data-t-show="3">
-                <div class="cover-form">
-                    <form 
-                    (ngSubmit)="onSubmit()"
-                    [formGroup]="coverLetterForm">
-                        <ul>                   
-                            <li>
-                                <input class="form-control" 
-                                type="text" 
-                                placeholder="Manager Name (If unknown leave it empty)"
-                                formControlName="managerName"
-                                [ngClass]="{'is-invalid': !coverLetterForm.get('managerName')?.valid }"/>
-                                <span class="invalid-feedback">
-                                    <span *ngIf="coverLetterForm.get('managerName')?.errors?.['pattern']">
-                                        {{mngValidatorMessages.mngPatternError}}
-                                    </span>
-                                    <span *ngIf="coverLetterForm.get('managerName')?.errors?.['maxlength']">
-                                        {{mngValidatorMessages.mngNameMaxLen}}
-                                    </span>
-                                </span>
-                            </li>
-
-                            <li>
-                                <select class="form-control" 
-                                aria-label="Default select example" 
-                                id="position-name"
-                                formControlName="position">
-                                    <option *ngFor="let position of positions">{{position}}</option> 
-                                </select>
-                            </li>
-
-                            <li>
-                                <input class="form-control" 
-                                type="text" 
-                                placeholder="Company Name"
-                                formControlName="company"
-                                [ngClass]="{'is-invalid': (coverLetterForm.get('company')?.touched ||
-                                          coverLetterForm.get('company')?.dirty) &&
-                                          !coverLetterForm.get('company')?.valid }"/>
-                                <span class="invalid-feedback">
-                                    <span *ngIf="coverLetterForm.get('company')?.errors?.['required']">
-                                        {{cmpValidatorMessages.cmpNameReqError}}
-                                    </span>
-                                    <span *ngIf="coverLetterForm.get('company')?.errors?.['maxlength']">
-                                        {{cmpValidatorMessages.cmpNameMaxLen}}
-                                    </span>
-                                </span>
-                            </li>
-                            <button type="submit" class="submit-btn"
-                                [disabled]="!coverLetterForm.valid">
-                                Generate
-                            </button>
-                        </ul>
-
-                    </form>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="section-title">
+          <h2>Cover Letter Generator</h2>
         </div>
+      </div>
+      <div class="col-md-5 fadeLeft bottom" data-t-show="3">
+        <div class="contact-detail">
+          <p>Please fill in this information to generate my cover letter.</p>
+          <h2>Follow Me</h2>
+          <ul class="social">
+            <li>
+              <a
+                href="{{ this.socialInfor.linkedin }}"
+                target="_blank"
+                class="fa fa-linkedin"
+              ></a>
+            </li>
+            <li>
+              <a
+                href="{{ this.socialInfor.github }}"
+                target="_blank"
+                class="fa fa-github"
+              ></a>
+            </li>
+            <li><a (click)="goToContactPage()" class="fa fa-envelope"></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-7 fadeRight bottom" data-t-show="3">
+        <div class="cover-form">
+          <form (ngSubmit)="onSubmit()" [formGroup]="coverLetterForm">
+            <ul>
+              <li>
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Manager Name (If unknown leave it empty)"
+                  formControlName="managerName"
+                  [ngClass]="{
+                    'is-invalid': !coverLetterForm.get('managerName')?.valid,
+                  }"
+                />
+                <span class="invalid-feedback">
+                  <span
+                    *ngIf="
+                      coverLetterForm.get('managerName')?.errors?.['pattern']
+                    "
+                  >
+                    {{ mngValidatorMessages.mngPatternError }}
+                  </span>
+                  <span
+                    *ngIf="
+                      coverLetterForm.get('managerName')?.errors?.['maxlength']
+                    "
+                  >
+                    {{ mngValidatorMessages.mngNameMaxLen }}
+                  </span>
+                </span>
+              </li>
+
+              <li>
+                <select
+                  class="form-control"
+                  aria-label="Default select example"
+                  id="position-name"
+                  formControlName="position"
+                >
+                  <option *ngFor="let position of positions">
+                    {{ position }}
+                  </option>
+                </select>
+              </li>
+
+              <li>
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Company Name"
+                  formControlName="company"
+                  [ngClass]="{
+                    'is-invalid':
+                      (coverLetterForm.get('company')?.touched ||
+                        coverLetterForm.get('company')?.dirty) &&
+                      !coverLetterForm.get('company')?.valid,
+                  }"
+                />
+                <span class="invalid-feedback">
+                  <span
+                    *ngIf="coverLetterForm.get('company')?.errors?.['required']"
+                  >
+                    {{ cmpValidatorMessages.cmpNameReqError }}
+                  </span>
+                  <span
+                    *ngIf="
+                      coverLetterForm.get('company')?.errors?.['maxlength']
+                    "
+                  >
+                    {{ cmpValidatorMessages.cmpNameMaxLen }}
+                  </span>
+                </span>
+              </li>
+              <button
+                type="submit"
+                class="submit-btn"
+                [disabled]="!coverLetterForm.valid"
+              >
+                Generate
+              </button>
+            </ul>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <!--// Main Section \\-->

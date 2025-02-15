@@ -1,6 +1,10 @@
 {
   "extends": ["../../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
+  "parserOptions": {
+    "project": ["libs/portfolio_functions/publications/tsconfig.*?.json"],
+    "createDefaultProgram": true
+  },
   "overrides": [
     {
       "files": ["*.ts"],
@@ -13,7 +17,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "portfolioV2",
+            "prefix": "portfolio-v2",
             "style": "camelCase"
           }
         ],

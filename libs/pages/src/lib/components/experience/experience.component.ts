@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+/* eslint-disable no-multi-str */
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { IExperience } from '@portfolio-v2/interfaces';
 import { GetDateTimeService } from '@portfolio-v2/services';
 
@@ -12,12 +18,11 @@ import { GetDateTimeService } from '@portfolio-v2/services';
   imports: [CommonModule],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceComponent {
-
   /** Selected experience section */
-  public selected: string = null ?? 'election';
+  public selected = 'election';
 
   /** Date time service */
   private dateTimeService = inject(GetDateTimeService);
@@ -37,10 +42,10 @@ export class ExperienceComponent {
         'Created technical documentation with confluence.',
         'Provided technical and site support for the 2023 General Election in New Jersey.',
         'Utilized Git and Jenkins for version control and CICD Pipeline; C#, C++, Typescript, .NET, Angular, NgRx, RxJs, Yocto, and Visual \
-         Studio and Nx Workspace for a variety of projects; Doxygen, CompoDoc, and JIRA to generate documentation and management of the software development life cycle.'
+         Studio and Nx Workspace for a variety of projects; Doxygen, CompoDoc, and JIRA to generate documentation and management of the software development life cycle.',
       ],
-      startDate: new Date("2023-09-05"),
-      endDate: new Date()
+      startDate: new Date('2023-09-05'),
+      endDate: new Date(),
     },
 
     {
@@ -64,8 +69,8 @@ export class ExperienceComponent {
         'Utilized Git, Github Actions, and Jenkins with AWS S3 Bucket for version control and CICD Pipeline; C#, Unity, MRTK, and Visual Studio \
         to create MR application for HoloLens 2; Doxygen and JIRA to generate documentation and management of the software development life cycle.',
       ],
-      startDate: new Date("2021-08-01"),
-      endDate: new Date("2023-08-01")
+      startDate: new Date('2021-08-01'),
+      endDate: new Date('2023-08-01'),
     },
 
     {
@@ -86,10 +91,10 @@ export class ExperienceComponent {
 
         'Utilized Git, Subversion, and Gerrit for version control and code review; Python, Scons, Bash, and Teamcity to \
         cross-compilation and build system; MIBs to allow remote configurations of the settings; JAVA SE 8, Netbeans and cURL to \
-        create auditor software; Doxygen to generate documentation of the software.'
+        create auditor software; Doxygen to generate documentation of the software.',
       ],
-      startDate: new Date("2019-09-01"),
-      endDate: new Date("2021-02-01")
+      startDate: new Date('2019-09-01'),
+      endDate: new Date('2021-02-01'),
     },
 
     {
@@ -99,10 +104,10 @@ export class ExperienceComponent {
       points: [
         'Assisted the Center with updating and maintaining their web software to effectively track the attendance of over 200 students and staff members.',
         'Learned Agile development, reverse engineering, database normalization, OOP designing, and PHP in order to effectively complete tasks.',
-        'Created technical documents to monitor progress.'
+        'Created technical documents to monitor progress.',
       ],
-      startDate: new Date("2018-01-01"),
-      endDate: new Date("2019-08-01")
+      startDate: new Date('2018-01-01'),
+      endDate: new Date('2019-08-01'),
     },
 
     {
@@ -113,10 +118,10 @@ export class ExperienceComponent {
         'Liaised with colleagues to provide service in a timely manner to boost the efficiency of dining hall operations.',
         'Provided exceptional service to students and staff frequenting the dining hall.',
         'Maintained consistent communications with colleagues and senior management to exchange updates on operations.',
-        'Learned to balance work duties with academic responsibilities.'
+        'Learned to balance work duties with academic responsibilities.',
       ],
-      startDate: new Date("2018-01-01"),
-      endDate: new Date("2019-03-01")
+      startDate: new Date('2018-01-01'),
+      endDate: new Date('2019-03-01'),
     },
 
     {
@@ -125,42 +130,45 @@ export class ExperienceComponent {
       shortDescription: 'Engineered an inventory control software for Sapna, a small business in Sri Lanka, to streamline inventory management processes.',
       points: [
         'Identified and addressed common issues of low-level inventory control software, troubleshooting to resolve these issues and achieve full functionality.',
-        'Enhanced my working knowledge of SQL and Java tools, as well as OOP concepts, through completion of project tasks.'
+        'Enhanced my working knowledge of SQL and Java tools, as well as OOP concepts, through completion of project tasks.',
       ],
-      startDate: new Date("2014-01-01"),
-      endDate: new Date("2015-03-01")
-    }
+      startDate: new Date('2014-01-01'),
+      endDate: new Date('2015-03-01'),
+    },
   ];
 
   /** Experience */
-  public experience: IExperience = null ?? this.experienceList[0];
+  public experience: IExperience = this.experienceList[0];
 
   /** Number of years of experience */
   public yearsOfExperience = '1 Year';
 
   /** Experience data map */
-  private readonly experienceDataMap: {[key: string]: IExperience} = {
+  private readonly experienceDataMap: { [key: string]: IExperience } = {
     election: this.experienceList[0],
     uno: this.experienceList[1],
     sencore: this.experienceList[2],
     peace: this.experienceList[3],
     larson: this.experienceList[4],
-    java: this.experienceList[5]
-  }
+    java: this.experienceList[5],
+  };
 
-  /** Display selected */
+  /**
+   * Display selected
+   * @param selection
+   */
   public displaySelected(selection: string): void {
-    if(selection) {
+    if (selection) {
       this.selected = selection;
     }
     this.experience = this.experienceDataMap[this.selected];
 
-    const result = this.dateTimeService.getYearsOfExperience(this.experience.startDate, this.experience.endDate);
+    const result = this.dateTimeService
+      .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
 
-    if( result > 1.0) {
+    if (result > 1.0) {
       this.yearsOfExperience = `${result.toString()} Years`;
-    }
-    else {
+    } else {
       this.yearsOfExperience = `${result.toString()} Year`;
     }
   }

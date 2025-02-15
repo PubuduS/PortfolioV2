@@ -4,6 +4,8 @@
 /.nx/cache
 /documentation
 .angular
+.eslintcache
+test-results
 
 # Prettier doesn't work with these files
 **/*.js

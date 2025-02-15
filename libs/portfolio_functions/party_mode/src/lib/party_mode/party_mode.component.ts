@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Party mode page
+ */
 @Component({
   selector: 'portfolio-v2-party-mode',
   standalone: true,

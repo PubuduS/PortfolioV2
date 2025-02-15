@@ -1,20 +1,40 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GetDataService, GetDateTimeService } from '@portfolio-v2/services';
-import { ISocialInfor, IManagerValidatorMsgs, ICompanyValidatorMsgs } from '@portfolio-v2/interfaces';
-import  Docxtemplater  from 'docxtemplater';
-import  PizZip  from 'pizzip';
-import  PizZipUtils  from 'pizzip/utils/index.js';
-import  { saveAs } from 'file-saver';
+import {
+  FormGroup,
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import Docxtemplater from 'docxtemplater';
+import PizZip from 'pizzip';
+import PizZipUtils from 'pizzip/utils/index.js';
+import { saveAs } from 'file-saver';
+
+import {
+  GetDataService,
+  GetDateTimeService,
+} from '@portfolio-v2/services';
+import {
+  ISocialInfor,
+  IManagerValidatorMsgs,
+  ICompanyValidatorMsgs,
+} from '@portfolio-v2/interfaces';
 
 /**
  * Load File
  * @param url url
  * @param callback callback function
  */
-function loadFile(url: string, callback: { (error: Error | null, content: string): void; (err: Error, data: string): void; }) {
+function loadFile(url: string, callback: {
+  (error: Error | null, content: string): void;
+  (err: Error, data: string): void; }): void {
   PizZipUtils.getBinaryContent(url, callback);
 }
 
@@ -30,7 +50,6 @@ function loadFile(url: string, callback: { (error: Error | null, content: string
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverLetterComponent implements OnInit {
-
   /** Data service */
   private dataService = inject(GetDataService);
 
@@ -57,7 +76,7 @@ export class CoverLetterComponent implements OnInit {
     'Angular Developer',
     'Java Developer',
     'Junior Game Developer',
-    'Game Developer'
+    'Game Developer',
   ];
 
   /** Social infor */
@@ -75,14 +94,14 @@ export class CoverLetterComponent implements OnInit {
   /** Manager name validator messages */
   public readonly mngValidatorMessages: IManagerValidatorMsgs = {
     mngPatternError: 'The name can only contain letters.',
-    mngNameMaxLen: `The name cannot be more than ${this.nameMaxLen} characters.`
-  }
+    mngNameMaxLen: `The name cannot be more than ${this.nameMaxLen} characters.`,
+  };
 
   /** Company name validator messages */
   public readonly cmpValidatorMessages: ICompanyValidatorMsgs = {
     cmpNameReqError: 'Please enter the company name.',
-    cmpNameMaxLen: `The name cannot be more than ${this.cmpMaxLen} characters.`
-  }
+    cmpNameMaxLen: `The name cannot be more than ${this.cmpMaxLen} characters.`,
+  };
 
   /**
    * @inheritdoc
@@ -91,7 +110,7 @@ export class CoverLetterComponent implements OnInit {
     this.coverLetterForm = this.formBuilder.group({
       managerName: ['', [Validators.pattern(this.nameRegexPattern), Validators.maxLength(this.nameMaxLen)]],
       position: 'Software Engineer',
-      company: ['', [Validators.required, Validators.maxLength(this.cmpMaxLen)] ]
+      company: ['', [Validators.required, Validators.maxLength(this.cmpMaxLen)]],
     });
   }
 
@@ -110,13 +129,13 @@ export class CoverLetterComponent implements OnInit {
     let manager = formValues.managerName;
     const date = this.dateTimeService.getDate();
 
-    if(manager=='' || manager==undefined || manager == null) {
-      manager = 'Hiring Committee'
+    if (manager === '' || manager === undefined || manager == null) {
+      manager = 'Hiring Committee';
     }
 
     loadFile(
       'assets/CoverLetter/PubuduCoverLetter.docx',
-      function (error: Error | null, content: string) {
+      (error: Error | null, content: string) => {
         if (error) {
           throw error;
         }
@@ -132,10 +151,11 @@ export class CoverLetterComponent implements OnInit {
           Company: formValues.company,
         });
         try {
-          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          // render the document (replace all occurences of {first_name}
+          //  by John, {last_name} by Doe, ...)
           doc.render();
-        } catch (error) {
-          console.log(JSON.stringify({ error: error }));
+        } catch (err) {
+          console.log(JSON.stringify({ err }));
         }
         const out = doc.getZip().generate({
           type: 'blob',
@@ -144,7 +164,7 @@ export class CoverLetterComponent implements OnInit {
         });
         // Output the document using Data-URI
         saveAs(out, 'PWijesooriya_Cover_Letter.docx');
-      }
+      },
     );
   }
 }

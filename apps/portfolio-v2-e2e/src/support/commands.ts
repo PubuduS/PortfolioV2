@@ -25,16 +25,16 @@ Cypress.Commands.add('login', (email, password) => {
 });
 
 Cypress.Commands.add('navbar', () => {
-    cy.contains('Home')
-    cy.contains('About Me')
-    cy.contains('Skills')
-    cy.contains('Experience')
-    cy.contains('Portfolio')
-    cy.contains('Education')
-    cy.contains('Resume')
-    cy.contains('Cover Letter')
-    cy.get('[data-contact-btn="Contact"]')
-})
+  cy.contains('Home');
+  cy.contains('About Me');
+  cy.contains('Skills');
+  cy.contains('Experience');
+  cy.contains('Portfolio');
+  cy.contains('Education');
+  cy.contains('Resume');
+  cy.contains('Cover Letter');
+  cy.get('[data-contact-btn="Contact"]');
+});
 //
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })

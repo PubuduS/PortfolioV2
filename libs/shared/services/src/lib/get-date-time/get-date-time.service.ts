@@ -4,10 +4,9 @@ import { Injectable } from '@angular/core';
  * Get date time service
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetDateTimeService {
-
   /** Today's date */
   private today: Date;
 
@@ -29,7 +28,7 @@ export class GetDateTimeService {
     const monthOffset = 1;
     // January is 0
     this.month = this.today.getMonth() + monthOffset;
-    this.year= this.today.getFullYear();
+    this.year = this.today.getFullYear();
   }
 
   /**
@@ -38,21 +37,19 @@ export class GetDateTimeService {
    * @returns formatted date
    */
   private formatDate(format: 'US' | 'UK'): string {
-
     let formattedDate: string;
 
     const day = this.day.toLocaleString().padStart(2, '0');
 
     const month = this.month.toLocaleString().padStart(2, '0');
-    const year = this.year;
+    const { year } = this;
 
-    const dateUSFormat = month + '/' + day + '/' + year;
-    const dateUKFormat = day + '/' + month + '/' + year;
+    const dateUSFormat = `${month}/${day}/${year}`;
+    const dateUKFormat = `${day}/${month}/${year}`;
 
-    if(format == 'UK') {
+    if (format === 'UK') {
       formattedDate = dateUKFormat;
-    }
-    else {
+    } else {
       formattedDate = dateUSFormat;
     }
 
@@ -83,9 +80,8 @@ export class GetDateTimeService {
    * @returns Number of years of experience
    */
   private calculateYearsOfExperience(startDate: Date, endDate: Date): number {
-
     let value = 1;
-    if(startDate && endDate) {
+    if (startDate && endDate) {
       // considering leap years
       const millisecondsInYear = 1000 * 60 * 60 * 24 * 365.25;
       const differenceInMilliseconds = endDate.getTime() - startDate.getTime();

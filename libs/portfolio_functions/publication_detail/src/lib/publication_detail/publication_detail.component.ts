@@ -1,11 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
-import { IPublicationDetails } from '@portfolio-v2/interfaces';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { GetDataService } from '@portfolio-v2/services';
 import { MatIconModule } from '@angular/material/icon';
 
+import { IPublicationDetails } from '@portfolio-v2/interfaces';
+import { GetDataService } from '@portfolio-v2/services';
+
+/**
+ *
+ */
 @Component({
   selector: 'portfolio-v2-publication-detail',
   standalone: true,
@@ -16,5 +24,6 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class PublicationDetailComponent {
   private dataService = inject(GetDataService);
-  public readonly pubDetail: IPublicationDetails = this.dataService.getPublicationDetail(this.dataService.getSelectedRecord());
+  public readonly pubDetail: IPublicationDetails
+    = this.dataService.getPublicationDetail(this.dataService.getSelectedRecord());
 }

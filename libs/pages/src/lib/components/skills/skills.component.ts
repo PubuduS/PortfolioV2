@@ -1,5 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ISkills } from '@portfolio-v2/interfaces';
 
 /** Skill page */
@@ -31,6 +35,6 @@ export class SkillsComponent {
     leftSubHeading: 'FRAMEWORKS AND ENGINES',
     framework: ['Unity Engine', 'MRTK', 'Bootstrap', 'AWS', 'STL'],
     rightSubHeading: 'SOFTWARE',
-    software: ['Windows(10) & Linux(Ubuntu)', 'Git & Subversion', 'Doxygen', 'SQLite', 'Jira']
-  }
+    software: ['Windows(10) & Linux(Ubuntu)', 'Git & Subversion', 'Doxygen', 'SQLite', 'Jira'],
+  };
 }

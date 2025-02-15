@@ -3,5 +3,6 @@
   "include": ["src/**/*.ts", "../../libs/portfolio_services/weather/weather.service.spec.ts", "../../libs/portfolio_services/weather/weather.service.ts", "../../libs/portfolio_services/errorMsg/error.service.spec.ts", "../../libs/portfolio_services/errorMsg/error.service.ts", "../../libs/portfolio_services/getData/getdata.service.spec.ts", "../../libs/portfolio_services/getData/getdata.service.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
-  }
+  },
+  "exclude": ["jest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
 }

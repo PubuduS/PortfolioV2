@@ -1,4 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+} from '@angular/core/testing';
+
 import { CoverLetterComponent } from './cover_letter.component';
 
 describe('CoverLetterComponent', () => {

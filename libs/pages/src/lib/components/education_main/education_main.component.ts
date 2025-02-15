@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /** function declaration for flower animation */
@@ -17,7 +21,7 @@ export class EducationMainComponent implements OnInit {
   /**
    * @inheritdoc
    */
-  ngOnInit(): void {
+  public ngOnInit(): void {
     FlowerAnimation();
   }
 }

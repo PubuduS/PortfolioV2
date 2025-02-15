@@ -1,17 +1,35 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+
 import { IPublication } from '@portfolio-v2/interfaces';
 import { PublicationDetailComponent } from '@portfolio-v2/publication_detail';
 import { GetDataService } from '@portfolio-v2/services';
 
+/**
+ *
+ */
 @Component({
   selector: 'portfolio-v2-publications',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatDialogModule, MatIconModule, PublicationDetailComponent],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatIconModule,
+    PublicationDetailComponent,
+  ],
   templateUrl: './publications.component.html',
   styleUrl: './publications.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +47,7 @@ export class PublicationsComponent {
       btnMoreDisable: false,
       btnDownloadDisable: false,
       downloadUrl: 'assets/PDFs/Publications/ARWalker.pdf',
-      downloadFileName: 'ARWalker'
+      downloadFileName: 'ARWalker',
     },
     {
       title: 'A Study of the Hololens Application Store',
@@ -39,7 +57,7 @@ export class PublicationsComponent {
       btnMoreDisable: false,
       btnDownloadDisable: false,
       downloadUrl: 'assets/PDFs/Publications/HLStore.pdf',
-      downloadFileName: 'HLStore'
+      downloadFileName: 'HLStore',
     },
     {
       title: 'Gait Rehabillitation with Mixed Reality',
@@ -49,11 +67,15 @@ export class PublicationsComponent {
       btnMoreDisable: false,
       btnDownloadDisable: false,
       downloadUrl: 'assets/PDFs/Publications/Thesis.pdf',
-      downloadFileName: 'Thesis'
-    }
+      downloadFileName: 'Thesis',
+    },
   ];
 
-  public openDialog(selection: string) {
+  /**
+   * Open a dialog
+   * @param selection selection
+   */
+  public openDialog(selection: string): void {
     this.dataService.setSelectedRecord(selection);
     this.dialog.open(PublicationDetailComponent);
   }

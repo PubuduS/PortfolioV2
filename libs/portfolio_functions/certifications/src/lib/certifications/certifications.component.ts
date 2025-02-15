@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ICertificateCard } from '@portfolio-v2/interfaces';
 
+/**
+ * Certifications Page
+ */
 @Component({
   selector: 'portfolio-v2-certifications',
   standalone: true,
@@ -48,8 +55,8 @@ export class CertificationsComponent {
       credentialID: 'None',
       certification: 'In Progress',
       description: 'This is a introductory level course about web development.',
-    }
-  ]
+    },
+  ];
 
   public readonly certificatesRight: ICertificateCard[] = [
 
@@ -78,6 +85,6 @@ export class CertificationsComponent {
       certification: 'Here',
       certificateURL: 'https://www.coursera.org/account/accomplishments/certificate/R7P6PNDABS9V',
       description: 'This is a introductory level course about deep learning.',
-    }
-  ]
+    },
+  ];
 }

@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { IProjectCard } from '@portfolio-v2/interfaces';
-import { IconURLs, IconURLType } from '@portfolio-v2/const';
+import {
+  IconURLs,
+  IconURLType,
+} from '@portfolio-v2/const';
 
 /** Featured project page */
 @Component({
@@ -13,7 +20,6 @@ import { IconURLs, IconURLType } from '@portfolio-v2/const';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedProjectsComponent {
-
   /** Icon URLS */
   public readonly icons: IconURLType = IconURLs;
 
@@ -26,7 +32,7 @@ export class FeaturedProjectsComponent {
     githubURL: 'https://github.com/PubuduS/Gait_Training/tree/dev_followme',
     demoURL: 'https://youtu.be/t9CPMqp_rRg',
     documentationURL: 'https://pubudus.github.io/Gait_Training/',
-    screenshotURL: 'assets/images/project_screenshots/mr_app_ss.png'
+    screenshotURL: 'assets/images/project_screenshots/mr_app_ss.png',
   };
 
   /** Farming game project description */
@@ -38,7 +44,7 @@ export class FeaturedProjectsComponent {
     githubURL: 'https://github.com/PubuduS/Farming_RPG',
     demoURL: 'https://youtu.be/IkFDgCI8DBM',
     documentationURL: 'https://pubudus.github.io/Farming_RPG/',
-    screenshotURL: 'assets/images/project_screenshots/farming_rpg_ss.png'
+    screenshotURL: 'assets/images/project_screenshots/farming_rpg_ss.png',
   };
 
   /** Central server project description */
@@ -48,6 +54,6 @@ export class FeaturedProjectsComponent {
     tools: 'C++, Tacacs, HTML, CSS, Python, Scons, Bash, Git, Gerrit, Subversion, Teamcity, Jira',
     imageURL: 'assets/images/featured_projects/project3.jpg',
     demoURL: 'https://youtu.be/sx0_Yjl_cSQ',
-    screenshotURL: 'assets/images/project_screenshots/tacacs_ss.png'
+    screenshotURL: 'assets/images/project_screenshots/tacacs_ss.png',
   };
 }

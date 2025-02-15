@@ -1,109 +1,154 @@
-
 <!--// Main Section \\-->
 <div class="pw-main-section get-in-touchfull" id="contact">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="section-title">
-                    <h2>LET'S GET IN TOUCH</h2>
-                </div>
-            </div>
-            <div class="col-md-5 fadeLeft bottom" data-t-show="3">
-                <div class="contact-detail">
-                    <p>Need anything build, want to work together, discuss about new opportunity or simply want to have a chat?</p>
-                    <p>Drop me an email at <a href="mailto:pubudusupun@gmail.com"></a> pubudusupun&#64;gmail.com or simply fill out the form below and I will reply yo you soon!</p>
-                    <h2>Follow Me</h2>
-                    <ul class="social">
-                        <li><a href={{this.socialInfor.linkedin}} target="_blank" class="fa fa-linkedin"></a></li>
-                        <li><a href={{this.socialInfor.github}} target="_blank" class="fa fa-github"></a></li>
-                        <li><a (click)="openDialog(this.socialInfor.email)" class="fa fa-envelope"></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-7 fadeRight bottom" data-t-show="3">
-                <div class="contact-form">
-                    <form
-                    (ngSubmit)="sendEmail()"
-                    [formGroup]="contactForm">
-                        <ul>
-                            <li>
-                                <input class="form-control" 
-                                type="email" 
-                                placeholder="Email Address"
-                                formControlName="email"
-                                [ngClass]="{'is-invalid': (contactForm.get('email')?.touched ||
-                                contactForm.get('email')?.dirty) &&
-                                !contactForm.get('email')?.valid }"/>
-
-                                <span class="invalid-feedback">
-                                    <span *ngIf="contactForm.get('email')?.errors?.['required']">
-                                        {{emailValidatorMsgs.emailReqError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('email')?.errors?.['email']">
-                                        {{emailValidatorMsgs.emailPttrnError}}
-                                    </span>
-                                </span>
-                            </li>
-
-                            <li>
-                                <input class="form-control" 
-                                type="text" 
-                                placeholder="Your Name"
-                                formControlName="name"
-                                [ngClass]="{'is-invalid': (contactForm.get('name')?.touched ||
-                                contactForm.get('name')?.dirty) &&
-                                !contactForm.get('name')?.valid }"/>
-
-                                <span class="invalid-feedback">
-                                    <span *ngIf="contactForm.get('name')?.errors?.['required']">
-                                        {{senderValidatorMsgs.senderReqError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('name')?.errors?.['minlength']">
-                                        {{senderValidatorMsgs.senderMinLenError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('name')?.errors?.['maxlength']">
-                                        {{senderValidatorMsgs.senderMaxLenError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('name')?.errors?.['pattern']">
-                                        {{senderValidatorMsgs.senderPttrnError}}
-                                    </span>
-                                </span>
-                            </li>
-
-                            <li>
-                                <textarea 
-                                    class="form-control" 
-                                    placeholder="Your Message"
-                                    formControlName="message"
-                                    [ngClass]="{'is-invalid': (contactForm.get('message')?.touched ||
-                                    contactForm.get('message')?.dirty) &&
-                                    !contactForm.get('message')?.valid }">                                    
-                                </textarea>
-
-                                <span class="invalid-feedback">
-                                    <span *ngIf="contactForm.get('message')?.errors?.['required']">
-                                        {{msgValidatorMsgs.msgReqError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('message')?.errors?.['minlength']">
-                                        {{msgValidatorMsgs.msgMinLenError}}
-                                    </span>
-                                    <span *ngIf="contactForm.get('message')?.errors?.['maxlength']">
-                                        {{msgValidatorMsgs.msgMaxLenError}}
-                                    </span>
-                                </span>
-                            </li>
-
-                            <li>                                
-                                <button type="submit" class="submit-btn"
-                                [disabled]="!contactForm.valid">
-                                Send
-                                </button>
-                            </li>
-                        </ul>
-                    </form>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="section-title">
+          <h2>LET'S GET IN TOUCH</h2>
         </div>
+      </div>
+      <div class="col-md-5 fadeLeft bottom" data-t-show="3">
+        <div class="contact-detail">
+          <p>
+            Need anything build, want to work together, discuss about new
+            opportunity or simply want to have a chat?
+          </p>
+          <p>
+            Drop me an email at
+            <a href="mailto:pubudusupun@gmail.com"></a>
+            pubudusupun&#64;gmail.com or simply fill out the form below and I
+            will reply yo you soon!
+          </p>
+          <h2>Follow Me</h2>
+          <ul class="social">
+            <li>
+              <a
+                href="{{ this.socialInfor.linkedin }}"
+                target="_blank"
+                class="fa fa-linkedin"
+              ></a>
+            </li>
+            <li>
+              <a
+                href="{{ this.socialInfor.github }}"
+                target="_blank"
+                class="fa fa-github"
+              ></a>
+            </li>
+            <li>
+              <a
+                (click)="openDialog(this.socialInfor.email)"
+                class="fa fa-envelope"
+              ></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-7 fadeRight bottom" data-t-show="3">
+        <div class="contact-form">
+          <form (ngSubmit)="sendEmail()" [formGroup]="contactForm">
+            <ul>
+              <li>
+                <input
+                  class="form-control"
+                  type="email"
+                  placeholder="Email Address"
+                  formControlName="email"
+                  [ngClass]="{
+                    'is-invalid':
+                      (contactForm.get('email')?.touched ||
+                        contactForm.get('email')?.dirty) &&
+                      !contactForm.get('email')?.valid,
+                  }"
+                />
+
+                <span class="invalid-feedback">
+                  <span *ngIf="contactForm.get('email')?.errors?.['required']">
+                    {{ emailValidatorMsgs.emailReqError }}
+                  </span>
+                  <span *ngIf="contactForm.get('email')?.errors?.['email']">
+                    {{ emailValidatorMsgs.emailPttrnError }}
+                  </span>
+                </span>
+              </li>
+
+              <li>
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Your Name"
+                  formControlName="name"
+                  [ngClass]="{
+                    'is-invalid':
+                      (contactForm.get('name')?.touched ||
+                        contactForm.get('name')?.dirty) &&
+                      !contactForm.get('name')?.valid,
+                  }"
+                />
+
+                <span class="invalid-feedback">
+                  <span *ngIf="contactForm.get('name')?.errors?.['required']">
+                    {{ senderValidatorMsgs.senderReqError }}
+                  </span>
+                  <span *ngIf="contactForm.get('name')?.errors?.['minlength']">
+                    {{ senderValidatorMsgs.senderMinLenError }}
+                  </span>
+                  <span *ngIf="contactForm.get('name')?.errors?.['maxlength']">
+                    {{ senderValidatorMsgs.senderMaxLenError }}
+                  </span>
+                  <span *ngIf="contactForm.get('name')?.errors?.['pattern']">
+                    {{ senderValidatorMsgs.senderPttrnError }}
+                  </span>
+                </span>
+              </li>
+
+              <li>
+                <textarea
+                  class="form-control"
+                  placeholder="Your Message"
+                  formControlName="message"
+                  [ngClass]="{
+                    'is-invalid':
+                      (contactForm.get('message')?.touched ||
+                        contactForm.get('message')?.dirty) &&
+                      !contactForm.get('message')?.valid,
+                  }"
+                >
+                </textarea>
+
+                <span class="invalid-feedback">
+                  <span
+                    *ngIf="contactForm.get('message')?.errors?.['required']"
+                  >
+                    {{ msgValidatorMsgs.msgReqError }}
+                  </span>
+                  <span
+                    *ngIf="contactForm.get('message')?.errors?.['minlength']"
+                  >
+                    {{ msgValidatorMsgs.msgMinLenError }}
+                  </span>
+                  <span
+                    *ngIf="contactForm.get('message')?.errors?.['maxlength']"
+                  >
+                    {{ msgValidatorMsgs.msgMaxLenError }}
+                  </span>
+                </span>
+              </li>
+
+              <li>
+                <button
+                  type="submit"
+                  class="submit-btn"
+                  [disabled]="!contactForm.valid"
+                >
+                  Send
+                </button>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <!--// Main Section \\-->

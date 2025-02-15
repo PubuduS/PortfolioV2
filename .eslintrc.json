@@ -2,16 +2,24 @@
   "root": true,
   "ignorePatterns": ["**/*"],
   "parserOptions": {
-    "parrser": "@typescript-eslint/parser",
+    "parser": "@typescript-eslint/parser",
     "project": "./tsconfig.base.json"
   },
-  "plugins": ["@nx"],
+  "plugins": ["@nx", "import-newlines"],
   "overrides": [
     {
       "files": ["*.ts"],
+      "extends": [
+        "plugin:@nx/typescript",
+        "plugin:@angular-eslint/recommended",
+        "airbnb-base",
+        "airbnb-typescript/base",
+        "plugin:import/typescript",
+        "plugin:jsdoc/recommended"
+      ],
       "rules": {
         "@nx/enforce-module-boundaries": [
-          "error",
+          "off",
           {
             "enforceBuildableLibDependency": true,
             "allow": [],
@@ -23,8 +31,49 @@
             ]
           }
         ],
-        "@typescript-eslint/no-empty-function": "off",
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@typescript-eslint/dot-notation": "off",
+        "@typescript-eslint/explicit-function-return-type": [
+          "error",
+          {
+            "allowExpressions": true,
+            "allowTypedFunctionExpressions": true
+          }
+        ],
+        "@typescript-eslint/explicit-member-accessibility": [
+          "error",
+          {
+            "accessibility": "explicit",
+            "overrides": {
+              "constructors": "no-public"
+            }
+          }
+        ],
+        "@typescript-eslint/lines-between-class-members": "off",
+        "@typescript-eslint/no-empty-function": ["off"],
         "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": ["off"],
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": ["**/apps/*"]
+          }
+        ],
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -32,25 +81,110 @@
           }
         ],
         "@typescript-eslint/no-useless-constructor": "off",
-        "no-empty-function": "off",
-        "no-unused-vars": "off"
+        "class-methods-use-this": "off",
+        "import/no-cycle": 2,
+        "import/order": [
+          "error",
+          {
+            "groups": [
+              ["builtin", "external"],
+              ["internal", "parent", "sibling"]
+            ],
+            "pathGroups": [
+              {
+                "pattern": "@portfolio-v2/**",
+                "group": "internal",
+                "position": "before"
+              }
+            ],
+            "distinctGroup": false,
+            "newlines-between": "always",
+            "pathGroupsExcludedImportTypes": []
+          }
+        ],
+        "max-classes-per-file": "off",
+        "no-empty-function": ["off"],
+        "no-param-reassign": [
+          "error",
+          {
+            "props": false
+          }
+        ],
+        "no-return-assign": "off",
+        "no-unused-vars": "off",
+        "operator-linebreak": "off",
+        "import-newlines/enforce": [
+          "error",
+          {
+            "items": 1,
+            "semi": false
+          }
+        ],
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true,
+            "optionalDependencies": false,
+            "peerDependencies": false,
+            "packageDir": ["./"]
+          }
+        ],
+        "import/prefer-default-export": "off",
+        "jsdoc/check-tag-names": [
+          1,
+          {
+            "definedTags": ["note"]
+          }
+        ],
+        "jsdoc/require-jsdoc": [
+          1,
+          {
+            "publicOnly": true,
+            "require": {
+              "ArrowFunctionExpression": true,
+              "ClassDeclaration": true,
+              "ClassExpression": true,
+              "FunctionDeclaration": true,
+              "FunctionExpression": true,
+              "MethodDefinition": true
+            }
+          }
+        ],
+        "jsdoc/require-param-type": "off",
+        "jsdoc/require-property-type": "off",
+        "jsdoc/require-returns-type": "off",
+        "no-warning-comments": [
+          "error",
+          {
+            "terms": ["todo"]
+          }
+        ],
+        "@typescript-eslint/no-extra-semi": "error",
+        "no-extra-semi": "off"
+      },
+      "parserOptions": {
+        "project": "./tsconfig.base.json"
+      },
+      "plugins": ["jasmine", "import", "jsdoc"],
+      "settings": {
+        "import/core-modules": ["rxjs/operators"],
+        "import/resolver": {
+          "typescript": {}
+        }
+      },
+      "env": {
+        "es6": true,
+        "jasmine": true,
+        "browser": true
       }
     },
     {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nx/typescript"],
-      "rules": {
-        "@typescript-eslint/no-extra-semi": "error",
-        "no-extra-semi": "off"
-      }
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nx/javascript"],
-      "rules": {
-        "@typescript-eslint/no-extra-semi": "error",
-        "no-extra-semi": "off"
-      }
+      "files": ["*.html"],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {}
     },
     {
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],

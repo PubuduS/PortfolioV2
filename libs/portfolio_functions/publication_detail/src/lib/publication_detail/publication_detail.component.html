@@ -1,24 +1,30 @@
 <div class="card-model">
-    <h1 mat-dialog-title id="title">{{pubDetail.title}}</h1>    
-    <mat-dialog-content class="mat-typography">
-    
+  <h1 mat-dialog-title id="title">{{ pubDetail.title }}</h1>
+  <mat-dialog-content class="mat-typography">
     <div class="row">
+      <div class="col-md-12 description">
+        <section>
+          <p>
+            <strong class="pubHeading">Authors: </strong>{{ pubDetail.authors }}
+          </p>
+          <p>
+            <strong class="pubHeading">Abstract: </strong
+            >{{ pubDetail.abstarct }}
+          </p>
+        </section>
+      </div>
 
-        <div class="col-md-12 description" >
-            <section>
-                <p><strong class="pubHeading">Authors: </strong>{{pubDetail.authors}}</p>
-                <p><strong class="pubHeading">Abstract: </strong>{{pubDetail.abstarct}}</p>               
-            </section>
-        </div>
+      <div class="col-md-10">
+        <p>
+          <strong class="pubHeading">Cite: </strong> {{ pubDetail.citation }}
+        </p>
+      </div>
 
-        <div class="col-md-10">
-            <p><strong class="pubHeading">Cite: </strong> {{pubDetail.citation }}</p>            
-        </div>
-
-        <div class="col-md-2">
-            <button [cdkCopyToClipboard]="pubDetail.citation"><mat-icon>content_copy</mat-icon>Copy</button>
-        </div>
-
-    </div>          
-    </mat-dialog-content>
+      <div class="col-md-2">
+        <button [cdkCopyToClipboard]="pubDetail.citation">
+          <mat-icon>content_copy</mat-icon>Copy
+        </button>
+      </div>
+    </div>
+  </mat-dialog-content>
 </div>

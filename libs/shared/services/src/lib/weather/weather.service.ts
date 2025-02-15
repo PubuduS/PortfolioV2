@@ -1,73 +1,89 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Signal, computed, inject } from '@angular/core';
+import {
+  Injectable,
+  Signal,
+  computed,
+  inject,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, catchError, map, of, tap } from 'rxjs';
-import { IWeather, IResult, OpenWeatherResponse } from '@portfolio-v2/interfaces';
+import {
+  Observable,
+  catchError,
+  map,
+  of,
+  tap,
+} from 'rxjs';
+
+import {
+  IWeather,
+  IResult,
+  OpenWeatherResponse,
+} from '@portfolio-v2/interfaces';
 import { ErrorService } from '../error-message/error.service';
 
 /**
  * Get weather service
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WeatherService {
-
   /** HTTP client */
   private http = inject(HttpClient);
 
-   /** Error service */
+  /** Error service */
   private errService = inject(ErrorService);
 
-   /** Latitude */
+  /** Latitude */
   private readonly latitude: number = 41.257160;
 
-   /** Longitude */
+  /** Longitude */
   private readonly longitude: number = -95.995102;
 
-   /** API Key */
+  /** API Key */
   private readonly apiKey: string = 'd686291342bdd228fd2e1801a7800ff1';
 
-   /** Open Weather URL */
+  /** Open Weather URL */
   private readonly openweatherURL: string = `https://api.openweathermap.org/data/2.5/weather?lat=${this.latitude}&lon=${this.longitude}&appid=${this.apiKey}&units=imperial`;
 
-   /** Weather icon base path */
+  /** Weather icon base path */
   private readonly weatherIconBasePath: string = 'assets/images/weatherIcons/';
 
-   /** Icon extention */
+  /** Icon extention */
   private readonly iconExtention: string = '.svg';
 
-   /** Weather data */
+  /** Weather data */
   public weatherData: Signal<IWeather | undefined> = computed(() => this.weatherForcast().data);
 
-   /** Weather error */
+  /** Weather error */
   public weatherError: Signal<string | undefined> = computed(() => this.weatherForcast().error);
 
-   /** Weather animation path */  public weatherAnimationPath = computed(() => {
-    return `${this.weatherIconBasePath}` + ( this.weatherData()?.iconCode ?? '01d' ) + `${this.iconExtention}`;
-  });
+  /** Weather animation path */ public weatherAnimationPath = computed(() => `${this.weatherIconBasePath}${this.weatherData()?.iconCode ?? '01d'}${this.iconExtention}`);
 
   /** Weather data observable */
-  private weatherData$: Observable<IResult<IWeather>> = this.http.get<OpenWeatherResponse>(this.openweatherURL)
-  .pipe(
-    tap( p => console.log(p)),
-    map( p => ({data: {
-      condition: p.weather[0].main,
-      description: p.weather[0].description,
-      temprature: p.main.temp,
-      humidity: p.main.humidity,
-      windSpeed: p.wind.speed,
-      iconCode: p.weather[0].icon
-    }} as IResult<IWeather>) ),
-    tap( p => console.log(p)),
-    catchError(err => of({
-      data: {},
-      error: this.errService.formatHttpError(err)
-    } as IResult<IWeather>))
-  );
+  private weatherData$: Observable<IResult<IWeather>>
+    = this.http.get<OpenWeatherResponse>(this.openweatherURL)
+      .pipe(
+        tap((p) => console.log(p)),
+        map((p) => ({
+          data: {
+            condition: p.weather[0].main,
+            description: p.weather[0].description,
+            temprature: p.main.temp,
+            humidity: p.main.humidity,
+            windSpeed: p.wind.speed,
+            iconCode: p.weather[0].icon,
+          },
+        } as IResult<IWeather>)),
+        tap((p) => console.log(p)),
+        catchError((err) => of({
+          data: {},
+          error: this.errService.formatHttpError(err),
+        } as IResult<IWeather>)),
+      );
 
-  /** Weather forcast*/
+  /** Weather forcast */
   private weatherForcast = toSignal(this.weatherData$, {
-    initialValue: (  { data: {} } as IResult<IWeather> )
+    initialValue: ({ data: {} } as IResult<IWeather>),
   });
 }

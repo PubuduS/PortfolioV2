@@ -1,0 +1,43 @@
+{
+	"folders": [
+    {
+      "path": ".",
+      "name": "portfolio-v2"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "stylelint.validate": [
+      "scss"
+    ],
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "prettier.singleQuote": true,
+    "html.autoCreateQuotes": true,
+    "html.completion.attributeDefaultValue": "doublequotes",
+  },
+  "extensions": {
+    "recommendations": [
+      "angular.ng-template",
+      "dbaeumer.vscode-eslint",
+      "editorconfig.editorconfig",
+      "esbenp.prettier-vscode",
+      "stylelint.vscode-stylelint",
+      "nrwl.angular-console"
+    ]
+  }
+}

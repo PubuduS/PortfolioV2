@@ -1,8 +1,17 @@
-import { ChangeDetectionStrategy, Component, Signal, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { WeatherService } from '@portfolio-v2/services';
 import { IWeather } from '@portfolio-v2/interfaces';
 
+/**
+ * Display weather component
+ */
 @Component({
   selector: 'portfolio-v2-weather-display',
   standalone: true,
@@ -12,9 +21,9 @@ import { IWeather } from '@portfolio-v2/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherDisplayComponent {
-  weatherService = inject(WeatherService);
+  public weatherService = inject(WeatherService);
 
-  weatherData: Signal<IWeather | undefined> = this.weatherService.weatherData;
-  weatherErr: Signal<string | undefined> = this.weatherService.weatherError;
-  weatherIcon: Signal<string> = this.weatherService.weatherAnimationPath;
+  public weatherData: Signal<IWeather | undefined> = this.weatherService.weatherData;
+  public weatherErr: Signal<string | undefined> = this.weatherService.weatherError;
+  public weatherIcon: Signal<string> = this.weatherService.weatherAnimationPath;
 }

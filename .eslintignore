@@ -1,6 +1,9 @@
-node_modules
+node_modules/**
 dist/
 release/
 **/*.js
 node_modules/**
 documentation/**
+# apps/portfolio-v2-e2e/**/*.cy.ts
+# apps/portfolio-v2-e2e/src/support/app.po.ts
+# apps/portfolio-v2-e2e/src/support/commands.ts
