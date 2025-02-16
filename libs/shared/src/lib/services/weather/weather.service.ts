@@ -19,8 +19,8 @@ import {
   IResult,
   OpenWeatherResponse,
 } from '@portfolio-v2/interfaces';
+import { environment } from '@portfolio-v2/environment';
 import { ErrorService } from '../error-message/error.service';
-
 /**
  * Get weather service
  */
@@ -41,7 +41,7 @@ export class WeatherService {
   private readonly longitude: number = -95.995102;
 
   /** API Key */
-  private readonly apiKey: string = 'd686291342bdd228fd2e1801a7800ff1';
+  private readonly apiKey: string = environment.openWeatherAPIKey;
 
   /** Open Weather URL */
   private readonly openweatherURL: string = `https://api.openweathermap.org/data/2.5/weather?lat=${this.latitude}&lon=${this.longitude}&appid=${this.apiKey}&units=imperial`;

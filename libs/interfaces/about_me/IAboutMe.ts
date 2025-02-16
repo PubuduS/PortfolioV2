@@ -1,4 +1,5 @@
 export interface IAboutMe {
+    id: number,
     heading: string,
     imageSrc: string,
     intro: string[],

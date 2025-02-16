@@ -6,6 +6,8 @@ tmp
 /out-tsc
 documentation
 message.txt
+apps/portfolio-v2/src/environments/environment.development.ts
+apps/portfolio-v2/src/environments/environment.ts
 
 # dependencies
 node_modules

@@ -16,6 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@portfolio-v2/environment": ["apps/portfolio-v2/src/environments/index.ts"],
       "@portfolio-v2/const": ["libs/const/index.ts"],
       "@portfolio-v2/interfaces": ["libs/interfaces/index.ts"],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],

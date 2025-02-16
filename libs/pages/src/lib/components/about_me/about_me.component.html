@@ -1,46 +1,58 @@
 <div class="pw-main-content">
   <div class="pw-main-section about-full" id="section_2" data-anchor="about">
     <div class="container">
-      <div class="row">
-        <div class="col-md-4">
-          <figure class="about-img">
-            <img
-              [src]="aboutMe.imageSrc"
-              alt="about-img"
-              data-aboutme-img="my-photo"
-            />
-          </figure>
-        </div>
-        <div class="col-md-8">
-          <div class="about-text about-me">
-            <h2>{{ aboutMe.heading }}</h2>
-            <p *ngFor="let param of aboutMe.intro">{{ param }}</p>
+      @if (aboutMeData | async; as aboutMe) {
+        <div class="row">
+          <div class="col-md-4">
+            <figure class="about-img">
+              <img
+                [src]="aboutMe.imageSrc"
+                alt="about-img"
+                data-aboutme-img="my-photo"
+              />
+            </figure>
           </div>
-        </div>
-        <div class="col-md-12">
-          <div class="about-text about-text-list fadeUp" data-t-show="3">
-            <h3>{{ aboutMe.subHeading }}</h3>
-            <div class="row">
-              <div class="col-md-6">
-                <p>{{ aboutMe.subHeadingIntro }}</p>
-                <ul class="list-style-one">
-                  <li *ngFor="let point of aboutMe.leftPoints">{{ point }}</li>
-                </ul>
-              </div>
-              <div class="col-md-6">
-                <ul class="list-style-one">
-                  <li>
-                    I'm an avid fan of video games. Currently, I'm playing Apex
-                    Legends. If you're interested you can see my gameplays
-                    <a [href]="aboutMe.link" target="_blank">here.</a>
-                  </li>
-                  <li *ngFor="let point of aboutMe.rightPoints">{{ point }}</li>
-                </ul>
+          <div class="col-md-8">
+            <div class="about-text about-me">
+              <h2>{{ aboutMe.heading }}</h2>
+              @for (param of aboutMe.intro; track $index) {
+                <p>{{ param }}</p>
+              }
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="about-text about-text-list fadeUp" data-t-show="3">
+              <h3>{{ aboutMe.subHeading }}</h3>
+              <div class="row">
+                <div class="col-md-6">
+                  <p>{{ aboutMe.subHeadingIntro }}</p>
+                  <ul class="list-style-one">
+                    @for (leftPoint of aboutMe.leftPoints; track $index) {
+                      <li>
+                        {{ leftPoint }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <ul class="list-style-one">
+                    @for (rightPoint of aboutMe.rightPoints; track $index) {
+                      <li>
+                        @if (isLinkDetected(rightPoint)) {
+                          {{ removeLinkTag(rightPoint) }}
+                          <a [href]="aboutMe.link" target="_blank">here.</a>
+                        } @else {
+                          {{ rightPoint }}
+                        }
+                      </li>
+                    }
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </div>

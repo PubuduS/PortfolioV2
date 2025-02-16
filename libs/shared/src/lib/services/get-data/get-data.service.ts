@@ -1,6 +1,19 @@
 import { Injectable } from '@angular/core';
+import {
+  map,
+  Observable,
+} from 'rxjs';
+import {
+  Firestore,
+  collection,
+  collectionData,
+  orderBy,
+  query,
+} from '@angular/fire/firestore';
+import { Storage } from '@angular/fire/storage';
 
 import {
+  IAboutMe,
   IProjectCard,
   IPublicationDetails,
   ISocialInfor,
@@ -191,6 +204,38 @@ export class GetDataService {
   };
 
   /**
+   * constructor
+   * @param storage angular fire storage
+   * @param firestore firestore
+   */
+  constructor(
+    private storage: Storage,
+    private firestore: Firestore,
+  ) {}
+
+  /**
+   * Get Index Cards
+   * @param location collection name
+   */
+  public getAboutMeSectionData(location: string): Observable<IAboutMe> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id'));
+     const data = (collectionData(orderedQuery) as Observable<IAboutMe[]>).pipe(
+      map((data) => data[0]),
+      map((data) => {
+        return {
+          ...data,
+          intro: this.lineBreaker(typeof data.intro === 'string' ? data.intro: data.intro.join("")),
+          leftPoints: this.lineBreaker(typeof data.leftPoints === 'string' ? data.leftPoints: data.leftPoints.join("")),
+          rightPoints: this.lineBreaker(typeof data.rightPoints === 'string' ? data.rightPoints: data.rightPoints.join(""))
+        };
+      }),
+    );
+
+    return data;
+  }
+
+  /**
    * Setter for record selection
    * @param selected selected record
    */
@@ -230,5 +275,20 @@ export class GetDataService {
    */
   public getSocialInfor(): ISocialInfor {
     return this.socialInfor;
+  }
+
+  /**
+   * Get the whole string and break it based on the delimiter
+   * @param content Content as a single string
+   * @returns Array of strings(Paragraphs)
+   */
+  private lineBreaker(content: string): string[] {
+    return content
+    // Split the string at each delimiter
+    .split('<<LEnd>>')
+     // Trim whitespace from each paragraph
+    .map((paragraph) => paragraph.trim())
+    // Remove empty entries
+    .filter((paragraph) => paragraph.length > 0);
   }
 }
