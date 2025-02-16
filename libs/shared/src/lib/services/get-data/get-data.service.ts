@@ -16,6 +16,7 @@ import {
   IAboutMe,
   IProjectCard,
   IPublicationDetails,
+  ISkills,
   ISocialInfor,
 } from '@portfolio-v2/interfaces';
 
@@ -214,25 +215,47 @@ export class GetDataService {
   ) {}
 
   /**
-   * Get Index Cards
+   * Get about me section data
    * @param location collection name
+   * @returns Observable of IAboutMe
    */
   public getAboutMeSectionData(location: string): Observable<IAboutMe> {
     const cardCollection = collection(this.firestore, location);
     const orderedQuery = query(cardCollection, orderBy('id'));
-     const data = (collectionData(orderedQuery) as Observable<IAboutMe[]>).pipe(
+    const aboutMeData = (collectionData(orderedQuery) as Observable<IAboutMe[]>).pipe(
       map((data) => data[0]),
-      map((data) => {
-        return {
-          ...data,
-          intro: this.lineBreaker(typeof data.intro === 'string' ? data.intro: data.intro.join("")),
-          leftPoints: this.lineBreaker(typeof data.leftPoints === 'string' ? data.leftPoints: data.leftPoints.join("")),
-          rightPoints: this.lineBreaker(typeof data.rightPoints === 'string' ? data.rightPoints: data.rightPoints.join(""))
-        };
-      }),
+      map((data) => ({
+        ...data,
+        intro: this.lineBreaker(typeof data.intro === 'string' ? data.intro : data.intro.join('')),
+        leftPoints: this.lineBreaker(typeof data.leftPoints === 'string' ? data.leftPoints : data.leftPoints.join('')),
+        rightPoints: this.lineBreaker(typeof data.rightPoints === 'string' ? data.rightPoints : data.rightPoints.join('')),
+      })),
     );
 
-    return data;
+    return aboutMeData;
+  }
+
+  /**
+   * Get skills section data
+   * @param location collection name
+   * @returns Observable of IAboutMe
+   */
+  public getSkillsSectionData(location: string): Observable<ISkills> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id'));
+    const skillsData = (collectionData(orderedQuery) as Observable<ISkills[]>).pipe(
+      map((data) => data[0]),
+      map((data) => (
+        {
+          ...data,
+          languagesCol1: this.createSkillMap(data.languagesCol1 as unknown as string),
+          languagesCol2: this.createSkillMap(data.languagesCol2 as unknown as string),
+          framework: this.lineBreaker(typeof data.framework === 'string' ? data.framework : data.framework.join('')),
+          software: this.lineBreaker(typeof data.software === 'string' ? data.software : data.software.join('')),
+        })),
+    );
+
+    return skillsData;
   }
 
   /**
@@ -285,10 +308,27 @@ export class GetDataService {
   private lineBreaker(content: string): string[] {
     return content
     // Split the string at each delimiter
-    .split('<<LEnd>>')
-     // Trim whitespace from each paragraph
-    .map((paragraph) => paragraph.trim())
+      .split('<<LEnd>>')
+    // Trim whitespace from each paragraph
+      .map((paragraph) => paragraph.trim())
     // Remove empty entries
-    .filter((paragraph) => paragraph.length > 0);
+      .filter((paragraph) => paragraph.length > 0);
+  }
+
+  /**
+   * Get the string marked with delimiter and clean up the string.
+   * Then create a map of Map<string, number>.
+   * @param content Content as a single string
+   * @returns Map of skill and progress bar value
+   */
+  private createSkillMap(content: string): Map<string, number> {
+    const breakLines = this.lineBreaker(content).join('').split('$');
+    const skillMap = new Map<string, number>();
+
+    for (let i = 0; i < breakLines.length; i += 2) {
+      skillMap.set(breakLines[i], Number(breakLines[i + 1]));
+    }
+
+    return skillMap;
   }
 }

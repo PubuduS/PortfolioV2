@@ -20,6 +20,7 @@ import { GetDataService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutMeComponent {
+  /** Observable containing About Me section data */
   public readonly aboutMeData: Observable<IAboutMe>;
 
   /**
