@@ -24,7 +24,7 @@ export const PAGE_ROUTES: Routes = [
   },
   {
     path: 'education',
-    loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.EducationMainComponent),
+    loadChildren: () => import('@portfolio-v2/portfolio-pages').then((route) => route.EDUCATION_ROUTES),
   },
   {
     path: 'coverletter',

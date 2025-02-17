@@ -5,12 +5,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 
-import {
-  EducationComponent,
-  CertificationsComponent,
-  PublicationsComponent,
-  PartyModeComponent,
-} from '@portfolio-v2/portfolio-pages';
+import { PartyModeComponent } from '@portfolio-v2/portfolio-pages';
 import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
 
 /** Main Component */
@@ -20,9 +15,6 @@ import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
     RouterModule,
     RouterOutlet,
     RouterLink,
-    EducationComponent,
-    CertificationsComponent,
-    PublicationsComponent,
     PartyModeComponent,
     WeatherDisplayComponent,
   ],

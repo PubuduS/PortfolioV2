@@ -16,12 +16,16 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@portfolio-v2/environment": ["apps/portfolio-v2/src/environments/index.ts"],
       "@portfolio-v2/const": ["libs/const/index.ts"],
+      "@portfolio-v2/environment": [
+        "apps/portfolio-v2/src/environments/index.ts"
+      ],
       "@portfolio-v2/interfaces": ["libs/interfaces/index.ts"],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
-      "@portfolio-v2/shared/services": ["libs/shared/src/lib/services/index.ts"],
-      "@portfolio-v2/shared/components": ["libs/shared/src/lib/components/index.ts"]
+      "@portfolio-v2/shared/components": [
+        "libs/shared/src/lib/components/index.ts"
+      ],
+      "@portfolio-v2/shared/services": ["libs/shared/src/lib/services/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -13,4 +13,6 @@ export * from './lib/components/contact/contact.component';
 export * from './lib/components/page_not_found/page_not_found.component';
 export * from './lib/components/portfolio/components/featured_projects/featured_projects.component';
 export * from './lib/components/party_mode/party_mode.component';
+
 export * from './lib/components/page.route';
+export * from './lib/components/education_main/education.route';

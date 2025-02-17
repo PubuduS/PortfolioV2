@@ -5,6 +5,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { FlowerAnimationComponent } from './components/flower/flower-animation.component';
+
 /** function declaration for flower animation */
 declare function FlowerAnimation(): void;
 
@@ -12,7 +14,10 @@ declare function FlowerAnimation(): void;
 @Component({
   selector: 'portfolio-v2-education-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FlowerAnimationComponent,
+  ],
   templateUrl: './education_main.component.html',
   styleUrl: './education_main.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
