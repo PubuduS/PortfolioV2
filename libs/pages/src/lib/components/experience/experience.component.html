@@ -1,107 +1,62 @@
-<!--// Experience Section \\-->
 <div
-  class="pw-main-section tabs-wrapperfull"
+  class="pw-main-section tabs-wrapperfull h-100"
   id="section_4"
   data-anchor="experience"
 >
   <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="section-title">
-          <h2>WORK EXPERIENCE</h2>
-        </div>
-        <div class="tabs-wrapper fadeIn" data-t-show="3">
-          <div
-            class="nav flex-column nav-pills"
-            id="v-pills-tab"
-            role="tablist"
-            aria-orientation="vertical"
-          >
-            <a
-              class="nav-link active"
-              id="v-pills-home-tab"
-              data-toggle="pill"
-              role="tab"
-              (click)="displaySelected('election')"
-              aria-selected="false"
-              >Election Systems and Software</a
-            >
-
-            <a
-              class="nav-link"
-              id="v-pills-home-tab1"
-              data-toggle="pill"
-              role="tab"
-              (click)="displaySelected('uno')"
-              aria-selected="true"
-              >University of Nebraska Omaha</a
-            >
-
-            <a
-              class="nav-link"
-              id="v-pills-profile-tab"
-              data-toggle="pill"
-              role="tab"
-              aria-controls="v-pills-profile"
-              (click)="displaySelected('sencore')"
-              aria-selected="false"
-              >Sencore.Inc</a
-            >
-
-            <a
-              class="nav-link"
-              id="v-pills-messages-tab"
-              data-toggle="pill"
-              role="tab"
-              (click)="displaySelected('peace')"
-              aria-selected="false"
-              >Peace Lutheran Early Childhood Center</a
-            >
-
-            <a
-              class="nav-link"
-              id="v-pills-settings-tab"
-              data-toggle="pill"
-              role="tab"
-              (click)="displaySelected('larson')"
-              aria-selected="false"
-              >Student Worker Larson Commons</a
-            >
-
-            <a
-              class="nav-link"
-              id="v-pills-setting-tab"
-              data-toggle="pill"
-              role="tab"
-              (click)="displaySelected('java')"
-              aria-selected="false"
-              >Java Institute</a
-            >
+    @if (experienceData | async; as experienceData) {
+      <div class="row">
+        <div class="col-md-12">
+          <div class="section-title">
+            <h2>WORK EXPERIENCE</h2>
           </div>
-
-          <div class="tab-content" id="v-pills-tabContent">
+          <div class="tabs-wrapper fadeIn" data-t-show="3">
             <div
-              class="tab-pane fade show active"
-              role="tabpanel"
-              aria-labelledby="v-pills-home-tab"
-              *ngIf="experience"
+              class="nav flex-column nav-pills"
+              id="v-pills-tab"
+              role="tablist"
+              aria-orientation="vertical"
             >
-              <h3>{{ experience.position }}</h3>
-              <span
-                >{{ experience.timePeriod }} ( {{ yearsOfExperience }} )</span
-              >
-              <p>{{ experience.shortDescription }}</p>
-              <ul
-                class="list-style-one"
-                *ngFor="let point of experience.points"
-              >
-                <li>{{ point }}</li>
-              </ul>
+              @for (job of experienceData; track $index) {
+                <a
+                  class="nav-link"
+                  id="v-pills-home-tab"
+                  data-toggle="pill"
+                  role="tab"
+                  (click)="displaySelected(job)"
+                  [ngClass]="{ active: selectedJob === job.employer }"
+                  [attr.aria-selected]="
+                    selectedJob === job.employer ? 'true' : 'false'
+                  "
+                  >{{ job.employer }}</a
+                >
+              }
+            </div>
+            <div class="tab-content" id="v-pills-tabContent">
+              @if (experience) {
+                <div
+                  class="tab-pane fade show active"
+                  role="tabpanel"
+                  aria-labelledby="v-pills-home-tab"
+                >
+                  <h3>{{ experience.position }}</h3>
+                  <span
+                    >{{ experience.timePeriod }} (
+                    {{ yearsOfExperience }} )</span
+                  >
+                  <p>{{ experience.shortDescription }}</p>
+                  <ul
+                    class="list-style-one"
+                    *ngFor="let point of experience.points"
+                  >
+                    <li>{{ point }}</li>
+                  </ul>
+                </div>
+              }
             </div>
           </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>
-<!--// Experience Section \\-->

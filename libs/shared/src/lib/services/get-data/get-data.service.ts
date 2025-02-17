@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import {
   map,
@@ -14,6 +15,7 @@ import { Storage } from '@angular/fire/storage';
 
 import {
   IAboutMe,
+  IExperience,
   IProjectCard,
   IPublicationDetails,
   ISkills,
@@ -256,6 +258,24 @@ export class GetDataService {
     );
 
     return skillsData;
+  }
+
+  /**
+   * Get experience section data
+   * @param location collection name
+   * @returns Observable of IAboutMe
+   */
+  public getExperienceSectionData(location: string): Observable<IExperience[]> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id', 'desc'));
+    const experienceData = (collectionData(orderedQuery) as Observable<IExperience[]>).pipe(
+      map((data) => _.map(data, (exp: IExperience) => ({
+        ...exp,
+        startDate: new Date(exp.startDate),
+        endDate: exp.endDate as unknown as string === 'present' ? new Date() : new Date(exp.endDate),
+      }))),
+    );
+    return experienceData;
   }
 
   /**
