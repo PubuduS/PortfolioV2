@@ -18,6 +18,42 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 641.5 637.3"
           >
+            <!-- Define the glow filter -->
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feFlood flood-color="teal" result="color" />
+                <feGaussianBlur
+                  in="SourceAlpha"
+                  stdDeviation="40"
+                  result="blurred"
+                />
+                <feComposite in="color" in2="blurred" operator="in" />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <image
+              href="https://icons.iconarchive.com/icons/paomedia/small-n-flat/128/book-icon.png"
+              width="128"
+              height="128"
+              x="50%"
+              y="50%"
+              transform="translate(-64, -64)"
+              filter="url(#glow)"
+            />
+            <text
+              x="50%"
+              y="70%"
+              text-anchor="middle"
+              font-size="36"
+              fill="white"
+              font-family="Arial, sans-serif"
+            >
+              Publications
+            </text>
+
             <style type="text/css">
               .st0 {
                 fill: #ffffff;
@@ -1440,6 +1476,42 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 641.5 637.3"
           >
+            <!-- Define the glow filter -->
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feFlood flood-color="teal" result="color" />
+                <feGaussianBlur
+                  in="SourceAlpha"
+                  stdDeviation="50"
+                  result="blurred"
+                />
+                <feComposite in="color" in2="blurred" operator="in" />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <image
+              href="https://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/128/Categories-applications-education-university-icon.png"
+              width="128"
+              height="128"
+              x="50%"
+              y="50%"
+              transform="translate(-64, -64)"
+              filter="url(#glow)"
+            />
+            <text
+              x="50%"
+              y="70%"
+              text-anchor="middle"
+              font-size="36"
+              fill="white"
+              font-family="Arial, sans-serif"
+            >
+              Education
+            </text>
             <style type="text/css">
               .st0 {
                 fill: #ffffff;
@@ -2862,6 +2934,41 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 641.5 637.3"
           >
+            <!-- Define the glow filter -->
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feFlood flood-color="teal" result="color" />
+                <feGaussianBlur
+                  in="SourceAlpha"
+                  stdDeviation="40"
+                  result="blurred"
+                />
+                <feComposite in="color" in2="blurred" operator="in" />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <image
+              href="https://icons.iconarchive.com/icons/inipagi/job-seeker/128/certificate-icon.png"
+              width="128"
+              height="128"
+              x="50%"
+              y="50%"
+              transform="translate(-64, -64)"
+              filter="url(#glow)"
+            />
+            <text
+              x="50%"
+              y="70%"
+              text-anchor="middle"
+              font-size="36"
+              fill="white"
+              font-family="Arial, sans-serif"
+            >
+              Certifications
+            </text>
             <style type="text/css">
               .st0 {
                 fill: #ffffff;
