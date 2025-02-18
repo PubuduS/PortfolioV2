@@ -16,7 +16,7 @@ export const PAGE_ROUTES: Routes = [
   },
   {
     path: 'portfolio',
-    loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.PortfolioComponent),
+    loadChildren: () => import('@portfolio-v2/portfolio-pages').then((route) => route.PORTFOLIO_ROUTES),
   },
   {
     path: 'featured-projects',
