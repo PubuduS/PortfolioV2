@@ -15,6 +15,7 @@ export interface IProjectCard
 }
 
 export interface IProjectView {
+    id: number,
     imageURL: string;
     viewHeading: string;
     viewDescription: string;

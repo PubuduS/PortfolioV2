@@ -17,6 +17,7 @@ import {
   IAboutMe,
   IExperience,
   IProjectCard,
+  IProjectView,
   IPublicationDetails,
   ISkills,
   ISocialInfor,
@@ -276,6 +277,17 @@ export class GetDataService {
       }))),
     );
     return experienceData;
+  }
+
+  /**
+   * Get project section icons and descriptions
+   * @param location collection name
+   * @returns Observable of IAboutMe
+   */
+  public getProjectView(location: string): Observable<IProjectView[]> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id'));
+    return (collectionData(orderedQuery) as Observable<IProjectView[]>);
   }
 
   /**
