@@ -23,7 +23,7 @@
                       />
                     </button>
                   } @else {
-                    <button mat-button (click)="openDialog('auditor')">
+                    <button mat-button (click)="openDialog(project.id)">
                       <img
                         [src]="project.imageURL"
                         alt="project"
