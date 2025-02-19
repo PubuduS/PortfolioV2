@@ -16,12 +16,16 @@ import { IProjectView } from '@portfolio-v2/interfaces';
 import { ProjectCardComponent } from './components/project_card/project_card.component';
 
 /**
- *
+ * Portfolio Section
  */
 @Component({
   selector: 'portfolio-v2-portfolio',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatDialogModule,
+  ],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,11 +53,11 @@ export class PortfolioComponent {
 
   /**
    * Open dialog
-   * @param selection selected record
+   * @param id record id
    */
-  protected openDialog(selection: string): void {
-    this.dataService.setSelectedRecord(selection);
-    this.dialog.open(ProjectCardComponent);
+  protected openDialog(id: number): void {
+    this.dataService.getProjectCardById('project-data-section', id);
+    this.dialog.open(ProjectCardComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
   }
 
   /** Go to featured project page */
