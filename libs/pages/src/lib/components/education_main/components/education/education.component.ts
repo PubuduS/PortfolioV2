@@ -3,6 +3,10 @@ import {
   Component,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+
+import { GetDataService } from '@portfolio-v2/shared/services';
+import { IEducation } from '@portfolio-v2/interfaces';
 
 /**
  * Education Page
@@ -15,4 +19,15 @@ import { CommonModule } from '@angular/common';
   styleUrl: './education.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EducationComponent {}
+export class EducationComponent {
+  /** Education information */
+  protected readonly educationInfor: Observable<IEducation[]>;
+
+  /**
+   * constructor
+   * @param dataService data service
+   */
+  constructor(private dataService: GetDataService) {
+    this.educationInfor = this.dataService.getEducationInformation('education-section');
+  }
+}
