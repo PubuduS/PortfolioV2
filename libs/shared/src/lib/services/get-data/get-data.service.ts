@@ -18,6 +18,7 @@ import { Storage } from '@angular/fire/storage';
 
 import {
   IAboutMe,
+  IEducation,
   IExperience,
   IProjectCard,
   IProjectView,
@@ -195,6 +196,17 @@ export class GetDataService {
     const data = docData(documentRef) as Observable<IProjectCard | undefined>;
     this.projectCard = data;
     return data;
+  }
+
+  /**
+   * Get education information
+   * @param location location
+   * @returns observable of IEducation array.
+   */
+  public getEducationInformation(location: string): Observable<IEducation[]> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id', 'desc'));
+    return (collectionData(orderedQuery) as Observable<IEducation[]>);
   }
 
   /**
