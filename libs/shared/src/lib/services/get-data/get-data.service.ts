@@ -29,9 +29,12 @@ import {
   ISocialInfor,
 } from '@portfolio-v2/interfaces';
 
+/** Custom Data */
+type CustomData = IAboutMe | ICertificateCard | IEducation | IExperience |
+IProjectView | IPublication | ISkills | ISocialInfor;
+
 /**
  * Get Data Searvice
- * TODO: These will soon move to database
  */
 @Injectable({
   providedIn: 'root',
@@ -54,45 +57,38 @@ export class GetDataService {
   ) {}
 
   /**
-   * Get about me section data
+   * Get data from database
    * @param location location
-   * @returns Observable of IAboutMe
+   * @param isAscending sort order. If true data will be return in ascending order
+   * @returns Observable of data
    */
-  public getAboutMeSectionData(location: string): Observable<IAboutMe> {
+  public getData<T extends CustomData>(
+    location: string,
+    isAscending = true,
+  ): Observable<T> {
     const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id'));
-    const aboutMeData = (collectionData(orderedQuery) as Observable<IAboutMe[]>).pipe(
+    const orderedQuery = isAscending ? query(cardCollection, orderBy('id')) : query(cardCollection, orderBy('id', 'desc'));
+    const singleRecord = (collectionData(orderedQuery) as Observable<T[]>).pipe(
       map((data) => data[0]),
     );
 
-    return aboutMeData;
+    return singleRecord;
   }
 
   /**
-   * Get skills section data
+   * Get data from database
    * @param location location
-   * @returns Observable of ISkills
+   * @param isAscending sort order. If true data will be return in ascending order
+   * @returns Observable of data array
    */
-  public getSkillsSectionData(location: string): Observable<ISkills> {
+  public getDataArray<T extends CustomData>(
+    location: string,
+    isAscending = true,
+  ): Observable<T[]> {
     const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id'));
-    const skillsData = (collectionData(orderedQuery) as Observable<ISkills[]>).pipe(
-      map((data) => data[0]),
-    );
-
-    return skillsData;
-  }
-
-  /**
-   * Get social media information
-   * @param location location
-   * @returns Observable of ISocialInfor array
-   */
-  public getSocialMediaInformation(location: string): Observable<ISocialInfor[]> {
-    const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id'));
-    const skillsData = (collectionData(orderedQuery) as Observable<ISocialInfor[]>);
-    return skillsData;
+    const orderedQuery = isAscending ? query(cardCollection, orderBy('id')) : query(cardCollection, orderBy('id', 'desc'));
+    const arrayOfRecords = (collectionData(orderedQuery) as Observable<T[]>);
+    return arrayOfRecords;
   }
 
   /**
@@ -114,17 +110,6 @@ export class GetDataService {
   }
 
   /**
-   * Get project section icons and descriptions
-   * @param location collection name
-   * @returns Observable of IAboutMe
-   */
-  public getProjectView(location: string): Observable<IProjectView[]> {
-    const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id'));
-    return (collectionData(orderedQuery) as Observable<IProjectView[]>);
-  }
-
-  /**
    * Get a specific project card by id
    * @param location location
    * @param id id
@@ -136,39 +121,6 @@ export class GetDataService {
     const data = docData(documentRef) as Observable<IProjectCard | undefined>;
     this.projectCard = data;
     return data;
-  }
-
-  /**
-   * Get education information
-   * @param location location
-   * @returns observable of IEducation array.
-   */
-  public getEducationInformation(location: string): Observable<IEducation[]> {
-    const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id', 'desc'));
-    return (collectionData(orderedQuery) as Observable<IEducation[]>);
-  }
-
-  /**
-   * Get certificates information
-   * @param location location
-   * @returns observable of ICertificateCard array.
-   */
-  public getCertificatesInformation(location: string): Observable<ICertificateCard[]> {
-    const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id', 'desc'));
-    return (collectionData(orderedQuery) as Observable<ICertificateCard[]>);
-  }
-
-  /**
-   * Get publications
-   * @param location location
-   * @returns Observable of IPublication array.
-   */
-  public getPublications(location: string): Observable<IPublication[]> {
-    const cardCollection = collection(this.firestore, location);
-    const orderedQuery = query(cardCollection, orderBy('id'));
-    return (collectionData(orderedQuery) as Observable<IPublication[]>);
   }
 
   /**
@@ -186,37 +138,5 @@ export class GetDataService {
     const data = docData(documentRef) as Observable<IPublicationDetails | undefined>;
     this.publicationDetailCard = data;
     return data;
-  }
-
-  /**
-   * Get the whole string and break it based on the delimiter
-   * @param content Content as a single string
-   * @returns Array of strings(Paragraphs)
-   */
-  private lineBreaker(content: string): string[] {
-    return content
-    // Split the string at each delimiter
-      .split('<<LEnd>>')
-    // Trim whitespace from each paragraph
-      .map((paragraph) => paragraph.trim())
-    // Remove empty entries
-      .filter((paragraph) => paragraph.length > 0);
-  }
-
-  /**
-   * Get the string marked with delimiter and clean up the string.
-   * Then create a map of Map<string, number>.
-   * @param content Content as a single string
-   * @returns Map of skill and progress bar value
-   */
-  private createSkillMap(content: string): Map<string, number> {
-    const breakLines = this.lineBreaker(content).join('').split('$');
-    const skillMap = new Map<string, number>();
-
-    for (let i = 0; i < breakLines.length; i += 2) {
-      skillMap.set(breakLines[i], Number(breakLines[i + 1]));
-    }
-
-    return skillMap;
   }
 }

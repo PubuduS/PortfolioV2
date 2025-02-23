@@ -46,7 +46,7 @@ export class PublicationsComponent {
     private dataService: GetDataService,
     private dialog: MatDialog,
   ) {
-    this.publicationList$ = this.dataService.getPublications('publication-section');
+    this.publicationList$ = this.dataService.getDataArray<IPublication>('publication-section');
   }
 
   /**

@@ -29,6 +29,6 @@ export class SkillsComponent {
    * @param dataService database service
    */
   constructor(private dataService: GetDataService) {
-    this.skillsData = this.dataService.getSkillsSectionData('skills-section');
+    this.skillsData = this.dataService.getData<ISkills>('skills-section');
   }
 }
