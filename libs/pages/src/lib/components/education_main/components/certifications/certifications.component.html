@@ -3,50 +3,39 @@
     <div class="row">
       <div class="col-md-12">
         <div class="section-title">
-          <h2>Certifications</h2>
+          <h2 class="text-center mt-4">Certifications</h2>
         </div>
-        <div class="certifications-wrap">
-          <ul class="row">
-            <li class="col-md-6 fadeRight" data-t-show="3">
-              <section *ngFor="let card of certificatesLeft">
-                <img [src]="certificate_icon_URL" alt="certification" />
-                <h3>{{ card.title }}</h3>
-                <p>Completed: {{ card.completedDate }}</p>
-                <p>Issuing Organization: {{ card.organization }}</p>
-                <p>Credential ID: {{ card.credentialID }}</p>
-                <p>
-                  Certificate:
-                  <a
-                    [href]="card.certificateURL"
-                    target="_blank"
-                    [title]="tooltip"
-                    >{{ card.certification }}</a
-                  >
-                </p>
-                <p>{{ card.description }}</p>
-              </section>
-            </li>
-            <li class="col-md-6 fadeLeft" data-t-show="3">
-              <section *ngFor="let card of certificatesRight">
-                <img [src]="certificate_icon_URL" alt="certification" />
-                <h3>{{ card.title }}</h3>
-                <p>Completed: {{ card.completedDate }}</p>
-                <p>Issuing Organization: {{ card.organization }}</p>
-                <p>Credential ID: {{ card.credentialID }}</p>
-                <p>
-                  Certificate:
-                  <a
-                    [href]="card.certificateURL"
-                    target="_blank"
-                    [title]="tooltip"
-                    >{{ card.certification }}</a
-                  >
-                </p>
-                <p>{{ card.description }}</p>
-              </section>
-            </li>
-          </ul>
-        </div>
+        @if (certificatesCards$ | async; as certificatesCards) {
+          <div class="certifications-wrap">
+            <ul class="row">
+              @for (card of certificatesCards; track $index) {
+                <li class="col-md-6 col-sm-12">
+                  <section>
+                    <img
+                      [src]="certificate_icon_URL"
+                      [alt]="card.title + ' certification'"
+                    />
+                    <h3>{{ card.title }}</h3>
+                    <p>Completed: {{ card.completedDate }}</p>
+                    <p>Issuing Organization: {{ card.organization }}</p>
+                    <p>Credential ID: {{ card.credentialID }}</p>
+                    <p>
+                      Certificate:
+                      <a
+                        [href]="card.certificateURL"
+                        target="_blank"
+                        [title]="tooltip"
+                      >
+                        {{ card.certification }}
+                      </a>
+                    </p>
+                    <p>{{ card.description }}</p>
+                  </section>
+                </li>
+              }
+            </ul>
+          </div>
+        }
       </div>
     </div>
   </div>
