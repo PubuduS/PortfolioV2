@@ -48,7 +48,7 @@ export class PortfolioComponent {
     private dataService: GetDataService,
     public dialog: MatDialog,
   ) {
-    this.projectView$ = this.dataService.getProjectView('project-icon-section');
+    this.projectView$ = this.dataService.getDataArray<IProjectView>('project-icon-section');
   }
 
   /**

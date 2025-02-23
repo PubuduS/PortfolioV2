@@ -28,6 +28,6 @@ export class EducationComponent {
    * @param dataService data service
    */
   constructor(private dataService: GetDataService) {
-    this.educationInfor = this.dataService.getEducationInformation('education-section');
+    this.educationInfor = this.dataService.getDataArray<IEducation>('education-section', false);
   }
 }

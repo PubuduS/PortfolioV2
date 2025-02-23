@@ -105,7 +105,7 @@ export class CoverLetterComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
   ) {
-    this.socialInfor = this.dataService.getSocialMediaInformation('social-infor-section');
+    this.socialInfor = this.dataService.getDataArray<ISocialInfor>('social-infor-section');
   }
 
   /**

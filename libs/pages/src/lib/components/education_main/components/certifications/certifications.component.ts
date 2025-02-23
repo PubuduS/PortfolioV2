@@ -32,6 +32,6 @@ export class CertificationsComponent {
    * @param dataService data service
    */
   constructor(private dataService: GetDataService) {
-    this.certificatesCards$ = this.dataService.getCertificatesInformation('certification-section');
+    this.certificatesCards$ = this.dataService.getDataArray<ICertificateCard>('certification-section', false);
   }
 }

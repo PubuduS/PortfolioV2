@@ -87,7 +87,7 @@ export class ContactComponent implements OnInit {
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
   ) {
-    this.socialInfor = this.dataService.getSocialMediaInformation('social-infor-section');
+    this.socialInfor = this.dataService.getDataArray<ISocialInfor>('social-infor-section');
   }
 
   /**

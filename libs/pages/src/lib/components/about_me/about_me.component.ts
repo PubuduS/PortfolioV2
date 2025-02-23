@@ -28,7 +28,7 @@ export class AboutMeComponent {
    * @param dataService Satabase service
    */
   constructor(private dataService: GetDataService) {
-    this.aboutMeData = this.dataService.getAboutMeSectionData('about-me-section');
+    this.aboutMeData = this.dataService.getData<IAboutMe>('about-me-section');
   }
 
   /**
