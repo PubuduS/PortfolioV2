@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -12,6 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 import { GetDataService } from '@portfolio-v2/shared/services';
 import {
@@ -28,50 +28,41 @@ import { ContactPopupComponent } from './components/contact_popup/contact_popup.
 @Component({
   selector: 'portfolio-v2-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ContactPopupComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent implements OnInit {
-  /** Data service */
-  private dataService = inject(GetDataService);
-
-  /** Form builder */
-  private formBuilder = inject(FormBuilder);
-
-  /** Dialog */
-  private dialog = inject(MatDialog);
-
   /** Contact form */
-  public contactForm!: FormGroup;
+  protected contactForm!: FormGroup;
 
   /** Social infor */
-  public readonly socialInfor: ISocialInfor = this.dataService.getSocialInfor();
+  protected readonly socialInfor: Observable<ISocialInfor[]>;
 
   /** Name minimum length */
-  public readonly nameMinLen: number = 2;
+  protected readonly nameMinLen: number = 2;
 
   /** Name maximum length */
-  public readonly nameMaxLen: number = 12;
+  protected readonly nameMaxLen: number = 12;
 
   /** Name regex pattern */
-  public readonly nameRegexPattern: string = '^[a-zA-Z]+$';
+  protected readonly nameRegexPattern: string = '^[a-zA-Z]+$';
 
   /** Message minimum length */
-  public readonly msgMinLen: number = 10;
+  protected readonly msgMinLen: number = 10;
 
   /** Message maximum length */
-  public readonly msgMaxLen: number = 1000;
+  protected readonly msgMaxLen: number = 1000;
 
   /** Email validator messages */
-  public readonly emailValidatorMsgs: IEmailValidatorMsgs = {
+  protected readonly emailValidatorMsgs: IEmailValidatorMsgs = {
     emailReqError: 'Please enter an email address.',
     emailPttrnError: 'Please enter a valid email address.',
   };
 
   /** Sender text field validator messages */
-  public readonly senderValidatorMsgs: ISenderNameValidatorMsgs = {
+  protected readonly senderValidatorMsgs: ISenderNameValidatorMsgs = {
     senderReqError: 'Please enter your name.',
     senderMinLenError: `A name should have at least ${this.nameMinLen} letters.`,
     senderMaxLenError: `A name should not exceed ${this.nameMaxLen} letters.`,
@@ -79,11 +70,25 @@ export class ContactComponent implements OnInit {
   };
 
   /** Message text field validator messages */
-  public readonly msgValidatorMsgs: IMessageValidatorMsgs = {
+  protected readonly msgValidatorMsgs: IMessageValidatorMsgs = {
     msgReqError: 'Please enter a message.',
     msgMinLenError: `The message should have at least ${this.msgMinLen} letters.`,
     msgMaxLenError: `The message should not exceed ${this.msgMaxLen} characters.`,
   };
+
+  /**
+   * constructor
+   * @param dataService data service
+   * @param dialog dialog
+   * @param formBuilder form builder
+   */
+  constructor(
+    private dataService: GetDataService,
+    private dialog: MatDialog,
+    private formBuilder: FormBuilder,
+  ) {
+    this.socialInfor = this.dataService.getSocialMediaInformation('social-infor-section');
+  }
 
   /**
    * @inheritdoc
@@ -100,7 +105,7 @@ export class ContactComponent implements OnInit {
    * Open dialog
    * @param email email address
    */
-  public openDialog(email: string): void {
+  protected openDialog(email: string): void {
     this.dialog.open(ContactPopupComponent, {
       data: {
         emailAddr: email,
@@ -111,7 +116,7 @@ export class ContactComponent implements OnInit {
   /**
    * Send Email
    */
-  public sendEmail(): void {
+  protected sendEmail(): void {
     console.log('implement this function');
   }
 }

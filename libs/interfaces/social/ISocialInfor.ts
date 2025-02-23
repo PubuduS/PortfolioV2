@@ -1,5 +1,9 @@
+/** Interface for Social Media Information */
 export interface ISocialInfor {
-    linkedin: string,
-    github: string,
-    email: string
+  /** ID */
+  id: number,
+  /** Media link */
+  media: string,
+  /** Media icon */
+  mediaIcon?: string,
 }

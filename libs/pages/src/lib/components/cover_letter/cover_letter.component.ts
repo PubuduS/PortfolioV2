@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -16,6 +15,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
+import { Observable } from 'rxjs';
 
 import {
   GetDataService,
@@ -50,23 +50,11 @@ function loadFile(url: string, callback: {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverLetterComponent implements OnInit {
-  /** Data service */
-  private dataService = inject(GetDataService);
-
-  /** Router */
-  private router = inject(Router);
-
-  /** Form builder */
-  private formBuilder = inject(FormBuilder);
-
-  /** Date time service */
-  private dateTimeService = inject(GetDateTimeService);
-
   /** Cover letter form */
-  public coverLetterForm!: FormGroup;
+  protected coverLetterForm!: FormGroup;
 
   /** positions */
-  public readonly positions: string[] = [
+  protected readonly positions: string[] = [
     'Software Engineer',
     'Junior Software Engineer',
     'Software Developer',
@@ -77,31 +65,48 @@ export class CoverLetterComponent implements OnInit {
     'Java Developer',
     'Junior Game Developer',
     'Game Developer',
+    'Web Developer',
   ];
 
   /** Social infor */
-  public readonly socialInfor: ISocialInfor = this.dataService.getSocialInfor();
+  protected readonly socialInfor: Observable<ISocialInfor[]>;
 
   /** Name max length */
-  public readonly nameMaxLen: number = 12;
+  protected readonly nameMaxLen: number = 12;
 
   /** Name regex pattern */
-  public readonly nameRegexPattern: string = '^[a-zA-Z]+$';
+  protected readonly nameRegexPattern: string = '^[a-zA-Z]+$';
 
   /** Company name max length */
-  public readonly cmpMaxLen: number = 12;
+  protected readonly cmpMaxLen: number = 12;
 
   /** Manager name validator messages */
-  public readonly mngValidatorMessages: IManagerValidatorMsgs = {
+  protected readonly mngValidatorMessages: IManagerValidatorMsgs = {
     mngPatternError: 'The name can only contain letters.',
     mngNameMaxLen: `The name cannot be more than ${this.nameMaxLen} characters.`,
   };
 
   /** Company name validator messages */
-  public readonly cmpValidatorMessages: ICompanyValidatorMsgs = {
+  protected readonly cmpValidatorMessages: ICompanyValidatorMsgs = {
     cmpNameReqError: 'Please enter the company name.',
     cmpNameMaxLen: `The name cannot be more than ${this.cmpMaxLen} characters.`,
   };
+
+  /**
+   * constructor
+   * @param dataService data service
+   * @param dateTimeService date time service
+   * @param formBuilder form builder
+   * @param router router
+   */
+  constructor(
+    private dataService: GetDataService,
+    private dateTimeService: GetDateTimeService,
+    private formBuilder: FormBuilder,
+    private router: Router,
+  ) {
+    this.socialInfor = this.dataService.getSocialMediaInformation('social-infor-section');
+  }
 
   /**
    * @inheritdoc
@@ -117,14 +122,14 @@ export class CoverLetterComponent implements OnInit {
   /**
    * Go to contact page
    */
-  public goToContactPage(): void {
-    this.router.navigate(['contact']);
+  protected goToContactPage(): void {
+    this.router.navigate(['content/contact']);
   }
 
   /**
    * On submit
    */
-  public onSubmit(): void {
+  protected onSubmit(): void {
     const formValues = this.coverLetterForm.value;
     let manager = formValues.managerName;
     const date = this.dateTimeService.getDate();
