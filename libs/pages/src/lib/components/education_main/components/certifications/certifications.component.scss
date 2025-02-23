@@ -1,37 +1,87 @@
-/*certifications-full*/
 .certifications-full {
-    background-color: #0A192F;
-    padding: 100px 0 40px;
-}
-.certifications-wrap ul li { padding: 0 61px; margin-bottom: 60px; }
-.certifications-wrap section {
-    padding: 86px 32px 26px;
-    border: 2px solid #ADE8F4;
-    border-radius: 20px;
-    color: #f5f5f5;
-    position: relative;
-    margin: 61px 0 0;
-}
-.certifications-wrap section:hover img { transform: scale(0.9); }
-.certifications-wrap section img {
-    position: absolute;
-    left: 32px;
-    top: -61px;
-    transition: all 0.4s ease-in-out;
-}
-.certifications-wrap section h3 {
-    font-size: 20px;
-    line-height: 24px;
-    margin: 0 0 20px;
-    color: #fff;
-}
-.certifications-wrap section p a {
-    color: #61F8D5;
-}
-.certifications-wrap section p a:hover { text-decoration: underline; }
-.certifications-full .section-title h2,
-.get-in-touchfull .section-title h2 {color: #ADE8F4;}
-.certifications-wrap section p {
-    margin: 0 0 20px;
-    line-height: 19px;
+  background-color: #0a192f;
+  padding: 100px 0 40px;
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 60px;
+
+    h2 {
+      font-weight: 800;
+      font-size: 40px;
+      line-height: 49px;
+      text-transform: uppercase;
+      margin: 0;
+      color: #ade8f4;
+    }
+  }
+
+  .certifications-wrap {
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0;
+
+      li {
+        padding: 15px;
+        list-style: none;
+      }
+    }
+
+    section {
+      padding: 80px 30px 30px;
+      border: 2px solid #ade8f4;
+      border-radius: 20px;
+      color: #f5f5f5;
+      position: relative;
+      margin: 20px;
+      transition: all 0.4s ease-in-out;
+
+      &:hover {
+        border-color: #61f8d5;
+        transform: scale(1.02);
+      }
+
+      img {
+        position: absolute;
+        left: 30px;
+        top: -50px;
+        transition: all 0.4s ease-in-out;
+        filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+      }
+
+      h3 {
+        font-size: 20px;
+        margin: 10px 0 15px;
+        color: #fff;
+      }
+
+      p {
+        margin: 0 0 15px;
+        line-height: 22px;
+        font-size: 16px;
+
+        a {
+          color: #61f8d5;
+          font-weight: bold;
+
+          &:hover {
+            text-decoration: underline;
+            color: #48e0c1;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .certifications-wrap ul {
+      flex-direction: column;
+    }
+
+    .certifications-wrap section {
+      margin-bottom: 30px;
+    }
+  }
 }
