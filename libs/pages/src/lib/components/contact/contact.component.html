@@ -19,28 +19,28 @@
             will reply yo you soon!
           </p>
           <h2>Follow Me</h2>
-          <ul class="social">
-            <li>
-              <a
-                href="{{ this.socialInfor.linkedin }}"
-                target="_blank"
-                class="fa fa-linkedin"
-              ></a>
-            </li>
-            <li>
-              <a
-                href="{{ this.socialInfor.github }}"
-                target="_blank"
-                class="fa fa-github"
-              ></a>
-            </li>
-            <li>
-              <a
-                (click)="openDialog(this.socialInfor.email)"
-                class="fa fa-envelope"
-              ></a>
-            </li>
-          </ul>
+          @if (socialInfor | async; as socialInfor) {
+            <ul class="social">
+              @for (social of socialInfor; track $index) {
+                @if (social.id === 3) {
+                  <li>
+                    <a
+                      (click)="openDialog(social.media)"
+                      [class]="'fa ' + social.mediaIcon"
+                    ></a>
+                  </li>
+                } @else {
+                  <li>
+                    <a
+                      href="{{ social.media }}"
+                      target="_blank"
+                      [class]="'fa ' + social.mediaIcon"
+                    ></a>
+                  </li>
+                }
+              }
+            </ul>
+          }
         </div>
       </div>
       <div class="col-md-7 fadeRight bottom" data-t-show="3">

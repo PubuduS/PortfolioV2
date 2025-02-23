@@ -43,13 +43,6 @@ export class GetDataService {
   /** Holds project card for now. todo: move this to ngrx state */
   public projectCard: Observable<IProjectCard | undefined> = of(undefined);
 
-  /** Social information */
-  private readonly socialInfor: ISocialInfor = {
-    linkedin: 'https://www.linkedin.com/in/pubudu-wijesooriya/',
-    github: 'https://github.com/PubuduS/',
-    email: 'pubudusupun@gmail.com',
-  };
-
   /**
    * constructor
    * @param storage angular fire storage
@@ -62,7 +55,7 @@ export class GetDataService {
 
   /**
    * Get about me section data
-   * @param location collection name
+   * @param location location
    * @returns Observable of IAboutMe
    */
   public getAboutMeSectionData(location: string): Observable<IAboutMe> {
@@ -70,12 +63,6 @@ export class GetDataService {
     const orderedQuery = query(cardCollection, orderBy('id'));
     const aboutMeData = (collectionData(orderedQuery) as Observable<IAboutMe[]>).pipe(
       map((data) => data[0]),
-      map((data) => ({
-        ...data,
-        intro: this.lineBreaker(typeof data.intro === 'string' ? data.intro : data.intro.join('')),
-        leftPoints: this.lineBreaker(typeof data.leftPoints === 'string' ? data.leftPoints : data.leftPoints.join('')),
-        rightPoints: this.lineBreaker(typeof data.rightPoints === 'string' ? data.rightPoints : data.rightPoints.join('')),
-      })),
     );
 
     return aboutMeData;
@@ -83,24 +70,28 @@ export class GetDataService {
 
   /**
    * Get skills section data
-   * @param location collection name
-   * @returns Observable of IAboutMe
+   * @param location location
+   * @returns Observable of ISkills
    */
   public getSkillsSectionData(location: string): Observable<ISkills> {
     const cardCollection = collection(this.firestore, location);
     const orderedQuery = query(cardCollection, orderBy('id'));
     const skillsData = (collectionData(orderedQuery) as Observable<ISkills[]>).pipe(
       map((data) => data[0]),
-      map((data) => (
-        {
-          ...data,
-          languagesCol1: this.createSkillMap(data.languagesCol1 as unknown as string),
-          languagesCol2: this.createSkillMap(data.languagesCol2 as unknown as string),
-          framework: this.lineBreaker(typeof data.framework === 'string' ? data.framework : data.framework.join('')),
-          software: this.lineBreaker(typeof data.software === 'string' ? data.software : data.software.join('')),
-        })),
     );
 
+    return skillsData;
+  }
+
+  /**
+   * Get social media information
+   * @param location location
+   * @returns Observable of ISocialInfor array
+   */
+  public getSocialMediaInformation(location: string): Observable<ISocialInfor[]> {
+    const cardCollection = collection(this.firestore, location);
+    const orderedQuery = query(cardCollection, orderBy('id'));
+    const skillsData = (collectionData(orderedQuery) as Observable<ISocialInfor[]>);
     return skillsData;
   }
 
@@ -195,14 +186,6 @@ export class GetDataService {
     const data = docData(documentRef) as Observable<IPublicationDetails | undefined>;
     this.publicationDetailCard = data;
     return data;
-  }
-
-  /**
-   * Getter for social media information
-   * @returns social media information data model
-   */
-  public getSocialInfor(): ISocialInfor {
-    return this.socialInfor;
   }
 
   /**
