@@ -4,6 +4,7 @@ import {
   map,
   Observable,
   of,
+  from,
 } from 'rxjs';
 import {
   Firestore,
@@ -14,7 +15,11 @@ import {
   orderBy,
   query,
 } from '@angular/fire/firestore';
-import { Storage } from '@angular/fire/storage';
+import {
+  Storage,
+  getDownloadURL,
+  ref,
+} from '@angular/fire/storage';
 
 import {
   IAboutMe,
@@ -138,5 +143,15 @@ export class GetDataService {
     const data = docData(documentRef) as Observable<IPublicationDetails | undefined>;
     this.publicationDetailCard = data;
     return data;
+  }
+
+  /**
+   * Get a single URL to a photo stored in db, given a file path.
+   * @param filePath file path
+   * @returns observable containing the url of the photo
+   */
+  public getPhotoURL(filePath: string): Observable<string> {
+    const fileRef = ref(this.storage, filePath);
+    return from(getDownloadURL(fileRef));
   }
 }
