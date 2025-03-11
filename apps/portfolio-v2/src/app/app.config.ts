@@ -32,9 +32,42 @@ import {
   getPerformance,
   providePerformance,
 } from '@angular/fire/performance';
+import {
+  ActionReducer,
+  MetaReducer,
+  provideStore,
+} from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { localStorageSync } from 'ngrx-store-localstorage';
 
+import {
+  AppState,
+  stateReducers,
+  StateEffects,
+} from '@portfolio-v2/state';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+
+/**
+ * Sync the state with local storage to rehydrate
+ * @param reducer reducer
+ * @returns Action Reducer
+ */
+export function localStorageSyncReducer(reducer: ActionReducer<AppState>)
+  : ActionReducer<AppState> {
+  return localStorageSync({ keys: ['stateBanks'], rehydrate: true })(reducer);
+}
+
+/**
+ * Meta Reducer
+ * This is used as a rehydration.
+ * This will basically cash immediate previous visits.
+ * When the user reclick an immediate previous visit,
+ * instead of contacting database, this will pull the
+ * data from local cache from the browswer.
+ */
+const metaReducer: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -50,5 +83,12 @@ export const appConfig: ApplicationConfig = {
     providePerformance(() => getPerformance()),
     ScreenTrackingService,
     UserTrackingService,
+    provideStore({ stateBanks: stateReducers }, { metaReducers: metaReducer }),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: true,
+      connectInZone: true,
+    }),
+    provideEffects([StateEffects]),
   ],
 };

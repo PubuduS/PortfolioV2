@@ -3,10 +3,9 @@ import {
   Component,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
-import { IEducation } from '@portfolio-v2/interfaces';
+import { educationSelector } from '@portfolio-v2/state/selectors';
 
 /**
  * Education Page
@@ -21,13 +20,11 @@ import { IEducation } from '@portfolio-v2/interfaces';
 })
 export class EducationComponent {
   /** Education information */
-  protected readonly educationInfor: Observable<IEducation[]>;
+  protected readonly educationInfor = this.store.selectSignal(educationSelector);
 
   /**
    * constructor
-   * @param dataService data service
+   * @param store ngrx store
    */
-  constructor(private dataService: GetDataService) {
-    this.educationInfor = this.dataService.getDataArray<IEducation>('education-section', false);
-  }
+  constructor(private store: Store) {}
 }

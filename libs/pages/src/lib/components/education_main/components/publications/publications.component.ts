@@ -10,10 +10,10 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { IPublication } from '@portfolio-v2/interfaces';
-import { GetDataService } from '@portfolio-v2/shared/services';
+import { publicationCardsSelector } from '@portfolio-v2/state/selectors';
+import { StateActions } from '@portfolio-v2/state';
 import { PublicationDetailComponent } from '../publication_detail/publication_detail.component';
 
 /**
@@ -35,26 +35,26 @@ import { PublicationDetailComponent } from '../publication_detail/publication_de
 })
 export class PublicationsComponent {
   /** Observable of IPublication array */
-  protected readonly publicationList$: Observable<IPublication[]>;
+  protected readonly publicationList = this.store.selectSignal(publicationCardsSelector);
 
   /**
    * constructor
-   * @param dataService data service
    * @param dialog mat dialog
+   * @param store ngrx store
    */
   constructor(
-    private dataService: GetDataService,
     private dialog: MatDialog,
-  ) {
-    this.publicationList$ = this.dataService.getDataArray<IPublication>('publication-section');
-  }
+    private store: Store,
+  ) {}
 
   /**
    * Open a dialog
    * @param id ID
    */
   public openDialog(id: number): void {
-    this.dataService.getPublicationDetailsCardById('publication-details-section', id);
+    this.store.dispatch(StateActions.selectedPublicationCardIDStateUpdated(
+      { selectedPublicationID: id },
+    ));
     this.dialog.open(PublicationDetailComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
   }
 }

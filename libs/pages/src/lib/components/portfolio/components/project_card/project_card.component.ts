@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -10,8 +9,12 @@ import {
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Store } from '@ngrx/store';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
+import {
+  projectCardSelector,
+  selectedCardIDSelector,
+} from '@portfolio-v2/state/selectors';
 
 /**
  * Project Card
@@ -31,9 +34,14 @@ import { GetDataService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectCardComponent {
-  /** Data Service */
-  private dataService = inject(GetDataService);
+  /** Selected card ID */
+  private readonly cardId = this.store.selectSignal(selectedCardIDSelector)();
+  /** Selected project card */
+  protected readonly projectCard = this.store.selectSignal(projectCardSelector(this.cardId));
 
-  /** Data record */
-  public readonly data = this.dataService.projectCard;
+  /**
+   * constructor
+   * @param store ngrx store
+   */
+  constructor(private store: Store) {}
 }

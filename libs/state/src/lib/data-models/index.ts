@@ -5,7 +5,13 @@ export { IProjectCard, IProjectView } from './project_display/IProjectCard';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
 export { IExperience } from './experience/IExperience';
 export { ISocialInfor } from './social/ISocialInfor';
-export { ICompanyValidatorMsgs, IManagerValidatorMsgs, IEmailValidatorMsgs, ISenderNameValidatorMsgs, IMessageValidatorMsgs } from './validator_msgs/IValidatorErrorMsg';
+export {
+  ICompanyValidatorMsgs,
+  IManagerValidatorMsgs,
+  IEmailValidatorMsgs,
+  ISenderNameValidatorMsgs,
+  IMessageValidatorMsgs,
+} from './validator_msgs/IValidatorErrorMsg';
 export { ISkills } from './skills/ISkills';
 export { IAboutMe } from './about_me/IAboutMe';
 export { IEducation } from './education/IEducation';

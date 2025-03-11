@@ -5,8 +5,10 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
 
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 
 /** Landing page */
 @Component({
@@ -23,6 +25,14 @@ export class LandingBannerComponent implements OnInit {
 
   /** Date Time Service */
   private dateTimeService = inject(GetDateTimeService);
+
+  /**
+   * constructor
+   * @param store ngrx store
+   */
+  constructor(private store: Store) {
+    this.populateStore();
+  }
 
   /**
    * @inheritdoc
@@ -42,5 +52,19 @@ export class LandingBannerComponent implements OnInit {
     } else {
       this.bannerImageSrc = 'assets/images/banners/Fall_Banner.gif';
     }
+  }
+
+  /** Dispatch all the actions to populate data */
+  private populateStore(): void {
+    this.store.dispatch(StateActions.aboutMeStateConnect());
+    this.store.dispatch(StateActions.skillsStateConnect());
+    this.store.dispatch(StateActions.experienceStateConnect());
+    this.store.dispatch(StateActions.portfolioCardsStateConnect());
+    this.store.dispatch(StateActions.projectCardsStateConnect());
+    this.store.dispatch(StateActions.certificatesCardsStateConnect());
+    this.store.dispatch(StateActions.educationCardsStateConnect());
+    this.store.dispatch(StateActions.publicationCardsStateConnect());
+    this.store.dispatch(StateActions.publicationDetailCardsStateConnect());
+    this.store.dispatch(StateActions.socialMediaInformationStateConnect());
   }
 }

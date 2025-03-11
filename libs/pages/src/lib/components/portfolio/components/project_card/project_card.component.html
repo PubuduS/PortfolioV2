@@ -1,12 +1,11 @@
 <div class="card-model">
-  @if (data | async; as dataRecord) {
+  @if (projectCard(); as dataRecord) {
     <h1 mat-dialog-title>{{ dataRecord.heading }}</h1>
     <mat-dialog-content class="mat-typography">
       <div class="row">
         <div class="col-md-4">
           <img src="{{ dataRecord.imageURL }}" />
         </div>
-
         <div class="col-md-8 description">
           <section>
             <p>{{ dataRecord.description }}</p>

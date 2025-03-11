@@ -3,10 +3,9 @@ import {
   Component,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { ICertificateCard } from '@portfolio-v2/interfaces';
-import { GetDataService } from '@portfolio-v2/shared/services';
+import { certificatesSelector } from '@portfolio-v2/state/selectors';
 
 /**
  * Certifications Page
@@ -25,13 +24,11 @@ export class CertificationsComponent {
   /** Tooltip string */
   public readonly tooltip: string = 'Click here to view the certificate';
   /** Observable of ICertificateCard array */
-  protected certificatesCards$: Observable<ICertificateCard[]>;
+  protected certificatesCards = this.store.selectSignal(certificatesSelector);
 
   /**
    * constructor
-   * @param dataService data service
+   * @param store ngrx store
    */
-  constructor(private dataService: GetDataService) {
-    this.certificatesCards$ = this.dataService.getDataArray<ICertificateCard>('certification-section', false);
-  }
+  constructor(private store: Store) {}
 }

@@ -10,7 +10,7 @@
           <h2>EDUCATION AND CREDENTIALS</h2>
         </div>
       </div>
-      @if (educationInfor | async; as education) {
+      @if (educationInfor(); as education) {
         @for (edu of education; track $index) {
           @if (edu.id !== 1) {
             <div class="col-md-6" data-t-show="3">

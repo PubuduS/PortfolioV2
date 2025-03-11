@@ -1,7 +1,7 @@
 <div class="pw-main-content">
   <div class="pw-main-section about-full" id="section_2" data-anchor="about">
     <div class="container">
-      @if (aboutMeData | async; as aboutMe) {
+      @if (aboutMeData(); as aboutMe) {
         <div class="row">
           <div class="col-md-4">
             <figure class="about-img">

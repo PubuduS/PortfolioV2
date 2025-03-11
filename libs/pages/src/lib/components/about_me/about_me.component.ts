@@ -3,10 +3,9 @@ import {
   Component,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { IAboutMe } from '@portfolio-v2/interfaces';
-import { GetDataService } from '@portfolio-v2/shared/services';
+import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 
 /**
  * About me page
@@ -20,16 +19,14 @@ import { GetDataService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutMeComponent {
-  /** Observable containing About Me section data */
-  public readonly aboutMeData: Observable<IAboutMe>;
+  /** Signal containing About Me section data */
+  public readonly aboutMeData = this.store.selectSignal(aboutMeSelector);
 
   /**
    * constructor
-   * @param dataService Satabase service
+   * @param store ngrx store
    */
-  constructor(private dataService: GetDataService) {
-    this.aboutMeData = this.dataService.getData<IAboutMe>('about-me-section');
-  }
+  constructor(private store: Store) {}
 
   /**
    * Remove the link tag and returns the string without that

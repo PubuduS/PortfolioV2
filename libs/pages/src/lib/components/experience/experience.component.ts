@@ -6,16 +6,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  filter,
   map,
-  Observable,
   take,
 } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { IExperience } from '@portfolio-v2/interfaces';
-import {
-  GetDataService,
-  GetDateTimeService,
-} from '@portfolio-v2/shared/services';
+import { IExperience } from '@portfolio-v2/state/dataModels';
+import { GetDateTimeService } from '@portfolio-v2/shared/services';
+import { experienceSelector } from '@portfolio-v2/state/selectors';
 
 /**
  * Experience page
@@ -33,7 +32,7 @@ export class ExperienceComponent {
    * Array of IExperience.
    * Hold the data from the database
    */
-  protected readonly experienceData: Observable<IExperience[]>;
+  protected readonly experienceData = this.store.select(experienceSelector);
 
   /** Selected job */
   protected selectedJob = '';
@@ -49,12 +48,12 @@ export class ExperienceComponent {
 
   /**
    * constructor
-   * @param dataService Database service
+   * @param store ngrx store
    */
-  constructor(private dataService: GetDataService) {
-    this.experienceData = this.dataService.getExperienceSectionData('experience-section');
+  constructor(private store: Store) {
     this.experienceData.pipe(
       take(1),
+      filter((data) => data !== undefined),
       map((data) => data[0]),
     ).subscribe((exp) => this.displaySelected(exp));
   }

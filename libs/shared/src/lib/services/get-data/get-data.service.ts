@@ -10,8 +10,6 @@ import {
   Firestore,
   collection,
   collectionData,
-  doc,
-  docData,
   orderBy,
   query,
 } from '@angular/fire/firestore';
@@ -32,11 +30,11 @@ import {
   IPublicationDetails,
   ISkills,
   ISocialInfor,
-} from '@portfolio-v2/interfaces';
+} from '@portfolio-v2/state/dataModels';
 
 /** Custom Data */
 type CustomData = IAboutMe | ICertificateCard | IEducation | IExperience |
-IProjectView | IPublication | ISkills | ISocialInfor;
+IProjectView | IPublication | ISkills | ISocialInfor | IProjectCard | IPublicationDetails;
 
 /**
  * Get Data Searvice
@@ -76,7 +74,6 @@ export class GetDataService {
     const singleRecord = (collectionData(orderedQuery) as Observable<T[]>).pipe(
       map((data) => data[0]),
     );
-
     return singleRecord;
   }
 
@@ -112,37 +109,6 @@ export class GetDataService {
       }))),
     );
     return experienceData;
-  }
-
-  /**
-   * Get a specific project card by id
-   * @param location location
-   * @param id id
-   * @returns observable of project card or undefined if no records were found.
-   */
-  public getProjectCardById(location: string, id: number): Observable<IProjectCard | undefined> {
-    const recordId = `project-${id.toString().padStart(2, '0')}`;
-    const documentRef = doc(this.firestore, `${location}/${recordId}`);
-    const data = docData(documentRef) as Observable<IProjectCard | undefined>;
-    this.projectCard = data;
-    return data;
-  }
-
-  /**
-   * Get a publication detail card by id
-   * @param location location
-   * @param id id
-   * @returns observable of publication detail card or undefined if no records were found.
-   */
-  public getPublicationDetailsCardById(
-    location: string,
-    id: number,
-  ): Observable<IPublicationDetails | undefined> {
-    const recordId = `publication-${id.toString().padStart(2, '0')}`;
-    const documentRef = doc(this.firestore, `${location}/${recordId}`);
-    const data = docData(documentRef) as Observable<IPublicationDetails | undefined>;
-    this.publicationDetailCard = data;
-    return data;
   }
 
   /**

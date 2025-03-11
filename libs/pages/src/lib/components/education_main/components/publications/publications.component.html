@@ -10,7 +10,7 @@
           <h2>Publications</h2>
         </div>
       </div>
-      @if (publicationList$ | async; as publicationList) {
+      @if (publicationList(); as publicationList) {
         @for (publication of publicationList; track $index) {
           <mat-card class="publication-card col-md-4">
             <mat-card-header>

@@ -1,5 +1,5 @@
 <div class="card-model">
-  @if (pubDetail$ | async; as pubDetail) {
+  @if (pubDetail(); as pubDetail) {
     <h1 mat-dialog-title id="title">{{ pubDetail.title }}</h1>
     <mat-dialog-content class="mat-typography">
       <div class="row">

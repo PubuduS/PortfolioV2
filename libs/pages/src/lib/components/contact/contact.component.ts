@@ -11,15 +11,14 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
 import {
-  ISocialInfor,
   IEmailValidatorMsgs,
   ISenderNameValidatorMsgs,
   IMessageValidatorMsgs,
-} from '@portfolio-v2/interfaces';
+} from '@portfolio-v2/state/dataModels';
+import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { ContactPopupComponent } from './components/contact_popup/contact_popup.component';
 
 /**
@@ -38,7 +37,7 @@ export class ContactComponent implements OnInit {
   protected contactForm!: FormGroup;
 
   /** Social infor */
-  protected readonly socialInfor: Observable<ISocialInfor[]>;
+  protected readonly socialInfor = this.store.selectSignal(socialMediaSelector);
 
   /** Name minimum length */
   protected readonly nameMinLen: number = 2;
@@ -78,17 +77,15 @@ export class ContactComponent implements OnInit {
 
   /**
    * constructor
-   * @param dataService data service
    * @param dialog dialog
    * @param formBuilder form builder
+   * @param store ngrx store
    */
   constructor(
-    private dataService: GetDataService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
-  ) {
-    this.socialInfor = this.dataService.getDataArray<ISocialInfor>('social-infor-section');
-  }
+    private store: Store,
+  ) {}
 
   /**
    * @inheritdoc

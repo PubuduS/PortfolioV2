@@ -11,7 +11,7 @@
         </div>
         <div class="my-projects">
           <ul>
-            @for (project of projectView$ | async; track $index) {
+            @for (project of projectView(); track $index) {
               <li class="bounceOut" data-t-show="4">
                 <a data-toggle="modal">
                   @if (project.id === 1) {

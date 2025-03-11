@@ -18,9 +18,10 @@ import {
   IWeather,
   IResult,
   OpenWeatherResponse,
-} from '@portfolio-v2/interfaces';
+} from '@portfolio-v2/state/dataModels';
 import { environment } from '@portfolio-v2/environment';
 import { ErrorService } from '../error-message/error.service';
+
 /**
  * Get weather service
  */

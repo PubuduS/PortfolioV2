@@ -14,12 +14,11 @@
           </p>
           <p>
             Drop me an email at
-            <a href="mailto:pubudusupun@gmail.com"></a>
-            pubudusupun&#64;gmail.com or simply fill out the form below and I
-            will reply yo you soon!
+            <a href="mailto:pubudusupun@gmail.com">pubudusupun&#64;gmail.com</a>
+            or simply fill out the form below and I will reply yo you soon!
           </p>
           <h2>Follow Me</h2>
-          @if (socialInfor | async; as socialInfor) {
+          @if (socialInfor(); as socialInfor) {
             <ul class="social">
               @for (social of socialInfor; track $index) {
                 @if (social.id === 3) {

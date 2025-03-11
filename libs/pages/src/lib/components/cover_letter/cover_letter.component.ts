@@ -25,7 +25,7 @@ import {
   ISocialInfor,
   IManagerValidatorMsgs,
   ICompanyValidatorMsgs,
-} from '@portfolio-v2/interfaces';
+} from 'libs/state/src/lib/data-models';
 
 /**
  * Load File

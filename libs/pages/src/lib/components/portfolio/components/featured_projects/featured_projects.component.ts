@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { IProjectCard } from '@portfolio-v2/interfaces';
+import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import {
   IconURLs,
   IconURLType,
@@ -25,6 +25,7 @@ export class FeaturedProjectsComponent {
 
   /** Gait trainer project description */
   public readonly gaitTrainer: IProjectCard = {
+    id: 1,
     heading: 'Gait Trainer',
     description: 'A mixed reality, cross-platform application that provides gait training to patients.',
     tools: 'C#, Unity, Visual Studio, Doxygen, GitHub, GitHub Actions, Jenkins, AWS S3, GitHub pages, OpenXR, MRTK',
@@ -37,6 +38,7 @@ export class FeaturedProjectsComponent {
 
   /** Farming game project description */
   public readonly farmingGame: IProjectCard = {
+    id: 2,
     heading: '2D Farming Game',
     description: 'A simple pixel farming game similar to Stardew Valley.',
     tools: 'C#, Unity, Visual Studio, Doxygen, GitHub, GitHub Actions, GitHub pages',
@@ -49,6 +51,7 @@ export class FeaturedProjectsComponent {
 
   /** Central server project description */
   public readonly centralServer: IProjectCard = {
+    id: 3,
     heading: 'A centralized server authentication login',
     description: 'This feature provides centralized server-based authentication and login functionality for the Sencore MRD5800 product line and its sub-brands.',
     tools: 'C++, Tacacs, HTML, CSS, Python, Scons, Bash, Git, Gerrit, Subversion, Teamcity, Jira',

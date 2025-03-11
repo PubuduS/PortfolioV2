@@ -3,10 +3,9 @@ import {
   Component,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { ISkills } from '@portfolio-v2/interfaces';
-import { GetDataService } from '@portfolio-v2/shared/services';
+import { skillsSelector } from '@portfolio-v2/state/selectors';
 
 /** Skill page */
 @Component({
@@ -18,17 +17,15 @@ import { GetDataService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsComponent {
-  /** Observable containing Skills section data */
-  public readonly skillsData: Observable<ISkills>;
+  /** Signal containing Skills section data */
+  public readonly skillsData = this.store.selectSignal(skillsSelector);
 
   /** Bullet point image src */
   protected readonly bulletPointImageSrc = 'assets/images/skills/black-list-shape.svg';
 
   /**
    * constructor
-   * @param dataService database service
+   * @param store ngrx store
    */
-  constructor(private dataService: GetDataService) {
-    this.skillsData = this.dataService.getData<ISkills>('skills-section');
-  }
+  constructor(private store: Store) {}
 }

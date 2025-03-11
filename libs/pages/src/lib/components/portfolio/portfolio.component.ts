@@ -9,10 +9,10 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
-import { IProjectView } from '@portfolio-v2/interfaces';
+import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
+import { StateActions } from '@portfolio-v2/state';
 import { ProjectCardComponent } from './components/project_card/project_card.component';
 
 /**
@@ -35,28 +35,26 @@ export class PortfolioComponent {
   protected readonly toolTip: string = 'Click here to see more';
 
   /** Observable of project data such as icons, headings and descriptions */
-  protected readonly projectView$: Observable<IProjectView[]>;
+  protected readonly projectView = this.store.selectSignal(portfolioCardsSelector);
 
   /**
    * constructor
    * @param router router
-   * @param dataService data service
+   * @param store ngrx store
    * @param dialog dialog
    */
   constructor(
     private router: Router,
-    private dataService: GetDataService,
+    private store: Store,
     public dialog: MatDialog,
-  ) {
-    this.projectView$ = this.dataService.getDataArray<IProjectView>('project-icon-section');
-  }
+  ) {}
 
   /**
    * Open dialog
    * @param id record id
    */
   protected openDialog(id: number): void {
-    this.dataService.getProjectCardById('project-data-section', id);
+    this.store.dispatch(StateActions.projectCardIDStateUpdated({ selectedProjectCardID: id }));
     this.dialog.open(ProjectCardComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
   }
 
