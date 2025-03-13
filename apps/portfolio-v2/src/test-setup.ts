@@ -3,6 +3,9 @@ import {
   TextEncoder,
   TextDecoder,
 } from 'util';
+import { ReadableStream } from 'node:stream/web';
+
+(global as any).ReadableStream = ReadableStream;
 
 (global as any).TextEncoder = TextEncoder;
 
