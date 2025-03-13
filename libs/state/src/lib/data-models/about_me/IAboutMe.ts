@@ -1,11 +1,21 @@
+/** About me interface */
 export interface IAboutMe {
-    id: number,
-    heading: string,
-    imageSrc: string,
-    intro: string[],
-    subHeading: string,
-    subHeadingIntro: string,
-    leftPoints: string[],
-    rightPoints: string[],
-    link?: string,
+  /** ID */
+  id: number,
+  /** Page heading */
+  heading: string,
+  /** URL of my photo */
+  imageSrc: string,
+  /** Brief introduction */
+  intro: string[],
+  /** Sub heading */
+  subHeading: string,
+  /** Sub heading intro */
+  subHeadingIntro: string,
+  /** Left points */
+  leftPoints: string[],
+  /** Right points */
+  rightPoints: string[],
+  /** Optional: Link (Game play link) */
+  link?: string,
 }

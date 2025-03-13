@@ -1,12 +1,20 @@
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { MockComponent } from 'ng-mocks';
+import { provideRouter } from '@angular/router';
 
+import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule],
+      imports: [
+        AppComponent,
+        MockComponent(WeatherDisplayComponent),
+      ],
+      providers: [
+        provideRouter([]),
+      ],
     }).compileComponents();
   });
 
