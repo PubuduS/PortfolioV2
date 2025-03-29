@@ -11,6 +11,7 @@ export {
   IEmailValidatorMsgs,
   ISenderNameValidatorMsgs,
   IMessageValidatorMsgs,
+  IPasswordValidatorMsgs,
 } from './validator_msgs/IValidatorErrorMsg';
 export { ISkills } from './skills/ISkills';
 export { IAboutMe } from './about_me/IAboutMe';
