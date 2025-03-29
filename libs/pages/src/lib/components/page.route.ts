@@ -34,4 +34,8 @@ export const PAGE_ROUTES: Routes = [
     path: 'contact',
     loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.ContactComponent),
   },
+  {
+    path: 'admin',
+    loadComponent: () => import('@portfolio-v2/shared/components').then((mod) => mod.LoginComponent),
+  },
 ];
