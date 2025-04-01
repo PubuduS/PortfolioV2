@@ -55,5 +55,8 @@ export const StateActions = createActionGroup({
 
     'Social Media Information State Connect': emptyProps(),
     'Social Media Information State Updated': props<{ socialInfor: ISocialInfor[] }>(),
+
+    'Admin State Connect': emptyProps(),
+    'Admin State Updated': props<{ isAdmin: boolean }>(),
   },
 });

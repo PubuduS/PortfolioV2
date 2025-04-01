@@ -66,5 +66,6 @@ export class LandingBannerComponent implements OnInit {
     this.store.dispatch(StateActions.publicationCardsStateConnect());
     this.store.dispatch(StateActions.publicationDetailCardsStateConnect());
     this.store.dispatch(StateActions.socialMediaInformationStateConnect());
+    this.store.dispatch(StateActions.adminStateConnect());
   }
 }
