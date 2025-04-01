@@ -25,4 +25,5 @@ export interface StoreState {
   selectedPublicationID: number,
   publicationDetails?: IPublicationDetails[],
   socialInfor?: ISocialInfor[],
+  isAdmin: boolean,
 }

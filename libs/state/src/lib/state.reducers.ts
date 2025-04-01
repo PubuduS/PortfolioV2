@@ -19,6 +19,7 @@ const initialState: StoreState = {
   selectedPublicationID: 0,
   publicationDetails: undefined,
   socialInfor: undefined,
+  isAdmin: false,
 };
 
 export const stateReducers = createReducer<StoreState>(
@@ -90,4 +91,8 @@ export const stateReducers = createReducer<StoreState>(
     socialInfor,
   })),
 
+  on(StateActions.adminStateUpdated, (state, { isAdmin }): StoreState => ({
+    ...state,
+    isAdmin,
+  })),
 );

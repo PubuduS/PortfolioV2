@@ -15,6 +15,7 @@ import {
   IEmailValidatorMsgs,
   IPasswordValidatorMsgs,
 } from '@portfolio-v2/state/dataModels';
+import { AuthService } from '@portfolio-v2/shared/services';
 
 /**
  * Admin Login Panel
@@ -33,6 +34,8 @@ import {
 export class LoginComponent implements OnInit {
   /** Login form */
   protected loginForm!: FormGroup;
+  /** True if attept is successfull; false otherise */
+  protected isCredentialsRight = true;
 
   /** Email validator messages */
   protected readonly emailValidatorMsgs: IEmailValidatorMsgs = {
@@ -47,9 +50,11 @@ export class LoginComponent implements OnInit {
 
   /**
    * constructor
+   * @param authService auth service
    * @param formBuilder form builder
    */
   constructor(
+    private authService: AuthService,
     private formBuilder: FormBuilder,
   ) {}
 
@@ -66,7 +71,12 @@ export class LoginComponent implements OnInit {
   /**
    * Login function
    */
-  public login(): void {
-    console.log('To Be implemented');
+  public async login(): Promise<void> {
+    const { email, password } = this.loginForm.value;
+    this.authService.logout();
+    this.isCredentialsRight = await this.authService.signIn(email, password);
+    if (!this.isCredentialsRight) {
+      this.loginForm.reset();
+    }
   }
 }

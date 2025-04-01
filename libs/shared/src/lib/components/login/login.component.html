@@ -55,6 +55,14 @@
           Login
         </button>
       </div>
+      <div class="d-flex justify-content-center">
+        @if (!isCredentialsRight && !this.loginForm.dirty) {
+          <span class="mt-4 wrong-credentials">
+            Your email or password is wrong. Please check both and try
+            again.</span
+          >
+        }
+      </div>
     </form>
   </div>
 </div>
