@@ -1,5 +1,8 @@
-<!--// Header \\-->
-<div class="banner" id="section_1" data-anchor="home">
-  <img [src]="bannerImageSrc" alt="banner" data-banner-img="sesonal-img" />
+<div class="banner w-100" id="section_1" data-anchor="home">
+  <img
+    class="w-100"
+    [src]="bannerImageSrc | async"
+    alt="banner"
+    data-banner-img="sesonal-img"
+  />
 </div>
-<!--// Header \\-->

@@ -1,13 +1,16 @@
 .weather-panel {
-  max-height: 15%;
-}
+  display: flex;
+  align-items: center;
 
-.weather-info {
-  color: white;
-  font-size: medium;
-}
+  .weather-info {
+    color: #fff;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
 
-.weatherAnim {
-  width: 10%;
-  height: 30%;
+  .weatherAnim {
+    height: 3rem;
+    object-fit: contain;
+    vertical-align: middle;
+  }
 }

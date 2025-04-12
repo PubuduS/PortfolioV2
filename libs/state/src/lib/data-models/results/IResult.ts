@@ -1,4 +1,4 @@
 export interface IResult<T> {
-    data: T | undefined;
-    error?: string;
+  data: T | undefined;
+  error?: string;
 }
