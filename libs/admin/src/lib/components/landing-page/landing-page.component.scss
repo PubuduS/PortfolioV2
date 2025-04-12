@@ -1,0 +1,21 @@
+.landing {
+  height: calc(100vh - 14vh);
+  z-index: 300;
+  .content {
+    margin-top: 14vh;
+    width: 100%;
+    .admin-form {
+      .imagePreview {
+        max-width: 60%;
+        max-height: 60%;
+      }
+      button {
+        border: 1px solid black;
+        border-radius: 3px;
+      }
+      mat-icon {
+        color: #63e6be;
+      }
+    }
+  }
+}

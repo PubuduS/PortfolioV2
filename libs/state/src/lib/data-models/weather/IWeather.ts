@@ -1,10 +1,10 @@
 export interface IWeather {
-    condition: string,
-    description: string,
-    temprature: number,
-    humidity: number,
-    windSpeed: number,
-    iconCode?: string
+  condition: string,
+  description: string,
+  temprature: number,
+  humidity: number,
+  windSpeed: number,
+  iconCode?: string
 }
 
 export interface Weather {

@@ -8,6 +8,7 @@ import {
 } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 import { StateActions } from '@portfolio-v2/state';
 
@@ -24,10 +25,12 @@ export class AuthService {
   /**
    * constructor
    * @param auth firebase auth
+   * @param router Router
    * @param store ngrx store
    */
   constructor(
     private auth: Auth,
+    private router: Router,
     private store: Store,
   ) {
     this.authState$ = authState(this.auth);
@@ -45,6 +48,7 @@ export class AuthService {
         .then((t) => {
           console.log(`t ${t.user.email}`);
           this.store.dispatch(StateActions.adminStateUpdated({ isAdmin: true }));
+          this.router.navigate(['admin/landing']);
           return true;
         })
         .catch((error) => {

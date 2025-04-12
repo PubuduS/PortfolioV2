@@ -2,12 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
 
-import { GetDateTimeService } from '@portfolio-v2/shared/services';
+import {
+  GetDataService,
+  GetDateTimeService,
+} from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 
 /** Landing page */
@@ -20,17 +23,22 @@ import { StateActions } from '@portfolio-v2/state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingBannerComponent implements OnInit {
+  /** Base path */
+  private readonly basePath = 'portfolio/landing-page/banners/';
   /** Banner image */
-  public bannerImageSrc = 'assets/images/banners/Spring_Banner.gif';
-
-  /** Date Time Service */
-  private dateTimeService = inject(GetDateTimeService);
+  public bannerImageSrc = of(`${this.basePath}/spring/Spring_Banner.gif`);
 
   /**
    * constructor
+   * @param dateTimeService date time service
+   * @param getDataService get data service
    * @param store ngrx store
    */
-  constructor(private store: Store) {
+  constructor(
+    private dateTimeService: GetDateTimeService,
+    private getDataService: GetDataService,
+    private store: Store,
+  ) {
     this.populateStore();
   }
 
@@ -46,11 +54,11 @@ export class LandingBannerComponent implements OnInit {
     const month: number = this.dateTimeService.getMonth();
 
     if (month <= 3 || month === 12) {
-      this.bannerImageSrc = 'assets/images/banners/Winter_Banner.gif';
+      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/winter/Winter_Banner.gif`);
     } else if (month > 3 && month <= 8) {
-      this.bannerImageSrc = 'assets/images/banners/Spring_Banner.gif';
+      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/spring/Spring_Banner.gif`);
     } else {
-      this.bannerImageSrc = 'assets/images/banners/Fall_Banner.gif';
+      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/spring/Fall_Banner.gif`);
     }
   }
 

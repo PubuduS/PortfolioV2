@@ -1,4 +1,7 @@
-<div class="weather-panel" *ngIf="!weatherErr()">
+<div
+  class="weather-panel w-100 h-100 d-flex justify-content-center"
+  *ngIf="!weatherErr()"
+>
   <div class="row d-flex text-center">
     <div class="col-12 mb-2">
       <img class="weatherAnim" [src]="weatherIcon()" />

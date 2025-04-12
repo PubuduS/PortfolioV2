@@ -6,8 +6,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { IWeather } from '@portfolio-v2/state/dataModels';
 import { WeatherService } from '@portfolio-v2/shared/services';
-import { IWeather } from 'libs/state/src/lib/data-models';
 
 /**
  * Display weather component

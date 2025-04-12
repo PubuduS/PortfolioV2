@@ -1,7 +1,12 @@
-.weather {
-  max-height: 20%;
-}
+header {
+  height: 14vh;
 
-portfolio-v2-weather-display {
-  max-height: 20%;
+  .weather {
+    height: auto;
+    max-height: 85px;
+
+    portfolio-v2-weather-display {
+      max-height: 20%;
+    }
+  }
 }

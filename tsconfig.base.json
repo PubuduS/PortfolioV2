@@ -16,6 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@portfolio-v2/admin": ["libs/admin/src/index.ts"],
       "@portfolio-v2/const": ["libs/const/index.ts"],
       "@portfolio-v2/environment": [
         "apps/portfolio-v2/src/environments/index.ts"
@@ -27,6 +28,9 @@
       ],
       "@portfolio-v2/shared/services": [
         "libs/shared/src/lib/services/index.ts"
+      ],
+      "@portfolio-v2/shared/validators": [
+        "libs/shared/src/lib/validators/index.ts"
       ],
       "@portfolio-v2/state": ["libs/state/src/index.ts"],
       "@portfolio-v2/state/dataModels": [
