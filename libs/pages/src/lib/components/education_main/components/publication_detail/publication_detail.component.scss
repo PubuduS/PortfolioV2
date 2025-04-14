@@ -1,16 +1,18 @@
-.card-model{
-    background-color: #35495E;
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.card-model {
+  background-color: $midnigh-graphite;
 }
 
 #title {
   text-align: center;
-  color: white;
+  color: $white;
 }
 
-.row{
-    color: white;
+.row {
+  color: $white;
 }
 
-.pubHeading{
-    color: #0A192F;
+.pubHeading {
+  color: $nocturne-navy;
 }

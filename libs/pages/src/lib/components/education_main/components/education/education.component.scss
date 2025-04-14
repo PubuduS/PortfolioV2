@@ -1,55 +1,66 @@
-/*education-full*/
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
 .education-full {
-    background-color: #FACF5A;
-    padding: 100px 0 40px;
-    padding-top: 10%;
+  background-color: $golden-bloom;
+  padding: 100px 0 40px;
+  padding-top: 10%;
 }
 
 h2 {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 /*section-title*/
 .section-title {
-    text-align: center;
-    margin-bottom: 60px;
+  text-align: center;
+  margin-bottom: 60px;
 }
 .section-title h2 {
-    font-weight: 800;
-    font-size: 40px;
-    line-height: 49px;
-    text-transform: uppercase;
-    margin: 0;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 49px;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .uni-wrap {
-    width: 100%;
-    padding: 20px;
-    margin-bottom: 60px;
-    padding: 40px;
-    background-color: rgba(39,39,39,0.85);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    color: #f5f5f5;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 60px;
+  padding: 40px;
+  background-color: rgba(39, 39, 39, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: $ghost-gray;
 }
 .uni-wrap h4 {
-    color: #f5f5f5;
-    margin: 0 0 20px;
-    font-size: 20px;
-    line-height: 24px;
-    font-weight: 600;
-} 
-.uni-wrap p:last-child { margin-bottom: 0; }
+  color: $ghost-gray;
+  margin: 0 0 20px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.uni-wrap p:last-child {
+  margin-bottom: 0;
+}
 .uni-wrap p {
-    line-height: 19px;
-    margin: 0 0 20px;
+  line-height: 19px;
+  margin: 0 0 20px;
 }
 .uni-wrap p span {
-    width: 45%;
-    display: inline-block;
-    vertical-align: top;
+  width: 45%;
+  display: inline-block;
+  vertical-align: top;
 }
-.uni-wrap strong { color: #f5f5f5; }
-.uni-wrap.high p span { width: 55%; }
-.uni-wrap.high p span:first-child { width: 22%; }
-.uni-wrap.high p span.pice { width: 22%; }
+.uni-wrap strong {
+  color: $ghost-gray;
+}
+.uni-wrap.high p span {
+  width: 55%;
+}
+.uni-wrap.high p span:first-child {
+  width: 22%;
+}
+.uni-wrap.high p span.pice {
+  width: 22%;
+}

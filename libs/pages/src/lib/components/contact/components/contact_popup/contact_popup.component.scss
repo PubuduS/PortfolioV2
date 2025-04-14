@@ -1,20 +1,22 @@
-.card-model{
-    background-color: #35495E;
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.card-model {
+  background-color: $midnigh-graphite;
 }
 
 #title {
   text-align: center;
-  color: white;
+  color: $white;
 }
 
-.row{
-    color: white;
+.row {
+  color: $white;
 }
 
 .description {
-    margin-top: 6%;    
+  margin-top: 6%;
 }
 
 .email {
-    font-weight:bolder
+  font-weight: bolder;
 }

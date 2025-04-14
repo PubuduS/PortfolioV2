@@ -2,6 +2,7 @@
 
 /* You can add global styles to this file, and also import other style files */
 @charset "UTF-8";
+@import 'colors';
 @import '~bootstrap/dist/css/bootstrap.css';
 @import '~font-awesome/css/font-awesome.css';
 @import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap';
@@ -12,8 +13,8 @@
 }
 
 body {
-  background-color: #fff;
-  color: #0a192f;
+  background-color: $white;
+  color: $nocturne-navy;
   font-family: Montserrat, sans-serif;
   font-size: 16px;
   font-weight: normal;
@@ -25,7 +26,7 @@ body h3,
 body h4,
 body h5,
 body h6 {
-  color: #0a192f;
+  color: $nocturne-navy;
   font-family: Montserrat, sans-serif;
   font-style: normal;
   line-height: 1.5;
@@ -62,11 +63,11 @@ h3 a,
 h4 a,
 h5 a,
 h6 a {
-  color: #0a192f;
+  color: $nocturne-navy;
 }
 
 p a {
-  color: #0a192f;
+  color: $nocturne-navy;
 }
 
 p {
@@ -75,7 +76,7 @@ p {
 }
 
 a {
-  color: #0a192f;
+  color: $nocturne-navy;
   text-decoration: none;
 }
 
@@ -101,7 +102,7 @@ img {
 }
 
 strong {
-  color: #0a192f;
+  color: $nocturne-navy;
 }
 
 iframe {
@@ -111,9 +112,9 @@ iframe {
 }
 
 select {
-  background-color: #f0eef0;
-  border: 1px solid #dfdfdf;
-  color: #0a192f;
+  background-color: $soft-peach;
+  border: 1px solid $gainsboro;
+  color: $nocturne-navy;
   cursor: pointer;
   display: inline-block;
   font-size: 14px;
@@ -124,7 +125,7 @@ select {
 }
 
 label {
-  color: #6c8391;
+  color: $slate-grey;
   display: block;
   font-weight: 400;
   margin-bottom: 10px;
@@ -144,7 +145,7 @@ form p {
 }
 
 form p span i {
-  color: #474747;
+  color: $black-cow;
   left: 16px;
   position: absolute;
   top: 13px;
@@ -199,7 +200,7 @@ table > tfoot > tr > th,
 table > thead > tr > td,
 table > tbody > tr > td,
 table > tfoot > tr > td {
-  border: 1px solid #ddd;
+  border: 1px solid $cloud-gray;
   line-height: 1.5;
   padding-left: 3px;
   text-align: center;
@@ -207,7 +208,7 @@ table > tfoot > tr > td {
 }
 
 table thead tr th {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $cloud-gray;
   text-align: center;
   text-transform: capitalize;
 }
@@ -218,11 +219,11 @@ table thead tr th {
 .table > caption + thead > tr:first-child > td,
 .table > colgroup + thead > tr:first-child > td,
 .table > thead:first-child > tr:first-child > td {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $cloud-gray;
 }
 
 table > thead > tr > th {
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid $cloud-gray;
   vertical-align: bottom;
 }
 
@@ -236,7 +237,7 @@ table > thead:first-child > tr:first-child > td {
 }
 
 table > tbody + tbody {
-  border-top: 2px solid #ddd;
+  border-top: 2px solid $cloud-gray;
 }
 
 .table > thead > tr > th,
@@ -249,7 +250,7 @@ table > tbody + tbody {
 }
 
 p ins {
-  color: #999;
+  color: $lemon-grass;
 }
 
 dl dd {
@@ -295,7 +296,7 @@ address {
   padding: 0 !important;
   transition: all 0.4s ease-in-out;
   position: relative;
-  color: #f5f5f5;
+  color: $ghost-gray;
 }
 
 .navbar-nav li {
@@ -305,7 +306,7 @@ address {
 .navbar-nav li a.active,
 .navbar-nav li.active a,
 .navbar-nav li:hover a {
-  color: #fff;
+  color: $white;
 }
 
 .navbar-nav li:hover a::before,
@@ -322,7 +323,7 @@ address {
   width: 0;
   height: 2px;
   transition: all 0.4s ease-in-out;
-  background-color: #facf5a;
+  background-color: $golden-bloom;
 }
 
 .pw-header-wrap {
@@ -337,7 +338,7 @@ address {
   // align-items: center;
   // justify-content: center;
   // padding: 3%;
-  background-color: #35495e;
+  background-color: $midnigh-graphite;
 }
 
 .container {
@@ -346,7 +347,7 @@ address {
 
 .pw-sticky .pw-header-wrap {
   padding: 10px 126px;
-  box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+  box-shadow: 0 0 5px $obsidian-veil;
 }
 
 .header-btn {
@@ -356,15 +357,15 @@ address {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5;
+  background-color: $ghost-gray;
   border-radius: 8px;
-  color: #0a192f;
+  color: $nocturne-navy;
   transition: all 0.4s ease-in-out;
 }
 
 .header-btn:hover {
-  background-color: #fff;
-  box-shadow: 0 0 20px rgb(0 0 0 / 10%);
+  background-color: $white;
+  box-shadow: 0 0 20px $obsidian-veil;
 }
 
 html,

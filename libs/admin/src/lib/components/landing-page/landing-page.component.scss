@@ -1,3 +1,5 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
 .landing {
   height: calc(100vh - 14vh);
   z-index: 300;
@@ -10,11 +12,11 @@
         max-height: 60%;
       }
       button {
-        border: 1px solid black;
+        border: 1px solid $black;
         border-radius: 3px;
       }
       mat-icon {
-        color: #63e6be;
+        color: $electric-aloe;
       }
     }
   }

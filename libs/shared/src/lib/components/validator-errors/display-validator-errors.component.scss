@@ -1,3 +1,5 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
 :host {
   display: block;
 }
@@ -7,5 +9,5 @@
   width: 100%;
   margin-top: 0.25rem;
   font-size: 0.875rem;
-  color: #dc3545;
+  color: $jasper;
 }
