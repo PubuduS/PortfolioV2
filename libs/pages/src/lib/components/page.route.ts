@@ -35,6 +35,10 @@ export const PAGE_ROUTES: Routes = [
     loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.ContactComponent),
   },
   {
+    path: 'party-mode',
+    loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.PartyModeComponent),
+  },
+  {
     path: 'admin',
     loadComponent: () => import('@portfolio-v2/shared/components').then((mod) => mod.LoginComponent),
   },

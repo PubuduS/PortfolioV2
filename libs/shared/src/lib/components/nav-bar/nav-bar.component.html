@@ -1,0 +1,115 @@
+<div class="row w-100 mx-4 mt-2 main">
+  <div class="col-lg-2 col-4">
+    <a href="index.html" class="logo mr-auto"
+      ><img src="assets/images/logo/footer-logo.svg" alt="logo"
+    /></a>
+  </div>
+
+  <div class="col-lg-8 col-3">
+    <nav class="navbar navbar-expand-lg">
+      <button
+        class="navbar-toggler collapsed"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="fa fa-bars"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a [routerLink]="['/home']">Home</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/aboutme']">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/skills']">Skills</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/experience']">Experience</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/portfolio']">Portfolio</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/education']">Education</a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="assets/PDFs/Resume/Pubudu_Resumes.pdf"
+              target="_blank"
+              >Resume</a
+            >
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/coverletter']">Cover Letter</a>
+          </li>
+          <li class="nav-item">
+            <a [routerLink]="['content/admin']">Admin</a>
+          </li>
+
+          <!-- This is needed for space between contact button and cover letter menu item -->
+          <li class="nav-item contact"></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="col-lg-1 col-3">
+    <a
+      class="header-btn ml-auto"
+      [routerLink]="['content/contact']"
+      data-contact-btn="Contact"
+      >Contact</a
+    >
+  </div>
+  <div class="col-lg-1 col-1">
+    <button mat-fab color="warn" id="partyMode" (click)="togglePartyMode()">
+      <mat-icon>celebration</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="row col-12 weather">
+  @if (isAdmin | async) {
+    <div class="col-1 mx-2">
+      @if (!isPreviewMode()) {
+        <button
+          mat-fab
+          extended
+          color="warn"
+          id="previewMode"
+          (click)="togglePreview()"
+        >
+          <mat-icon>preview</mat-icon>
+          Preview
+        </button>
+      } @else {
+        <button
+          mat-fab
+          extended
+          color="primary"
+          id="previewMode"
+          (click)="togglePreview()"
+        >
+          <mat-icon>admin_panel_settings</mat-icon>
+          Admin
+        </button>
+      }
+    </div>
+    <div class="col-1">
+      <button mat-fab extended color="accent" id="logout" (click)="logOut()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  }
+
+  <div class="col-9">
+    <portfolio-v2-weather-display></portfolio-v2-weather-display>
+  </div>
+</div>

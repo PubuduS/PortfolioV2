@@ -1,22 +1,14 @@
 import { Component } from '@angular/core';
-import {
-  RouterModule,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 
-import { PartyModeComponent } from '@portfolio-v2/portfolio-pages';
-import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
+import { NavBarComponent } from '@portfolio-v2/shared/components';
 
 /** Main Component */
 @Component({
   standalone: true,
   imports: [
-    RouterModule,
     RouterOutlet,
-    RouterLink,
-    PartyModeComponent,
-    WeatherDisplayComponent,
+    NavBarComponent,
   ],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',

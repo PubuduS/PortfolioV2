@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { MockComponent } from 'ng-mocks';
 import { provideRouter } from '@angular/router';
+import { MockComponent } from 'ng-mocks';
 
-import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
+import { NavBarComponent } from '@portfolio-v2/shared/components';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
@@ -10,7 +10,7 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AppComponent,
-        MockComponent(WeatherDisplayComponent),
+        MockComponent(NavBarComponent),
       ],
       providers: [
         provideRouter([]),

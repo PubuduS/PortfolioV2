@@ -1,0 +1,17 @@
+main {
+  height: 14vh;
+
+  .weather {
+    height: auto;
+    max-height: 85px;
+
+    portfolio-v2-weather-display {
+      max-height: 20%;
+    }
+
+    button {
+      width: 100%;
+      height: 60%;
+    }
+  }
+}
