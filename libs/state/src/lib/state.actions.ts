@@ -58,5 +58,11 @@ export const StateActions = createActionGroup({
 
     'Admin State Connect': emptyProps(),
     'Admin State Updated': props<{ isAdmin: boolean }>(),
+
+    'Preview Mode State Connect': emptyProps(),
+    'Preview Mode State Updated': props<{ isPreviewMode: boolean }>(),
+
+    'Party Mode State Connect': emptyProps(),
+    'Party Mode State Updated': props<{ isPartyMode: boolean }>(),
   },
 });

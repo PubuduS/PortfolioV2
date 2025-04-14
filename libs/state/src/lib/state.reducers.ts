@@ -20,6 +20,8 @@ const initialState: StoreState = {
   publicationDetails: undefined,
   socialInfor: undefined,
   isAdmin: false,
+  isPreviewMode: false,
+  isPartyMode: false,
 };
 
 export const stateReducers = createReducer<StoreState>(
@@ -94,5 +96,15 @@ export const stateReducers = createReducer<StoreState>(
   on(StateActions.adminStateUpdated, (state, { isAdmin }): StoreState => ({
     ...state,
     isAdmin,
+  })),
+
+  on(StateActions.previewModeStateUpdated, (state, { isPreviewMode }): StoreState => ({
+    ...state,
+    isPreviewMode,
+  })),
+
+  on(StateActions.partyModeStateUpdated, (state, { isPartyMode }): StoreState => ({
+    ...state,
+    isPartyMode,
   })),
 );

@@ -26,4 +26,6 @@ export interface StoreState {
   publicationDetails?: IPublicationDetails[],
   socialInfor?: ISocialInfor[],
   isAdmin: boolean,
+  isPreviewMode: boolean,
+  isPartyMode: boolean,
 }

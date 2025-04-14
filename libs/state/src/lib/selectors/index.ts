@@ -1,4 +1,4 @@
-export * from './about-me-selector';
+export * from './about-me.selector';
 export * from './certificates.selector';
 export * from './education.selector';
 export * from './experience.selector';
@@ -10,3 +10,6 @@ export * from './selected-card-id.selector';
 export * from './selected-publication-id.selector';
 export * from './skills.selector';
 export * from './social-media.selector';
+export * from './is-admin-mode.selector';
+export * from './is-preview-mode.selector';
+export * from './is-party-mode.selector';

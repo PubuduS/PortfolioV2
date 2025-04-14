@@ -48,7 +48,7 @@ export class AuthService {
         .then((t) => {
           console.log(`t ${t.user.email}`);
           this.store.dispatch(StateActions.adminStateUpdated({ isAdmin: true }));
-          this.router.navigate(['admin/landing']);
+          this.router.navigate(['admin/home']);
           return true;
         })
         .catch((error) => {
