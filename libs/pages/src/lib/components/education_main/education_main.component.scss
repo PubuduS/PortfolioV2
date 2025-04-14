@@ -1,44 +1,46 @@
-body {
-    background-color: #131b21;
-  }
-  
-  .flower-container {
-    width: 100%;
-    background-color: #131b21;
-    margin: 0 auto;
-    margin-top: 1%;
-  }
-  
-  svg#flower-frame {
-    min-height: 71vh;
-    width: 100%;
-  }
-    
-  #Footer_group_1_,
-  [id^=PinkFlowerGroup],
-  [id^=BaseGroup] path,
-  [id^=LeafGroup] path,
-  path[id^=Stroke],
-  g[id^=BudGroup] g[id^=BudGroup] g[id^=Bud],
-  #Bud8_1_,
-  #Bud10_1_,
-  #Bud23_1_,
-  #Bud26_1_,
-  [id^=Dots],
-  [id^=Flourish] {
-    visibility: hidden;
-  }
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
 
-  /*education-full*/
+body {
+  background-color: $midnight-steel;
+}
+
+.flower-container {
+  width: 100%;
+  background-color: $midnight-steel;
+  margin: 0 auto;
+  margin-top: 1%;
+}
+
+svg#flower-frame {
+  min-height: 71vh;
+  width: 100%;
+}
+
+#Footer_group_1_,
+[id^='PinkFlowerGroup'],
+[id^='BaseGroup'] path,
+[id^='LeafGroup'] path,
+path[id^='Stroke'],
+g[id^='BudGroup'] g[id^='BudGroup'] g[id^='Bud'],
+#Bud8_1_,
+#Bud10_1_,
+#Bud23_1_,
+#Bud26_1_,
+[id^='Dots'],
+[id^='Flourish'] {
+  visibility: hidden;
+}
+
+/*education-full*/
 .education-full {
-  background-color: #131b21;
+  background-color: $midnight-steel;
   padding: 100px 0 40px;
   padding-top: 10%;
 }
 
 h2 {
   font-size: 24px;
-  color: #f5f5f5;
+  color: $ghost-gray;
 }
 
 /*section-title*/
@@ -53,4 +55,3 @@ h2 {
   text-transform: uppercase;
   margin: 0;
 }
-

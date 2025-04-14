@@ -1,89 +1,89 @@
-/*skills-full*/
-.pw-main-content
-{
-    display: flex;
-    position: relative;
-    width: 100%;
-    flex-direction: column;    
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.pw-main-content {
+  display: flex;
+  position: relative;
+  width: 100%;
+  flex-direction: column;
 }
 
 .container {
-    max-width: 1280px;
-    padding-top: 9%;
-    margin-bottom: 2%;
+  max-width: 1280px;
+  padding-top: 9%;
+  margin-bottom: 2%;
 }
 
 .skills-full {
-    background-color: #FACF5A;
-    padding: 100px 0 5%;
+  background-color: $golden-bloom;
+  padding: 100px 0 5%;
 }
 
 .skillst {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 64px;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 64px;
+  position: relative;
 }
 .skillst h6 {
-    font-size: 20px;
-    line-height: 24px;
-    margin: 0 0 16px;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 0 0 16px;
 }
 
-.skillst .title { display: none; }
+.skillst .title {
+  display: none;
+}
 
 /*section-title*/
 .section-title {
-    text-align: center;
-    margin-bottom: 60px;
+  text-align: center;
+  margin-bottom: 60px;
 }
 .section-title h2 {
-    font-weight: 800;
-    font-size: 40px;
-    line-height: 49px;
-    text-transform: uppercase;
-    margin: 0;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 49px;
+  text-transform: uppercase;
+  margin: 0;
 }
 .section-title p {
-    margin: 20px auto 0;
-    max-width: 55%;
-    font-size: larger;
-    font-weight: 400;
+  margin: 20px auto 0;
+  max-width: 55%;
+  font-size: larger;
+  font-weight: 400;
 }
 /*text-skills*/
 .text-skills h3 {
-    font-size: 24px;
-    margin: 0 0 40px;
-    margin-top: 5%;
-    line-height: 29px;
-    font-weight: bold;
+  font-size: 24px;
+  margin: 0 0 40px;
+  margin-top: 5%;
+  line-height: 29px;
+  font-weight: bold;
 }
 .text-skills h4 {
-    font-size: 16px;
-    margin: 0 0 19px;
-    line-height: 19px;
-    font-weight: bold;
+  font-size: 16px;
+  margin: 0 0 19px;
+  line-height: 19px;
+  font-weight: bold;
 }
 .list-style-two.list-style-one li {
-    color: #0A192F;
-    margin-bottom: 16px;
+  color: $nocturne-navy;
+  margin-bottom: 16px;
 }
 
-.skill-img{
-    margin: 0% 3%;
+.skill-img {
+  margin: 0% 3%;
 }
 
-.progress
-{
-    height: 30px;
+.progress {
+  height: 30px;
 }
 
-.progress-bar
-{   
-    background-color: #0A192F;
+.progress-bar {
+  background-color: $nocturne-navy;
 }
 
 .freqTool {
-padding-left: 0%;
+  padding-left: 0%;
 }

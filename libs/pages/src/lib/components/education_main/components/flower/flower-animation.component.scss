@@ -1,6 +1,8 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
 .flower-container {
   width: 100%;
-  background-color: #131b21;
+  background-color: $midnight-steel;
   margin: 0 auto;
   margin-top: 1%;
 }

@@ -1,9 +1,11 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
 .weather-panel {
   display: flex;
   align-items: center;
 
   .weather-info {
-    color: #fff;
+    color: $white;
     font-size: 1rem;
     white-space: nowrap;
   }
