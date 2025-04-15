@@ -26,7 +26,9 @@ export class AboutMeComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {}
+  constructor(
+    private store: Store,
+  ) {}
 
   /**
    * Remove the link tag and returns the string without that

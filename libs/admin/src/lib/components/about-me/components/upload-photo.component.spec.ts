@@ -6,15 +6,23 @@ import {
   MockStore,
   provideMockStore,
 } from '@ngrx/store/testing';
+import { createSpyObj } from 'jest-createspyobj';
+import { FormBuilder } from '@angular/forms';
 
+import {
+  GetDataService,
+  SetDataService,
+} from '@portfolio-v2/shared/services';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
-import { AboutMeComponent } from './about_me.component';
+import { UploadPhotoComponent } from './upload-photo.component';
 
-describe('AboutMeComponent', () => {
-  let component: AboutMeComponent;
-  let fixture: ComponentFixture<AboutMeComponent>;
+describe('UploadPhotoComponent', () => {
+  let component: UploadPhotoComponent;
+  let fixture: ComponentFixture<UploadPhotoComponent>;
   let store: MockStore;
+  let mockSetDataService: jest.Mocked<SetDataService>;
+  let mockGetDataService: jest.Mocked<GetDataService>;
   const mockData: IAboutMe = {
     id: 1,
     imageSrc: 'some url',
@@ -26,16 +34,27 @@ describe('AboutMeComponent', () => {
   };
 
   beforeEach(async () => {
+    mockSetDataService = createSpyObj(SetDataService);
+    mockGetDataService = createSpyObj(GetDataService);
     await TestBed.configureTestingModule({
-      imports: [AboutMeComponent],
+      imports: [UploadPhotoComponent],
       providers: [
         provideMockStore(),
+        FormBuilder,
+        {
+          provide: SetDataService,
+          useValue: mockSetDataService,
+        },
+        {
+          provide: GetDataService,
+          useValue: mockGetDataService,
+        },
       ],
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(aboutMeSelector, mockData);
-    fixture = TestBed.createComponent(AboutMeComponent);
+    fixture = TestBed.createComponent(UploadPhotoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

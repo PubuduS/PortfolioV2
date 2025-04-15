@@ -6,15 +6,21 @@ import {
   MockStore,
   provideMockStore,
 } from '@ngrx/store/testing';
+import { createSpyObj } from 'jest-createspyobj';
+import { FormBuilder } from '@angular/forms';
+import { MockComponent } from 'ng-mocks';
 
-import { aboutMeSelector } from '@portfolio-v2/state/selectors';
+import { SetDataService } from '@portfolio-v2/shared/services';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
-import { AboutMeComponent } from './about_me.component';
+import { aboutMeSelector } from '@portfolio-v2/state/selectors';
+import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
+import { AboutMeComponent } from './about-me.component';
 
 describe('AboutMeComponent', () => {
   let component: AboutMeComponent;
   let fixture: ComponentFixture<AboutMeComponent>;
   let store: MockStore;
+  let mockSetDataService: jest.Mocked<SetDataService>;
   const mockData: IAboutMe = {
     id: 1,
     imageSrc: 'some url',
@@ -26,10 +32,19 @@ describe('AboutMeComponent', () => {
   };
 
   beforeEach(async () => {
+    mockSetDataService = createSpyObj(SetDataService);
     await TestBed.configureTestingModule({
-      imports: [AboutMeComponent],
+      imports: [
+        AboutMeComponent,
+        MockComponent(DisplayValidatorErrorsComponent),
+      ],
       providers: [
         provideMockStore(),
+        FormBuilder,
+        {
+          provide: SetDataService,
+          useValue: mockSetDataService,
+        },
       ],
     }).compileComponents();
 

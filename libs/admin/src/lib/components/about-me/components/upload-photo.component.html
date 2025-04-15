@@ -1,0 +1,104 @@
+<div class="upload">
+  <div class="content d-flex justify-content-center col-12">
+    <div class="col-12 text-center">
+      <div class="row">
+        <div class="col-12">
+          <h2>Upload Photo</h2>
+        </div>
+      </div>
+      <div class="row d-flex justify-content-center mt-1">
+        <form [formGroup]="uploadPhotoForm!">
+          <div class="admin-form col-12 px-5 text-center">
+            <!-- File Input Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-6">
+                <input
+                  type="file"
+                  class="form-control"
+                  formControlName="filePicker"
+                  accept="image/webp"
+                  (change)="onFileChange($event)"
+                />
+                <portfolio-display-validator-errors
+                  [control]="uploadPhotoForm.get('filePicker')"
+                  errorKey="required"
+                  message="A valid image is required"
+                >
+                </portfolio-display-validator-errors>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div
+              class="row mb-3 d-flex justify-content-center upload-progress-bar"
+            >
+              <mat-progress-bar
+                class="col-6 w-50 bar"
+                mode="determinate"
+                [value]="progressValue"
+              ></mat-progress-bar>
+            </div>
+
+            <!-- Progress Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-6">
+                <span
+                  >File Upload Progress:
+                  {{ progressValue | number: '2.2-2' }}%</span
+                >
+                @if (isUploadCompleted) {
+                  <mat-icon class="mx-1 check">check_circle</mat-icon>
+                }
+              </div>
+            </div>
+
+            <!-- Upload Button Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-2">
+                <button
+                  mat-fab
+                  extended
+                  color="primary"
+                  id="upload"
+                  (click)="uploadData()"
+                >
+                  <mat-icon>upload</mat-icon>
+                  Upload
+                </button>
+              </div>
+              <div class="col-2">
+                <button
+                  mat-fab
+                  extended
+                  color="warn"
+                  id="exit"
+                  [mat-dialog-close]="true"
+                >
+                  <mat-icon>close</mat-icon>
+                  Exit
+                </button>
+              </div>
+            </div>
+
+            <!-- Preview Image Row -->
+            <div class="row">
+              <div class="col-6">
+                <label class="text-center">New Photo</label>
+              </div>
+              <div class="col-6">
+                <label class="text-center">Current Photo</label>
+              </div>
+            </div>
+            <div class="row d-flex justify-content-center mb-2">
+              <img class="imagePreview mt-3 col-5" [src]="imagePreview" />
+              <img
+                class="imagePreview mt-3 col-5"
+                [src]="aboutMeData()?.imageSrc"
+              />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

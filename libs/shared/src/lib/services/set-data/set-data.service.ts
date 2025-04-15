@@ -4,6 +4,20 @@ import {
   Storage,
   uploadBytesResumable,
 } from '@angular/fire/storage';
+import {
+  Firestore,
+  doc,
+  setDoc,
+} from '@angular/fire/firestore';
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+} from 'rxjs';
+
+import { IAboutMe } from '@portfolio-v2/state/dataModels';
 
 /**
  * Set/Modify Data in the database
@@ -20,10 +34,11 @@ export class SetDataService {
   /**
    * constructor
    * @param storage firebase storage
-   * @param cdr change detection
+   * @param firestore firestore
    */
   constructor(
     private storage: Storage,
+    private firestore: Firestore,
   ) {}
 
   /**
@@ -68,5 +83,39 @@ export class SetDataService {
    */
   public getUploadCompleteState(): boolean {
     return this.isUploadCompleted;
+  }
+
+  /**
+   * Modify image
+   * @param path database path
+   * @param value value to add
+   * @returns observable doc reference
+   */
+  public modifyField(path: string, value: string | undefined): Observable<string> {
+    if (!value) {
+      return of('empty');
+    }
+    const docRef = doc(this.firestore, path);
+    return from(setDoc(docRef, { imageSrc: value }, { merge: true })).pipe(
+      map(() => 'successfull'),
+      catchError((error) => of(`error ${error}`)),
+    );
+  }
+
+  /**
+   * Replace a record with new value
+   * @param path database path
+   * @param value value to add
+   * @returns observable doc reference
+   */
+  public setRecord(path: string, value: IAboutMe): Observable<string> {
+    if (!value) {
+      return of('empty');
+    }
+    const docRef = doc(this.firestore, path);
+    return from(setDoc(docRef, value)).pipe(
+      map(() => 'successfull'),
+      catchError((error) => of(`error ${error}`)),
+    );
   }
 }

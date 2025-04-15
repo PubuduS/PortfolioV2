@@ -2,14 +2,10 @@
 export interface IAboutMe {
   /** ID */
   id: number,
-  /** Page heading */
-  heading: string,
   /** URL of my photo */
   imageSrc: string,
   /** Brief introduction */
   intro: string[],
-  /** Sub heading */
-  subHeading: string,
   /** Sub heading intro */
   subHeadingIntro: string,
   /** Left points */
