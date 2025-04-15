@@ -1,0 +1,34 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.upload {
+  background-color: $midnigh-graphite;
+  .content {
+    font-weight: bolder;
+    width: 90%;
+    .admin-form {
+      .imagePreview {
+        max-width: 60%;
+        max-height: 60%;
+      }
+      button {
+        border: 1px solid $black;
+        border-radius: 3px;
+      }
+      label {
+        color: $nocturne-navy;
+        font-weight: bolder;
+      }
+      .check {
+        color: $electric-teal;
+      }
+      .upload-progress-bar {
+        --mdc-linear-progress-track-height: 1rem;
+        --mdc-linear-progress-active-indicator-height: 0.5rem;
+        mat-progress-bar {
+          --mdc-linear-progress-track-color: #{$nocturne-navy};
+          --mdc-linear-progress-active-indicator-color: #{$electric-teal};
+        }
+      }
+    }
+  }
+}

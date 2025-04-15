@@ -1,0 +1,32 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.main {
+  background-color: $nocturne-navy;
+
+  height: 100%;
+  .content {
+    margin-top: 14vh;
+
+    h2 {
+      color: $white;
+    }
+
+    label {
+      color: $tropical-jade;
+    }
+    textarea {
+      background-color: $nocturne-navy;
+      color: $white;
+    }
+
+    input {
+      background-color: $nocturne-navy;
+      color: $white;
+    }
+
+    .success {
+      color: $electric-teal;
+      font-size: 4rem;
+    }
+  }
+}
