@@ -1,22 +1,23 @@
-<div class="pw-main-section skills-full" id="section_3" data-anchor="skills">
+<div class="skills-section w-100 h-100" id="section_3" data-anchor="skills">
   <div class="container">
     @if (skillsData(); as skillData) {
       <div class="row">
-        <div class="col-md-12">
-          <div class="section-title">
-            <h2>{{ skillData.heading }}</h2>
-            <p>{{ skillData.intro }}</p>
-          </div>
+        <div class="text-center mb-5">
+          <h2 class="fw-bolder text-uppercase mt-5">
+            {{ skillData.heading }}
+          </h2>
+          <p class="text-center fw-normal pt-3">{{ skillData.intro }}</p>
         </div>
-        <div class="col-md-5 fadeLeft" data-t-show="3">
+
+        <div class="col-lg-5 col-md-12" data-t-show="3">
           <div class="row">
-            <div class="col-md-5">
+            <div class="col-lg-5 col-md-12">
               @for (
                 language of skillData.languagesCol1 | keyvalue;
                 track $index
               ) {
-                <div class="skillst">
-                  <h6>{{ language.key }}</h6>
+                <div class="mb-5">
+                  <h6 class="mb-3">{{ language.key }}</h6>
                   <div class="progress">
                     <div
                       class="progress-bar progress-bar-striped progress-bar-animated"
@@ -29,14 +30,14 @@
                 </div>
               }
             </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-5">
+            <div class="col-lg-2 d-none d-lg-block"></div>
+            <div class="col-lg-5 col-md-12">
               @for (
                 language of skillData.languagesCol2 | keyvalue;
                 track $index
               ) {
-                <div class="skillst">
-                  <h6>{{ language.key }}</h6>
+                <div class="mb-5">
+                  <h6 class="mb-3">{{ language.key }}</h6>
                   <div class="progress">
                     <div
                       class="progress-bar progress-bar-striped progress-bar-animated"
@@ -52,35 +53,33 @@
           </div>
         </div>
 
-        <div class="col-md-1"></div>
-        <div class="col-md-6 fadeRight" data-t-show="3">
-          <div class="text-skills">
-            <h3>{{ skillData.toolHeading }}</h3>
-            <div class="row">
-              <div class="col-md-6">
-                <h4>{{ skillData.leftSubHeading }}</h4>
-                @for (framework of skillData.framework; track $index) {
-                  <ul class="list-style-two list-style-one freqTool">
-                    <li>
-                      <img [src]="bulletPointImageSrc" class="skill-img" />{{
-                        framework
-                      }}
-                    </li>
-                  </ul>
-                }
-              </div>
-              <div class="col-md-6">
-                <h4>{{ skillData.rightSubHeading }}</h4>
-                @for (software of skillData.software; track $index) {
-                  <ul class="list-style-two list-style-one freqTool">
-                    <li>
-                      <img [src]="bulletPointImageSrc" class="skill-img" />{{
-                        software
-                      }}
-                    </li>
-                  </ul>
-                }
-              </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-6 col-md-12" data-t-show="3">
+          <h3 class="fw-bold my-4">{{ skillData.toolHeading }}</h3>
+          <div class="row">
+            <div class="col-6">
+              <h4 class="fw-bold mb-4">{{ skillData.leftSubHeading }}</h4>
+              @for (framework of skillData.framework; track $index) {
+                <ul class="px-0 mb-3">
+                  <li>
+                    <img [src]="bulletPointImageSrc" class="pe-3" />{{
+                      framework
+                    }}
+                  </li>
+                </ul>
+              }
+            </div>
+            <div class="col-6">
+              <h4 class="fw-bold mb-4">{{ skillData.rightSubHeading }}</h4>
+              @for (software of skillData.software; track $index) {
+                <ul class="px-0 mb-3">
+                  <li>
+                    <img [src]="bulletPointImageSrc" class="pe-3" />{{
+                      software
+                    }}
+                  </li>
+                </ul>
+              }
             </div>
           </div>
         </div>
