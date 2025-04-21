@@ -17,7 +17,7 @@ import {
   of,
 } from 'rxjs';
 
-import { IAboutMe } from '@portfolio-v2/state/dataModels';
+import { AllowedRecords } from '../../types';
 
 /**
  * Set/Modify Data in the database
@@ -108,7 +108,7 @@ export class SetDataService {
    * @param value value to add
    * @returns observable doc reference
    */
-  public setRecord(path: string, value: IAboutMe): Observable<string> {
+  public setRecord<T extends AllowedRecords>(path: string, value: T): Observable<string> {
     if (!value) {
       return of('empty');
     }

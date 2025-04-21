@@ -1,0 +1,91 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.skills-section {
+  background-color: $golden-bloom;
+  overflow: auto;
+
+  .container {
+    padding-top: 14vh;
+
+    h2 {
+      font-size: 2.5rem;
+      line-height: 49px;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      line-height: 29px;
+    }
+
+    h4 {
+      font-size: 1rem;
+      line-height: 19px;
+    }
+
+    h6 {
+      font-size: 1.5rem;
+      line-height: 24px;
+    }
+
+    p {
+      font-size: 1.3rem;
+    }
+
+    li {
+      color: $nocturne-navy;
+      font-size: 1.2rem;
+    }
+
+    .progress {
+      height: 2rem;
+      .progress-bar {
+        background-color: $nocturne-navy;
+      }
+    }
+
+    $form-range-thumb-width: 2.5rem;
+    $form-range-thumb-height: 2rem;
+    $form-range-track-height: 0.6rem;
+
+    .form-range {
+      height: 3rem;
+      background: transparent;
+
+      &::-webkit-slider-thumb {
+        width: $form-range-thumb-width;
+        height: $form-range-thumb-height;
+        background-color: $nocturne-navy;
+        border-radius: 30%;
+        -webkit-appearance: none;
+        margin-top: calc(
+          ($form-range-track-height - $form-range-thumb-width) / 2.6
+        );
+      }
+
+      &::-webkit-slider-runnable-track {
+        height: $form-range-track-height;
+        background-color: $lemon-grass;
+        border-radius: 0.25rem;
+      }
+
+      &::-moz-range-thumb {
+        width: $form-range-thumb-width;
+        height: $form-range-thumb-height;
+        background-color: $nocturne-navy;
+        border: none;
+        border-radius: 50%;
+      }
+
+      &::-moz-range-track {
+        height: $form-range-track-height;
+        background-color: $white;
+        border-radius: 0.25rem;
+      }
+    }
+
+    .success {
+      color: $electric-teal;
+      font-size: 4rem;
+    }
+  }
+}

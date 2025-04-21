@@ -2,14 +2,12 @@
 export interface ISkills {
   /** ID */
   id: number,
-  /** Page heading */
-  heading: string,
   /** Brief introduction */
   intro: string,
   /** Languages column 1 */
-  languagesCol1: Map<string, number>,
+  languagesCol1: { [key: string]: number },
   /** Languages column 2 */
-  languagesCol2: Map<string, number>,
+  languagesCol2: { [key: string]: number },
   /** Tool heading */
   toolHeading: string,
   /** Left sub-heading */
