@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,7 +27,10 @@ import {
   take,
 } from 'rxjs';
 
-import { SetDataService } from '@portfolio-v2/shared/services';
+import {
+  SetDataService,
+  UtilityService,
+} from '@portfolio-v2/shared/services';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
@@ -61,6 +63,7 @@ export class AboutMeComponent implements OnInit {
   /** Landing form */
   protected aboutMeForm!: FormGroup;
 
+  /** Returns true if the save is successful */
   protected isSaveSuccess = of(false);
 
   /** Signal containing About Me section data */
@@ -72,12 +75,14 @@ export class AboutMeComponent implements OnInit {
    * @param setDataService Set Data Service
    * @param store ngrx store
    * @param dialog Mat Dialog
+   * @param utility utility service
    */
   constructor(
     private formBuilder: FormBuilder,
     private setDataService: SetDataService,
     private store: Store,
     private dialog: MatDialog,
+    private utility: UtilityService,
   ) {
     this.aboutMeData = this.store.selectSignal(aboutMeSelector);
   }
@@ -87,13 +92,13 @@ export class AboutMeComponent implements OnInit {
    */
   public ngOnInit(): void {
     const aboutObject = this.aboutMeData();
-    const allParagraphs = this.seperateSentences(aboutObject?.intro);
+    const allParagraphs = this.utility.seperateSentences(aboutObject?.intro);
 
     this.aboutMeForm = this.formBuilder.group({
       mainIntro: [`${allParagraphs}`, [Validators.required]],
       subIntro: [`${aboutObject?.subHeadingIntro}`, [Validators.required]],
-      leftPoints: [`${this.seperateSentences(aboutObject?.leftPoints)}`, [Validators.required]],
-      rightPoints: [`${this.seperateSentences(aboutObject?.rightPoints)}`, [Validators.required]],
+      leftPoints: [`${this.utility.seperateSentences(aboutObject?.leftPoints)}`, [Validators.required]],
+      rightPoints: [`${this.utility.seperateSentences(aboutObject?.rightPoints)}`, [Validators.required]],
       linkField: [`${aboutObject?.link}`, [Validators.required, urlValidator()]],
     });
   }
@@ -105,20 +110,25 @@ export class AboutMeComponent implements OnInit {
     this.dialog.open(UploadPhotoComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
   }
 
+  /**
+   * Update data
+   */
   protected updateData(): void {
     const {
       mainIntro, subIntro, leftPoints, rightPoints, linkField,
     } = this.aboutMeForm.value;
+
     const newAboutMeValues: IAboutMe = {
       id: 1,
       imageSrc: this.aboutMeData()?.imageSrc ?? '',
-      intro: this.breakStringToParagraphs(mainIntro),
+      intro: this.utility.breakStringToParagraphs(mainIntro),
       subHeadingIntro: subIntro,
-      leftPoints: this.breakStringToParagraphs(leftPoints),
-      rightPoints: this.breakStringToParagraphs(rightPoints),
+      leftPoints: this.utility.breakStringToParagraphs(leftPoints),
+      rightPoints: this.utility.breakStringToParagraphs(rightPoints),
       link: linkField,
     };
-    this.isSaveSuccess = this.setDataService.setRecord('about-me-section/part-01/', newAboutMeValues).pipe(
+
+    this.isSaveSuccess = this.setDataService.setRecord<IAboutMe>('about-me-section/part-01/', newAboutMeValues).pipe(
       take(1),
       map((result) => {
         this.store.dispatch(StateActions.aboutMeStateUpdated({
@@ -127,32 +137,5 @@ export class AboutMeComponent implements OnInit {
         return result === 'successfull';
       }),
     );
-  }
-
-  /**
-   * Break long string into paragraphs based on new line.
-   * @param value long sentence
-   * @returns array of strings
-   */
-  private breakStringToParagraphs(value: string): string[] {
-    const introArray: string[] = _.pull(value.split('\n'), '');
-    return introArray;
-  }
-
-  /**
-   * Separate paragraphs by adding new lines
-   * @param longSentence long sentence
-   * @returns string with multiple paragraphs separated by new line.
-   */
-  private seperateSentences(longSentence: string[] | undefined): string {
-    if (!longSentence) {
-      return '';
-    }
-
-    let paragraphs = '';
-    longSentence?.forEach((param) => {
-      paragraphs += `${param}\n\n`;
-    });
-    return _.trim(paragraphs);
   }
 }

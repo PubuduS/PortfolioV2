@@ -6,15 +6,25 @@ import {
   MockStore,
   provideMockStore,
 } from '@ngrx/store/testing';
+import { createSpyObj } from 'jest-createspyobj';
+import { FormBuilder } from '@angular/forms';
+import { MockComponents } from 'ng-mocks';
 
-import { skillsSelector } from '@portfolio-v2/state/selectors';
+import {
+  SetDataService,
+  UtilityService,
+} from '@portfolio-v2/shared/services';
+import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
 import { ISkills } from '@portfolio-v2/state/dataModels';
+import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { SkillsComponent } from './skills.component';
 
 describe('SkillsComponent', () => {
   let component: SkillsComponent;
   let fixture: ComponentFixture<SkillsComponent>;
   let store: MockStore;
+  let mockSetDataService: jest.Mocked<SetDataService>;
+  let mockUtilityService: jest.Mocked<UtilityService>;
   const mockSkills: ISkills = {
     id: 1,
     intro: 'Some intro',
@@ -37,10 +47,24 @@ describe('SkillsComponent', () => {
   };
 
   beforeEach(async () => {
+    mockSetDataService = createSpyObj(SetDataService);
+    mockUtilityService = createSpyObj(UtilityService);
     await TestBed.configureTestingModule({
-      imports: [SkillsComponent],
+      imports: [
+        SkillsComponent,
+        MockComponents(DisplayValidatorErrorsComponent),
+      ],
       providers: [
         provideMockStore(),
+        FormBuilder,
+        {
+          provide: SetDataService,
+          useValue: mockSetDataService,
+        },
+        {
+          provide: UtilityService,
+          useValue: mockUtilityService,
+        },
       ],
     }).compileComponents();
 

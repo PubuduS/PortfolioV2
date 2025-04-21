@@ -1,0 +1,12 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.change-language {
+  background-color: $dune;
+  h2 {
+    color: $electric-aloe;
+  }
+  .success {
+    color: $electric-teal;
+    font-size: 4rem;
+  }
+}

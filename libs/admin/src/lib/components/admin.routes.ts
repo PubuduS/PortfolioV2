@@ -10,4 +10,8 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     path: 'aboutme',
     loadComponent: () => import('@portfolio-v2/admin').then((mod) => mod.AboutMeComponent),
   },
+  {
+    path: 'skills',
+    loadComponent: () => import('@portfolio-v2/admin').then((mod) => mod.SkillsComponent),
+  },
 ];
