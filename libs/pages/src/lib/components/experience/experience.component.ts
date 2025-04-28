@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { IExperience } from '@portfolio-v2/state/dataModels';
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
+import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
 
 /**
  * Experience page
@@ -22,7 +23,10 @@ import { experienceSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-experience',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    HighlightPipePipe,
+  ],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +54,9 @@ export class ExperienceComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {
+  constructor(
+    private store: Store,
+  ) {
     this.experienceData.pipe(
       take(1),
       filter((data) => data !== undefined),
