@@ -13,9 +13,9 @@ export interface IExperience {
   /** Job responsibilities in point form */
   points: string[],
   /** Start date */
-  startDate: Date,
+  startDate: string,
   /** End date */
-  endDate: Date,
+  endDate: string,
   /** Is this my current job */
   isCurrent?: boolean,
 }

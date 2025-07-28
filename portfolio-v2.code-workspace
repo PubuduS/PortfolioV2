@@ -29,6 +29,7 @@
     "prettier.singleQuote": true,
     "html.autoCreateQuotes": true,
     "html.completion.attributeDefaultValue": "doublequotes",
+    "nxConsole.generateAiAgentRules": true,
   },
   "extensions": {
     "recommendations": [

@@ -54,7 +54,7 @@ import { ChangeLanguageComponent } from './components/change-language/change-lan
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsComponent implements OnInit {
-  /** Landing form */
+  /** Skills form */
   protected skillsForm!: FormGroup;
   /** Signal containing Skills section data */
   public readonly skillsData: Signal<ISkills | undefined>;
