@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve portfolio-v2 -o",
+    "start": "nx serve portfolio-v2 -o --watch",
     "build": "nx build portfolio-v2",
     "clean": "nx reset",
     "test": "nx run-many --target=test --parallel=5 --runInBand",

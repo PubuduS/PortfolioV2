@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  Signal,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -48,7 +50,7 @@ export class ExperienceComponent {
   public experience: IExperience | undefined;
 
   /** Number of years of experience */
-  public yearsOfExperience = '1 Year';
+  public yearsOfExperience: Signal<string> = signal<string>('1 Year');
 
   /**
    * constructor
@@ -66,20 +68,29 @@ export class ExperienceComponent {
 
   /**
    * Display selected
-   * @param job job details
+   * @param exp job details
    */
-  public displaySelected(job: IExperience): void {
-    if (job) {
-      this.experience = job;
+  public displaySelected(exp: IExperience): void {
+    if (exp) {
+      this.experience = exp;
       this.selectedJob = this.experience.employer;
-      const result = this.dateTimeService
-        .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
-
-      if (result > 1.0) {
-        this.yearsOfExperience = `${result.toString()} Years`;
-      } else {
-        this.yearsOfExperience = `${result.toString()} Year`;
-      }
+      this.totalYearsOfExperience();
     }
+  }
+
+  /**
+   * Calculate the total years of experience by
+   * calculating the difference between the start and end date
+   */
+  private totalYearsOfExperience(): void {
+    if (!this.experience?.startDate || !this.experience?.endDate) {
+      this.yearsOfExperience = signal('1 Year');
+      return;
+    }
+
+    const numOfYears = this.dateTimeService
+      .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
+
+    this.yearsOfExperience = signal(numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`);
   }
 }

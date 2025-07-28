@@ -31,6 +31,7 @@ import {
   ISkills,
   ISocialInfor,
 } from '@portfolio-v2/state/dataModels';
+import { GetDateTimeService } from '../get-date-time/get-date-time.service';
 
 /** Custom Data */
 type CustomData = IAboutMe | ICertificateCard | IEducation | IExperience |
@@ -53,10 +54,12 @@ export class GetDataService {
    * constructor
    * @param storage angular fire storage
    * @param firestore firestore
+   * @param dateTimeService date time service
    */
   constructor(
     private storage: Storage,
     private firestore: Firestore,
+    private dateTimeService: GetDateTimeService,
   ) {}
 
   /**
@@ -104,8 +107,7 @@ export class GetDataService {
     const experienceData = (collectionData(orderedQuery) as Observable<IExperience[]>).pipe(
       map((data) => _.map(data, (exp: IExperience) => ({
         ...exp,
-        startDate: new Date(exp.startDate),
-        endDate: exp.endDate as unknown as string === 'present' ? new Date() : new Date(exp.endDate),
+        endDate: exp.endDate === 'present' ? this.dateTimeService.convertDateToISOString(new Date()) : exp.endDate,
       }))),
     );
     return experienceData;

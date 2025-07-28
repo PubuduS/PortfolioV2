@@ -25,8 +25,8 @@ describe('ExperienceComponent', () => {
     timePeriod: '2024 - Present',
     shortDescription: 'shor description',
     points: ['point 1', 'point 2', 'point 3'],
-    startDate: new Date('03/12/2021'),
-    endDate: new Date('03/12/2023'),
+    startDate: '2021-03-12',
+    endDate: '2023-03-12',
     isCurrent: false,
   }];
 

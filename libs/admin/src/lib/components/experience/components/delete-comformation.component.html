@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>The following record will be deleted:</h2>
+<mat-dialog-content class="mat-typography">
+  <h3>Please confirm to delete the following record:</h3>
+  @if (records.length > 0) {
+    @for (record of records; track record) {
+      <p>{{ record[0] }}: {{ record[1] }}</p>
+    }
+    @if (points.length > 0) {
+      <h3>Points:</h3>
+      @for (point of points; track point) {
+        <p>{{ point }}</p>
+      }
+    }
+  } @else {
+    <p>No record to delete</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-fab
+    extended
+    color="primary"
+    class="float-end"
+    [mat-dialog-close]="false"
+  >
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <button
+    mat-fab
+    extended
+    color="warn"
+    class="float-end"
+    [mat-dialog-close]="true"
+  >
+    <mat-icon>delete</mat-icon>
+    Delete
+  </button>
+</mat-dialog-actions>

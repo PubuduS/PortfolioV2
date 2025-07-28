@@ -8,6 +8,7 @@ import {
   Firestore,
   doc,
   setDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import {
   catchError,
@@ -114,6 +115,19 @@ export class SetDataService {
     }
     const docRef = doc(this.firestore, path);
     return from(setDoc(docRef, value)).pipe(
+      map(() => 'successfull'),
+      catchError((error) => of(`error ${error}`)),
+    );
+  }
+
+  /**
+   * Delete a record from Firestore
+   * @param path database path
+   * @returns observable doc reference
+   */
+  public deleteRecord(path: string): Observable<string> {
+    const docRef = doc(this.firestore, path);
+    return from(deleteDoc(docRef)).pipe(
       map(() => 'successfull'),
       catchError((error) => of(`error ${error}`)),
     );

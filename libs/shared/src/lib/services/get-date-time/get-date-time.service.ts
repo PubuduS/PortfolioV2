@@ -100,7 +100,116 @@ export class GetDateTimeService {
    * @param endDate end date
    * @returns Number of years of experience
    */
-  public getYearsOfExperience(startDate: Date, endDate: Date): number {
-    return this.calculateYearsOfExperience(startDate, endDate);
+  public getYearsOfExperience(startDate: string, endDate: string): number {
+    return this.calculateYearsOfExperience(new Date(startDate), new Date(endDate));
+  }
+
+  /**
+   * Convert date to ISO string
+   * @param date date
+   * @returns ISO string
+   */
+  public convertDateToISOString(date: Date): string {
+    return date.toISOString().slice(0, 10);
+  }
+
+  /**
+   * Convert date to ISO format "YYYY-MM-DD"
+   * @param dateInput date string in format "M/D/YYYY" (e.g., "9/3/2023") or Date object
+   * @returns ISO formatted date string "YYYY-MM-DD" (e.g., "2023-09-03")
+   */
+  public convertToISOFormat(dateInput: string | Date): string {
+    if (!dateInput) {
+      return '';
+    }
+
+    let date: Date;
+
+    if (dateInput instanceof Date) {
+      // If it's already a Date object, extract the local date components
+      // to avoid timezone issues
+      const year = dateInput.getFullYear();
+      const month = dateInput.getMonth() + 1; // getMonth() returns 0-11
+      const day = dateInput.getDate();
+
+      // Create a new date object using local components to ensure no timezone shift
+      date = new Date(year, month - 1, day);
+    } else if (typeof dateInput === 'string') {
+      // If it's a string, check if it's already in ISO format
+      if (this.isISOFormat(dateInput)) {
+        // Already in ISO format, return as-is
+        return dateInput;
+      }
+
+      // If it's a string in M/D/YYYY format, parse it
+      const parts = dateInput.split('/');
+      if (parts.length !== 3) {
+        throw new Error(`Invalid date format: ${dateInput}. Expected format: M/D/YYYY or YYYY-MM-DD`);
+      }
+
+      const month = parseInt(parts[0], 10);
+      const day = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+
+      // Validate the date
+      date = new Date(year, month - 1, day); // month is 0-indexed
+      if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+        throw new Error(`Invalid date: ${dateInput}`);
+      }
+    } else {
+      throw new Error(`Invalid date input type: ${typeof dateInput}`);
+    }
+
+    // Format as YYYY-MM-DD using the date object
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Convert ISO format date string to Date object for date picker
+   * @param isoDateString date string in ISO format "YYYY-MM-DD" (e.g., "2023-09-05")
+   * @returns Date object that will display correctly in date picker
+   */
+  public convertISOToDate(isoDateString: string): Date | null {
+    if (!isoDateString) {
+      return null;
+    }
+
+    if (isoDateString === 'present') {
+      return new Date();
+    }
+
+    // Check if it's already in ISO format
+    if (!this.isISOFormat(isoDateString)) {
+      throw new Error(`Invalid ISO date format: ${isoDateString}. Expected format: YYYY-MM-DD`);
+    }
+
+    // Parse the ISO date string
+    const parts = isoDateString.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    // Create a date object using local timezone to avoid timezone conversion issues
+    const date = new Date(year, month - 1, day); // month is 0-indexed
+
+    // Validate the date
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      throw new Error(`Invalid date: ${isoDateString}`);
+    }
+
+    return date;
+  }
+
+  /**
+   * Check if the date string is in ISO format
+   * @param dateString date string
+   * @returns true if the date string is in ISO format, false otherwise
+   */
+  private isISOFormat(dateString: string): boolean {
+    return !!dateString.match(/^\d{4}-\d{2}-\d{2}$/);
   }
 }
