@@ -18,6 +18,7 @@ export interface StoreState {
   experiences?: IExperience[],
   portfolioCards?: IProjectView[],
   projectCards?: IProjectCard[],
+  featuredProjectCards?: IProjectCard[],
   selectedProjectCardID: number,
   certificates?: ICertificateCard[],
   education?: IEducation[],

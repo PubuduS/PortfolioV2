@@ -6,12 +6,14 @@ import {
 import { StateActions } from './state.actions';
 import { StoreState } from './state.state';
 
+/** Initial state */
 const initialState: StoreState = {
   aboutMe: undefined,
   skills: undefined,
   experiences: undefined,
   portfolioCards: undefined,
   projectCards: undefined,
+  featuredProjectCards: undefined,
   selectedProjectCardID: 0,
   certificates: undefined,
   education: undefined,
@@ -51,6 +53,14 @@ export const stateReducers = createReducer<StoreState>(
     ...state,
     projectCards,
   })),
+
+  on(
+    StateActions.featuredProjectCardsStateUpdated,
+    (state, { projectCards }): StoreState => ({
+      ...state,
+      featuredProjectCards: projectCards,
+    }),
+  ),
 
   on(StateActions.projectCardIDStateUpdated, (state, { selectedProjectCardID }): StoreState => ({
     ...state,
