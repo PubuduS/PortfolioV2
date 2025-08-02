@@ -113,6 +113,18 @@ export class StateEffects {
   ));
 
   /**
+   * Connects to featured project cards state to get page information.
+   */
+  public connectToFeaturedProjectCardsState = createEffect(() => this.actions.pipe(
+    ofType(StateActions.featuredProjectCardsStateConnect),
+    switchMap(() => this.dbService.getDataArray<IProjectCard>('featured-project-section').pipe(
+      map((projectCards: IProjectCard[]) => StateActions
+        .featuredProjectCardsStateUpdated({ projectCards })),
+      catchError((error: Error) => this.handleErrors('Featured project card', error)),
+    )),
+  ));
+
+  /**
    * Connects to publication cards state to get page information.
    */
   public connectToPublicationCardsState = createEffect(() => this.actions.pipe(

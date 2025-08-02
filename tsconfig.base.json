@@ -26,7 +26,9 @@
       "@portfolio-v2/shared/components": [
         "libs/shared/src/lib/components/index.ts"
       ],
-      "@portfolio-v2/shared/pipes": ["libs/shared/src/lib/pipes/index.ts"],
+      "@portfolio-v2/shared/pipes": [
+        "libs/shared/src/lib/pipes/index.ts"
+      ],
       "@portfolio-v2/shared/services": [
         "libs/shared/src/lib/services/index.ts"
       ],

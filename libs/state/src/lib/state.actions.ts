@@ -35,6 +35,9 @@ export const StateActions = createActionGroup({
     'Project Cards State Connect': emptyProps(),
     'Project Cards State Updated': props<{ projectCards: IProjectCard[] }>(),
 
+    'Featured Project Cards State Connect': emptyProps(),
+    'Featured Project Cards State Updated': props<{ projectCards: IProjectCard[] }>(),
+
     'Project Card ID State Connect': emptyProps(),
     'Project Card ID State Updated': props<{ selectedProjectCardID: number }>(),
 

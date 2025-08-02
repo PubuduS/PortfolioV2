@@ -4,6 +4,7 @@ export * from './education.selector';
 export * from './experience.selector';
 export * from './portfolio-cards.selector';
 export * from './project-card.selector';
+export * from './featured-project-card.selector';
 export * from './publication-details-card.selector';
 export * from './publications.selector';
 export * from './selected-card-id.selector';
