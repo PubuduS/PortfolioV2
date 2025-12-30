@@ -5,7 +5,6 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +14,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'portfolio-display-validator-errors',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './display-validator-errors.component.html',
   styleUrl: './display-validator-errors.component.scss',
   host: {

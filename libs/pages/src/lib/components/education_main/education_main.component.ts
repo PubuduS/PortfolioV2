@@ -3,7 +3,6 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { FlowerAnimationComponent } from './components/flower/flower-animation.component';
 
@@ -15,7 +14,6 @@ declare function FlowerAnimation(): void;
   selector: 'portfolio-v2-education-main',
   standalone: true,
   imports: [
-    CommonModule,
     FlowerAnimationComponent,
   ],
   templateUrl: './education_main.component.html',

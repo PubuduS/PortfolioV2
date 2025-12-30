@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 
 import { certificatesSelector } from '@portfolio-v2/state/selectors';
@@ -13,7 +12,7 @@ import { certificatesSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-certifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './certifications.component.html',
   styleUrl: './certifications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

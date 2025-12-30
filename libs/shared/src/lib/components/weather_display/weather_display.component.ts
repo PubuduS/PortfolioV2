@@ -4,7 +4,6 @@ import {
   Signal,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { IWeather } from '@portfolio-v2/state/dataModels';
 import { WeatherService } from '@portfolio-v2/shared/services';
@@ -15,7 +14,7 @@ import { WeatherService } from '@portfolio-v2/shared/services';
 @Component({
   selector: 'portfolio-v2-weather-display',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './weather_display.component.html',
   styleUrl: './weather_display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

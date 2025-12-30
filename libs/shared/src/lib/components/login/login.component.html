@@ -45,9 +45,11 @@
           }"
         />
         <span class="invalid-feedback text-center">
-          <span *ngIf="loginForm.get('password')?.errors?.['required']">
-            {{ passwordValidatorMsgs.passwordReqError }}
-          </span>
+          @if (loginForm.get('password')?.errors?.['required']) {
+            <span>
+              {{ passwordValidatorMsgs.passwordReqError }}
+            </span>
+          }
         </span>
       </div>
       <div class="d-flex justify-content-center">
