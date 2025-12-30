@@ -3,7 +3,6 @@ import {
   Component,
   Signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
@@ -17,7 +16,7 @@ import { featuredProjectCardsSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-featured-projects',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './featured_projects.component.html',
   styleUrl: './featured_projects.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

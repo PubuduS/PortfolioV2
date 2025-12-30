@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
@@ -13,7 +12,7 @@ import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-about-me',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './about_me.component.html',
   styleUrl: './about_me.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

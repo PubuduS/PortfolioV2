@@ -3,7 +3,6 @@ import {
   Component,
   Inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   MatDialogModule,
   MatDialogRef,
@@ -19,7 +18,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 @Component({
   selector: 'portfolio-v2-contact-popup',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, MatIconModule, ClipboardModule],
+  imports: [MatButtonModule, MatDialogModule, MatIconModule, ClipboardModule],
   templateUrl: './contact_popup.component.html',
   styleUrl: './contact_popup.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 
 import { educationSelector } from '@portfolio-v2/state/selectors';
@@ -13,7 +12,7 @@ import { educationSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-education',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './education.component.html',
   styleUrl: './education.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

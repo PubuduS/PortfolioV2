@@ -160,7 +160,9 @@
           }
         ],
         "@typescript-eslint/no-extra-semi": "error",
-        "no-extra-semi": "off"
+        "no-extra-semi": "off",
+        "@angular-eslint/prefer-standalone": "off",
+        "@angular-eslint/prefer-inject": "off"
       },
       "parserOptions": {
         "project": "./tsconfig.base.json"

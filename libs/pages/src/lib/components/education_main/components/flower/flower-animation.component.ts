@@ -2,7 +2,6 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 /**
@@ -11,7 +10,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'portfolio-v2-flower-animation',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './flower-animation.component.html',
   styleUrl: './flower-animation.component.scss',
 })

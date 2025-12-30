@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   MatDialogActions,
   MatDialogContent,
@@ -23,7 +22,6 @@ import {
   selector: 'portfolio-v2-project-card',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogContent,
     MatDialogActions,
     MatButtonModule,

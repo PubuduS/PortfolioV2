@@ -1,22 +1,26 @@
 <div>
   <div>
-    <img
-      class="gifimgRight"
-      src="https://i.gifer.com/yH.gif"
-      alt="Italian Trulli"
-      *ngIf="isRightGIFVisible()"
-    />
-    <img
-      class="gifimgLeft"
-      src="https://i.gifer.com/yH.gif"
-      alt="Italian Trulli"
-      *ngIf="isLeftGIFVisible()"
-    />
+    @if (isRightGIFVisible()) {
+      <img
+        class="gifimgRight"
+        src="https://i.gifer.com/yH.gif"
+        alt="Italian Trulli"
+      />
+    }
+    @if (isLeftGIFVisible()) {
+      <img
+        class="gifimgLeft"
+        src="https://i.gifer.com/yH.gif"
+        alt="Italian Trulli"
+      />
+    }
   </div>
 </div>
 
 <h1 class="quote">
-  <span *ngFor="let word of randomQuote">{{ word }}</span>
+  @for (word of randomQuote; track word) {
+    <span>{{ word }}</span>
+  }
 </h1>
 
 <svg

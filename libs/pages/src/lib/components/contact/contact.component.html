@@ -61,12 +61,16 @@
                 />
 
                 <span class="invalid-feedback">
-                  <span *ngIf="contactForm.get('email')?.errors?.['required']">
-                    {{ emailValidatorMsgs.emailReqError }}
-                  </span>
-                  <span *ngIf="contactForm.get('email')?.errors?.['email']">
-                    {{ emailValidatorMsgs.emailPttrnError }}
-                  </span>
+                  @if (contactForm.get('email')?.errors?.['required']) {
+                    <span>
+                      {{ emailValidatorMsgs.emailReqError }}
+                    </span>
+                  }
+                  @if (contactForm.get('email')?.errors?.['email']) {
+                    <span>
+                      {{ emailValidatorMsgs.emailPttrnError }}
+                    </span>
+                  }
                 </span>
               </li>
 
@@ -85,18 +89,26 @@
                 />
 
                 <span class="invalid-feedback">
-                  <span *ngIf="contactForm.get('name')?.errors?.['required']">
-                    {{ senderValidatorMsgs.senderReqError }}
-                  </span>
-                  <span *ngIf="contactForm.get('name')?.errors?.['minlength']">
-                    {{ senderValidatorMsgs.senderMinLenError }}
-                  </span>
-                  <span *ngIf="contactForm.get('name')?.errors?.['maxlength']">
-                    {{ senderValidatorMsgs.senderMaxLenError }}
-                  </span>
-                  <span *ngIf="contactForm.get('name')?.errors?.['pattern']">
-                    {{ senderValidatorMsgs.senderPttrnError }}
-                  </span>
+                  @if (contactForm.get('name')?.errors?.['required']) {
+                    <span>
+                      {{ senderValidatorMsgs.senderReqError }}
+                    </span>
+                  }
+                  @if (contactForm.get('name')?.errors?.['minlength']) {
+                    <span>
+                      {{ senderValidatorMsgs.senderMinLenError }}
+                    </span>
+                  }
+                  @if (contactForm.get('name')?.errors?.['maxlength']) {
+                    <span>
+                      {{ senderValidatorMsgs.senderMaxLenError }}
+                    </span>
+                  }
+                  @if (contactForm.get('name')?.errors?.['pattern']) {
+                    <span>
+                      {{ senderValidatorMsgs.senderPttrnError }}
+                    </span>
+                  }
                 </span>
               </li>
 
@@ -115,21 +127,21 @@
                 </textarea>
 
                 <span class="invalid-feedback">
-                  <span
-                    *ngIf="contactForm.get('message')?.errors?.['required']"
-                  >
-                    {{ msgValidatorMsgs.msgReqError }}
-                  </span>
-                  <span
-                    *ngIf="contactForm.get('message')?.errors?.['minlength']"
-                  >
-                    {{ msgValidatorMsgs.msgMinLenError }}
-                  </span>
-                  <span
-                    *ngIf="contactForm.get('message')?.errors?.['maxlength']"
-                  >
-                    {{ msgValidatorMsgs.msgMaxLenError }}
-                  </span>
+                  @if (contactForm.get('message')?.errors?.['required']) {
+                    <span>
+                      {{ msgValidatorMsgs.msgReqError }}
+                    </span>
+                  }
+                  @if (contactForm.get('message')?.errors?.['minlength']) {
+                    <span>
+                      {{ msgValidatorMsgs.msgMinLenError }}
+                    </span>
+                  }
+                  @if (contactForm.get('message')?.errors?.['maxlength']) {
+                    <span>
+                      {{ msgValidatorMsgs.msgMaxLenError }}
+                    </span>
+                  }
                 </span>
               </li>
 

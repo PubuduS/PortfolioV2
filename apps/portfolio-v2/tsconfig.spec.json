@@ -2,15 +2,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "module": "preserve",
     "target": "es2016",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "moduleResolution": "bundler",
+    "isolatedModules": true
   },
   "files": ["src/test-setup.ts"],
   "include": [
     "jest.config.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
-    "src/**/*.d.ts"
-, "../../libs/portfolio_services/weather/weather.service.spec.ts", "../../libs/portfolio_services/errorMsg/error.service.spec.ts"  ]
+    "src/**/*.d.ts",
+    "../../libs/portfolio_services/weather/weather.service.spec.ts",
+    "../../libs/portfolio_services/errorMsg/error.service.spec.ts"
+  ]
 }

@@ -49,20 +49,20 @@
                   }"
                 />
                 <span class="invalid-feedback">
-                  <span
-                    *ngIf="
-                      coverLetterForm.get('managerName')?.errors?.['pattern']
-                    "
-                  >
-                    {{ mngValidatorMessages.mngPatternError }}
-                  </span>
-                  <span
-                    *ngIf="
-                      coverLetterForm.get('managerName')?.errors?.['maxlength']
-                    "
-                  >
-                    {{ mngValidatorMessages.mngNameMaxLen }}
-                  </span>
+                  @if (
+                    coverLetterForm.get('managerName')?.errors?.['pattern']
+                  ) {
+                    <span>
+                      {{ mngValidatorMessages.mngPatternError }}
+                    </span>
+                  }
+                  @if (
+                    coverLetterForm.get('managerName')?.errors?.['maxlength']
+                  ) {
+                    <span>
+                      {{ mngValidatorMessages.mngNameMaxLen }}
+                    </span>
+                  }
                 </span>
               </li>
 
@@ -73,9 +73,11 @@
                   id="position-name"
                   formControlName="position"
                 >
-                  <option *ngFor="let position of positions">
-                    {{ position }}
-                  </option>
+                  @for (position of positions; track position) {
+                    <option>
+                      {{ position }}
+                    </option>
+                  }
                 </select>
               </li>
 
@@ -93,18 +95,16 @@
                   }"
                 />
                 <span class="invalid-feedback">
-                  <span
-                    *ngIf="coverLetterForm.get('company')?.errors?.['required']"
-                  >
-                    {{ cmpValidatorMessages.cmpNameReqError }}
-                  </span>
-                  <span
-                    *ngIf="
-                      coverLetterForm.get('company')?.errors?.['maxlength']
-                    "
-                  >
-                    {{ cmpValidatorMessages.cmpNameMaxLen }}
-                  </span>
+                  @if (coverLetterForm.get('company')?.errors?.['required']) {
+                    <span>
+                      {{ cmpValidatorMessages.cmpNameReqError }}
+                    </span>
+                  }
+                  @if (coverLetterForm.get('company')?.errors?.['maxlength']) {
+                    <span>
+                      {{ cmpValidatorMessages.cmpNameMaxLen }}
+                    </span>
+                  }
                 </span>
               </li>
               <button

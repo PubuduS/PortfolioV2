@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +19,6 @@ import {
   selector: 'portfolio-v2-publication-detail',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     ClipboardModule,
     MatIconModule,

@@ -10,7 +10,8 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/pages/jest.config.ts"
+        "jestConfig": "libs/pages/jest.config.ts",
+        "tsConfig": "libs/pages/tsconfig.spec.json"
       },
       "configurations": {
         "ci": {
@@ -23,10 +24,7 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "libs/pages/**/*.ts",
-          "libs/pages/**/*.html"
-        ]
+        "lintFilePatterns": ["libs/pages/**/*.ts", "libs/pages/**/*.html"]
       }
     }
   }

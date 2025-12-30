@@ -4,7 +4,6 @@ import {
   Inject,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -22,7 +21,6 @@ import { IExperience } from '@portfolio-v2/state/dataModels';
   selector: 'admin-delete-comformation',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
