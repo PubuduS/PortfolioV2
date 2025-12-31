@@ -14,7 +14,6 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'portfolio-display-validator-errors',
   standalone: true,
-  imports: [],
   templateUrl: './display-validator-errors.component.html',
   styleUrl: './display-validator-errors.component.scss',
   host: {

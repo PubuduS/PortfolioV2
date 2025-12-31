@@ -14,7 +14,6 @@ import { WeatherService } from '@portfolio-v2/shared/services';
 @Component({
   selector: 'portfolio-v2-weather-display',
   standalone: true,
-  imports: [],
   templateUrl: './weather_display.component.html',
   styleUrl: './weather_display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

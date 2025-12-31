@@ -227,7 +227,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     newExperienceValuesArray[newId - 1] = newExperienceValues;
 
     if (this.experienceForm.valid) {
-      this.isAddSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience0${(newId)}/`, newExperienceValues).pipe(
+      this.isAddSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience${this.utility.getPaddedDigits(newId, 2)}/`, newExperienceValues).pipe(
         take(1),
         map((result) => {
           this.store.dispatch(StateActions.experienceStateUpdated({
@@ -291,7 +291,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     }
 
     // Delete from database
-    this.isDeleteSuccess = this.setDataService.deleteRecord(`experience-section/experience0${this.experience.id}/`).pipe(
+    this.isDeleteSuccess = this.setDataService.deleteRecord(`experience-section/experience${this.utility.getPaddedDigits(this.experience.id, 2)}/`).pipe(
       take(1),
       map((result) => {
         if (result === 'successfull') {
@@ -338,7 +338,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     const newExperienceValuesArray: IExperience[] = [...this.experienceData()!];
     newExperienceValuesArray[this.experience.id - 1] = newExperienceValues;
 
-    this.isEditSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience0${this.experience.id}/`, newExperienceValues).pipe(
+    this.isEditSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience${this.utility.getPaddedDigits(this.experience.id, 2)}/`, newExperienceValues).pipe(
       take(1),
       map((result) => {
         this.store.dispatch(StateActions.experienceStateUpdated({

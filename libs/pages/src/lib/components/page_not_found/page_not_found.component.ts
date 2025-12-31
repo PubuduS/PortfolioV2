@@ -15,7 +15,6 @@ import {
 @Component({
   selector: 'portfolio-v2-page-not-found',
   standalone: true,
-  imports: [],
   templateUrl: './page_not_found.component.html',
   styleUrl: './page_not_found.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

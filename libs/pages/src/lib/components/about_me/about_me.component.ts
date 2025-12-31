@@ -12,7 +12,6 @@ import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-about-me',
   standalone: true,
-  imports: [],
   templateUrl: './about_me.component.html',
   styleUrl: './about_me.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
