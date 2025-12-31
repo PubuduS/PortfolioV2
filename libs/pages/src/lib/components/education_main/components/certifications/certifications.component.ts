@@ -12,7 +12,6 @@ import { certificatesSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-certifications',
   standalone: true,
-  imports: [],
   templateUrl: './certifications.component.html',
   styleUrl: './certifications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

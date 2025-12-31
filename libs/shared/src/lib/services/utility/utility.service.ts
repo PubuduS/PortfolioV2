@@ -39,4 +39,15 @@ export class UtilityService {
     });
     return _.trim(paragraphs);
   }
+
+  /**
+   * Get padded digits
+   * @param num number
+   * @param size size
+   * @param padWith pad with
+   * @returns padded string
+   */
+  public getPaddedDigits(num: number, size: number, padWith = '0'): string {
+    return num.toString().padStart(size, padWith);
+  }
 }

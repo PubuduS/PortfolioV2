@@ -1,0 +1,64 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.card-model {
+  background-color: $dark-cyan-blue;
+  border: 2px solid $icy-petal;
+  border-radius: 15px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  max-width: 1200px;
+
+  .modal-body {
+    padding: 0;
+  }
+
+  button.close:hover {
+    opacity: 1 !important;
+  }
+
+  button.close {
+    position: absolute;
+    opacity: 1 !important;
+    color: $golden-bloom;
+    text-shadow: none;
+    font-size: 50px;
+    right: 10px;
+    top: 3px;
+  }
+
+  h1 {
+    margin: 0 0 20px;
+    font-weight: 600;
+    color: $icy-petal;
+    text-align: center;
+  }
+
+  p {
+    color: $black;
+    margin: 0 0 20px;
+  }
+
+  label {
+    color: $nocturne-navy;
+    font-weight: bolder;
+  }
+
+  img {
+    border: 1px solid $oxford-blue;
+  }
+
+  .progress-label {
+    color: $oxford-blue;
+    font-weight: bolder;
+  }
+
+  .success {
+    color: $electric-teal;
+    font-size: 2rem;
+  }
+}
+
+.btnGroup {
+  justify-content: center;
+  background-color: $golden-bloom;
+}

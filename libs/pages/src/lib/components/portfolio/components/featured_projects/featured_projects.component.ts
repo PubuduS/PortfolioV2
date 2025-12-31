@@ -16,7 +16,6 @@ import { featuredProjectCardsSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-featured-projects',
   standalone: true,
-  imports: [],
   templateUrl: './featured_projects.component.html',
   styleUrl: './featured_projects.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

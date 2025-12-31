@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'portfolio-v2-flower-animation',
   standalone: true,
-  imports: [],
   templateUrl: './flower-animation.component.html',
   styleUrl: './flower-animation.component.scss',
 })

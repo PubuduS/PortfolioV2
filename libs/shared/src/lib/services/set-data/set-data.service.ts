@@ -87,12 +87,30 @@ export class SetDataService {
   }
 
   /**
+   * Modify a field in a record
+   * @param path database path
+   * @param value value to add
+   * @param field field to modify
+   * @returns observable doc reference
+   */
+  public modifyAField(path: string, value: string | undefined, field: string): Observable<string> {
+    if (!value) {
+      return of('empty');
+    }
+    const docRef = doc(this.firestore, path);
+    return from(setDoc(docRef, { [field]: value }, { merge: true })).pipe(
+      map(() => 'successfull'),
+      catchError((error) => of(`error ${error}`)),
+    );
+  }
+
+  /**
    * Modify image
    * @param path database path
    * @param value value to add
    * @returns observable doc reference
    */
-  public modifyField(path: string, value: string | undefined): Observable<string> {
+  public modifyImageSrcField(path: string, value: string | undefined): Observable<string> {
     if (!value) {
       return of('empty');
     }

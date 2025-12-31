@@ -16,7 +16,9 @@ bootstrapApplication(
   AppComponent,
   {
     ...appConfig,
-    providers: [provideZoneChangeDetection(),
-      ...appConfig.providers],
+    providers: [
+      provideZoneChangeDetection(),
+      ...appConfig.providers,
+    ],
   },
 ).catch((err) => console.error(err));

@@ -73,7 +73,14 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   /** Base Path */
   private readonly basePath = 'portfolio/about-me-section';
 
+  /** My Image Subscription */
   private myImageSubscription!: Subscription;
+
+  /** Image URL Subscription */
+  private imageUrlSubscription!: Subscription;
+
+  /** Upload Progress Interval ID */
+  private uploadProgressIntervalId: number | undefined;
 
   /**
    * constructor
@@ -109,6 +116,12 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
     if (this.myImageSubscription) {
       this.myImageSubscription.unsubscribe();
     }
+    if (this.imageUrlSubscription) {
+      this.imageUrlSubscription.unsubscribe();
+    }
+    if (this.uploadProgressIntervalId !== undefined) {
+      clearInterval(this.uploadProgressIntervalId);
+    }
   }
 
   /**
@@ -138,17 +151,24 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   protected uploadData(): void {
     const { filePicker } = this.uploadPhotoForm.value;
     if (filePicker) {
-      const databseFilePath = `${this.basePath}/MyPhoto.webp`;
-      this.setDataService.pushFileToStorage(databseFilePath, this.imageUrl);
-      setInterval(() => {
+      const databaseFilePath = `${this.basePath}/MyPhoto.webp`;
+
+      // Clear any existing interval before starting a new one
+      if (this.uploadProgressIntervalId !== undefined) {
+        clearInterval(this.uploadProgressIntervalId);
+      }
+
+      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl);
+      this.uploadProgressIntervalId = window.setInterval(() => {
         this.progressValue = this.setDataService.getProgressValue();
         this.isUploadCompleted = this.setDataService.getUploadCompleteState();
         this.cdr.detectChanges();
       }, 100);
-      const newImageUrl = this.getDataService.getPhotoURL(databseFilePath);
-      this.myImageSubscription = newImageUrl.subscribe((result) => {
+
+      const newImageUrl = this.getDataService.getPhotoURL(databaseFilePath);
+      this.imageUrlSubscription = newImageUrl.subscribe((result) => {
         if (result) {
-          this.setDataService.modifyField('about-me-section/part-01/', result);
+          this.setDataService.modifyImageSrcField('about-me-section/part-01/', result);
           if (this.aboutMeData()) {
             this.store.dispatch(StateActions.aboutMeStateUpdated({
               aboutMe: {

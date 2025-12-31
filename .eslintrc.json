@@ -161,7 +161,7 @@
         ],
         "@typescript-eslint/no-extra-semi": "error",
         "no-extra-semi": "off",
-        "@angular-eslint/prefer-standalone": "off",
+        "@angular-eslint/prefer-standalone": "error",
         "@angular-eslint/prefer-inject": "off"
       },
       "parserOptions": {

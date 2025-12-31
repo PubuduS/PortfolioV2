@@ -1,0 +1,56 @@
+<div
+  class="pw-main-section projects-full"
+  id="section_5"
+  data-anchor="protfolio"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="section-title">
+          <h2>SOME OF MY PROJECTS</h2>
+        </div>
+        <div class="my-projects">
+          <ul>
+            @for (project of projectView(); track $index) {
+              <li class="bounceOut" data-t-show="4">
+                <div class="action-buttons">
+                  <button mat-fab color="accent" [disabled]="project.id === 1">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                  <button
+                    mat-fab
+                    color="primary"
+                    (click)="openDialogDescription(project)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </div>
+                <a data-toggle="modal">
+                  @if (project.id === 1) {
+                    <button mat-button (click)="goToFeaturedPRojectsPage()">
+                      <img
+                        [src]="project.imageURL"
+                        alt="project"
+                        [title]="toolTip"
+                      />
+                    </button>
+                  } @else {
+                    <button mat-button (click)="openDialog(project.id)">
+                      <img
+                        [src]="project.imageURL"
+                        alt="project"
+                        [title]="toolTip"
+                      />
+                    </button>
+                  }
+                  <h3>{{ project.viewHeading }}</h3>
+                  <p>{{ project.viewDescription }}</p>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

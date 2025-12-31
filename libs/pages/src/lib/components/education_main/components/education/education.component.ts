@@ -12,7 +12,6 @@ import { educationSelector } from '@portfolio-v2/state/selectors';
 @Component({
   selector: 'portfolio-v2-education',
   standalone: true,
-  imports: [],
   templateUrl: './education.component.html',
   styleUrl: './education.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

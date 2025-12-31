@@ -18,4 +18,8 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     path: 'experience',
     loadComponent: () => import('@portfolio-v2/admin').then((mod) => mod.AdminExperienceComponent),
   },
+  {
+    path: 'portfolio',
+    loadComponent: () => import('@portfolio-v2/admin').then((mod) => mod.PortfolioComponent),
+  },
 ];
