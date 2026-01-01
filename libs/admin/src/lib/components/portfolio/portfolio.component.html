@@ -14,7 +14,12 @@
             @for (project of projectView(); track $index) {
               <li class="bounceOut" data-t-show="4">
                 <div class="action-buttons">
-                  <button mat-fab color="accent" [disabled]="project.id === 1">
+                  <button
+                    mat-fab
+                    color="accent"
+                    [disabled]="project.id === 1"
+                    (click)="openDeleteDialog(project)"
+                  >
                     <mat-icon>delete</mat-icon>
                   </button>
                   <button

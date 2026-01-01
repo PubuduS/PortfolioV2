@@ -1,0 +1,31 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.container {
+  p {
+    color: $black;
+  }
+
+  h2 {
+    b {
+      color: $hot-flamingoes;
+    }
+  }
+
+  img {
+    .project-tile {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    .project-card {
+      max-width: 400px;
+      max-height: 400px;
+      object-fit: contain;
+    }
+  }
+
+  .success {
+    color: $electric-teal;
+    font-size: 4rem;
+  }
+}

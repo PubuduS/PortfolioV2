@@ -1,0 +1,79 @@
+<div class="container">
+  <h2 mat-dialog-title>
+    The following record will be deleted. <b>This action cannot be undone.</b>
+  </h2>
+  <mat-dialog-content class="mat-typography">
+    <h3>Please confirm to delete the following records:</h3>
+    @if (data.project) {
+      <div class="row">
+        <div class="col-8">
+          <p><strong>ID:</strong> {{ data.project.id }}</p>
+          <p><strong>Title:</strong> {{ data.project.viewHeading }}</p>
+          <p>
+            <strong>Description:</strong> {{ data.project.viewDescription }}
+          </p>
+        </div>
+        <div class="col-4">
+          <img
+            class="border border-dark border-2 project-tile"
+            [src]="data.project.imageURL"
+            alt="Project Image"
+          />
+        </div>
+      </div>
+
+      <h3>This action also will delete the following card data</h3>
+      @if (projectCard(); as dataRecord) {
+        <div class="row">
+          <div class="col-8">
+            <p><strong>Card ID:</strong> {{ dataRecord.id }}</p>
+            <p><strong>Card Title:</strong> {{ dataRecord.heading }}</p>
+            <p>
+              <strong>Card Description:</strong> {{ dataRecord.description }}
+            </p>
+          </div>
+          <div class="col-4">
+            <img
+              class="border border-dark border-2 project-card"
+              [src]="dataRecord.imageURL"
+              alt="Project Image"
+            />
+          </div>
+        </div>
+      }
+      @if ((isTileDeleteSuccess | async) && (isCardDeleteSuccess | async)) {
+        <div class="mt-2">
+          <mat-icon
+            class="success w-100 h-100 d-flex justify-content-center"
+            title="Changes saved"
+            >check_circle</mat-icon
+          >
+        </div>
+      }
+    } @else {
+      <p>No record to delete</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      mat-fab
+      extended
+      color="primary"
+      class="float-end"
+      [mat-dialog-close]="false"
+    >
+      <mat-icon>cancel</mat-icon>
+      Cancel
+    </button>
+    <button
+      mat-fab
+      extended
+      color="warn"
+      class="float-end"
+      (click)="deleteTile()"
+    >
+      <mat-icon>delete</mat-icon>
+      Delete
+    </button>
+  </mat-dialog-actions>
+</div>
