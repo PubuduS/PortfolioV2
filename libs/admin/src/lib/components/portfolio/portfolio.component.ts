@@ -16,6 +16,8 @@ import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
+import { DeletePortfolioTileComponent } from './components/delete-portfolio-tile/delete-portfolio-tile.component';
+
 /**
  * Portfolio Section
  */
@@ -69,6 +71,18 @@ export class PortfolioComponent {
         autoFocus: 'first-tabbable',
         restoreFocus: true,
         width: '600px',
+        data: { project },
+      },
+    );
+  }
+
+  protected openDeleteDialog(project: IProjectView): void {
+    this.dialog.open(
+      DeletePortfolioTileComponent,
+      {
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        width: '800px',
         data: { project },
       },
     );

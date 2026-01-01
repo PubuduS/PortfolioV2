@@ -76,9 +76,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   /** Returns true if the edit is successful */
   protected isEditSuccess = of(false);
 
-  /** Returns true if the delete is successful */
-  protected isDeleteSuccess = of(false);
-
   /** Upload Complete Flag */
   protected isUploadCompleted = false;
 
@@ -150,36 +147,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
     if (this.uploadProgressIntervalId !== undefined) {
       clearInterval(this.uploadProgressIntervalId);
     }
-  }
-
-  /**
-   * Delete the tile
-   */
-  protected deleteTile(): void {
-    if (!this.data.project.id) {
-      return;
-    }
-
-    // Remove from local array
-    const newProjectViewArray: IProjectView[] = [...this.projectView()!];
-    const index = newProjectViewArray.findIndex((project) => project.id === this.data.project.id);
-
-    if (index !== -1) {
-      newProjectViewArray.splice(index, 1);
-    }
-
-    // Delete from database
-    this.isDeleteSuccess = this.setDataService.deleteRecord(`project-icon-section/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`).pipe(
-      take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Update the store with the new array (without the deleted item)
-          this.store.dispatch(StateActions.portfolioCardsStateConnect());
-          return true;
-        }
-        return false;
-      }),
-    );
   }
 
   /**

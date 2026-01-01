@@ -35,6 +35,9 @@
       "@portfolio-v2/shared/validators": [
         "libs/shared/src/lib/validators/index.ts"
       ],
+      "@portfolio-v2/shared/test-helpers": [
+        "libs/shared/src/lib/test-helpers/index.ts"
+      ],
       "@portfolio-v2/state": ["libs/state/src/index.ts"],
       "@portfolio-v2/state/dataModels": [
         "libs/state/src/lib/data-models/index.ts"
