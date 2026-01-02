@@ -57,7 +57,11 @@ export class PortfolioComponent {
    */
   protected openDialog(id: number): void {
     this.store.dispatch(StateActions.projectCardIDStateUpdated({ selectedProjectCardID: id }));
-    this.dialog.open(ProjectCardsComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
+    this.dialog.open(ProjectCardsComponent, {
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      width: '800px',
+    });
   }
 
   /**

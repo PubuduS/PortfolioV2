@@ -24,3 +24,23 @@ export function urlValidator(): ValidatorFn {
     }
   };
 }
+
+/**
+ * Firebase URL validator
+ * @returns validator function
+ */
+export function firebaseURLValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    // Return null if empty or null
+    if (!control.value) return null;
+
+    // URL regex that allows Firebase Storage URLs with query parameters
+    const urlPattern = /^https?:\/\/.+$/;
+    try {
+      return urlPattern.test(control.value.toString()) ? null : { invalidURL: true };
+    } catch (error) {
+      // Fallback to basic validation if regex fails
+      return { invalidURL: true };
+    }
+  };
+}

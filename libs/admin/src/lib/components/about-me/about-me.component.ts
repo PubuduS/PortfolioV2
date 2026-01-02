@@ -36,7 +36,8 @@ import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
 import { urlValidator } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
-import { UploadPhotoComponent } from './components/upload-photo.component';
+import { IUploadPhotoConfig } from '../shared/types/upload-photo-config.interface';
+import { UploadPhotoComponent } from '../shared/upload-photo/upload-photo.component';
 
 /**
  * About me admin section
@@ -107,7 +108,22 @@ export class AboutMeComponent implements OnInit {
    * Open the photo upload dialog
    */
   protected openDialog(): void {
-    this.dialog.open(UploadPhotoComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
+    this.dialog.open(
+      UploadPhotoComponent,
+      {
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        data: {
+          title: 'Upload Profile Photo',
+          fieldPath: 'portfolio/about-me-section/profile/MyPhoto.webp/',
+          stateSelector: aboutMeSelector,
+          stateUpdateAction: (updatedData: any) => StateActions.aboutMeStateUpdated({
+            aboutMe: { ...this.aboutMeData(), ...updatedData },
+          }),
+          currentImageUrl: this.aboutMeData()?.imageSrc,
+        } as IUploadPhotoConfig,
+      },
+    );
   }
 
   /**

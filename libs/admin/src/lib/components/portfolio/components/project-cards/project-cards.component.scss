@@ -6,47 +6,72 @@
   border-radius: 15px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-}
-.card-model {
   max-width: 1200px;
-}
 
-.card-model .modal-body {
-  padding: 0;
-}
-.card-model button.close:hover {
-  opacity: 1 !important;
-}
-.card-model button.close {
-  position: absolute;
-  opacity: 1 !important;
-  color: $golden-bloom;
-  text-shadow: none;
-  font-size: 50px;
-  right: 10px;
-  top: 3px;
-}
-.card-model h1 {
-  margin: 0 0 20px;
-  font-weight: 600;
-  color: $icy-petal;
-  text-align: center;
-}
-.card-model p {
-  color: $black;
-  margin: 0 0 20px;
-}
+  .modal-body {
+    padding: 0;
+  }
 
-.description {
-  background-color: $oxford-blue;
-}
+  button.close {
+    position: absolute;
+    opacity: 1 !important;
+    color: $golden-bloom;
+    text-shadow: none;
+    font-size: 50px;
+    right: 10px;
+    top: 3px;
+    :hover {
+      opacity: 1 !important;
+    }
+  }
 
-.description p {
-  margin-top: 2%;
-  color: $white;
-}
+  h1 {
+    margin: 0 0 20px;
+    font-weight: 600;
+    color: $icy-petal;
+    text-align: center;
+  }
 
-.btnGroup {
-  justify-content: center;
-  background-color: $golden-bloom;
+  p {
+    color: $black;
+    margin: 0 0 20px;
+  }
+
+  .description {
+    background-color: $oxford-blue;
+    p {
+      margin-top: 2%;
+      color: $white;
+    }
+  }
+
+  label {
+    color: $golden-bloom;
+    font-weight: bolder;
+  }
+
+  .btnGroup {
+    justify-content: center;
+    background-color: $golden-bloom;
+  }
+
+  portfolio-display-validator-errors {
+    font-weight: bold;
+  }
+
+  .form-control:focus {
+    box-shadow:
+      inset 0 1px 4px $electric-aloe,
+      0 0 5px 2px $electric-aloe;
+  }
+
+  .progress-label {
+    color: $oxford-blue;
+    font-weight: bolder;
+  }
+
+  .success {
+    color: $electric-teal;
+    font-size: 2rem;
+  }
 }
