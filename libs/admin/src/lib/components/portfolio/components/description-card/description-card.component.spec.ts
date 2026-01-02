@@ -182,16 +182,11 @@ describe('DescriptionCardComponent', () => {
 
   describe('Component Cleanup', () => {
     it('should unsubscribe from subscriptions on destroy', () => {
-      const unsubscribeSpy1 = jest.fn();
-      const unsubscribeSpy2 = jest.fn();
-
-      component['myImageSubscription'] = { unsubscribe: unsubscribeSpy1 } as any;
-      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy2 } as any;
+      const unsubscribeSpy = jest.fn();
+      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy } as any;
 
       callComponentMethod(component, 'ngOnDestroy');
-
-      expect(unsubscribeSpy1).toHaveBeenCalled();
-      expect(unsubscribeSpy2).toHaveBeenCalled();
+      expect(unsubscribeSpy).toHaveBeenCalled();
     });
 
     it('should clear upload progress interval on destroy', () => {

@@ -108,6 +108,7 @@ describe('PortfolioComponent', () => {
       const expectedConfig = {
         autoFocus: 'first-tabbable',
         restoreFocus: true,
+        width: '800px',
       };
 
       callComponentMethod(component, 'openDialog', projectId);

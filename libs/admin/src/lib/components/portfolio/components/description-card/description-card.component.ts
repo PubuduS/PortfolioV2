@@ -88,9 +88,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   /** Base Path Docs */
   private readonly basePathForDocs = 'project-icon-section';
 
-  /** My Image Subscription */
-  private myImageSubscription!: Subscription;
-
   /** Image URL Subscription */
   private imageUrlSubscription!: Subscription;
 
@@ -138,9 +135,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnDestroy(): void {
-    if (this.myImageSubscription) {
-      this.myImageSubscription.unsubscribe();
-    }
     if (this.imageUrlSubscription) {
       this.imageUrlSubscription.unsubscribe();
     }
@@ -205,7 +199,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
     this.isEditSuccess = this.saveDataRecord(
       databaseDocPath,
       newProjectView,
-      projectViewData,
       title,
     );
   }
@@ -260,14 +253,12 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * Persist project changes to the database
    * @param databaseDocPath path to the project document
    * @param newProjectView updated project view
-   * @param projectViewData current project view data
    * @param title new project title
    * @returns observable of success status
    */
   private saveDataRecord(
     databaseDocPath: string,
     newProjectView: IProjectView,
-    projectViewData: IProjectView[],
     title: string,
   ): Observable<boolean> {
     return this.setDataService

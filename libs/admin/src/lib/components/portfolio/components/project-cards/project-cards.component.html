@@ -1,54 +1,214 @@
 <div class="card-model">
   @if (projectCard(); as dataRecord) {
     <h1 mat-dialog-title>{{ dataRecord.heading }}</h1>
-    <mat-dialog-content class="mat-typography">
-      <div class="row">
-        <div class="col-md-4">
-          <img src="{{ dataRecord.imageURL }}" />
+    <form [formGroup]="cardEditorForm!">
+      <mat-dialog-content class="mat-typography">
+        <div class="row">
+          <div class="col-6">
+            <label class="fw-bold mb-2">New Photo (Click)</label>
+            <img src="{{ imagePreview }}" (click)="cardInput.click()" />
+            <input
+              type="file"
+              #cardInput
+              hidden
+              class="form-control"
+              formControlName="filePicker"
+              accept="image/webp"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+          <div class="col-6">
+            <label class="fw-bold mb-2">Current Photo</label>
+            <img src="{{ dataRecord.imageURL }}" class="img-fluid" />
+          </div>
         </div>
-        <div class="col-md-8 description">
-          <section>
-            <p>{{ dataRecord.description }}</p>
-            <p>
-              Technologies: <b>{{ dataRecord.tools }}</b>
-            </p>
-          </section>
+        <div class="row my-2 description">
+          <div class="col-12">
+            <label for="description" class="form-label mt-2">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              formControlName="description"
+              rows="4"
+              placeholder="Enter project description"
+            ></textarea>
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('description')"
+              errorKey="required"
+              message="A valid description is required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
+
+          <div class="col-12">
+            <label class="fw-bold my-2"> Technologies:</label>
+            <input
+              id="technologies"
+              formControlName="technologies"
+              class="form-control mb-3"
+              type="text"
+              placeholder="Technologies used in the project"
+            />
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('technologies')"
+              errorKey="required"
+              message="A valid comma separated list of technologies are required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
+
+          <div class="col-6">
+            <label class="fw-bold my-2"> Codebase:</label>
+            <input
+              id="codebase"
+              formControlName="codebase"
+              class="form-control mb-3"
+              type="text"
+              placeholder="A link to the codebase [Optional]"
+            />
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('codebase')"
+              errorKey="invalidURL"
+              message="A valid URL is required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
+          <div class="col-6">
+            <label class="fw-bold my-2"> Youtube:</label>
+            <input
+              id="youtube"
+              formControlName="youtube"
+              class="form-control mb-3"
+              type="text"
+              placeholder="A youtube link for demo [Optional]"
+            />
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('youtube')"
+              errorKey="invalidURL"
+              message="A valid URL is required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
+          <div class="col-6">
+            <label class="fw-bold my-2"> Screenshot:</label>
+            <div class="d-flex">
+              <input
+                id="screenshot"
+                formControlName="screenshot"
+                class="form-control mb-3 me-2"
+                type="text"
+                placeholder="A link to the screenshot [Optional]"
+              />
+              <button
+                mat-mini-fab
+                color="primary"
+                class="flex-shrink-0"
+                (click)="openUploadPhotoPanel()"
+              >
+                <mat-icon>upload</mat-icon>
+              </button>
+            </div>
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('screenshot')"
+              errorKey="invalidURL"
+              message="A valid URL is required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
+          <div class="col-6">
+            <label class="fw-bold my-2"> Documentation:</label>
+            <input
+              id="documentation"
+              formControlName="documentation"
+              class="form-control mb-3"
+              type="text"
+              placeholder="A link to project documentation [Optional]"
+            />
+            <portfolio-display-validator-errors
+              [control]="cardEditorForm.get('documentation')"
+              errorKey="invalidURL"
+              message="A valid URL is required"
+            >
+            </portfolio-display-validator-errors>
+          </div>
         </div>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions class="btnGroup" align="end">
-      <a
-        mat-button
-        class="btn"
-        disabled="{{ dataRecord.gitDisable }}"
-        href="{{ dataRecord.githubURL }}"
-        target="_blank"
-        ><mat-icon>code</mat-icon>CodeBase</a
-      >
-      <a
-        mat-button
-        class="btn"
-        disabled="{{ dataRecord.demoDisable }}"
-        href="{{ dataRecord.demoURL }}"
-        target="_blank"
-        ><mat-icon>ondemand_video</mat-icon>YouTube</a
-      >
-      <a
-        mat-button
-        class="btn"
-        disabled="{{ dataRecord.ssDisable }}"
-        href="{{ dataRecord.screenshotURL }}"
-        target="_blank"
-        ><mat-icon>screenshot_monitor</mat-icon>ScreenShots</a
-      >
-      <a
-        mat-button
-        class="btn"
-        disabled="{{ dataRecord.docDisable }}"
-        href="{{ dataRecord.documentationURL }}"
-        target="_blank"
-        ><mat-icon>document_scanner</mat-icon>Documentation</a
-      >
-    </mat-dialog-actions>
+        <!-- Progress Status Section -->
+        <div class="row mb-3 d-flex justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <div
+              class="d-flex align-items-center justify-content-between flex-wrap"
+            >
+              <span class="progress-label">
+                File Upload Progress: {{ progressValue | number: '2.2-2' }}%
+              </span>
+              @if (isUploadCompleted) {
+                <mat-icon class="check" title="Upload complete"
+                  >check_circle</mat-icon
+                >
+              }
+            </div>
+            @if (isEditSuccess | async) {
+              <div class="mt-2">
+                <mat-icon
+                  class="success w-100 h-100 d-flex justify-content-center"
+                  title="Changes saved"
+                  >check_circle</mat-icon
+                >
+              </div>
+            }
+          </div>
+        </div>
+        <div class="buttons d-flex float-end">
+          <button
+            mat-fab
+            extended
+            color="primary"
+            class="mx-2"
+            (click)="updateData()"
+          >
+            <mat-icon>save</mat-icon>
+            <span>Save</span>
+          </button>
+          <button mat-fab extended mat-dialog-close color="accent">
+            <mat-icon>cancel</mat-icon>
+            <span>Cancel</span>
+          </button>
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions class="btnGroup" align="end">
+        <a
+          mat-button
+          class="btn"
+          disabled="{{ dataRecord.gitDisable }}"
+          href="{{ dataRecord.githubURL }}"
+          target="_blank"
+          ><mat-icon>code</mat-icon>CodeBase</a
+        >
+        <a
+          mat-button
+          class="btn"
+          disabled="{{ dataRecord.demoDisable }}"
+          href="{{ dataRecord.demoURL }}"
+          target="_blank"
+          ><mat-icon>ondemand_video</mat-icon>YouTube</a
+        >
+        <a
+          mat-button
+          class="btn"
+          disabled="{{ dataRecord.ssDisable }}"
+          href="{{ dataRecord.screenshotURL }}"
+          target="_blank"
+          ><mat-icon>screenshot_monitor</mat-icon>ScreenShots</a
+        >
+        <a
+          mat-button
+          class="btn"
+          disabled="{{ dataRecord.docDisable }}"
+          href="{{ dataRecord.documentationURL }}"
+          target="_blank"
+          ><mat-icon>document_scanner</mat-icon>Documentation</a
+        >
+      </mat-dialog-actions>
+    </form>
   }
 </div>
