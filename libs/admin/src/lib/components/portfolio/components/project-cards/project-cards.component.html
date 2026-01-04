@@ -12,14 +12,18 @@
               #cardInput
               hidden
               class="form-control"
-              formControlName="filePicker"
               accept="image/webp"
               (change)="onFileSelected($event)"
             />
           </div>
           <div class="col-6">
             <label class="fw-bold mb-2">Current Photo</label>
-            <img src="{{ dataRecord.imageURL }}" class="img-fluid" />
+            <img
+              src="{{
+                dataRecord.imageURL ? dataRecord.imageURL : defaultImageSrc
+              }}"
+              class="img-fluid"
+            />
           </div>
         </div>
         <div class="row my-2 description">

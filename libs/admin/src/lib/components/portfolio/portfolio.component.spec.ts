@@ -192,7 +192,7 @@ describe('PortfolioComponent', () => {
       const compiled = fixture.nativeElement;
       const projectItems = compiled.querySelectorAll('li');
 
-      expect(projectItems.length).toBe(mockData.length);
+      expect(projectItems.length).toBe(mockData.length + 1); // +1 for the "Add" button
     });
 
     it('should render project headings and descriptions', () => {
@@ -200,8 +200,8 @@ describe('PortfolioComponent', () => {
       const headings = compiled.querySelectorAll('h3');
       const descriptions = compiled.querySelectorAll('p');
 
-      expect(headings.length).toBe(mockData.length);
-      expect(descriptions.length).toBe(mockData.length);
+      expect(headings.length).toBe(mockData.length + 1); // +1 for the "Add" button
+      expect(descriptions.length).toBe(mockData.length + 1); // +1 for the "Add" button
 
       expect(headings[0].textContent.trim()).toBe(mockData[0].viewHeading);
       expect(descriptions[0].textContent.trim()).toBe(mockData[0].viewDescription);
@@ -254,7 +254,7 @@ describe('PortfolioComponent', () => {
       const compiled = fixture.nativeElement;
       const images = compiled.querySelectorAll('img');
 
-      expect(images.length).toBe(mockData.length);
+      expect(images.length).toBe(mockData.length + 1); // +1 for the "Add" button
       expect(images[0].getAttribute('alt')).toBe('project');
       expect(images[0].title).toBe(getComponentProperty(component, 'toolTip'));
     });
@@ -263,13 +263,16 @@ describe('PortfolioComponent', () => {
       const compiled = fixture.nativeElement;
       const images = compiled.querySelectorAll('img');
 
-      expect(images.length).toBe(mockData.length);
+      expect(images.length).toBe(mockData.length + 1); // +1 for the "Add" button
 
-      images.forEach((img: HTMLImageElement, index: number) => {
-        expect(img.src).toContain(mockData[index].imageURL);
-        expect(img.alt).toBe('project');
-        expect(img.title).toBe(getComponentProperty(component, 'toolTip'));
-      });
+      // Check only the project images (exclude the "Add" button image)
+      Array.from(images).slice(0, mockData.length)
+        .forEach((img, index) => {
+          const imageElement = img as HTMLImageElement;
+          expect(imageElement.src).toContain(mockData[index].imageURL);
+          expect(imageElement.alt).toBe('project');
+          expect(imageElement.title).toBe(getComponentProperty(component, 'toolTip'));
+        });
     });
   });
 

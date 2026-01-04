@@ -17,6 +17,7 @@ import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
 import { DeletePortfolioTileComponent } from './components/delete-portfolio-tile/delete-portfolio-tile.component';
+import { AddTileComponent } from '../shared/add-tile/add-tile.component';
 
 /**
  * Portfolio Section
@@ -50,6 +51,17 @@ export class PortfolioComponent {
     private store: Store,
     public dialog: MatDialog,
   ) {}
+
+  /**
+   * Add new record
+   */
+  protected addNewRecord(): void {
+    this.dialog.open(AddTileComponent, {
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      width: '600px',
+    });
+  }
 
   /**
    * Open dialog

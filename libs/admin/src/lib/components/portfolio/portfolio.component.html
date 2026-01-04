@@ -53,6 +53,22 @@
                 </a>
               </li>
             }
+            <li class="bounceOut" data-t-show="4">
+              <a data-toggle="modal">
+                <button mat-button (click)="addNewRecord()">
+                  <img
+                    src="assets/images/portfolio/add.ico"
+                    width="120"
+                    height="120"
+                    alt="project"
+                    [title]="toolTip"
+                  />
+                </button>
+
+                <h3 class="mt-1">Add</h3>
+                <p>Add a New Record</p>
+              </a>
+            </li>
           </ul>
         </div>
       </div>
