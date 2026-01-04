@@ -2,12 +2,13 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Inject,
   OnDestroy,
   OnInit,
 } from '@angular/core';
 import {
+  MAT_DIALOG_DATA,
   MatDialog,
-  MatDialogActions,
   MatDialogClose,
   MatDialogContent,
   MatDialogModule,
@@ -30,11 +31,7 @@ import {
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
-import {
-  projectCardSelector,
-  selectedCardIDSelector,
-  portfolioCardsSelector,
-} from '@portfolio-v2/state/selectors';
+import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import {
   GetDataService,
   SetDataService,
@@ -47,17 +44,16 @@ import {
 import { StateActions } from '@portfolio-v2/state';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
-import { UploadPhotoComponent } from '../../../shared/upload-photo/upload-photo.component';
+import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
 
 /**
  * Project Cards Component
  */
 @Component({
-  selector: 'admin-project-cards',
+  selector: 'admin-add-portfolio-record',
   imports: [
     CommonModule,
     MatDialogContent,
-    MatDialogActions,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
@@ -65,13 +61,13 @@ import { UploadPhotoComponent } from '../../../shared/upload-photo/upload-photo.
     ReactiveFormsModule,
     DisplayValidatorErrorsComponent,
   ],
-  templateUrl: './project-cards.component.html',
-  styleUrl: './project-cards.component.scss',
+  templateUrl: './add-portfolio-record.component.html',
+  styleUrl: './add-portfolio-record.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProjectCardsComponent implements OnInit, OnDestroy {
+export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /** Card Editor Form */
-  protected cardEditorForm!: FormGroup;
+  protected cardAddForm!: FormGroup;
 
   /** Default Image URL */
   protected readonly defaultImageSrc = 'https://placehold.co/300x200.png';
@@ -85,23 +81,14 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   /** Selected Image URL */
   protected imageUrl = '';
 
-  /** Selected file for upload */
-  protected selectedFile: File | null = null;
-
   /** Upload Complete Flag */
   protected isUploadCompleted = false;
 
-  /** Selected card ID */
-  private readonly cardId = this.store.selectSignal(selectedCardIDSelector)();
-
-  /** Selected project card */
-  protected readonly projectCard = this.store.selectSignal(projectCardSelector(this.cardId));
+  /** Image Upload Progress Value */
+  protected progressValue = 0;
 
   /** Image URL Subscription */
   private imageUrlSubscription!: Subscription;
-
-  /** Image Upload Progress Value */
-  protected progressValue = 0;
 
   /** Upload Progress Interval ID */
   private uploadProgressIntervalId: number | undefined;
@@ -109,6 +96,9 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   /**
    * constructor
    * @param dialog dialog ref
+   * @param data data
+   * @param data.currentId current id
+   * @param data.heading heading
    * @param cdr change detector ref
    * @param formBuilder form builder
    * @param getDataService get data service
@@ -118,6 +108,10 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    */
   constructor(
     public dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: {
+      currentId: number,
+      heading: string,
+    },
     private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private getDataService: GetDataService,
@@ -142,13 +136,13 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    this.cardEditorForm = this.formBuilder.group({
-      description: [this.projectCard()?.description ?? '', [Validators.required]],
-      technologies: [this.projectCard()?.tools ?? '', [Validators.required]],
-      codebase: [this.projectCard()?.githubURL ?? '', [urlValidator()]],
-      youtube: [this.projectCard()?.demoURL ?? '', [urlValidator()]],
-      screenshot: [this.projectCard()?.screenshotURL ?? '', [firebaseURLValidator()]],
-      documentation: [this.projectCard()?.documentationURL ?? '', [urlValidator()]],
+    this.cardAddForm = this.formBuilder.group({
+      description: ['', [Validators.required]],
+      technologies: ['', [Validators.required]],
+      codebase: ['', [urlValidator()]],
+      youtube: ['', [urlValidator()]],
+      screenshot: ['', [firebaseURLValidator()]],
+      documentation: ['', [urlValidator()]],
     });
   }
 
@@ -161,7 +155,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
     if (event.target instanceof HTMLInputElement) {
       const file = event.target.files?.[0];
       if (file) {
-        this.selectedFile = file; // Store the selected file
         const reader = new FileReader();
         reader.onload = () => {
           this.imageUrl = reader.result as string;
@@ -177,7 +170,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * Open dialog description
    */
   protected openUploadPhotoPanel(): void {
-    const imageName = `ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Screenshot.webp`;
+    const imageName = `ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Screenshot.webp`;
     const fieldPath = `portfolio/project-screenshots/normal/${imageName}/`;
 
     // Get all project cards and create update action
@@ -186,7 +179,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       if (allProjectCards && Array.isArray(allProjectCards)) {
         // Update the specific card with new screenshot URL
         const updatedCards = allProjectCards.map((card: any) => (
-          card.id === this.cardId ? { ...card, screenshotURL: updatedData.imageSrc } : card
+          card.id === this.data.currentId ? { ...card, screenshotURL: updatedData.imageSrc } : card
         ));
         return StateActions.projectCardsStateUpdated({ projectCards: updatedCards });
       }
@@ -201,11 +194,11 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
         data: {
           title: 'Upload Project Screenshot',
           fieldPath,
-          currentImageUrl: this.projectCard()?.screenshotURL ?? this.defaultImageSrc,
+          currentImageUrl: this.defaultImageSrc,
           stateUpdateAction,
           onImageUploaded: (imageUrl: string) => {
             // Update the form field with the uploaded image URL
-            this.cardEditorForm.patchValue({
+            this.cardAddForm.patchValue({
               screenshot: imageUrl,
             });
           },
@@ -215,17 +208,17 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update project card data
+   * Add project card data
    */
-  protected updateData(): void {
-    if (!this.cardEditorForm.valid) return;
+  protected addData(): void {
+    if (!this.cardAddForm.valid) return;
 
     const {
       description, technologies, codebase, youtube, screenshot, documentation,
-    } = this.cardEditorForm.value;
+    } = this.cardAddForm.value;
 
-    const fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
-    const databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
+    const fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
+    const databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
     const hasNewFile = this.imageUrl && this.imageUrl !== '' && this.imageUrl !== this.defaultImageSrc;
@@ -236,10 +229,11 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
     // Only update imageURL if a new photo was provided, otherwise keep existing
     const imageURL = hasNewFile
       ? this.imageUrl
-      : this.projectCard()?.imageURL ?? this.defaultImageSrc;
+      : this.defaultImageSrc;
 
     const updatedCard: IProjectCard = {
-      ...this.projectCard()!,
+      id: this.data.currentId,
+      heading: this.data.heading,
       imageURL,
       description,
       tools: technologies,
@@ -307,6 +301,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         }
         this.store.dispatch(StateActions.portfolioCardsStateConnect());
+        this.store.dispatch(StateActions.projectCardsStateConnect());
         return result === 'successfull';
       }),
     );

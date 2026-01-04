@@ -1,0 +1,159 @@
+<div class="card-model">
+  <h1 mat-dialog-title>Tile Editor</h1>
+  <form [formGroup]="tileEditorForm!">
+    <mat-dialog-content class="mat-typography">
+      <!-- Image Preview Section -->
+      <div class="row d-flex justify-content-center g-3">
+        <div
+          class="col-12 col-sm-6 col-md-4 d-flex flex-column align-items-center"
+        >
+          <label class="fw-bold mb-2">New Icon (Click)</label>
+          <img
+            src="{{ imagePreview }}"
+            (click)="fileInput.click()"
+            class="img-fluid rounded cursor-pointer"
+            style="max-width: 120px; object-fit: contain"
+            alt="New Icon Preview"
+          />
+          <input
+            type="file"
+            #fileInput
+            hidden
+            class="form-control"
+            accept="image/webp"
+            (change)="onFileSelected($event)"
+          />
+        </div>
+        <div
+          class="col-12 col-sm-6 col-md-4 d-flex flex-column align-items-center"
+        >
+          <label class="fw-bold mb-2">Current Icon</label>
+          <img
+            src="{{ newUpdatedImage }}"
+            class="img-fluid rounded"
+            style="max-width: 120px; object-fit: contain"
+            alt="Current Icon"
+          />
+        </div>
+      </div>
+
+      <!-- Form Fields Section -->
+      <div class="row d-flex justify-content-center g-3 mt-2">
+        <div class="col-12 col-md-10 col-lg-8">
+          <label for="title" class="form-label">Title</label>
+          <input
+            id="title"
+            formControlName="title"
+            class="form-control"
+            type="text"
+            placeholder="Enter project title"
+          />
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center g-3">
+        <div class="col-12 col-md-10 col-lg-8">
+          <label for="description" class="form-label mt-2">Description</label>
+          <textarea
+            id="description"
+            class="form-control"
+            formControlName="description"
+            rows="4"
+            placeholder="Enter project description"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Progress Bar Section -->
+      <div class="row my-3 d-flex justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+          <mat-progress-bar
+            class="w-100 bar"
+            mode="determinate"
+            [value]="progressValue"
+          ></mat-progress-bar>
+        </div>
+      </div>
+
+      <!-- Progress Status Section -->
+      <div class="row mb-3 d-flex justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div
+            class="d-flex align-items-center justify-content-between flex-wrap"
+          >
+            <span class="progress-label">
+              File Upload Progress: {{ progressValue | number: '2.2-2' }}%
+            </span>
+            @if (isUploadCompleted) {
+              <mat-icon class="check" title="Upload complete"
+                >check_circle</mat-icon
+              >
+            }
+          </div>
+          @if (isEditSuccess | async) {
+            <div class="mt-2">
+              <mat-icon
+                class="success w-100 h-100 d-flex justify-content-center"
+                title="Changes saved"
+                >check_circle</mat-icon
+              >
+            </div>
+          }
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <!-- Action Buttons -->
+    <mat-dialog-actions
+      class="btnGroup d-flex justify-content-end gap-2 flex-wrap p-3"
+    >
+      @if ((isEditSuccess | async) === false) {
+        <button
+          mat-fab
+          extended
+          color="primary"
+          (click)="saveChanges()"
+          class="flex-shrink-0"
+        >
+          <mat-icon>add</mat-icon>
+          <span class="d-none d-sm-inline ms-2">Add</span>
+        </button>
+      } @else {
+        <button
+          mat-fab
+          extended
+          color="primary"
+          (click)="goToCardEditor()"
+          class="flex-shrink-0"
+        >
+          <mat-icon>arrow_right_alt</mat-icon>
+          <span class="d-none d-sm-inline ms-2">Next</span>
+        </button>
+      }
+
+      @if ((isEditSuccess | async) === false) {
+        <button
+          mat-fab
+          extended
+          mat-dialog-close
+          color="accent"
+          class="flex-shrink-0"
+        >
+          <mat-icon>cancel</mat-icon>
+          <span class="d-none d-sm-inline ms-2">Cancel</span>
+        </button>
+      } @else {
+        <button
+          mat-fab
+          extended
+          color="primary"
+          (click)="deleteTile()"
+          class="flex-shrink-0"
+        >
+          <mat-icon>cancel</mat-icon>
+          <span class="d-none d-sm-inline ms-2">Cancel</span>
+        </button>
+      }
+    </mat-dialog-actions>
+  </form>
+</div>

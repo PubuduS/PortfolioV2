@@ -1,0 +1,177 @@
+<div class="card-model">
+  <h1 mat-dialog-title>Add a New Record</h1>
+  <form [formGroup]="cardAddForm!">
+    <mat-dialog-content class="mat-typography">
+      <div class="row">
+        <div class="col-6">
+          <label class="fw-bold mb-2">New Photo (Click)</label>
+          <img src="{{ imagePreview }}" (click)="cardInput.click()" />
+          <input
+            type="file"
+            #cardInput
+            hidden
+            class="form-control"
+            accept="image/webp"
+            (change)="onFileSelected($event)"
+          />
+        </div>
+        <div class="col-6">
+          <label class="fw-bold mb-2">Current Photo</label>
+          <img src="{{ defaultImageSrc }}" class="img-fluid" />
+        </div>
+      </div>
+      <div class="row my-2 description">
+        <div class="col-12">
+          <label for="description" class="form-label mt-2">Description</label>
+          <textarea
+            id="description"
+            class="form-control"
+            formControlName="description"
+            rows="4"
+            placeholder="Enter project description"
+          ></textarea>
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('description')"
+            errorKey="required"
+            message="A valid description is required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+
+        <div class="col-12">
+          <label class="fw-bold my-2"> Technologies:</label>
+          <input
+            id="technologies"
+            formControlName="technologies"
+            class="form-control mb-3"
+            type="text"
+            placeholder="Technologies used in the project"
+          />
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('technologies')"
+            errorKey="required"
+            message="A valid comma separated list of technologies are required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+
+        <div class="col-6">
+          <label class="fw-bold my-2"> Codebase:</label>
+          <input
+            id="codebase"
+            formControlName="codebase"
+            class="form-control mb-3"
+            type="text"
+            placeholder="A link to the codebase [Optional]"
+          />
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('codebase')"
+            errorKey="invalidURL"
+            message="A valid URL is required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+        <div class="col-6">
+          <label class="fw-bold my-2"> Youtube:</label>
+          <input
+            id="youtube"
+            formControlName="youtube"
+            class="form-control mb-3"
+            type="text"
+            placeholder="A youtube link for demo [Optional]"
+          />
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('youtube')"
+            errorKey="invalidURL"
+            message="A valid URL is required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+        <div class="col-6">
+          <label class="fw-bold my-2"> Screenshot:</label>
+          <div class="d-flex">
+            <input
+              id="screenshot"
+              formControlName="screenshot"
+              class="form-control mb-3 me-2"
+              type="text"
+              placeholder="A link to the screenshot [Optional]"
+            />
+            <button
+              mat-mini-fab
+              color="primary"
+              class="flex-shrink-0"
+              (click)="openUploadPhotoPanel()"
+            >
+              <mat-icon>upload</mat-icon>
+            </button>
+          </div>
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('screenshot')"
+            errorKey="invalidURL"
+            message="A valid URL is required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+        <div class="col-6">
+          <label class="fw-bold my-2"> Documentation:</label>
+          <input
+            id="documentation"
+            formControlName="documentation"
+            class="form-control mb-3"
+            type="text"
+            placeholder="A link to project documentation [Optional]"
+          />
+          <portfolio-display-validator-errors
+            [control]="cardAddForm.get('documentation')"
+            errorKey="invalidURL"
+            message="A valid URL is required"
+          >
+          </portfolio-display-validator-errors>
+        </div>
+      </div>
+      <!-- Progress Status Section -->
+      <div class="row mb-3 d-flex justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div
+            class="d-flex align-items-center justify-content-between flex-wrap"
+          >
+            <span class="progress-label">
+              File Upload Progress: {{ progressValue | number: '2.2-2' }}%
+            </span>
+            @if (isUploadCompleted) {
+              <mat-icon class="check" title="Upload complete"
+                >check_circle</mat-icon
+              >
+            }
+          </div>
+          @if (isEditSuccess | async) {
+            <div class="mt-2">
+              <mat-icon
+                class="success w-100 h-100 d-flex justify-content-center"
+                title="Changes saved"
+                >check_circle</mat-icon
+              >
+            </div>
+          }
+        </div>
+      </div>
+      <div class="buttons d-flex float-end">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="mx-2"
+          (click)="addData()"
+        >
+          <mat-icon>add</mat-icon>
+          <span>Add</span>
+        </button>
+        <button mat-fab extended mat-dialog-close color="accent">
+          <mat-icon>cancel</mat-icon>
+          <span>Cancel</span>
+        </button>
+      </div>
+    </mat-dialog-content>
+  </form>
+</div>

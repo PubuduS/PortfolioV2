@@ -13,8 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import {
   map,
-  take,
   of,
+  forkJoin,
+  catchError,
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
@@ -42,16 +43,13 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeletePortfolioTileComponent {
-  /** Returns true if the tile delete is successful */
-  protected isTileDeleteSuccess = of(false);
-
-  /** Returns true if the card delete is successful */
-  protected isCardDeleteSuccess = of(false);
-
   /** Selected project card */
   protected readonly projectCard = this.store.selectSignal(
     projectCardSelector(this.data.project.id),
   );
+
+  /** Returns true if the tile delete is successful */
+  protected isOverallSuccess = false;
 
   /**
    * constructor
@@ -71,34 +69,52 @@ export class DeletePortfolioTileComponent {
   ) {}
 
   /**
-   * Delete the tile
+   * Delete the tile and all associated data
    */
   protected deleteTile(): void {
     if (!this.data.project.id) {
       return;
     }
 
-    // Delete from database
-    this.isTileDeleteSuccess = this.setDataService.deleteRecord(`project-icon-section/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`).pipe(
-      take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Update the store with the new array (without the deleted item)
-          this.store.dispatch(StateActions.portfolioCardsStateConnect());
-          return true;
-        }
-        return false;
-      }),
-    );
+    const projectId = this.data.project.id;
+    const paddedId = this.utility.getPaddedDigits(projectId, 2);
 
-    this.isCardDeleteSuccess = this.setDataService.deleteRecord(`project-data-section/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`).pipe(
-      take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          return true;
+    // Combine all delete operations into one
+    const deleteOperations = [
+      // Delete icon file from storage (optional - don't fail if doesn't exist)
+      this.setDataService.deleteFileFromStorage(`portfolio/portfolio-tiles/ID-${paddedId}-Icon.webp`).pipe(
+        map((result) => result === 'successfull'),
+        // Treat storage delete as optional (return true even if file doesn't exist)
+        catchError(() => of(true)),
+      ),
+
+      // Delete icon metadata from database
+      this.setDataService.deleteRecord(`project-icon-section/project-${paddedId}/`).pipe(
+        map((result) => result === 'successfull'),
+      ),
+
+      // Delete project data from database
+      this.setDataService.deleteRecord(`project-data-section/project-${paddedId}/`).pipe(
+        map((result) => result === 'successfull'),
+      ),
+    ];
+
+    // Execute all delete operations in parallel and wait for all to complete
+    forkJoin(deleteOperations).subscribe({
+      next: ([storageSuccess, iconSuccess, cardSuccess]) => {
+        // Only consider successful if both database operations succeed
+        // Storage delete is optional (may not exist)
+        this.isOverallSuccess = iconSuccess && cardSuccess && storageSuccess;
+
+        if (this.isOverallSuccess) {
+          // Update the store to reflect the deletion
+          this.store.dispatch(StateActions.portfolioCardsStateConnect());
+          this.dialogRef.close();
         }
-        return false;
-      }),
-    );
+      },
+      error: (_error) => {
+        this.dialogRef.close(false);
+      },
+    });
   }
 }

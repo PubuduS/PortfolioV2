@@ -3,6 +3,7 @@ import {
   ref,
   Storage,
   uploadBytesResumable,
+  deleteObject,
 } from '@angular/fire/storage';
 import {
   Firestore,
@@ -146,6 +147,19 @@ export class SetDataService {
   public deleteRecord(path: string): Observable<string> {
     const docRef = doc(this.firestore, path);
     return from(deleteDoc(docRef)).pipe(
+      map(() => 'successfull'),
+      catchError((error) => of(`error ${error}`)),
+    );
+  }
+
+  /**
+   * Delete file from firebase storage
+   * @param filePath file path in storage
+   * @returns Observable that returns success status
+   */
+  public deleteFileFromStorage(filePath: string): Observable<string> {
+    const storageRef = ref(this.storage, filePath);
+    return from(deleteObject(storageRef)).pipe(
       map(() => 'successfull'),
       catchError((error) => of(`error ${error}`)),
     );
