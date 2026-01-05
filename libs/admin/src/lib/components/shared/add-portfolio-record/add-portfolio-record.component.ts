@@ -51,6 +51,7 @@ import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
  */
 @Component({
   selector: 'admin-add-portfolio-record',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogContent,

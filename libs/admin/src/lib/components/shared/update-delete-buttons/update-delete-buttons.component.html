@@ -1,0 +1,39 @@
+@if (config().isVerticalLayout) {
+  <div class="action-buttons">
+    <button
+      mat-fab
+      color="accent"
+      [disabled]="config().deleteButtonDisabled"
+      (click)="config().deleteButtonClick?.()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button
+      mat-fab
+      color="primary"
+      [disabled]="config().editButtonDisabled"
+      (click)="config().editButtonClick?.()"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+} @else {
+  <div class="action-buttons horizontal row">
+    <button
+      mat-fab
+      color="accent"
+      [disabled]="config().deleteButtonDisabled"
+      (click)="config().deleteButtonClick?.()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button
+      mat-fab
+      color="primary"
+      [disabled]="config().editButtonDisabled"
+      (click)="config().editButtonClick?.()"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+}

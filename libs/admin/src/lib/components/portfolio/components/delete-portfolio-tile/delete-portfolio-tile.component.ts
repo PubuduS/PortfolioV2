@@ -32,6 +32,7 @@ import {
  */
 @Component({
   selector: 'admin-delete-portfolio-tile',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,
