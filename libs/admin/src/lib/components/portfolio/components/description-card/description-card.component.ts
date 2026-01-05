@@ -46,6 +46,7 @@ import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
  */
 @Component({
   selector: 'admin-description-card',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogContent,

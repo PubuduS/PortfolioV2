@@ -52,6 +52,7 @@ import { newProjectRecordIdSelector } from '../selectors/new-project-record-id.s
  */
 @Component({
   selector: 'admin-add-tile',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogContent,
@@ -125,6 +126,9 @@ export class AddTileComponent implements OnInit, OnDestroy {
   /** Upload Progress Interval ID */
   private uploadProgressIntervalId: number | undefined;
 
+  /** Upload Timeout ID */
+  private uploadTimeoutId: number | undefined;
+
   /**
    * constructor
    * @param cdr change detector ref
@@ -166,6 +170,9 @@ export class AddTileComponent implements OnInit, OnDestroy {
     }
     if (this.uploadProgressIntervalId !== undefined) {
       clearInterval(this.uploadProgressIntervalId);
+    }
+    if (this.uploadTimeoutId !== undefined) {
+      clearTimeout(this.uploadTimeoutId);
     }
   }
 
@@ -340,6 +347,12 @@ export class AddTileComponent implements OnInit, OnDestroy {
           clearInterval(this.uploadProgressIntervalId);
           this.uploadProgressIntervalId = undefined;
 
+          // Clear the timeout since upload completed successfully
+          if (this.uploadTimeoutId !== undefined) {
+            clearTimeout(this.uploadTimeoutId);
+            this.uploadTimeoutId = undefined;
+          }
+
           // Now get the download URL
           const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
           this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
@@ -359,12 +372,16 @@ export class AddTileComponent implements OnInit, OnDestroy {
       }, 100);
 
       // Timeout after 30 seconds
-      setTimeout(() => {
+      this.uploadTimeoutId = window.setTimeout(() => {
         if (this.uploadProgressIntervalId !== undefined) {
           clearInterval(this.uploadProgressIntervalId);
           this.uploadProgressIntervalId = undefined;
-          reject(new Error('Upload timeout'));
         }
+        if (this.uploadTimeoutId !== undefined) {
+          clearTimeout(this.uploadTimeoutId);
+          this.uploadTimeoutId = undefined;
+        }
+        reject(new Error('Upload timeout'));
       }, AddTileComponent.THIRTY_SECONDS_TIMEOUT);
     });
   }

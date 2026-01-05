@@ -54,6 +54,7 @@ import { UploadPhotoComponent } from '../../../shared/upload-photo/upload-photo.
  */
 @Component({
   selector: 'admin-project-cards',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogContent,

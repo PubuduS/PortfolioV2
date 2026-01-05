@@ -18,16 +18,19 @@ import { ProjectCardsComponent } from './components/project-cards/project-cards.
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
 import { DeletePortfolioTileComponent } from './components/delete-portfolio-tile/delete-portfolio-tile.component';
 import { AddTileComponent } from '../shared/add-tile/add-tile.component';
+import { UpdateDeleteButtonsComponent } from '../shared/update-delete-buttons/update-delete-buttons.component';
 
 /**
  * Portfolio Section
  */
 @Component({
   selector: 'admin-portfolio',
+  standalone: true,
   imports: [
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
+    UpdateDeleteButtonsComponent,
   ],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',
@@ -77,10 +80,33 @@ export class PortfolioComponent {
   }
 
   /**
+   * Get delete click handler for a project
+   * @param project project view
+   * @returns click handler function
+   */
+  protected getDeleteClickHandler(project: IProjectView): () => void {
+    return () => this.openDeleteDialog(project);
+  }
+
+  /**
+   * Get edit click handler for a project
+   * @param project project view
+   * @returns click handler function
+   */
+  protected getEditClickHandler(project: IProjectView): () => void {
+    return () => this.openDialogDescription(project);
+  }
+
+  /** Go to featured project page */
+  protected goToFeaturedPRojectsPage(): void {
+    this.router.navigate(['/content/portfolio/featured-projects']);
+  }
+
+  /**
    * Open dialog description
    * @param project project view
    */
-  protected openDialogDescription(project: IProjectView): void {
+  private openDialogDescription(project: IProjectView): void {
     this.dialog.open(
       DescriptionCardComponent,
       {
@@ -92,7 +118,11 @@ export class PortfolioComponent {
     );
   }
 
-  protected openDeleteDialog(project: IProjectView): void {
+  /**
+   * Open delete dialog
+   * @param project project view
+   */
+  private openDeleteDialog(project: IProjectView): void {
     this.dialog.open(
       DeletePortfolioTileComponent,
       {
@@ -102,10 +132,5 @@ export class PortfolioComponent {
         data: { project },
       },
     );
-  }
-
-  /** Go to featured project page */
-  protected goToFeaturedPRojectsPage(): void {
-    this.router.navigate(['/content/portfolio/featured-projects']);
   }
 }
