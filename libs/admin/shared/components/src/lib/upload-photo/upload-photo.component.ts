@@ -29,7 +29,7 @@ import {
   SetDataService,
 } from '@portfolio-v2/shared/services';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
-import { IUploadPhotoConfig } from '../types/upload-photo-config.interface';
+import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 
 /**
  *

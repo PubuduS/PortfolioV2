@@ -2,10 +2,7 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import {
   MockStore,
   provideMockStore,
@@ -13,33 +10,56 @@ import {
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
 
-import { IProjectView } from '@portfolio-v2/state/dataModels';
+import {
+  IProjectView,
+  IProjectCard,
+} from '@portfolio-v2/state/dataModels';
 import {
   GetDataService,
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
-import { AddPortfolioRecordComponent } from './add-portfolio-record.component';
-import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
+import {
+  portfolioCardsSelector,
+  projectCardSelector,
+  newProjectRecordIdSelector,
+} from '@portfolio-v2/state/selectors';
+import { AddPortfolioRecordComponent } from '@portfolio-v2/admin/shared/components';
+import { AddTileComponent } from './add-tile.component';
 
-describe('AddPortfolioRecordComponent', () => {
+describe('AddTileComponent', () => {
+  let component: AddTileComponent;
+  let fixture: ComponentFixture<AddTileComponent>;
+  let store: MockStore;
+  let mockSetDataService: jest.Mocked<SetDataService>;
+  let mockGetDataService: jest.Mocked<GetDataService>;
+  let mockUtilityService: jest.Mocked<UtilityService>;
+
   // Mock data for tests
   const mockData: IProjectView[] = [
     {
-      id: 1,
+      id: 2,
       imageURL: 'https://example.com/image1.jpg',
       viewHeading: 'Project 1',
       viewDescription: 'Description for project 1',
     },
   ];
-  let component: AddPortfolioRecordComponent;
-  let fixture: ComponentFixture<AddPortfolioRecordComponent>;
-  let store: MockStore;
-  let mockSetDataService: jest.Mocked<SetDataService>;
-  let mockGetDataService: jest.Mocked<GetDataService>;
-  let mockUtilityService: jest.Mocked<UtilityService>;
+
+  const mockProjectCard: IProjectCard = {
+    id: 2,
+    heading: 'Test Project',
+    description: 'Test project description',
+    tools: 'React, TypeScript',
+    imageURL: 'https://example.com/test-image.jpg',
+    githubURL: 'https://github.com/test',
+    gitDisable: false,
+    demoURL: 'https://demo.test.com',
+    demoDisable: false,
+    documentationURL: 'https://docs.test.com',
+    docDisable: false,
+    screenshotURL: 'https://screenshot.test.com',
+    ssDisable: false,
+  };
 
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
@@ -48,21 +68,13 @@ describe('AddPortfolioRecordComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        AddPortfolioRecordComponent,
+        AddTileComponent,
         MockComponents(
-          DisplayValidatorErrorsComponent,
-          UploadPhotoComponent,
+          AddPortfolioRecordComponent,
         ),
       ],
       providers: [
         provideMockStore({}),
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: {
-            currentId: 1,
-            heading: 'Test Project',
-          },
-        },
         { provide: SetDataService, useValue: mockSetDataService },
         { provide: GetDataService, useValue: mockGetDataService },
         { provide: UtilityService, useValue: mockUtilityService },
@@ -71,10 +83,13 @@ describe('AddPortfolioRecordComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+
     store.overrideSelector(portfolioCardsSelector, mockData);
+    store.overrideSelector(projectCardSelector(2), mockProjectCard);
+    store.overrideSelector(newProjectRecordIdSelector, 2);
     store.refreshState();
 
-    fixture = TestBed.createComponent(AddPortfolioRecordComponent);
+    fixture = TestBed.createComponent(AddTileComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -6,7 +6,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { IUpdateDeleteBtnConfigs } from '../types';
+import { IUpdateDeleteBtnConfigs } from '@portfolio-v2/admin/shared/types';
 
 /**
  * Update Delete Buttons Component
