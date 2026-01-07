@@ -47,7 +47,7 @@ import {
 import { StateActions } from '@portfolio-v2/state';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
-import { UploadPhotoComponent } from '../../../shared/upload-photo/upload-photo.component';
+import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
 
 /**
  * Project Cards Component

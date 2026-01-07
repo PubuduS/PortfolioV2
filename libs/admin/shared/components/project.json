@@ -1,0 +1,21 @@
+{
+  "name": "components",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/admin/shared/components/src",
+  "prefix": "admin",
+  "projectType": "library",
+  "tags": ["admin-shared"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/admin/shared/components/jest.config.cts",
+        "tsConfig": "libs/admin/shared/components/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

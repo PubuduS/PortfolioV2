@@ -14,11 +14,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
+import {
+  AddTileComponent,
+  UpdateDeleteButtonsComponent,
+} from '@portfolio-v2/admin/shared/components';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
 import { DeletePortfolioTileComponent } from './components/delete-portfolio-tile/delete-portfolio-tile.component';
-import { AddTileComponent } from '../shared/add-tile/add-tile.component';
-import { UpdateDeleteButtonsComponent } from '../shared/update-delete-buttons/update-delete-buttons.component';
 
 /**
  * Portfolio Section

@@ -20,8 +20,8 @@ import {
   getComponentProperty,
   callComponentMethod,
 } from '@portfolio-v2/shared/test-helpers';
+import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 import { UploadPhotoComponent } from './upload-photo.component';
-import { IUploadPhotoConfig } from '../types/upload-photo-config.interface';
 
 // Mock selector function that returns a signal
 const mockSelector = jest.fn();

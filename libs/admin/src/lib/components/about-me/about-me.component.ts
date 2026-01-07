@@ -36,8 +36,8 @@ import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
 import { urlValidator } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
-import { IUploadPhotoConfig } from '../shared/types/upload-photo-config.interface';
-import { UploadPhotoComponent } from '../shared/upload-photo/upload-photo.component';
+import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
+import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 
 /**
  * About me admin section

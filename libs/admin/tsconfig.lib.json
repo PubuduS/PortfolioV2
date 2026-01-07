@@ -14,5 +14,5 @@
     "jest.config.ts",
     "src/**/*.test.ts"
   ],
-  "include": ["src/**/*.ts", "../shared/src/lib/test-helpers/test-utils.ts"]
+  "include": ["src/**/*.ts", "../shared/src/lib/test-helpers/test-utils.ts", "../state/src/lib/selectors/new-project-record-id.selector.ts"]
 }

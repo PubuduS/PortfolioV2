@@ -14,8 +14,8 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
+import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
 import { ProjectCardsComponent } from './project-cards.component';
-import { UploadPhotoComponent } from '../../../shared/upload-photo/upload-photo.component';
 
 // Mock complete project card data
 const mockProjectCard: IProjectCard = {

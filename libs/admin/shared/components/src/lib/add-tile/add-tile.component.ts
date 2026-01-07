@@ -43,9 +43,9 @@ import { StateActions } from '@portfolio-v2/state';
 import {
   portfolioCardsSelector,
   projectCardSelector,
+  newProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { AddPortfolioRecordComponent } from '../add-portfolio-record/add-portfolio-record.component';
-import { newProjectRecordIdSelector } from '../selectors/new-project-record-id.selector';
+import { AddPortfolioRecordComponent } from '@portfolio-v2/admin/shared/components';
 
 /**
  * Add Tile Component
