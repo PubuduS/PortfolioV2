@@ -1,0 +1,178 @@
+<div class="main">
+  <div class="content d-flex justify-content-center col-12">
+    <div class="col-12 text-center">
+      <div class="row my-3">
+        <div class="col-12">
+          <h2>About Me Page</h2>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center mt-5 col-12">
+        <form [formGroup]="aboutMeForm!">
+          <div class="admin-form col-12 px-5 text-center">
+            <!-- Intro Text Area -->
+            <div class="row mb-3">
+              <div>
+                <label class="float-start">Main Introduction</label>
+              </div>
+              <div class="col-12">
+                <textarea
+                  class="p-2 float-start"
+                  formControlName="mainIntro"
+                  rows="6"
+                  cols="200"
+                >
+                </textarea>
+              </div>
+            </div>
+
+            <!-- Intro Text Validator Message -->
+            <div class="row">
+              <admin-portfolio-display-validator-errors
+                [control]="aboutMeForm.get('mainIntro')"
+                errorKey="required"
+                message="A valid introduction is required"
+              >
+              </admin-portfolio-display-validator-errors>
+            </div>
+
+            <!-- Sub Intro Text Area -->
+            <div class="row mb-3">
+              <div>
+                <label class="float-start">Sub Introduction</label>
+              </div>
+              <div class="col-12">
+                <textarea
+                  class="p-2 float-start"
+                  formControlName="subIntro"
+                  rows="1"
+                  cols="200"
+                >
+                </textarea>
+              </div>
+            </div>
+
+            <!--  Sub Intro Text Validator Message -->
+            <div class="row">
+              <admin-portfolio-display-validator-errors
+                [control]="aboutMeForm.get('subIntro')"
+                errorKey="required"
+                message="A valid sub introduction is required"
+              >
+              </admin-portfolio-display-validator-errors>
+            </div>
+
+            <!-- Points Text Area -->
+            <div class="row mb-3">
+              <div>
+                <label class="float-start">Points</label>
+              </div>
+              <div class="col-6">
+                <textarea
+                  class="p-2 float-start"
+                  formControlName="leftPoints"
+                  rows="6"
+                  cols="100"
+                >
+                </textarea>
+              </div>
+
+              <div class="col-6">
+                <textarea
+                  class="p-2"
+                  formControlName="rightPoints"
+                  rows="6"
+                  cols="100"
+                >
+                </textarea>
+              </div>
+            </div>
+
+            <!-- Points Validator Message  -->
+            <div class="row">
+              <div class="col-6">
+                <admin-portfolio-display-validator-errors
+                  [control]="aboutMeForm.get('leftPoints')"
+                  errorKey="required"
+                  message="A valid left points are required"
+                >
+                </admin-portfolio-display-validator-errors>
+              </div>
+              <div class="col-6">
+                <admin-portfolio-display-validator-errors
+                  [control]="aboutMeForm.get('rightPoints')"
+                  errorKey="required"
+                  message="A valid right points are required"
+                >
+                </admin-portfolio-display-validator-errors>
+              </div>
+            </div>
+
+            <!-- Link Text Field -->
+            <div class="row mb-3">
+              <div>
+                <label class="float-start">Link</label>
+              </div>
+              <div class="col-6">
+                <input
+                  class="p-2 w-50 float-start"
+                  formControlName="linkField"
+                />
+              </div>
+              <div class="col-1">
+                <button
+                  mat-fab
+                  extended
+                  color="primary"
+                  id="save"
+                  (click)="updateData()"
+                >
+                  <mat-icon>save</mat-icon>
+                  Save
+                </button>
+              </div>
+              <div class="col-1">
+                <button
+                  mat-fab
+                  extended
+                  color="primary"
+                  id="save"
+                  (click)="openDialog()"
+                >
+                  <mat-icon>photo</mat-icon>
+                  Photo
+                </button>
+              </div>
+
+              @if (isSaveSuccess | async) {
+                <div class="col-1">
+                  <mat-icon class="mx-1 success w-100 h-100"
+                    >check_circle</mat-icon
+                  >
+                </div>
+              }
+            </div>
+
+            <!-- Link Validators Message -->
+            <div class="row">
+              <admin-portfolio-display-validator-errors
+                class="col-4"
+                [control]="aboutMeForm.get('linkField')"
+                errorKey="required"
+                message="A valid link is required"
+              >
+              </admin-portfolio-display-validator-errors>
+              <admin-portfolio-display-validator-errors
+                class="col-4"
+                [control]="aboutMeForm.get('linkField')"
+                errorKey="invalidURL"
+                message="The URL is not valid"
+              >
+              </admin-portfolio-display-validator-errors>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

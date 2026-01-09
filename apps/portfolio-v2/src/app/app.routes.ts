@@ -16,7 +16,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('@portfolio-v2/admin').then(((route) => route.ADMIN_PAGE_ROUTES)),
+    loadChildren: () => import('@portfolio-v2/admin-components').then(((route) => route.ADMIN_PAGE_ROUTES)),
   },
   { path: '**', loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.PageNotFoundComponent) },
 ];

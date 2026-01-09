@@ -30,12 +30,12 @@
             rows="4"
             placeholder="Enter project description"
           ></textarea>
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('description')"
             errorKey="required"
             message="A valid description is required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
 
         <div class="col-12">
@@ -47,12 +47,12 @@
             type="text"
             placeholder="Technologies used in the project"
           />
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('technologies')"
             errorKey="required"
             message="A valid comma separated list of technologies are required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
 
         <div class="col-6">
@@ -64,12 +64,12 @@
             type="text"
             placeholder="A link to the codebase [Optional]"
           />
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('codebase')"
             errorKey="invalidURL"
             message="A valid URL is required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
         <div class="col-6">
           <label class="fw-bold my-2"> Youtube:</label>
@@ -80,12 +80,12 @@
             type="text"
             placeholder="A youtube link for demo [Optional]"
           />
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('youtube')"
             errorKey="invalidURL"
             message="A valid URL is required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
         <div class="col-6">
           <label class="fw-bold my-2"> Screenshot:</label>
@@ -106,12 +106,12 @@
               <mat-icon>upload</mat-icon>
             </button>
           </div>
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('screenshot')"
             errorKey="invalidURL"
             message="A valid URL is required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
         <div class="col-6">
           <label class="fw-bold my-2"> Documentation:</label>
@@ -122,12 +122,12 @@
             type="text"
             placeholder="A link to project documentation [Optional]"
           />
-          <portfolio-display-validator-errors
+          <admin-portfolio-display-validator-errors
             [control]="cardAddForm.get('documentation')"
             errorKey="invalidURL"
             message="A valid URL is required"
           >
-          </portfolio-display-validator-errors>
+          </admin-portfolio-display-validator-errors>
         </div>
       </div>
       <!-- Progress Status Section -->
