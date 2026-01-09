@@ -14,7 +14,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { WeatherDisplayComponent } from '@portfolio-v2/shared/components';
 import {
   isAdminModeSelector,
   isPreviewModeSelector,
@@ -22,6 +21,7 @@ import {
 } from '@portfolio-v2/state/selectors';
 import { AuthService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
+import { WeatherDisplayComponent } from '../weather_display/weather_display.component';
 
 /**
  * Navigation bar

@@ -15,7 +15,7 @@ import {
   GetDataService,
   SetDataService,
 } from '@portfolio-v2/shared/services';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
+import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import {
   getComponentProperty,
   callComponentMethod,

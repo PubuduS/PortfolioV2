@@ -19,12 +19,12 @@
                   accept="image/webp"
                   (change)="onFileChange($event)"
                 />
-                <portfolio-display-validator-errors
+                <admin-portfolio-display-validator-errors
                   [control]="uploadPhotoForm.get('filePicker')"
                   errorKey="required"
                   message="A valid image is required"
                 >
-                </portfolio-display-validator-errors>
+                </admin-portfolio-display-validator-errors>
               </div>
             </div>
 

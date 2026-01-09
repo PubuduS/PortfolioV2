@@ -1,0 +1,243 @@
+<div
+  class="experience-section tabs-wrapperfull w-100 h-100"
+  id="section_4"
+  data-anchor="experience"
+>
+  <div class="container">
+    @if (experienceData(); as experienceData) {
+      <form [formGroup]="experienceForm!">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="text-center mb-5 text-uppercase">
+              <h2 class="m-0 fs-1">WORK EXPERIENCE</h2>
+            </div>
+            <div class="tabs-wrapper fadeIn" data-t-show="3">
+              <div
+                class="nav flex-column nav-pills fs-5"
+                id="v-pills-tab"
+                role="tablist"
+                aria-orientation="vertical"
+              >
+                @for (job of experienceData; track $index) {
+                  <a
+                    class="nav-link py-4 pe-4 ps-0"
+                    id="v-pills-home-tab"
+                    data-toggle="pill"
+                    role="tab"
+                    (click)="displaySelected(job)"
+                    [ngClass]="{ active: selectedJob === job.employer }"
+                    [attr.aria-selected]="
+                      selectedJob === job.employer ? 'true' : 'false'
+                    "
+                    >{{ job.employer }}</a
+                  >
+                }
+              </div>
+              <div class="tab-content ps-5" id="v-pills-tabContent">
+                @if (experience) {
+                  <div
+                    class="tab-pane fade show active"
+                    role="tabpanel"
+                    aria-labelledby="v-pills-home-tab"
+                  >
+                    <div class="row">
+                      <div class="col-10">
+                        <input
+                          class="mb-2 fs-5 px-2 w-100"
+                          formControlName="position"
+                          placeholder="Enter job position"
+                        />
+                      </div>
+                      <div class="col-2">
+                        <button
+                          mat-fab
+                          extended
+                          color="warn"
+                          class="float-end"
+                          id="clear"
+                          (click)="clearForm()"
+                        >
+                          <mat-icon>clear</mat-icon>
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <admin-portfolio-display-validator-errors
+                        [control]="experienceForm.get('position')"
+                        errorKey="required"
+                        message="A valid position is required"
+                      >
+                      </admin-portfolio-display-validator-errors>
+                    </div>
+                    <input
+                      class="my-2 fs-6 px-2 w-100"
+                      formControlName="employer"
+                      placeholder="Enter employer name"
+                    />
+                    <div class="col-12">
+                      <admin-portfolio-display-validator-errors
+                        [control]="experienceForm.get('employer')"
+                        errorKey="required"
+                        message="A valid employer is required"
+                      >
+                      </admin-portfolio-display-validator-errors>
+                    </div>
+                    <div class="row">
+                      <div class="col-4">
+                        <mat-form-field>
+                          <mat-label>Start Date</mat-label>
+                          <input
+                            matInput
+                            [matDatepicker]="startPicker"
+                            formControlName="startDate"
+                          />
+                          <mat-hint>MM/DD/YYYY</mat-hint>
+                          <mat-datepicker-toggle
+                            matIconSuffix
+                            [for]="startPicker"
+                          ></mat-datepicker-toggle>
+                          <mat-datepicker #startPicker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-4">
+                        <mat-form-field>
+                          <mat-label>End Date</mat-label>
+                          <input
+                            matInput
+                            [matDatepicker]="endPicker"
+                            formControlName="endDate"
+                          />
+                          <mat-hint>MM/DD/YYYY</mat-hint>
+                          <mat-datepicker-toggle
+                            matIconSuffix
+                            [for]="endPicker"
+                          ></mat-datepicker-toggle>
+                          <mat-datepicker #endPicker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-4">
+                        <mat-checkbox class="my-2" formControlName="isCurrent"
+                          >Is Current?</mat-checkbox
+                        >
+                      </div>
+                    </div>
+
+                    <input
+                      class="my-2 fs-6 px-2 w-100"
+                      formControlName="timePeriod"
+                      placeholder="e.g., 2023 - Present"
+                    />
+                    <textarea
+                      class="my-2 p-2 w-100"
+                      formControlName="shortDescription"
+                      rows="6"
+                      cols="100"
+                      placeholder="Enter a short description of your role and responsibilities"
+                    ></textarea>
+                    <div class="col-12">
+                      <admin-portfolio-display-validator-errors
+                        portfolio-display-validator-errors
+                        [control]="experienceForm.get('shortDescription')"
+                        errorKey="required"
+                        message="A valid description is required"
+                      >
+                      </admin-portfolio-display-validator-errors>
+                    </div>
+
+                    <textarea
+                      class="my-2 p-2 w-100"
+                      formControlName="points"
+                      rows="6"
+                      cols="100"
+                      placeholder="Enter job responsibilities and achievements (one per line)"
+                    ></textarea>
+                    <div class="col-12">
+                      <admin-portfolio-display-validator-errors
+                        [control]="experienceForm.get('points')"
+                        errorKey="required"
+                        message="A valid points are required"
+                      >
+                      </admin-portfolio-display-validator-errors>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-5">
+          <div class="col-6"></div>
+          <div class="col-6">
+            <div class="row">
+              <div class="col-3">
+                <button
+                  mat-fab
+                  extended
+                  color="primary"
+                  class="float-end"
+                  id="save"
+                  (click)="addExperience()"
+                  [disabled]="!experienceForm.valid"
+                >
+                  <mat-icon>add</mat-icon>
+                  Add
+                </button>
+              </div>
+              @if (isAddSuccess | async) {
+                <div class="col-1">
+                  <mat-icon class="mx-1 success w-100 h-100"
+                    >check_circle</mat-icon
+                  >
+                </div>
+              }
+              <div class="col-3">
+                <button
+                  mat-fab
+                  extended
+                  color="accent"
+                  class="float-end"
+                  id="save"
+                  (click)="editExperience()"
+                  [disabled]="!experienceForm.valid"
+                >
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+              </div>
+              @if (isEditSuccess | async) {
+                <div class="col-1">
+                  <mat-icon class="mx-1 success w-100 h-100"
+                    >check_circle</mat-icon
+                  >
+                </div>
+              }
+              <div class="col-3">
+                <button
+                  mat-fab
+                  extended
+                  color="warn"
+                  class="float-end"
+                  id="delete"
+                  (click)="openDeleteConfirmation()"
+                  [disabled]="!experienceForm.valid"
+                >
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+              @if (isDeleteSuccess | async) {
+                <div class="col-1">
+                  <mat-icon class="mx-1 success w-100 h-100"
+                    >check_circle</mat-icon
+                  >
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </form>
+    }
+  </div>
+</div>

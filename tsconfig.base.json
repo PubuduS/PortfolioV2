@@ -16,7 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@portfolio-v2/admin": ["libs/admin/src/index.ts"],
       "@portfolio-v2/const": ["libs/const/index.ts"],
       "@portfolio-v2/environment": [
         "apps/portfolio-v2/src/environments/index.ts"
@@ -46,7 +45,12 @@
       "@portfolio-v2/admin/shared/components": [
         "libs/admin/shared/components/src/index.ts"
       ],
-      "@portfolio-v2/admin/shared/types": ["libs/admin/shared/types/src/index.ts"]
+      "@portfolio-v2/admin/shared/types": [
+        "libs/admin/shared/types/src/index.ts"
+      ],
+      "@portfolio-v2/admin-components": [
+        "libs/admin/admin-components/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

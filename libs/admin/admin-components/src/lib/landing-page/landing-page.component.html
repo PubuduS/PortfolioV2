@@ -1,0 +1,88 @@
+<div class="landing">
+  <div class="content d-flex justify-content-center col-12">
+    <div class="col-12 text-center">
+      <div class="row mb-3">
+        <div class="col-12 mt-3">
+          <h2>Landing Page</h2>
+        </div>
+      </div>
+      <div class="row d-flex justify-content-center mt-5">
+        <form [formGroup]="landingnForm!">
+          <div class="admin-form col-12 px-5 text-center">
+            <!-- File Input Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-2">
+                <input
+                  type="file"
+                  class="form-control"
+                  formControlName="filePicker"
+                  accept="image/*"
+                  (change)="onFileChange($event)"
+                />
+                <admin-portfolio-display-validator-errors
+                  [control]="landingnForm.get('filePicker')"
+                  errorKey="required"
+                  message="A valid image is required"
+                >
+                </admin-portfolio-display-validator-errors>
+              </div>
+            </div>
+
+            <!-- Season Selector Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-2">
+                <select
+                  name="seasons"
+                  class="form-select"
+                  formControlName="seasonsPicker"
+                >
+                  <option value="winter">Winter</option>
+                  <option value="spring">Spring</option>
+                  <option value="fall">Fall</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <mat-progress-bar
+                class="col-2 w-25"
+                mode="determinate"
+                [value]="progressValue"
+              ></mat-progress-bar>
+            </div>
+
+            <!-- Progress Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-2">
+                <span
+                  >File Upload Progress:
+                  {{ progressValue | number: '2.2-2' }}%</span
+                >
+                @if (isUploadCompleted) {
+                  <mat-icon class="mx-1">check_circle</mat-icon>
+                }
+              </div>
+            </div>
+
+            <!-- Upload Button Row -->
+            <div class="row mb-3 d-flex justify-content-center">
+              <div class="col-2">
+                <button class="btn btn-primary" (click)="uploadData()">
+                  Upload
+                </button>
+              </div>
+            </div>
+
+            <!-- Preview Image Row -->
+            <div class="row d-flex justify-content-center">
+              <div class="col-12">
+                <img class="imagePreview mt-3" [src]="imagePreview" />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

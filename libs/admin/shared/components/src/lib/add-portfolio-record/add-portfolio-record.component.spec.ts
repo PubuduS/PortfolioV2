@@ -20,8 +20,10 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/shared/components';
-import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
+import {
+  DisplayValidatorErrorsComponent,
+  UploadPhotoComponent,
+} from '@portfolio-v2/admin/shared/components';
 import { AddPortfolioRecordComponent } from './add-portfolio-record.component';
 
 describe('AddPortfolioRecordComponent', () => {

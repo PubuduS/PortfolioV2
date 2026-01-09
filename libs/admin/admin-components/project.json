@@ -1,0 +1,21 @@
+{
+  "name": "admin-components",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/admin/admin-components/src",
+  "prefix": "admin",
+  "projectType": "library",
+  "tags": ["admin-components"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/admin/admin-components/jest.config.cts",
+        "tsConfig": "libs/admin/admin-components/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
