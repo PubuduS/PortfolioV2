@@ -82,13 +82,15 @@ export class NavBarComponent {
     const currentURL = this.router.url;
     const isAdmin = this.isAdminRoute(currentURL);
     const lastSegment = currentURL.substring(currentURL.lastIndexOf('/') + 1);
+    let newRoute = '';
     if (lastSegment === 'home') {
-      const newRoute = isAdmin ? `${lastSegment}` : `admin/${lastSegment}`;
-      this.router.navigate([newRoute]);
+      newRoute = isAdmin ? `${lastSegment}` : `admin/${lastSegment}`;
+    } else if (lastSegment === 'featured-projects') {
+      newRoute = isAdmin ? `content/portfolio/${lastSegment}` : `admin/portfolio/${lastSegment}`;
     } else {
-      const newRoute = isAdmin ? `content/${lastSegment}` : `admin/${lastSegment}`;
-      this.router.navigate([newRoute]);
+      newRoute = isAdmin ? `content/${lastSegment}` : `admin/${lastSegment}`;
     }
+    this.router.navigate([newRoute]);
   }
 
   /**

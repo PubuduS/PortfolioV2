@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Inject,
+  Signal,
 } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
@@ -20,12 +21,20 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { StateActions } from '@portfolio-v2/state';
-import { IProjectView } from '@portfolio-v2/state/dataModels';
-import { projectCardSelector } from '@portfolio-v2/state/selectors';
+import {
+  portfolioCardSelector,
+  projectCardSelector,
+  featuredProjectCardSelector,
+} from '@portfolio-v2/state/selectors';
 import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
+import { ProjectCardType } from '@portfolio-v2/admin/shared/components';
+import {
+  IProjectCard,
+  IProjectView,
+} from '@portfolio-v2/state/dataModels';
 
 /**
  * Delete Portfolio Tile Component
@@ -45,9 +54,10 @@ import {
 })
 export class DeletePortfolioTileComponent {
   /** Selected project card */
-  protected readonly projectCard = this.store.selectSignal(
-    projectCardSelector(this.data.project.id),
-  );
+  protected readonly projectCard: Signal<IProjectCard | undefined>;
+
+  /** Selected portfolio card (not used for featured projects) */
+  protected readonly portfolioCard: Signal<IProjectView | undefined> | undefined;
 
   /** Returns true if the tile delete is successful */
   protected isOverallSuccess = false;
@@ -56,28 +66,38 @@ export class DeletePortfolioTileComponent {
    * constructor
    * @param dialogRef Dialog ref
    * @param data data
-   * @param data.project project to delete
+   * @param data.recordId project id to delete
+   * @param data.type project card type
    * @param setDataService Set Data service
    * @param store ngrx store
    * @param utility Utility service
    */
   constructor(
     public dialogRef: MatDialogRef<DeletePortfolioTileComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { project: IProjectView },
+    @Inject(MAT_DIALOG_DATA) public data: { recordId: number, type: ProjectCardType },
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
-  ) {}
+  ) {
+    // Select the appropriate card based on type
+    if (this.data.type === ProjectCardType.featured) {
+      this.projectCard = this.store.selectSignal(featuredProjectCardSelector(this.data.recordId));
+      this.portfolioCard = undefined as any; // Not used for featured projects
+    } else {
+      this.projectCard = this.store.selectSignal(projectCardSelector(this.data.recordId));
+      this.portfolioCard = this.store.selectSignal(portfolioCardSelector(this.data.recordId));
+    }
+  }
 
   /**
    * Delete the tile and all associated data
    */
   protected deleteTile(): void {
-    if (!this.data.project.id) {
+    if (!this.data.recordId) {
       return;
     }
 
-    const projectId = this.data.project.id;
+    const projectId = this.data.recordId;
     const paddedId = this.utility.getPaddedDigits(projectId, 2);
 
     // Combine all delete operations into one
@@ -86,6 +106,12 @@ export class DeletePortfolioTileComponent {
       this.setDataService.deleteFileFromStorage(`portfolio/portfolio-tiles/ID-${paddedId}-Icon.webp`).pipe(
         map((result) => result === 'successfull'),
         // Treat storage delete as optional (return true even if file doesn't exist)
+        catchError(() => of(true)),
+      ),
+
+      this.setDataService.deleteFileFromStorage(`portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp`).pipe(
+        map((result) => result === 'successfull'),
+        // Treat screenshot delete as optional (return true even if file doesn't exist)
         catchError(() => of(true)),
       ),
 
@@ -102,14 +128,64 @@ export class DeletePortfolioTileComponent {
 
     // Execute all delete operations in parallel and wait for all to complete
     forkJoin(deleteOperations).subscribe({
-      next: ([storageSuccess, iconSuccess, cardSuccess]) => {
+      next: ([storageSuccess, screenshotSuccess, iconSuccess, cardSuccess]) => {
         // Only consider successful if both database operations succeed
         // Storage delete is optional (may not exist)
-        this.isOverallSuccess = iconSuccess && cardSuccess && storageSuccess;
+        this.isOverallSuccess = iconSuccess && screenshotSuccess && cardSuccess && storageSuccess;
 
         if (this.isOverallSuccess) {
           // Update the store to reflect the deletion
           this.store.dispatch(StateActions.portfolioCardsStateConnect());
+          this.dialogRef.close();
+        }
+      },
+      error: (_error) => {
+        this.dialogRef.close(false);
+      },
+    });
+  }
+
+  /**
+   * Delete the tile and all associated data
+   */
+  protected deleteFeaturedProject(): void {
+    if (!this.data.recordId) {
+      return;
+    }
+
+    const projectId = this.data.recordId;
+    const paddedId = this.utility.getPaddedDigits(projectId, 2);
+
+    // Combine all delete operations into one
+    const deleteOperations = [
+      this.setDataService.deleteFileFromStorage(`portfolio/project-screenshots/featured/ID-${paddedId}-Screenshot.webp`).pipe(
+        map((result) => result === 'successfull'),
+        // Treat screenshot delete as optional (return true even if file doesn't exist)
+        catchError(() => of(true)),
+      ),
+
+      this.setDataService.deleteFileFromStorage(`portfolio/featured-projects/ID-${paddedId}-Image.webp`).pipe(
+        map((result) => result === 'successfull'),
+        // Treat screenshot delete as optional (return true even if file doesn't exist)
+        catchError(() => of(true)),
+      ),
+
+      // Delete project data from database
+      this.setDataService.deleteRecord(`featured-project-section/project-${paddedId}/`).pipe(
+        map((result) => result === 'successfull'),
+      ),
+    ];
+
+    // Execute all delete operations in parallel and wait for all to complete
+    forkJoin(deleteOperations).subscribe({
+      next: ([screenshotSuccess, cardSuccess]) => {
+        // Only consider successful if both database operations succeed
+        // Storage delete is optional (may not exist)
+        this.isOverallSuccess = screenshotSuccess && cardSuccess;
+
+        if (this.isOverallSuccess) {
+          // Update the store to reflect the deletion
+          this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
           this.dialogRef.close();
         }
       },

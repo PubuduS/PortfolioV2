@@ -8,7 +8,7 @@
         <div class="featured-project">
           <ul class="row">
             @for (project of featuredProjectCards(); track $index) {
-              <li class="col-md-12 fadeUp" data-t-show="3">
+              <li class="col-md-12 fadeUp project-card" data-t-show="3">
                 <figure>
                   <img [src]="project.imageURL" alt="img" />
                   <figcaption>
@@ -25,8 +25,7 @@
                               [src]="icons.githubIco"
                               alt="git"
                               [title]="icons.gitIcoTooltip"
-                            />
-                          </span>
+                          /></span>
                         } @else {
                           <a [href]="project.githubURL" target="_blank">
                             <img
@@ -44,8 +43,7 @@
                               [src]="icons.videoIco"
                               alt="share"
                               [title]="icons.videoIcoTooltip"
-                            />
-                          </span>
+                          /></span>
                         } @else {
                           <a [href]="project.demoURL" target="_blank">
                             <img
@@ -98,8 +96,36 @@
                     </ul>
                   </figcaption>
                 </figure>
+                <admin-update-delete-buttons
+                  [config]="{
+                    isVerticalLayout: false,
+                    deleteButtonDisabled: false,
+                    editButtonDisabled: false,
+                    deleteButtonClick: onDeleteButtonClick.bind(this, project),
+                    editButtonClick: onEditButtonClick.bind(this, project.id),
+                  }"
+                ></admin-update-delete-buttons>
               </li>
             }
+            <li
+              data-t-show="4"
+              class="d-flex mt-4 align-items-center justify-content-center"
+            >
+              <a data-toggle="modal">
+                <button mat-button (click)="addNewRecord()">
+                  <img
+                    src="assets/images/portfolio/add.ico"
+                    width="120"
+                    height="120"
+                    alt="project"
+                    title="Add a New Featured Project"
+                  />
+                </button>
+
+                <h3 class="mt-2 text-center text-black">Add</h3>
+                <p>Add a New Record</p>
+              </a>
+            </li>
           </ul>
         </div>
       </div>

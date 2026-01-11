@@ -45,7 +45,8 @@ import {
   projectCardSelector,
   newProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { AddPortfolioRecordComponent } from '@portfolio-v2/admin/shared/components';
+import { AddPortfolioRecordComponent } from '../add-portfolio-record/add-portfolio-record.component';
+import { ProjectCardType } from '../types/project-cards-type.enum';
 
 /**
  * Add Tile Component
@@ -220,6 +221,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
       data: {
         currentId: this.currentCardId,
         heading: this.tileEditorForm.value.title,
+        type: ProjectCardType.standard,
       },
     });
   }
@@ -316,10 +318,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
     };
   }
 
-  /**
-   * Handle file upload to storage and retrieve image URL
-   * @param fileStoragePath path to store the file
-   */
   /**
    * Upload file to Firebase Storage and return the download URL
    * @param fileStoragePath path in Firebase Storage

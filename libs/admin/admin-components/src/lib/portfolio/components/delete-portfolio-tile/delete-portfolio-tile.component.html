@@ -4,53 +4,52 @@
   </h2>
   <mat-dialog-content class="mat-typography">
     <h3>Please confirm to delete the following records:</h3>
-    @if (data.project) {
+    @if (portfolioCard && portfolioCard(); as portfolioCard) {
       <div class="row">
         <div class="col-8">
-          <p><strong>ID:</strong> {{ data.project.id }}</p>
-          <p><strong>Title:</strong> {{ data.project.viewHeading }}</p>
+          <p><strong>ID:</strong> {{ portfolioCard.id }}</p>
+          <p><strong>Title:</strong> {{ portfolioCard.viewHeading }}</p>
           <p>
-            <strong>Description:</strong> {{ data.project.viewDescription }}
+            <strong>Description:</strong> {{ portfolioCard.viewDescription }}
           </p>
         </div>
         <div class="col-4">
           <img
             class="border border-dark border-2 project-tile"
-            [src]="data.project.imageURL"
+            [src]="portfolioCard.imageURL"
             alt="Project Image"
           />
         </div>
       </div>
+    }
+    <h3>This action also will delete the following card data</h3>
+    @if (projectCard(); as dataRecord) {
+      <div class="row">
+        <div class="col-8">
+          <p><strong>Card ID:</strong> {{ dataRecord.id }}</p>
+          <p><strong>Card Title:</strong> {{ dataRecord.heading }}</p>
+          <p><strong>Card Description:</strong> {{ dataRecord.description }}</p>
+        </div>
+        <div class="col-4">
+          <img
+            class="border border-dark border-2 project-card"
+            [src]="dataRecord.imageURL"
+            alt="Project Image"
+          />
+        </div>
+      </div>
+    }
+    @if (isOverallSuccess) {
+      <div class="mt-2">
+        <mat-icon
+          class="success w-100 h-100 d-flex justify-content-center"
+          title="Changes saved"
+          >check_circle</mat-icon
+        >
+      </div>
+    }
 
-      <h3>This action also will delete the following card data</h3>
-      @if (projectCard(); as dataRecord) {
-        <div class="row">
-          <div class="col-8">
-            <p><strong>Card ID:</strong> {{ dataRecord.id }}</p>
-            <p><strong>Card Title:</strong> {{ dataRecord.heading }}</p>
-            <p>
-              <strong>Card Description:</strong> {{ dataRecord.description }}
-            </p>
-          </div>
-          <div class="col-4">
-            <img
-              class="border border-dark border-2 project-card"
-              [src]="dataRecord.imageURL"
-              alt="Project Image"
-            />
-          </div>
-        </div>
-      }
-      @if (isOverallSuccess) {
-        <div class="mt-2">
-          <mat-icon
-            class="success w-100 h-100 d-flex justify-content-center"
-            title="Changes saved"
-            >check_circle</mat-icon
-          >
-        </div>
-      }
-    } @else {
+    @if ((!portfolioCard || !portfolioCard()) && !projectCard()) {
       <p>No record to delete</p>
     }
   </mat-dialog-content>
@@ -65,15 +64,28 @@
       <mat-icon>cancel</mat-icon>
       Cancel
     </button>
-    <button
-      mat-fab
-      extended
-      color="warn"
-      class="float-end"
-      (click)="deleteTile()"
-    >
-      <mat-icon>delete</mat-icon>
-      Delete
-    </button>
+    @if (data.type === 'featured') {
+      <button
+        mat-fab
+        extended
+        color="warn"
+        class="float-end"
+        (click)="deleteFeaturedProject()"
+      >
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    } @else {
+      <button
+        mat-fab
+        extended
+        color="warn"
+        class="float-end"
+        (click)="deleteTile()"
+      >
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    }
   </mat-dialog-actions>
 </div>

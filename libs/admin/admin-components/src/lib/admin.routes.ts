@@ -20,6 +20,6 @@ export const ADMIN_PAGE_ROUTES: Routes = [
   },
   {
     path: 'portfolio',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.PortfolioComponent),
+    loadChildren: () => import('@portfolio-v2/admin-components').then((route) => route.PORTFOLIO_ROUTES),
   },
 ];

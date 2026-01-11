@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { provideMockStore } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import {
@@ -15,6 +16,7 @@ import {
 } from '@portfolio-v2/shared/services';
 import {
   DisplayValidatorErrorsComponent,
+  ProjectCardType,
   UploadPhotoComponent,
 } from '@portfolio-v2/admin/shared/components';
 import { ProjectCardsComponent } from './project-cards.component';
@@ -43,6 +45,11 @@ describe('ProjectCardsComponent', () => {
   let setDataService: jest.Mocked<SetDataService>;
   let utilityService: jest.Mocked<UtilityService>;
 
+  const mockProjectData = {
+    cardId: mockProjectCard.id,
+    type: ProjectCardType.standard,
+  };
+
   beforeEach(async () => {
     getDataService = createSpyObj(GetDataService);
     setDataService = createSpyObj(SetDataService);
@@ -60,10 +67,12 @@ describe('ProjectCardsComponent', () => {
           initialState: {
             stateBanks: {
               projectCards: [mockProjectCard],
+              featuredProjectCards: [mockProjectCard],
               selectedProjectCardID: 1,
             },
           },
         }),
+        { provide: MAT_DIALOG_DATA, useValue: mockProjectData },
         { provide: GetDataService, useValue: getDataService },
         { provide: SetDataService, useValue: setDataService },
         { provide: UtilityService, useValue: utilityService },
@@ -396,6 +405,65 @@ describe('ProjectCardsComponent', () => {
 
       // Should still complete without throwing
       expect(setDataService.setRecord).toHaveBeenCalled();
+    });
+  });
+
+  describe('Featured Project Support', () => {
+    let featuredComponent: ProjectCardsComponent;
+    let featuredFixture: ComponentFixture<ProjectCardsComponent>;
+
+    const mockFeaturedProjectData = {
+      cardId: mockProjectCard.id,
+      type: ProjectCardType.featured,
+    };
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [
+          ProjectCardsComponent,
+          MockComponents(
+            DisplayValidatorErrorsComponent,
+          ),
+        ],
+        providers: [
+          provideMockStore({
+            initialState: {
+              stateBanks: {
+                projectCards: [mockProjectCard],
+                featuredProjectCards: [mockProjectCard],
+                selectedProjectCardID: 1,
+              },
+            },
+          }),
+          { provide: MAT_DIALOG_DATA, useValue: mockFeaturedProjectData },
+          { provide: GetDataService, useValue: getDataService },
+          { provide: SetDataService, useValue: setDataService },
+          { provide: UtilityService, useValue: utilityService },
+        ],
+      }).compileComponents();
+
+      featuredFixture = TestBed.createComponent(ProjectCardsComponent);
+      featuredComponent = featuredFixture.componentInstance;
+      await featuredFixture.whenStable();
+    });
+
+    it('should initialize with featured project data', () => {
+      expect(featuredComponent.data.type).toBe(ProjectCardType.featured);
+      expect(featuredComponent.data.cardId).toBe(mockProjectCard.id);
+    });
+
+    it('should select featured project card from store', () => {
+      // The constructor should select the featured project card
+      expect(featuredComponent['projectCard']()).toBeDefined();
+    });
+
+    it('should initialize form with featured project card data', () => {
+      featuredComponent.ngOnInit();
+
+      expect(featuredComponent['cardEditorForm']).toBeDefined();
+      expect(featuredComponent['cardEditorForm']?.get('description')?.value).toBe(mockProjectCard.description);
+      expect(featuredComponent['cardEditorForm']?.get('technologies')?.value).toBe(mockProjectCard.tools);
     });
   });
 });

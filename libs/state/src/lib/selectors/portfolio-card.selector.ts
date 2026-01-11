@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 
-import { featuredProjectCardsSelector } from './featured-project-cards.selector';
+import { portfolioCardsSelector } from './portfolio-cards.selector';
 
 /**
  * Select a project card based on the ID from the store.
@@ -8,7 +8,7 @@ import { featuredProjectCardsSelector } from './featured-project-cards.selector'
  * @returns ss
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const featuredProjectCardSelector = (id: number) => createSelector(
-  featuredProjectCardsSelector,
+export const portfolioCardSelector = (id: number) => createSelector(
+  portfolioCardsSelector,
   (cards) => cards?.find((card) => card.id === id),
 );

@@ -18,7 +18,7 @@
                     isVerticalLayout: true,
                     deleteButtonDisabled: project.id === 1,
                     editButtonDisabled: false,
-                    deleteButtonClick: getDeleteClickHandler(project),
+                    deleteButtonClick: getDeleteClickHandler(project.id),
                     editButtonClick: getEditClickHandler(project),
                   }"
                 ></admin-update-delete-buttons>

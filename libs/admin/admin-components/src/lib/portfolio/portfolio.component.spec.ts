@@ -13,11 +13,7 @@ import { MockComponents } from 'ng-mocks';
 
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
-import { StateActions } from '@portfolio-v2/state';
-import {
-  getComponentProperty,
-  callComponentMethod,
-} from '@portfolio-v2/shared/test-helpers';
+import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
 import { PortfolioComponent } from './portfolio.component';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
@@ -81,34 +77,24 @@ describe('PortfolioComponent', () => {
 
   describe('Component Properties', () => {
     it('should have correct tooltip text', () => {
-      expect(getComponentProperty(component, 'toolTip')).toBe('Click here to see more');
+      expect((component as any).toolTip).toBe('Click here to see more');
     });
 
     it('should initialize projectView signal with store selector', () => {
-      const projectView = getComponentProperty(component, 'projectView') as () => IProjectView[];
+      const projectView = (component as any).projectView as () => IProjectView[];
       expect(projectView).toBeDefined();
       expect(projectView()).toEqual(mockData);
     });
   });
 
   describe('openDialog', () => {
-    it('should dispatch projectCardIDStateUpdated action', () => {
-      const dispatchSpy = jest.spyOn(store, 'dispatch');
-      const projectId = 2;
-
-      (component as any).openDialog(projectId);
-
-      expect(dispatchSpy).toHaveBeenCalledWith(
-        StateActions.projectCardIDStateUpdated({ selectedProjectCardID: projectId }),
-      );
-    });
-
-    it('should open ProjectCardsComponent dialog with correct config', () => {
+    it('should open ProjectCardsComponent dialog with correct config and data', () => {
       const projectId = 2;
       const expectedConfig = {
         autoFocus: 'first-tabbable',
         restoreFocus: true,
         width: '800px',
+        data: { cardId: projectId, type: 'standard' },
       };
 
       callComponentMethod(component, 'openDialog', projectId);
@@ -148,28 +134,28 @@ describe('PortfolioComponent', () => {
 
   describe('openDeleteDialog', () => {
     it('should open DeletePortfolioTileComponent dialog with correct config and data', () => {
-      const project = mockData[0];
+      const projectId = mockData[0].id;
       const expectedConfig = {
         autoFocus: 'first-tabbable',
         restoreFocus: true,
         width: '800px',
-        data: { project },
+        data: { recordId: projectId, type: 'standard' },
       };
 
-      callComponentMethod(component, 'openDeleteDialog', project);
+      callComponentMethod(component, 'openDeleteDialog', projectId);
 
       expect(component['dialog'].open).toHaveBeenCalledWith(DeletePortfolioTileComponent, expectedConfig);
     });
 
     it('should pass the project data correctly for regular projects', () => {
-      const project = mockData[1];
+      const projectId = mockData[1].id;
 
-      callComponentMethod(component, 'openDeleteDialog', project);
+      callComponentMethod(component, 'openDeleteDialog', projectId);
 
       expect(component['dialog'].open).toHaveBeenCalledWith(
         DeletePortfolioTileComponent,
         expect.objectContaining({
-          data: { project },
+          data: { recordId: projectId, type: 'standard' },
         }),
       );
     });
@@ -256,7 +242,7 @@ describe('PortfolioComponent', () => {
 
       expect(images.length).toBe(mockData.length + 1); // +1 for the "Add" button
       expect(images[0].getAttribute('alt')).toBe('project');
-      expect(images[0].title).toBe(getComponentProperty(component, 'toolTip'));
+      expect(images[0].title).toBe((component as any).toolTip);
     });
 
     it('should render project images with correct attributes', () => {
@@ -271,7 +257,7 @@ describe('PortfolioComponent', () => {
           const imageElement = img as HTMLImageElement;
           expect(imageElement.src).toContain(mockData[index].imageURL);
           expect(imageElement.alt).toBe('project');
-          expect(imageElement.title).toBe(getComponentProperty(component, 'toolTip'));
+          expect(imageElement.title).toBe((component as any).toolTip);
         });
     });
   });
@@ -300,7 +286,7 @@ describe('PortfolioComponent', () => {
       store.overrideSelector(portfolioCardsSelector, newData);
       store.refreshState();
 
-      expect((getComponentProperty(component, 'projectView') as () => IProjectView[])()).toEqual(newData);
+      expect(((component as any).projectView as () => IProjectView[])()).toEqual(newData);
     });
   });
 });
