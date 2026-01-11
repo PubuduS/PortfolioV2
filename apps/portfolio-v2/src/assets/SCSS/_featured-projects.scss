@@ -1,0 +1,170 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+// =============================================================================
+// FEATURED PROJECTS SCSS MIXINS
+// =============================================================================
+
+// Variables for repeated values
+$max-container-width: 1280px !default;
+$section-padding-x: 78px !default;
+$caption-max-width: 530px !default;
+$image-max-width: 740px !default;
+$transition-duration: 0.4s !default;
+$backdrop-blur: 10px !default;
+
+// =============================================================================
+// CONTAINER MIXIN
+// =============================================================================
+
+@mixin featured-projects-container {
+  // Layout styles
+  display: flex;
+  width: 100%;
+  position: relative;
+
+  // Visual styles
+  background-color: $ghost-gray;
+  padding: 100px 0 40px;
+
+  .container {
+    max-width: $max-container-width;
+    margin-top: 5%;
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+
+      h2 {
+        font-weight: 800;
+        font-size: 40px;
+        line-height: 49px;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      p {
+        margin: 20px auto 0;
+        max-width: 55%;
+      }
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+  }
+}
+
+// =============================================================================
+// PROJECT CARDS MIXIN
+// =============================================================================
+
+@mixin featured-projects-cards {
+  .featured-project {
+    // List items
+    > ul > li {
+      margin-bottom: 60px;
+      padding: 0 $section-padding-x;
+
+      // Even items (alternate layout)
+      &:nth-child(even) {
+        img {
+          margin-left: unset;
+          margin-right: auto;
+        }
+
+        figcaption {
+          right: 0;
+          left: unset;
+        }
+      }
+    }
+
+    // Figure container
+    figure {
+      position: relative;
+      margin: 0;
+      padding: 40px 0 0;
+      display: flex;
+
+      // Hover effect on caption
+      &:hover figcaption {
+        background-color: rgba(0, 53, 102, 0.9);
+      }
+    }
+
+    // Images
+    img {
+      max-width: $image-max-width;
+      width: 100%;
+      margin-left: auto;
+    }
+
+    // Caption overlay
+    figcaption {
+      max-width: $caption-max-width;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      box-shadow: 0 3px 16px rgba(0, 0, 0, 0.16);
+      background-color: rgba(0, 53, 102, 0.8);
+      -webkit-backdrop-filter: blur($backdrop-blur);
+      backdrop-filter: blur($backdrop-blur);
+      padding: 36px;
+      transition: all $transition-duration ease-in-out;
+    }
+
+    // Typography
+    h3 {
+      color: $icy-petal;
+      margin: 0 0 20px;
+      line-height: 29px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: $ghost-gray;
+    }
+
+    span {
+      display: block;
+      line-height: 24px;
+      color: $ghost-gray;
+      margin-bottom: 20px;
+
+      strong {
+        color: $ghost-gray;
+      }
+    }
+
+    // Links
+    .links {
+      display: flex;
+      margin: 0;
+
+      li {
+        margin-right: 46px;
+
+        a {
+          transition: all $transition-duration ease-in-out;
+          display: inline-block;
+
+          &:hover {
+            transform: scale(1.2);
+          }
+        }
+      }
+    }
+  }
+}
+
+// =============================================================================
+// COMBINED MIXIN (Convenience)
+// =============================================================================
+
+@mixin featured-projects-all {
+  @include featured-projects-container;
+  @include featured-projects-cards;
+}

@@ -45,6 +45,7 @@ import { StateActions } from '@portfolio-v2/state';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
 import { DisplayValidatorErrorsComponent } from '../validator-errors/display-validator-errors.component';
+import { ProjectCardType } from '../types/project-cards-type.enum';
 
 /**
  * Project Cards Component
@@ -88,11 +89,20 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /** Image Upload Progress Value */
   protected progressValue = 0;
 
+  /** Project card type */
+  protected readonly typeFeatured = ProjectCardType.featured;
+
   /** Image URL Subscription */
   private imageUrlSubscription!: Subscription;
 
   /** Upload Progress Interval ID */
   private uploadProgressIntervalId: number | undefined;
+
+  /** Upload Check Timeout ID */
+  private uploadCheckTimeoutId: number | undefined;
+
+  /** Timeout limit for upload in milliseconds (30 seconds) */
+  private static readonly THIRTY_SECONDS_TIMEOUT = 30000;
 
   /**
    * constructor
@@ -100,6 +110,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * @param data data
    * @param data.currentId current id
    * @param data.heading heading
+   * @param data.type project card type
    * @param cdr change detector ref
    * @param formBuilder form builder
    * @param getDataService get data service
@@ -112,6 +123,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: {
       currentId: number,
       heading: string,
+      type: ProjectCardType,
     },
     private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
@@ -131,12 +143,28 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
     if (this.uploadProgressIntervalId !== undefined) {
       clearInterval(this.uploadProgressIntervalId);
     }
+    if (this.uploadCheckTimeoutId !== undefined) {
+      clearTimeout(this.uploadCheckTimeoutId);
+    }
   }
 
   /**
    * @inheritdoc
    */
   public ngOnInit(): void {
+    if (this.data.type === this.typeFeatured) {
+      this.cardAddForm = this.formBuilder.group({
+        heading: ['', [Validators.required]],
+        description: ['', [Validators.required]],
+        technologies: ['', [Validators.required]],
+        codebase: ['', [urlValidator()]],
+        youtube: ['', [urlValidator()]],
+        screenshot: ['', [firebaseURLValidator()]],
+        documentation: ['', [urlValidator()]],
+      });
+      return;
+    }
+
     this.cardAddForm = this.formBuilder.group({
       description: ['', [Validators.required]],
       technologies: ['', [Validators.required]],
@@ -171,8 +199,16 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * Open dialog description
    */
   protected openUploadPhotoPanel(): void {
-    const imageName = `ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Screenshot.webp`;
-    const fieldPath = `portfolio/project-screenshots/normal/${imageName}/`;
+    const paddedId = this.utility.getPaddedDigits(this.data.currentId, 2);
+    let fieldPath = '';
+
+    if (this.data.type === ProjectCardType.featured) {
+      // For featured projects, screenshots go to the same directory as main images
+      fieldPath = `portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp/`;
+    } else {
+      // For regular projects, screenshots go to the project-screenshots directory
+      fieldPath = `portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp/`;
+    }
 
     // Get all project cards and create update action
     const allProjectCards = this.store.selectSignal(portfolioCardsSelector)();
@@ -182,7 +218,14 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
         const updatedCards = allProjectCards.map((card: any) => (
           card.id === this.data.currentId ? { ...card, screenshotURL: updatedData.imageSrc } : card
         ));
+        if (this.data.type === ProjectCardType.featured) {
+          return StateActions.featuredProjectCardsStateUpdated({ projectCards: updatedCards });
+        }
         return StateActions.projectCardsStateUpdated({ projectCards: updatedCards });
+      }
+
+      if (this.data.type === ProjectCardType.featured) {
+        return StateActions.featuredProjectCardsStateUpdated({ projectCards: [] });
       }
       return StateActions.projectCardsStateUpdated({ projectCards: [] });
     };
@@ -211,30 +254,47 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * Add project card data
    */
-  protected addData(): void {
+  protected async addData(): Promise<void> {
     if (!this.cardAddForm.valid) return;
 
     const {
       description, technologies, codebase, youtube, screenshot, documentation,
     } = this.cardAddForm.value;
 
-    const fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
-    const databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
+    let { heading } = this.data;
+    let fileStoragePath = '';
+    let databaseDocPath = '';
+
+    if (this.data.type === ProjectCardType.featured) {
+      heading = this.cardAddForm.value.heading ?? 'Default Heading';
+      fileStoragePath = `portfolio/featured-projects/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
+      databaseDocPath = `featured-project-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
+    } else {
+      fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
+      databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
+    }
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
     const hasNewFile = this.imageUrl && this.imageUrl !== '' && this.imageUrl !== this.defaultImageSrc;
+
+    let imageURL = this.defaultImageSrc;
+
+    // Handle file upload if a new file was selected
     if (hasNewFile) {
-      this.handleFileUpload(fileStoragePath);
+      try {
+        // Upload file and wait for Firebase Storage URL
+        imageURL = await this.uploadFileAndGetUrl(fileStoragePath);
+      } catch (error) {
+        // If upload fails, keep default image URL
+        console.error('File upload failed, using default image:', error);
+        // Error handling can be added here if needed
+      }
     }
 
-    // Only update imageURL if a new photo was provided, otherwise keep existing
-    const imageURL = hasNewFile
-      ? this.imageUrl
-      : this.defaultImageSrc;
-
+    // Create updated project card with the correct image URL
     const updatedCard: IProjectCard = {
       id: this.data.currentId,
-      heading: this.data.heading,
+      heading: this.data.type === ProjectCardType.featured ? heading : this.data.heading,
       imageURL,
       description,
       tools: technologies,
@@ -257,28 +317,66 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * Handle file upload to storage and retrieve image URL
    * @param fileStoragePath path to store the file
+   * @returns Promise that resolves with the Firebase Storage URL
    */
-  private handleFileUpload(fileStoragePath: string): void {
-    // Clear any existing interval before starting a new one
-    if (!this.uploadProgressIntervalId) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl);
-    this.uploadProgressIntervalId = window.setInterval(() => {
-      this.progressValue = this.setDataService.getProgressValue();
-      this.isUploadCompleted = this.setDataService.getUploadCompleteState();
-      this.cdr.detectChanges();
-    }, 100);
-
-    // Handle image URL retrieval with proper subscription management
-    const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
-    this.imageUrlSubscription = newImageUrl.pipe(
-      take(1),
-    ).subscribe((result) => {
-      if (result) {
-        this.imageUrl = result;
+  private async uploadFileAndGetUrl(fileStoragePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // Clear any existing interval before starting a new one
+      if (this.uploadProgressIntervalId !== undefined) {
+        clearInterval(this.uploadProgressIntervalId);
       }
+
+      // Start the upload
+      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl);
+
+      // Set up progress tracking and wait for completion
+      this.uploadProgressIntervalId = window.setInterval(() => {
+        this.progressValue = this.setDataService.getProgressValue();
+        this.isUploadCompleted = this.setDataService.getUploadCompleteState();
+        this.cdr.detectChanges();
+
+        // Check if upload is complete
+        if (this.isUploadCompleted) {
+          // Clear the interval
+          clearInterval(this.uploadProgressIntervalId);
+          this.uploadProgressIntervalId = undefined;
+
+          // Clear the timeout since upload completed successfully
+          if (this.uploadCheckTimeoutId !== undefined) {
+            clearTimeout(this.uploadCheckTimeoutId);
+            this.uploadCheckTimeoutId = undefined;
+          }
+
+          // Now get the download URL
+          const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
+          this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
+            next: (result) => {
+              if (result) {
+                this.imageUrl = result; // Update local imageUrl for consistency
+                resolve(result); // Return the Firebase Storage URL
+              } else {
+                reject(new Error('Failed to get upload URL'));
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        }
+      }, 100);
+
+      // Timeout after 30 seconds
+      this.uploadCheckTimeoutId = window.setTimeout(() => {
+        if (this.uploadProgressIntervalId !== undefined) {
+          clearInterval(this.uploadProgressIntervalId);
+          this.uploadProgressIntervalId = undefined;
+        }
+        if (this.uploadCheckTimeoutId !== undefined) {
+          clearTimeout(this.uploadCheckTimeoutId);
+          this.uploadCheckTimeoutId = undefined;
+        }
+        reject(new Error('Upload timeout'));
+      }, AddPortfolioRecordComponent.THIRTY_SECONDS_TIMEOUT);
     });
   }
 
@@ -301,8 +399,13 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
           this.imagePreview = this.defaultImageSrc;
           this.cdr.detectChanges();
         }
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        this.store.dispatch(StateActions.projectCardsStateConnect());
+        if (this.data.type === ProjectCardType.featured) {
+          this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
+        } else {
+          this.store.dispatch(StateActions.portfolioCardsStateConnect());
+          this.store.dispatch(StateActions.projectCardsStateConnect());
+        }
+
         return result === 'successfull';
       }),
     );

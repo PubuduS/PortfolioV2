@@ -2,10 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Inject,
   OnDestroy,
   OnInit,
+  signal,
+  Signal,
 } from '@angular/core';
 import {
+  MAT_DIALOG_DATA,
   MatDialog,
   MatDialogActions,
   MatDialogClose,
@@ -32,8 +36,8 @@ import { CommonModule } from '@angular/common';
 
 import {
   projectCardSelector,
-  selectedCardIDSelector,
   portfolioCardsSelector,
+  featuredProjectCardSelector,
 } from '@portfolio-v2/state/selectors';
 import {
   GetDataService,
@@ -48,6 +52,7 @@ import { StateActions } from '@portfolio-v2/state';
 import {
   DisplayValidatorErrorsComponent,
   UploadPhotoComponent,
+  ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 
@@ -95,10 +100,10 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   protected isUploadCompleted = false;
 
   /** Selected card ID */
-  private readonly cardId = this.store.selectSignal(selectedCardIDSelector)();
+  private cardId = 1;
 
   /** Selected project card */
-  protected readonly projectCard = this.store.selectSignal(projectCardSelector(this.cardId));
+  protected readonly projectCard: Signal<IProjectCard | undefined> = signal(undefined);
 
   /** Image URL Subscription */
   private imageUrlSubscription!: Subscription;
@@ -111,6 +116,9 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
 
   /**
    * constructor
+   * @param data data
+   * @param data.cardId card id
+   * @param data.type project card type
    * @param dialog dialog ref
    * @param cdr change detector ref
    * @param formBuilder form builder
@@ -120,6 +128,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param utility utility service
    */
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { cardId: number, type: ProjectCardType },
     public dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
@@ -127,7 +136,14 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
-  ) {}
+  ) {
+    this.cardId = this.data.cardId ?? 1;
+    if (this.data.type === ProjectCardType.featured) {
+      this.projectCard = this.store.selectSignal(featuredProjectCardSelector(this.cardId));
+    } else {
+      this.projectCard = this.store.selectSignal(projectCardSelector(this.cardId));
+    }
+  }
 
   /**
    * @inheritdoc
@@ -181,7 +197,13 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    */
   protected openUploadPhotoPanel(): void {
     const imageName = `ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Screenshot.webp`;
-    const fieldPath = `portfolio/project-screenshots/normal/${imageName}/`;
+    const basePath = 'portfolio/project-screenshots';
+    let fieldPath = '';
+    if (this.data.type === ProjectCardType.featured) {
+      fieldPath = `${basePath}/featured/${imageName}/`;
+    } else {
+      fieldPath = `${basePath}/normal/${imageName}/`;
+    }
 
     // Get all project cards and create update action
     const allProjectCards = this.store.selectSignal(portfolioCardsSelector)();
@@ -191,7 +213,13 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
         const updatedCards = allProjectCards.map((card: any) => (
           card.id === this.cardId ? { ...card, screenshotURL: updatedData.imageSrc } : card
         ));
+        if (this.data.type === ProjectCardType.featured) {
+          return StateActions.featuredProjectCardsStateUpdated({ projectCards: updatedCards });
+        }
         return StateActions.projectCardsStateUpdated({ projectCards: updatedCards });
+      }
+      if (this.data.type === ProjectCardType.featured) {
+        return StateActions.featuredProjectCardsStateUpdated({ projectCards: [] });
       }
       return StateActions.projectCardsStateUpdated({ projectCards: [] });
     };
@@ -227,8 +255,15 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       description, technologies, codebase, youtube, screenshot, documentation,
     } = this.cardEditorForm.value;
 
-    const fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
-    const databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
+    let fileStoragePath = '';
+    let databaseDocPath = '';
+    if (this.data.type === ProjectCardType.featured) {
+      fileStoragePath = `portfolio/featured-projects/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
+      databaseDocPath = `featured-project-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
+    } else {
+      fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
+      databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
+    }
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
     const hasNewFile = this.imageUrl && this.imageUrl !== '' && this.imageUrl !== this.defaultImageSrc;
@@ -309,7 +344,11 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
           this.imagePreview = this.defaultImageSrc;
           this.cdr.detectChanges();
         }
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
+        if (this.data.type === ProjectCardType.featured) {
+          this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
+        } else {
+          this.store.dispatch(StateActions.portfolioCardsStateConnect());
+        }
         return result === 'successfull';
       }),
     );

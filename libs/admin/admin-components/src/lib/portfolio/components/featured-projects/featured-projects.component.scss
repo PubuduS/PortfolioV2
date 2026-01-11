@@ -1,0 +1,27 @@
+// Featured Projects Component - Admin Version
+@import 'apps/portfolio-v2/src/assets/SCSS/featured-projects';
+
+.featured-projects-container {
+  @include featured-projects-all;
+
+  // Layout for project cards with buttons below
+  .project-card {
+    position: relative;
+    margin-bottom: 80px; // Space for buttons before next card
+  }
+
+  // Reposition buttons from top-right overlay to below the card
+  ::ng-deep .project-card admin-update-delete-buttons .action-buttons {
+    top: calc(100% + 20px); // Position below the card
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%); // Center horizontally
+  }
+
+  // Responsive positioning
+  @media (max-width: 768px) {
+    ::ng-deep .project-card admin-update-delete-buttons .action-buttons {
+      top: calc(100% + 15px);
+    }
+  }
+}

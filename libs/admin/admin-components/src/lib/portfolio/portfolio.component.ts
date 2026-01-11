@@ -12,11 +12,11 @@ import { Store } from '@ngrx/store';
 import { MatIconModule } from '@angular/material/icon';
 
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
-import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
   AddTileComponent,
   UpdateDeleteButtonsComponent,
+  ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
@@ -73,21 +73,21 @@ export class PortfolioComponent {
    * @param id record id
    */
   protected openDialog(id: number): void {
-    this.store.dispatch(StateActions.projectCardIDStateUpdated({ selectedProjectCardID: id }));
     this.dialog.open(ProjectCardsComponent, {
       autoFocus: 'first-tabbable',
       restoreFocus: true,
       width: '800px',
+      data: { cardId: id, type: ProjectCardType.standard },
     });
   }
 
   /**
    * Get delete click handler for a project
-   * @param project project view
+   * @param projectId project id
    * @returns click handler function
    */
-  protected getDeleteClickHandler(project: IProjectView): () => void {
-    return () => this.openDeleteDialog(project);
+  protected getDeleteClickHandler(projectId: number): () => void {
+    return () => this.openDeleteDialog(projectId);
   }
 
   /**
@@ -122,16 +122,16 @@ export class PortfolioComponent {
 
   /**
    * Open delete dialog
-   * @param project project view
+   * @param projectId project id
    */
-  private openDeleteDialog(project: IProjectView): void {
+  private openDeleteDialog(projectId: number): void {
     this.dialog.open(
       DeletePortfolioTileComponent,
       {
         autoFocus: 'first-tabbable',
         restoreFocus: true,
         width: '800px',
-        data: { project },
+        data: { recordId: projectId, type: ProjectCardType.standard },
       },
     );
   }

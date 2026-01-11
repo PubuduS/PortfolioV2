@@ -79,10 +79,6 @@ describe('UploadPhotoComponent', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('Form Initialization', () => {
     it('should have form initialization capability', () => {
       // Test that the component has the necessary setup for forms

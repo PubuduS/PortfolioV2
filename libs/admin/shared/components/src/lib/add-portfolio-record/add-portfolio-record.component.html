@@ -21,6 +21,24 @@
         </div>
       </div>
       <div class="row my-2 description">
+        @if (data.type === typeFeatured) {
+          <div class="col-12">
+            <label class="fw-bold my-2"> Heading:</label>
+            <input
+              id="heading"
+              formControlName="heading"
+              class="form-control mb-3"
+              type="text"
+              placeholder="Enter project heading"
+            />
+            <admin-portfolio-display-validator-errors
+              [control]="cardAddForm.get('technologies')"
+              errorKey="required"
+              message="A valid comma separated list of technologies are required"
+            >
+            </admin-portfolio-display-validator-errors>
+          </div>
+        }
         <div class="col-12">
           <label for="description" class="form-label mt-2">Description</label>
           <textarea
