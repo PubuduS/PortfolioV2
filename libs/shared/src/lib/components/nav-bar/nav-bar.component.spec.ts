@@ -7,7 +7,10 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { ActivatedRoute } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+} from '@angular/router';
 import { of } from 'rxjs';
 import { MockComponent } from 'ng-mocks';
 
@@ -21,6 +24,7 @@ import {
   AuthService,
   WeatherService,
 } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 import { NavBarComponent } from './nav-bar.component';
 
 describe('NavBarComponent', () => {
@@ -101,6 +105,26 @@ describe('NavBarComponent', () => {
       it('should display preview button', () => {
         const previewBtn = nativeElement.querySelector('#previewMode');
         expect(previewBtn).toBeTruthy();
+      });
+
+      it('mirrors the current page when preview is clicked', () => {
+        const router = TestBed.inject(Router);
+        jest.spyOn(router, 'url', 'get').mockReturnValue(
+          '/content/education/publications?edit=3',
+        );
+        const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+        const dispatch = jest.spyOn(store, 'dispatch');
+        const preview = nativeElement.querySelector('#previewMode');
+        if (!(preview instanceof HTMLElement)) {
+          throw new Error('preview button missing');
+        }
+
+        preview.click();
+
+        expect(navigate).toHaveBeenCalledWith('/admin/education/publications');
+        expect(dispatch).toHaveBeenCalledWith(
+          StateActions.previewModeStateUpdated({ isPreviewMode: true }),
+        );
       });
     });
   });

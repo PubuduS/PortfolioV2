@@ -25,6 +25,7 @@ import {
   IPublicationDetails,
   ISkills,
   ISocialInfor,
+  PUBLICATION_COLLECTIONS,
 } from './data-models';
 
 /**
@@ -129,7 +130,7 @@ export class StateEffects {
    */
   public connectToPublicationCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.publicationCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IPublication>('publication-section').pipe(
+    switchMap(() => this.dbService.getDataArray<IPublication>(PUBLICATION_COLLECTIONS.card).pipe(
       map((publications: IPublication[]) => StateActions
         .publicationCardsStateUpdated({ publications })),
       catchError((error: Error) => this.handleErrors('Publication card', error)),
@@ -141,7 +142,9 @@ export class StateEffects {
    */
   public connectToPublicationDetailsCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.publicationDetailCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IPublicationDetails>('publication-details-section').pipe(
+    switchMap(() => this.dbService.getDataArray<IPublicationDetails>(
+      PUBLICATION_COLLECTIONS.details,
+    ).pipe(
       map((publicationDetails: IPublicationDetails[]) => StateActions
         .publicationDetailCardsStateUpdated({ publicationDetails })),
       catchError((error: Error) => this.handleErrors('Publication details card', error)),

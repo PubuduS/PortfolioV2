@@ -1,0 +1,80 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.publications-admin {
+  background-color: $golden-bloom;
+  padding: 100px 0 80px;
+
+  .section-title {
+    margin-bottom: 40px;
+    text-align: center;
+
+    h2 {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 49px;
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+
+  .publication-grid {
+    align-items: start;
+    display: grid;
+    gap: 0 32px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    @media (max-width: 991px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 575px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .publication-card {
+    margin-bottom: 110px;
+    position: relative;
+
+    p {
+      text-align: justify;
+    }
+
+    img {
+      height: auto;
+      max-width: 100%;
+    }
+  }
+
+  mat-card-title {
+    text-align: center;
+  }
+
+  .add-publication {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    // Material buttons have a fixed height, which made the 120px icon spill over the label.
+    button {
+      height: auto;
+      line-height: 0;
+      padding: 8px;
+    }
+
+    img {
+      display: block;
+    }
+
+    h3 {
+      margin: 8px 0 0;
+    }
+  }
+
+  ::ng-deep .publication-card admin-update-delete-buttons .action-buttons {
+    left: 50%;
+    right: auto;
+    top: calc(100% + 16px);
+    transform: translateX(-50%);
+  }
+}

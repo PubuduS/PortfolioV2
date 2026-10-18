@@ -1,0 +1,20 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.publication-form {
+  label {
+    display: block;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  .cover-preview {
+    display: block;
+    margin-top: 8px;
+    max-width: 240px;
+  }
+
+  .form-error {
+    color: $jasper;
+    margin-top: 12px;
+  }
+}

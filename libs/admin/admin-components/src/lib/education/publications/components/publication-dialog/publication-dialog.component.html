@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ heading }}</h2>
+
+<mat-dialog-content>
+  <admin-publication-form
+    [target]="target"
+    [disabled]="status().kind === 'saving'"
+    (submitted)="onSubmitted($event)"
+  />
+
+  @if (errorMessage(); as message) {
+    <p class="save-error" role="alert">{{ message }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    mat-flat-button
+    color="primary"
+    [disabled]="status().kind === 'saving'"
+    (click)="save()"
+  >
+    Save
+  </button>
+
+  <button
+    type="button"
+    mat-button
+    mat-dialog-close
+    [disabled]="status().kind === 'saving'"
+  >
+    Cancel
+  </button>
+</mat-dialog-actions>

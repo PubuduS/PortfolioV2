@@ -1,0 +1,40 @@
+<div class="publications-admin">
+  <div class="container">
+    <div class="section-title">
+      <h2>Publications</h2>
+    </div>
+
+    <div class="publication-grid">
+      @for (publication of publications(); track publication.id) {
+        <div class="publication-card">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ publication.title }}</mat-card-title>
+              <mat-card-subtitle>{{ publication.keywords }}</mat-card-subtitle>
+            </mat-card-header>
+            <img
+              mat-card-image
+              [src]="publication.cover.url"
+              [alt]="publication.title"
+            />
+            <mat-card-content>
+              <p>{{ publication.summary }}</p>
+            </mat-card-content>
+          </mat-card>
+          <admin-update-delete-buttons [config]="buttonConfig(publication)" />
+        </div>
+      }
+      <div class="add-publication">
+        <button type="button" mat-button (click)="addPublication()">
+          <img
+            src="assets/images/portfolio/add.ico"
+            width="120"
+            height="120"
+            alt="Add a publication"
+          />
+        </button>
+        <h3>Add</h3>
+      </div>
+    </div>
+  </div>
+</div>

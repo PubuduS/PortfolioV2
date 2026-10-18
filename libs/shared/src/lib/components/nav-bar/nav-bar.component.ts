@@ -22,6 +22,7 @@ import {
 import { AuthService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 import { WeatherDisplayComponent } from '../weather_display/weather_display.component';
+import { mirrorUrl } from './mirror-url';
 
 /**
  * Navigation bar
@@ -79,18 +80,7 @@ export class NavBarComponent {
     this.store.dispatch(
       StateActions.previewModeStateUpdated({ isPreviewMode: !this.isPreviewMode() }),
     );
-    const currentURL = this.router.url;
-    const isAdmin = this.isAdminRoute(currentURL);
-    const lastSegment = currentURL.substring(currentURL.lastIndexOf('/') + 1);
-    let newRoute = '';
-    if (lastSegment === 'home') {
-      newRoute = isAdmin ? `${lastSegment}` : `admin/${lastSegment}`;
-    } else if (lastSegment === 'featured-projects') {
-      newRoute = isAdmin ? `content/portfolio/${lastSegment}` : `admin/portfolio/${lastSegment}`;
-    } else {
-      newRoute = isAdmin ? `content/${lastSegment}` : `admin/${lastSegment}`;
-    }
-    this.router.navigate([newRoute]);
+    this.router.navigateByUrl(mirrorUrl(this.router.url));
   }
 
   /**
@@ -105,14 +95,5 @@ export class NavBarComponent {
     } else {
       this.router.navigate(['content/aboutme']);
     }
-  }
-
-  /**
-   * Chack if the current route is admin route
-   * @param currentURL current URL
-   * @returns true if the current route is admin; false otherwise
-   */
-  private isAdminRoute(currentURL: string): boolean {
-    return currentURL.includes('admin');
   }
 }
