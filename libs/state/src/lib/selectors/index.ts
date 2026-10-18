@@ -13,6 +13,7 @@ export * from './portfolio-card.selector';
 export * from './portfolio-cards.selector';
 export * from './project-card.selector';
 export * from './publication-details-card.selector';
+export * from './publication-records.selector';
 export * from './publications.selector';
 export * from './selected-card-id.selector';
 export * from './selected-publication-id.selector';

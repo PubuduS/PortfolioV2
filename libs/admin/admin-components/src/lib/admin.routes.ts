@@ -22,4 +22,10 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     path: 'portfolio',
     loadChildren: () => import('@portfolio-v2/admin-components').then((route) => route.PORTFOLIO_ROUTES),
   },
+  {
+    path: 'education',
+    loadChildren: () => import('@portfolio-v2/admin-components').then(
+      (route) => route.EDUCATION_ADMIN_ROUTES,
+    ),
+  },
 ];

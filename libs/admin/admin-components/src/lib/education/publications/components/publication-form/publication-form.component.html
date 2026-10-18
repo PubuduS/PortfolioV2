@@ -1,0 +1,179 @@
+<form class="publication-form" [formGroup]="form" (ngSubmit)="submit()">
+  <label for="publication-title">Card title</label>
+  <input id="publication-title" class="form-control" formControlName="title" />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.title"
+    errorKey="required"
+    message="A card title is required"
+  />
+
+  <label for="publication-detail-title">Detail title</label>
+
+  <input
+    id="publication-detail-title"
+    class="form-control"
+    formControlName="detailTitle"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.detailTitle"
+    errorKey="required"
+    message="A detail title is required"
+  />
+
+  <label for="publication-keywords">Keywords</label>
+
+  <input
+    id="publication-keywords"
+    class="form-control"
+    formControlName="keywords"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.keywords"
+    errorKey="required"
+    message="Keywords are required"
+  />
+
+  <label for="publication-summary">Summary</label>
+
+  <textarea
+    id="publication-summary"
+    class="form-control"
+    rows="3"
+    formControlName="summary"
+  ></textarea>
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.summary"
+    errorKey="required"
+    message="A summary is required"
+  />
+
+  <label for="publication-authors">Authors</label>
+
+  <input
+    id="publication-authors"
+    class="form-control"
+    formControlName="authors"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.authors"
+    errorKey="required"
+    message="Authors are required"
+  />
+
+  <label for="publication-abstract">Abstract</label>
+
+  <textarea
+    id="publication-abstract"
+    class="form-control"
+    rows="8"
+    formControlName="abstractText"
+  ></textarea>
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.abstractText"
+    errorKey="required"
+    message="An abstract is required"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.abstractText"
+    errorKey="empty-abstract"
+    message="The abstract needs at least one paragraph"
+  />
+
+  <label for="publication-citation">Citation</label>
+
+  <textarea
+    id="publication-citation"
+    class="form-control"
+    rows="3"
+    formControlName="citation"
+  ></textarea>
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.citation"
+    errorKey="required"
+    message="A citation is required"
+  />
+
+  <label for="publication-cover">Cover image</label>
+
+  @if (coverPreview(); as preview) {
+    <img class="cover-preview" [src]="preview" alt="Cover preview" />
+  }
+
+  <input
+    id="publication-cover"
+    type="file"
+    accept="image/*"
+    (change)="onCoverSelected($event)"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.cover"
+    errorKey="required"
+    message="A cover image is required"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.cover"
+    errorKey="missing-cover"
+    message="A cover image is required"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.cover"
+    errorKey="unsupported-cover"
+    message="The cover must be an image"
+  />
+
+  <label for="publication-paper">Paper PDF</label>
+
+  <input
+    id="publication-paper"
+    type="file"
+    accept="application/pdf"
+    (change)="onPaperSelected($event)"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.paper"
+    errorKey="unsupported-paper"
+    message="The paper must be a PDF"
+  />
+
+  @if (form.controls.paper.value) {
+    <label for="publication-file-name">Download file name</label>
+
+    <input
+      id="publication-file-name"
+      class="form-control"
+      formControlName="fileName"
+    />
+
+    <admin-portfolio-display-validator-errors
+      [control]="form.controls.fileName"
+      errorKey="required"
+      message="A file name is required for the paper"
+    />
+
+    <admin-portfolio-display-validator-errors
+      [control]="form.controls.fileName"
+      errorKey="missing-file-name"
+      message="A file name is required for the paper"
+    />
+
+    <button type="button" mat-button (click)="removePaper()">
+      Remove paper
+    </button>
+  }
+
+  @if (formError(); as formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+</form>

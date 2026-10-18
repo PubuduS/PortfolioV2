@@ -58,7 +58,7 @@ export class LandingBannerComponent implements OnInit {
     } else if (month > 3 && month <= 8) {
       this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/spring/Spring_Banner.gif`);
     } else {
-      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/spring/Fall_Banner.gif`);
+      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/fall/Fall_Banner.gif`);
     }
   }
 

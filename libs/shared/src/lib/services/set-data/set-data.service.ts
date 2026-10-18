@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import {
   ref,
   Storage,
+  uploadBytes,
   uploadBytesResumable,
   deleteObject,
+  getDownloadURL,
 } from '@angular/fire/storage';
 import {
   Firestore,
   doc,
   setDoc,
   deleteDoc,
+  writeBatch,
 } from '@angular/fire/firestore';
 import {
   catchError,
@@ -20,6 +23,11 @@ import {
 } from 'rxjs';
 
 import { AllowedRecords } from '../../types';
+
+/** One document write inside a single batch. */
+export type WriteOp =
+  | { readonly kind: 'set'; readonly path: string; readonly value: AllowedRecords }
+  | { readonly kind: 'delete'; readonly path: string };
 
 /**
  * Set/Modify Data in the database
@@ -150,6 +158,43 @@ export class SetDataService {
       map(() => 'successfull'),
       catchError((error) => of(`error ${error}`)),
     );
+  }
+
+  /**
+   * Apply document writes in one Firestore batch.
+   * @param ops set and delete operations
+   * @returns resolves when the batch commits
+   */
+  public async commit(ops: readonly WriteOp[]): Promise<void> {
+    const batch = writeBatch(this.firestore);
+    ops.forEach((op) => {
+      const docRef = doc(this.firestore, op.path);
+      switch (op.kind) {
+        case 'set':
+          batch.set(docRef, op.value);
+          break;
+        case 'delete':
+          batch.delete(docRef);
+          break;
+        default: {
+          const unexpected: never = op;
+          throw new Error(`Unsupported write: ${JSON.stringify(unexpected)}`);
+        }
+      }
+    });
+    await batch.commit();
+  }
+
+  /**
+   * Upload a file and resolve with its download URL after the bytes are stored.
+   * @param path storage path
+   * @param file file to upload
+   * @returns download URL
+   */
+  public async uploadFile(path: string, file: File): Promise<string> {
+    const storageRef = ref(this.storage, path);
+    await uploadBytes(storageRef, file);
+    return getDownloadURL(storageRef);
   }
 
   /**

@@ -3,6 +3,28 @@ export { IWeather, OpenWeatherResponse } from './weather/IWeather';
 export { ICertificateCard } from './certificate_display/ICertificateCard';
 export { IProjectCard, IProjectView } from './project_display/IProjectCard';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
+export {
+  PUBLICATION_COLLECTIONS,
+  abstractAsText,
+  joinPublications,
+  nextPublicationId,
+  planDelete,
+  publicationDocPaths,
+  publicationFilePath,
+  toPublicationDocs,
+  toPublicationDraft,
+} from './publications/publication';
+export type {
+  AssetInput,
+  DraftFailure,
+  DraftResult,
+  EditTarget,
+  Publication,
+  PublicationAsset,
+  PublicationDraft,
+  PublicationFormValues,
+  PublicationId,
+} from './publications/publication';
 export { IExperience } from './experience/IExperience';
 export { ISocialInfor } from './social/ISocialInfor';
 export {

@@ -28,8 +28,8 @@ export interface IPublicationDetails {
   title: string,
   /** Authors */
   authors: string,
-  /** Abstarct */
-  abstarct: string,
+  /** Abstract paragraphs. The stored field name is misspelled. */
+  abstarct: readonly string[],
   /** Citation */
   citation: string
 }
