@@ -1,0 +1,134 @@
+[
+  {
+    "id": "publication-01",
+    "data": {
+      "type": "map",
+      "fields": {
+        "btnDownloadDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "shortDesc": {
+          "type": "string",
+          "value": "The paper investigates the use of Augmented Reality (AR) in biomechanics through ARWalker, an application enabling participants, especially older adults and those with diseases, to synchronize their gait with virtual companions, ultimately reducing the risk of falls."
+        },
+        "subTitle": {
+          "type": "string",
+          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
+        },
+        "title": {
+          "type": "string",
+          "value": "ARWalker"
+        },
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "downloadFileName": {
+          "type": "string",
+          "value": "ARWalker"
+        },
+        "imageUrl": {
+          "type": "string",
+          "value": "assets/images/publications/Researcher.jpeg"
+        },
+        "btnMoreDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "downloadUrl": {
+          "type": "string",
+          "value": "assets/PDFs/Publications/ARWalker.pdf"
+        }
+      }
+    }
+  },
+  {
+    "id": "publication-02",
+    "data": {
+      "type": "map",
+      "fields": {
+        "imageUrl": {
+          "type": "string",
+          "value": "assets/images/publications/HLStoreImg.jpeg"
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
+        "title": {
+          "type": "string",
+          "value": "A Study of the Hololens Application Store"
+        },
+        "shortDesc": {
+          "type": "string",
+          "value": "This paper investigates the landscape of Augmented Reality (AR) applications based on Head-Mounted Displays (HMDs), particularly focusing on those available on the Microsoft Hololens application store, examining their characteristics and system performance to provide valuable insights to the research community."
+        },
+        "downloadUrl": {
+          "type": "string",
+          "value": "assets/PDFs/Publications/HLStore.pdf"
+        },
+        "btnDownloadDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "downloadFileName": {
+          "type": "string",
+          "value": "HLStore"
+        },
+        "subTitle": {
+          "type": "string",
+          "value": "System Analysis, Mixed Reality, HoloLens 2"
+        },
+        "btnMoreDisable": {
+          "type": "boolean",
+          "value": false
+        }
+      }
+    }
+  },
+  {
+    "id": "publication-03",
+    "data": {
+      "type": "map",
+      "fields": {
+        "imageUrl": {
+          "type": "string",
+          "value": "assets/images/publications/Thesis.jpg"
+        },
+        "downloadFileName": {
+          "type": "string",
+          "value": "Thesis"
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "value": "assets/PDFs/Publications/Thesis.pdf"
+        },
+        "subTitle": {
+          "type": "string",
+          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
+        },
+        "btnMoreDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "title": {
+          "type": "string",
+          "value": "Gait Rehabillitation with Mixed Reality"
+        },
+        "shortDesc": {
+          "type": "string",
+          "value": "This study introduces two portable mixed reality systems for gait training in individuals with gait disabilities, employing an avatar-based approach backed by the proteus effect and complexity matching theories, as well as a system using rhythmic visual cues through a moving bar, with promising pilot study results and ongoing large-scale human trials to evaluate their effectiveness in restoring gait patterns."
+        },
+        "btnDownloadDisable": {
+          "type": "boolean",
+          "value": false
+        }
+      }
+    }
+  }
+]

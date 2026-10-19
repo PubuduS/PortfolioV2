@@ -1,0 +1,62 @@
+[
+  {
+    "id": "social-01",
+    "data": {
+      "type": "map",
+      "fields": {
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "mediaIcon": {
+          "type": "string",
+          "value": "fa-linkedin"
+        },
+        "media": {
+          "type": "string",
+          "value": "https://www.linkedin.com/in/pubudu-wijesooriya/"
+        }
+      }
+    }
+  },
+  {
+    "id": "social-02",
+    "data": {
+      "type": "map",
+      "fields": {
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
+        "mediaIcon": {
+          "type": "string",
+          "value": "fa-github"
+        },
+        "media": {
+          "type": "string",
+          "value": "https://github.com/PubuduS/"
+        }
+      }
+    }
+  },
+  {
+    "id": "social-03",
+    "data": {
+      "type": "map",
+      "fields": {
+        "mediaIcon": {
+          "type": "string",
+          "value": "fa-envelope"
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        },
+        "media": {
+          "type": "string",
+          "value": "mock.user@example.test"
+        }
+      }
+    }
+  }
+]

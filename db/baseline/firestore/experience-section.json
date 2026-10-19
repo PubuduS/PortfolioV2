@@ -1,0 +1,376 @@
+[
+  {
+    "id": "experience01",
+    "data": {
+      "type": "map",
+      "fields": {
+        "timePeriod": {
+          "type": "string",
+          "value": "2013 - 2015"
+        },
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "Identified and addressed common issues of low-level inventory control software, troubleshooting to resolve these issues and achieve full functionality."
+            },
+            {
+              "type": "string",
+              "value": "Enhanced my working knowledge of SQL and Java tools, as well as OOP concepts, through completion of project tasks."
+            }
+          ]
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2015-02-28"
+        },
+        "employer": {
+          "type": "string",
+          "value": "Java Institute"
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "Engineered an inventory control software for Sapna, a small business in Sri Lanka, to streamline inventory management processes."
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2013-12-31"
+        },
+        "position": {
+          "type": "string",
+          "value": "Software Engineer (JAVA) Java Institute"
+        }
+      }
+    }
+  },
+  {
+    "id": "experience02",
+    "data": {
+      "type": "map",
+      "fields": {
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "Liaised with colleagues to provide service in a timely manner to boost the efficiency of dining hall operations."
+            },
+            {
+              "type": "string",
+              "value": "Provided exceptional service to students and staff frequenting the dining hall."
+            },
+            {
+              "type": "string",
+              "value": "Maintained consistent communications with colleagues and senior management to exchange updates on operations."
+            },
+            {
+              "type": "string",
+              "value": "Learned to balance work duties with academic responsibilities."
+            }
+          ]
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2019-03-01"
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "Help with day to day operations of the student cafeteria"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2018 - 2019"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2018-01-01"
+        },
+        "employer": {
+          "type": "string",
+          "value": "Larson Commons"
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
+        "position": {
+          "type": "string",
+          "value": "Student Worker (Part-Time) at Larson Commons"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        }
+      }
+    }
+  },
+  {
+    "id": "experience03",
+    "data": {
+      "type": "map",
+      "fields": {
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "This is my senior capstone project for final year in South Dakota State University."
+        },
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "Assisted the Center with updating and maintaining their web software to effectively track the attendance of over 200 students and staff members."
+            },
+            {
+              "type": "string",
+              "value": "Learned Agile development, reverse engineering, database normalization, OOP designing, and PHP in order to effectively complete tasks."
+            },
+            {
+              "type": "string",
+              "value": "Created technical documents to monitor progress."
+            }
+          ]
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2019-08-01"
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        },
+        "position": {
+          "type": "string",
+          "value": "Part-Time Web Developer at Peace Lutheran Early Childhood Center."
+        },
+        "employer": {
+          "type": "string",
+          "value": "Peace Lutheran Early Childhood Center"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2018-01-01"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2018 - 2019"
+        }
+      }
+    }
+  },
+  {
+    "id": "experience04",
+    "data": {
+      "type": "map",
+      "fields": {
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "id": {
+          "type": "integer",
+          "value": "4"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2019-09-01"
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2021-02-01"
+        },
+        "position": {
+          "type": "string",
+          "value": "Software Engineer (C++) Sencore.Inc"
+        },
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "Engineered and implemented a centralized authentication system using TACACS+ and PAM modules for MRD5800 unit and sub brands; enabling units to connect to centralized remote authentication server to grant access and perform AAA functionalities."
+            },
+            {
+              "type": "string",
+              "value": "Programmed a portable Java Auditor software to parse through frequencies and log matrices into a CSV file for each channel."
+            },
+            {
+              "type": "string",
+              "value": "Evaluated a legacy codebase to identify inefficiencies and integrate enhancements."
+            },
+            {
+              "type": "string",
+              "value": "Utilized a wide variety of technologies throughout operations, including [C++, JIRA, Visual Studio Code, Git, Gerrit, PAM, TACACS+, SCons build system, Subversion, JS, ARM AT91 Micro-controllers, Debian GNU/Linux, TeamCity, MIBs, Java SE 8, Netbeans and cURL, Cross-Compilation, Bash, and Doxygen;]"
+            },
+            {
+              "type": "string",
+              "value": "Utilized [Git, Subversion,] and [Gerrit] for version control and code review; [Python, Scons, Bash,] and [Teamcity] to cross-compilation and build system; [MIBs] to allow remote configurations of the settings; [JAVA SE 8, Netbeans] and [cURL] to create auditor software; [Doxygen] to generate documentation of the software."
+            }
+          ]
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "Contributed to the development and optimization of Sencore MRD5800 and MRD7000 advanced modular decoder product lines, as well as associated sub-brands."
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2019 - 2021"
+        },
+        "employer": {
+          "type": "string",
+          "value": "Sencore.Inc"
+        }
+      }
+    }
+  },
+  {
+    "id": "experience05",
+    "data": {
+      "type": "map",
+      "fields": {
+        "timePeriod": {
+          "type": "string",
+          "value": "2021 - 2023"
+        },
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "The application analyzes the environment around the user and spawns an avatar that can intelligently navigate around the environment. When the user follows the avatar, the system analyzes the user\\'s walking pattern and assigns a score. Based on the score, it can early identify neural and motor-related disorders and also can help the user with gait training."
+            },
+            {
+              "type": "string",
+              "value": "This project is a massive collaborative project with multiple departments including medical science, biomechanics, and computer science with over millions of funding (Award Number: [P20GM109090])"
+            },
+            {
+              "type": "string",
+              "value": "Translated and optimized algorithms written in Matlab to C# and evaluate the accuracy."
+            },
+            {
+              "type": "string",
+              "value": "Created a dev journal and extensive technical documentation for future open-source development."
+            },
+            {
+              "type": "string",
+              "value": "Awarded [$5000] Graduate Research and Creative Activity(GRACA) fellowship of the University of Nebraska at Omaha for Summer 2022."
+            },
+            {
+              "type": "string",
+              "value": "Utilized [Git, Github Actions,] and [Jenkins] with [AWS S3 Bucket] for version control and CICD Pipeline; [C#, Unity, MRTK,] and [Visual Studio] to create MR application for HoloLens 2; [Doxygen] and [JIRA] to generate documentation and management of the software development life cycle."
+            }
+          ]
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2023-08-01"
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "Designed and developed a HoloLens 2 Mixed Reality application that provides gait training for patients with gait disorders."
+        },
+        "employer": {
+          "type": "string",
+          "value": "University of Nebraska at Omaha"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "id": {
+          "type": "integer",
+          "value": "5"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2021-08-01"
+        },
+        "position": {
+          "type": "string",
+          "value": "Graduate Research Assistant at University of Nebraska Omaha"
+        }
+      }
+    }
+  },
+  {
+    "id": "experience07",
+    "data": {
+      "type": "map",
+      "fields": {
+        "endDate": {
+          "type": "string",
+          "value": "present"
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "I joined Election Systems and Software in September 2023 and feel fortunate to be part of an outstanding team of experts in various domains of software engineering. It has been a great learning experience for me to integrate my knowledge of back-end embedded programming with the new front-end technologies I've acquired since joining Election Systems. Currently, I am working with a team of 10 engineers on updating a legacy product line."
+        },
+        "points": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "Utilized the latest Angular version 16.2, incorporating features like [RxJs, Nx, NgRx,] and Typescript for a comprehensive UI overhaul."
+            },
+            {
+              "type": "string",
+              "value": "Implemented a Jenkins Pipeline and integrated CompoDoc for automatic documentation. "
+            },
+            {
+              "type": "string",
+              "value": "Updated bash and Yocto recipes to seamlessly build and link the new UI, along with generating documentation for these changes."
+            },
+            {
+              "type": "string",
+              "value": "Created technical documentation with confluence. "
+            },
+            {
+              "type": "string",
+              "value": "Provided technical and site support for the 2023 General Election in New Jersey."
+            },
+            {
+              "type": "string",
+              "value": "Utilized [Git] and [Jenkins] for version control and CICD Pipeline; [C#, C++, Typescript, .NET, Angular, NgRx, RxJs, Yocto,] and [Visual Studio] and [Nx Workspace] for a variety of projects; [Doxygen, CompoDoc], and [JIRA] to generate documentation and management of the software development life cycle."
+            }
+          ]
+        },
+        "position": {
+          "type": "string",
+          "value": "Software Engineer at Election Systems and Software"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2023 - 2025"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2023-09-05"
+        },
+        "id": {
+          "type": "integer",
+          "value": "7"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": true
+        },
+        "employer": {
+          "type": "string",
+          "value": "Election Systems and Software"
+        }
+      }
+    }
+  }
+]

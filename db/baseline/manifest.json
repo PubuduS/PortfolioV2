@@ -1,0 +1,213 @@
+{
+  "sourceProjectId": "portfolio-c9b8e",
+  "capturedAt": "2026-10-19T03:02:35.260Z",
+  "sanitizerVersion": 2,
+  "firestore": {
+    "about-me-section": {
+      "docCount": 1,
+      "sha256": "32f7244808d2821901529c1e5154b603c2284583e25a009e55de7ef08269c70d"
+    },
+    "certification-section": {
+      "docCount": 7,
+      "sha256": "18f1dbb7fec5033d101e8a992de3390cf6e4bb711b6b881c870084872bf6c7ef"
+    },
+    "education-section": {
+      "docCount": 3,
+      "sha256": "3103875142897bfd2cf9e8fc72e20b2ffda7384adb817c19efd69ef450e66d0e"
+    },
+    "experience-section": {
+      "docCount": 6,
+      "sha256": "2c47cbf74b5589434adb68a0845c5817c576cfa309a70036e1fb99314a14e1dd"
+    },
+    "featured-project-section": {
+      "docCount": 3,
+      "sha256": "561c82cffdf2fcfc8c274ad1821f93668aa6329ef9932c0fc76567da97cfa3a6"
+    },
+    "project-data-section": {
+      "docCount": 7,
+      "sha256": "4420658fae6dee3cfce17c1e81419129dfb6a30d6b75c6506364d7bb1fd8d16e"
+    },
+    "project-icon-section": {
+      "docCount": 8,
+      "sha256": "d067c2ad7a973dfa8f1f5aa1925f19f0f82f6a2ef2e98771c54e6cd4b53d933b"
+    },
+    "publication-details-section": {
+      "docCount": 3,
+      "sha256": "225b33e1f6f806b252544830971c09335deb733d1495a29b15d8aff166999669"
+    },
+    "publication-section": {
+      "docCount": 3,
+      "sha256": "c27094f3faa9bbb7bf25fdfab3b22b0340211e3c39e4195af4a80f2f8bd57473"
+    },
+    "skills-section": {
+      "docCount": 1,
+      "sha256": "cb37eae70f6992a580ec5581c038b098e2468bd83c3f1398771c3c6cfe3ae196"
+    },
+    "social-infor-section": {
+      "docCount": 3,
+      "sha256": "0dd06423e4e1dd4017ae334784b008c965f9fc53c96e301b57ab4445134f14f2"
+    }
+  },
+  "storage": {
+    "about-me-section/part-01": {
+      "sha256": "ea1cb4fe7d0152f8da640511825b695710479bdb103d171847bc941fb0b59efc",
+      "bytes": 48606,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/about-me-section/profile/MyPhoto.webp": {
+      "sha256": "ff23052c9032bde9e215347a5a73da7e1abf511860a2dedc931e3792549402d9",
+      "bytes": 3632,
+      "contentType": "image/png"
+    },
+    "portfolio/featured-projects/ID-01-Image.webp": {
+      "sha256": "9054e2b3b5003a2f68dacc951621217537f14c5a36187b1740dfacf93596d3cd",
+      "bytes": 44950,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/featured-projects/ID-02-Image.webp": {
+      "sha256": "d6f63d64c5b5097c1cd176b3783ce473bdc3c893ef5e57b2c5bcbd2d8820d384",
+      "bytes": 49810,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/featured-projects/ID-03-Image.webp": {
+      "sha256": "9335bf1ed5f5e36e6a988a6ca1144c771a3214cb525da019230d4297e150dd76",
+      "bytes": 30586,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/landing-page/banners/fall/Fall_Banner.gif": {
+      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
+      "bytes": 134771,
+      "contentType": "image/gif"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner.gif": {
+      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
+      "bytes": 134771,
+      "contentType": "image/gif"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner.gif": {
+      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
+      "bytes": 134771,
+      "contentType": "image/gif"
+    },
+    "portfolio/portfolio-tiles/ID-01-Icon.webp": {
+      "sha256": "4c68ec38f4694c1694442e8a082e12a11b9b73a72b1fab4e5d64ea1802a4b457",
+      "bytes": 8414,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-02-Icon.webp": {
+      "sha256": "ca238468da7f8698bdca232e7db329c44a17129a35396b8b817d74bb2f7e2350",
+      "bytes": 6708,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-03-Icon.webp": {
+      "sha256": "a1738a4c20a9c299b8d29a8d04627e7d082bb6f8b37532d6afc21cdbd54c4541",
+      "bytes": 2978,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-04-Icon.webp": {
+      "sha256": "63e1483d8e74dafb5b5321b5d63b4a3b112ae412ca73a61e5431f0e6049d09f6",
+      "bytes": 6618,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-05-Icon.webp": {
+      "sha256": "505e7ad27ad2d07a1eb6bc81a771bbf127266679ed823b0846c0e555222d4f2d",
+      "bytes": 4278,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-06-Icon.webp": {
+      "sha256": "c2bc03433263c5b441f6369d68d6db8bffc68c51b758f097ef8a776b5247d241",
+      "bytes": 3750,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-07-Icon.webp": {
+      "sha256": "5c4bc754cab511b8e024595027635363c99b5211df44063b182cc9ce47cf2e4f",
+      "bytes": 5024,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/portfolio-tiles/ID-08-Icon.webp": {
+      "sha256": "c2105117a6939cb15c3c58f0b39d23617b6c2fe15a0406c2d94aa135c872193d",
+      "bytes": 5106,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-02-Image.webp": {
+      "sha256": "00911afad011f4b57df6990b2437b6fae215f713a4dbdbfcdf4d77a7eb4563f3",
+      "bytes": 51502,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-03-Image.webp": {
+      "sha256": "53b1acd46ba64b626249af1ad5099d3ef517473f0686684a820026305751bb0b",
+      "bytes": 29900,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-04-Image.webp": {
+      "sha256": "a5c96024167fcf504f588cabee4be6e4eac3cc88f1085c60d30eaca2eac8478a",
+      "bytes": 52204,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-05-Image.webp": {
+      "sha256": "59a91d6af6188e98a0110301f8b08dcba98fa4ce8016ebcf26aa64bf5cecbfdd",
+      "bytes": 49312,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-06-Image.webp": {
+      "sha256": "0c23a1dc0bf893240ee620ec055b0add0dffaa8410b8b8feed3e8b539f2c3b87",
+      "bytes": 48652,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-07-Image.webp": {
+      "sha256": "7dd37231f4dfbd39d2c4f4e95630651132645633bf534f456f66061c58d87be7",
+      "bytes": 51902,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-08-Image.webp": {
+      "sha256": "2036f7656216918862c3e948cafc9cf24678b8750ea70bd49304c128515d6261",
+      "bytes": 53116,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-card-images/ID-09-Image.webp": {
+      "sha256": "0c23a1dc0bf893240ee620ec055b0add0dffaa8410b8b8feed3e8b539f2c3b87",
+      "bytes": 48652,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/featured/ID-01-Screenshot.webp": {
+      "sha256": "f887894bf1b766804e7b03f491ea97c0d06fec325b5ead26b5baf931d292c00e",
+      "bytes": 49366,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/featured/ID-02-Screenshot.webp": {
+      "sha256": "ee4b403b103f370066e6a0f930a28588f0a8e8bf180d1bf52b342de3e43783f8",
+      "bytes": 47694,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/featured/ID-03-Screenshot.webp": {
+      "sha256": "937104a55ca9c6b6077e6b79a6c4d98f950fedc25e4ed8ba3efdb1ab0ed86e1d",
+      "bytes": 49520,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/normal/ID-02-Screenshot.webp": {
+      "sha256": "00911afad011f4b57df6990b2437b6fae215f713a4dbdbfcdf4d77a7eb4563f3",
+      "bytes": 51502,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/normal/ID-03-Screenshot.webp": {
+      "sha256": "75e429a356921ec3c0a3b42550dbd36ee4e71b643bf42718752624ad2bde9404",
+      "bytes": 49396,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/normal/ID-04-Screenshot.webp": {
+      "sha256": "59a91d6af6188e98a0110301f8b08dcba98fa4ce8016ebcf26aa64bf5cecbfdd",
+      "bytes": 49312,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/normal/ID-06-Screenshot.webp": {
+      "sha256": "3ce6198345e48a18243ac66596b291205fe5dfc053b28ddc0f7a9e1f91d377d3",
+      "bytes": 60632,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/project-screenshots/normal/ID-07-Screenshot.webp": {
+      "sha256": "88042cefbb39652179acfd4e71a7c142e0ed12923cc58fe15b1c5ca37e4d4667",
+      "bytes": 48762,
+      "contentType": "application/octet-stream"
+    }
+  }
+}
