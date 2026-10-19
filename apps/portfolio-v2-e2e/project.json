@@ -7,19 +7,9 @@
   "implicitDependencies": ["portfolio-v2"],
   "targets": {
     "e2e": {
-      "executor": "@nx/cypress:cypress",
+      "executor": "@nx/playwright:playwright",
       "options": {
-        "cypressConfig": "apps/portfolio-v2-e2e/cypress.config.ts",
-        "testingType": "e2e",
-        "devServerTarget": "portfolio-v2:serve:development"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "portfolio-v2:serve:production"
-        },
-        "ci": {
-          "devServerTarget": "portfolio-v2:serve-static"
-        }
+        "config": "apps/portfolio-v2-e2e/playwright.config.ts"
       }
     },
     "lint": {

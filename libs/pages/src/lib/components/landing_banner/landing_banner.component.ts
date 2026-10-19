@@ -24,7 +24,7 @@ import { StateActions } from '@portfolio-v2/state';
 })
 export class LandingBannerComponent implements OnInit {
   /** Base path */
-  private readonly basePath = 'portfolio/landing-page/banners/';
+  private readonly basePath = 'portfolio/landing-page/banners';
   /** Banner image */
   public bannerImageSrc = of(`${this.basePath}/spring/Spring_Banner.gif`);
 

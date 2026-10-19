@@ -47,3 +47,12 @@ Thumbs.db
 .nx/workspace-data
 .angular
 migrations.json
+
+# firebase emulator artifacts
+firebase-debug.log
+ui-debug.log
+firestore-debug.log
+.firebase/
+test-results/
+playwright-report/
+blob-report/

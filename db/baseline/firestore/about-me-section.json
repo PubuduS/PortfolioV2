@@ -1,0 +1,73 @@
+[
+  {
+    "id": "part-01",
+    "data": {
+      "type": "map",
+      "fields": {
+        "imageSrc": {
+          "type": "string",
+          "value": "storage://portfolio/about-me-section/profile/MyPhoto.webp"
+        },
+        "link": {
+          "type": "string",
+          "value": "https://www.youtube.com/watch?v=wX4gqdt23Ow"
+        },
+        "intro": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "My name is Pubudu. Currently, I live in Omaha, Nebraska. I enjoy building software, games, and websites. My interest in software engineering started back in 2012 when I decided to attend a code camp. After that, I decided to pursue my higher education in the US."
+            },
+            {
+              "type": "string",
+              "value": "Fast forward to today, I've had the privilege of working at A corporation, a charitable organization, and a small business. I graduated from the University of Omaha at Nebraska with a MSc in Computer Science in May 2023. These days I am actively looking forward to jobs that align with my skills."
+            },
+            {
+              "type": "string",
+              "value": "I am currently open to new opportunities where I can learn new technologies and helped to develop robust software. Need something built or simply want to have chat? Reach out to me on social media or send me an email."
+            }
+          ]
+        },
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "subHeadingIntro": {
+          "type": "string",
+          "value": "When I'm not coding my next project, I enjoy spending my time doing any on the following:"
+        },
+        "leftPoints": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "I love Cooking. I love to create Asian American fusion dishes."
+            },
+            {
+              "type": "string",
+              "value": "I'm a bookworm and fan of Philosophy, Science Fiction, Fictional, and Mystery genre."
+            }
+          ]
+        },
+        "rightPoints": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "I'm an avid fan of video games. Currently, I'm playing Apex Legends. If you're interested you can see my gameplays <<link>>"
+            },
+            {
+              "type": "string",
+              "value": "I'm eager to learn new technologies and new skills."
+            },
+            {
+              "type": "string",
+              "value": "I enjoy playing Chess."
+            }
+          ]
+        }
+      }
+    }
+  }
+]

@@ -41,7 +41,21 @@
           ],
           "outputHashing": "all"
         },
-        "development": {
+        "emulator": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/portfolio-v2/src/environments/environment.ts",
+              "with": "apps/portfolio-v2/src/environments/environment.emulator.ts"
+            }
+          ]
+        },
+        "live": {
           "buildOptimizer": false,
           "optimization": false,
           "vendorChunk": true,
@@ -64,11 +78,14 @@
         "production": {
           "buildTarget": "portfolio-v2:build:production"
         },
-        "development": {
-          "buildTarget": "portfolio-v2:build:development"
+        "emulator": {
+          "buildTarget": "portfolio-v2:build:emulator"
+        },
+        "live": {
+          "buildTarget": "portfolio-v2:build:live"
         }
       },
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "emulator",
       "continuous": true
     },
     "extract-i18n": {

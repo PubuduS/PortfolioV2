@@ -1,0 +1,37 @@
+{
+  "root": true,
+  "ignorePatterns": ["!**/*"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["tools/db/tsconfig.json"]
+  },
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "node": true,
+    "es2022": true,
+    "jest": true
+  },
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": "error",
+    "quotes": ["error", "single"],
+    "max-len": ["error", { "code": 140 }]
+  }
+}

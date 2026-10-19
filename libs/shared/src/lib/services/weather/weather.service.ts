@@ -22,6 +22,25 @@ import {
 import { environment } from '@portfolio-v2/environment';
 import { ErrorService } from '../error-message/error.service';
 
+/** Emulator weather data */
+const EMULATOR_WEATHER: IWeather = {
+  condition: 'Clear',
+  description: 'clear sky',
+  temprature: 72,
+  humidity: 48,
+  windSpeed: 8,
+  iconCode: '01d',
+};
+
+/**
+ * Check if emulators are enabled
+ * @param value - The environment object
+ * @returns True if emulators are enabled, false otherwise
+ */
+function hasEmulators(value: typeof environment): boolean {
+  return 'emulators' in value && Boolean((value as { emulators?: unknown }).emulators);
+}
+
 /**
  * Get weather service
  */
@@ -62,8 +81,9 @@ export class WeatherService {
   /** Weather animation path */ public weatherAnimationPath = computed(() => `${this.weatherIconBasePath}${this.weatherData()?.iconCode ?? '01d'}${this.iconExtention}`);
 
   /** Weather data observable */
-  private weatherData$: Observable<IResult<IWeather>>
-    = this.http.get<OpenWeatherResponse>(this.openweatherURL)
+  private weatherData$: Observable<IResult<IWeather>> = hasEmulators(environment)
+    ? of({ data: EMULATOR_WEATHER })
+    : this.http.get<OpenWeatherResponse>(this.openweatherURL)
       .pipe(
         tap((p) => console.log(p)),
         map((p) => ({

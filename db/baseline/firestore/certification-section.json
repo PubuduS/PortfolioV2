@@ -1,0 +1,282 @@
+[
+  {
+    "id": "certification-01",
+    "data": {
+      "type": "map",
+      "fields": {
+        "organization": {
+          "type": "string",
+          "value": "Coursera"
+        },
+        "title": {
+          "type": "string",
+          "value": "Neural Network and Deep Learning"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": "https://www.coursera.org/account/accomplishments/certificate/R7P6PNDABS9V"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is a introductory level course about deep learning."
+        },
+        "certification": {
+          "type": "string",
+          "value": "Here"
+        },
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "08/09/2019"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "R7P6PNDABS9V"
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-02",
+    "data": {
+      "type": "map",
+      "fields": {
+        "title": {
+          "type": "string",
+          "value": "Game Development with Unity"
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
+        "organization": {
+          "type": "string",
+          "value": "Udemy"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "None"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is a course about 2D game development with C#."
+        },
+        "certification": {
+          "type": "string",
+          "value": "In Progress"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": ""
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "In progress"
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-03",
+    "data": {
+      "type": "map",
+      "fields": {
+        "credentialID": {
+          "type": "string",
+          "value": "None"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "In progress"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": ""
+        },
+        "organization": {
+          "type": "string",
+          "value": "Udemy"
+        },
+        "certification": {
+          "type": "string",
+          "value": "In Progress"
+        },
+        "title": {
+          "type": "string",
+          "value": "Web Development Bootcamp"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is a introductory level course about web development."
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-04",
+    "data": {
+      "type": "map",
+      "fields": {
+        "title": {
+          "type": "string",
+          "value": "Object Oriented Programming in Java"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": "https://www.coursera.org/account/accomplishments/certificate/64EPBBAFEWYL"
+        },
+        "organization": {
+          "type": "string",
+          "value": "Coursera"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "64EPBBAFEWYL"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is a Coursera course offered by University of California San Diego."
+        },
+        "id": {
+          "type": "integer",
+          "value": "4"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "02/09/2020"
+        },
+        "certification": {
+          "type": "string",
+          "value": "Here"
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-05",
+    "data": {
+      "type": "map",
+      "fields": {
+        "description": {
+          "type": "string",
+          "value": "This is a introductory level course about AWS."
+        },
+        "id": {
+          "type": "integer",
+          "value": "5"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "In progress"
+        },
+        "organization": {
+          "type": "string",
+          "value": "Udemy"
+        },
+        "certification": {
+          "type": "string",
+          "value": "In Progress"
+        },
+        "title": {
+          "type": "string",
+          "value": "AWS Certified Cloud Practitioner"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "None"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": ""
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-06",
+    "data": {
+      "type": "map",
+      "fields": {
+        "id": {
+          "type": "integer",
+          "value": "6"
+        },
+        "organization": {
+          "type": "string",
+          "value": "Udemy"
+        },
+        "certification": {
+          "type": "string",
+          "value": "Here"
+        },
+        "title": {
+          "type": "string",
+          "value": "Modern C++ Multi-threading"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "04/26/2023"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is an course on modern C++ multi-threading."
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": "https://www.udemy.com/certificate/UC-ecab9d2a-2f1c-4eab-856c-e2be974d7844/"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "e2be974d7844"
+        }
+      }
+    }
+  },
+  {
+    "id": "certification-07",
+    "data": {
+      "type": "map",
+      "fields": {
+        "organization": {
+          "type": "string",
+          "value": "Angular Training"
+        },
+        "id": {
+          "type": "integer",
+          "value": "7"
+        },
+        "title": {
+          "type": "string",
+          "value": "Angular Level 1 Certification"
+        },
+        "description": {
+          "type": "string",
+          "value": "This is a professional certification from by Angular Training"
+        },
+        "certificateURL": {
+          "type": "string",
+          "value": "https://interstate21.com/certificate/?code=5A20CF0"
+        },
+        "certification": {
+          "type": "string",
+          "value": "Here"
+        },
+        "credentialID": {
+          "type": "string",
+          "value": "5A20CF0"
+        },
+        "completedDate": {
+          "type": "string",
+          "value": "02/21/2024"
+        }
+      }
+    }
+  }
+]

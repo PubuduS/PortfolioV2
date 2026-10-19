@@ -1,0 +1,17 @@
+{
+  "name": "tools-db",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/db",
+  "projectType": "library",
+  "tags": ["tools"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "tools/db/jest.config.ts",
+        "tsConfig": "tools/db/tsconfig.spec.json"
+      }
+    }
+  }
+}
