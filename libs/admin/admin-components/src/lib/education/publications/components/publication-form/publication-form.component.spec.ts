@@ -145,7 +145,10 @@ describe('PublicationFormComponent', () => {
         authors: 'Authors',
         abstract: ['First paragraph.', 'Second paragraph.'],
         citation: 'citation',
-        cover: { source: 'bundled', url: 'assets/images/publications/Researcher.jpeg' },
+        cover: {
+          source: 'storage',
+          url: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
+        },
         paper: null,
       },
     });
@@ -156,6 +159,6 @@ describe('PublicationFormComponent', () => {
     expect(title.value).toBe('ARWalker');
     expect(abstract.value).toBe('First paragraph.\n\nSecond paragraph.');
     expect(fixture.nativeElement.querySelector('.cover-preview').getAttribute('src'))
-      .toBe('assets/images/publications/Researcher.jpeg');
+      .toBe('storage://portfolio/publications/publication-card-images/ID-01-Image.webp');
   });
 });

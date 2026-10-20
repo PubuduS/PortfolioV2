@@ -8,9 +8,10 @@ import {
   nextPublicationId,
   planDelete,
   Publication,
+  PublicationFormValues,
+  publicationFilePath,
   toPublicationDocs,
   toPublicationDraft,
-  PublicationFormValues,
 } from './publication';
 
 const cards: IPublication[] = [
@@ -18,33 +19,33 @@ const cards: IPublication[] = [
     id: 1,
     title: 'ARWalker',
     subTitle: 'Gait Rehabilitation, Mixed Reality, HoloLens 2',
-    imageUrl: 'assets/images/publications/Researcher.jpeg',
+    imageUrl: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
     shortDesc: 'The paper investigates the use of Augmented Reality (AR) in biomechanics through ARWalker, an application enabling participants, especially older adults and those with diseases, to synchronize their gait with virtual companions, ultimately reducing the risk of falls.',
     btnMoreDisable: false,
     btnDownloadDisable: false,
-    downloadUrl: 'assets/PDFs/Publications/ARWalker.pdf',
+    downloadUrl: 'storage://portfolio/publications/papers/ID-01-Paper.pdf',
     downloadFileName: 'ARWalker',
   },
   {
     id: 2,
     title: 'A Study of the Hololens Application Store',
     subTitle: 'System Analysis, Mixed Reality, HoloLens 2',
-    imageUrl: 'assets/images/publications/HLStoreImg.jpeg',
+    imageUrl: 'storage://portfolio/publications/publication-card-images/ID-02-Image.webp',
     shortDesc: 'This paper investigates the landscape of Augmented Reality (AR) applications based on Head-Mounted Displays (HMDs), particularly focusing on those available on the Microsoft Hololens application store, examining their characteristics and system performance to provide valuable insights to the research community.',
     btnMoreDisable: false,
     btnDownloadDisable: false,
-    downloadUrl: 'assets/PDFs/Publications/HLStore.pdf',
+    downloadUrl: 'storage://portfolio/publications/papers/ID-02-Paper.pdf',
     downloadFileName: 'HLStore',
   },
   {
     id: 3,
     title: 'Gait Rehabillitation with Mixed Reality',
     subTitle: 'Gait Rehabilitation, Mixed Reality, HoloLens 2',
-    imageUrl: 'assets/images/publications/Thesis.jpg',
+    imageUrl: 'storage://portfolio/publications/publication-card-images/ID-03-Image.webp',
     shortDesc: 'This study introduces two portable mixed reality systems for gait training in individuals with gait disabilities, employing an avatar-based approach backed by the proteus effect and complexity matching theories, as well as a system using rhythmic visual cues through a moving bar, with promising pilot study results and ongoing large-scale human trials to evaluate their effectiveness in restoring gait patterns.',
     btnMoreDisable: false,
     btnDownloadDisable: false,
-    downloadUrl: 'assets/PDFs/Publications/Thesis.pdf',
+    downloadUrl: 'storage://portfolio/publications/papers/ID-03-Paper.pdf',
     downloadFileName: 'Thesis',
   },
 ];
@@ -141,15 +142,18 @@ describe('publication codec', () => {
       });
     });
 
-    it('keeps bundled asset urls and the abstract paragraphs', () => {
+    it('keeps storage asset urls and the abstract paragraphs', () => {
       const thesis = publication(3);
 
       expect(thesis.cover).toEqual({
-        source: 'bundled',
-        url: 'assets/images/publications/Thesis.jpg',
+        source: 'storage',
+        url: 'storage://portfolio/publications/publication-card-images/ID-03-Image.webp',
       });
       expect(thesis.paper).toEqual({
-        asset: { source: 'bundled', url: 'assets/PDFs/Publications/Thesis.pdf' },
+        asset: {
+          source: 'storage',
+          url: 'storage://portfolio/publications/papers/ID-03-Paper.pdf',
+        },
         fileName: 'Thesis',
       });
       expect(thesis.abstract).toHaveLength(4);
@@ -197,8 +201,21 @@ describe('publication codec', () => {
     });
   });
 
+  describe('publicationFilePath', () => {
+    it('uses the live storage object names', () => {
+      const { id } = publication(1);
+
+      expect(publicationFilePath(id, 'cover')).toBe(
+        'portfolio/publications/publication-card-images/ID-01-Image.webp',
+      );
+      expect(publicationFilePath(id, 'paper')).toBe(
+        'portfolio/publications/papers/ID-01-Paper.pdf',
+      );
+    });
+  });
+
   describe('planDelete', () => {
-    it('lists both documents and no bundled assets', () => {
+    it('lists both documents and the live storage objects', () => {
       const plan = planDelete(publication(1));
 
       expect(plan).toEqual({
@@ -206,19 +223,24 @@ describe('publication codec', () => {
           'publication-section/publication-01',
           'publication-details-section/publication-01',
         ],
-        files: [],
+        files: [
+          'portfolio/publications/publication-card-images/ID-01-Image.webp',
+          'portfolio/publications/papers/ID-01-Paper.pdf',
+        ],
       });
-      expect(plan.files.join(' ')).not.toContain('assets/');
     });
 
-    it('lists storage paths for storage assets only', () => {
-      const stored = publication(2);
+    it('does not list bundled assets', () => {
       const plan = planDelete({
-        ...stored,
-        cover: { source: 'storage', url: 'https://firebasestorage.googleapis.com/cover' },
+        ...publication(2),
+        cover: { source: 'bundled', url: 'assets/images/publications/HLStoreImg.jpeg' },
+        paper: {
+          asset: { source: 'bundled', url: 'assets/PDFs/Publications/HLStore.pdf' },
+          fileName: 'HLStore',
+        },
       });
 
-      expect(plan.files).toEqual(['education/publications/publication-02/cover']);
+      expect(plan.files).toEqual([]);
       expect(plan.docs).toEqual([
         'publication-section/publication-02',
         'publication-details-section/publication-02',
@@ -279,7 +301,10 @@ describe('publication codec', () => {
       const result = toPublicationDraft(formValues({
         abstractText: text,
         mode: 'edit',
-        cover: { source: 'bundled', url: 'assets/images/publications/Thesis.jpg' },
+        cover: {
+          source: 'storage',
+          url: 'storage://portfolio/publications/publication-card-images/ID-03-Image.webp',
+        },
       }));
 
       expect(result.ok).toBe(true);
@@ -298,7 +323,10 @@ describe('publication codec', () => {
     it('accepts an existing asset as the cover on edit', () => {
       const result = toPublicationDraft(formValues({
         mode: 'edit',
-        cover: { source: 'bundled', url: 'assets/images/publications/Researcher.jpeg' },
+        cover: {
+          source: 'storage',
+          url: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
+        },
       }));
 
       expect(result.ok).toBe(true);

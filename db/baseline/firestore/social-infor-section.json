@@ -4,17 +4,17 @@
     "data": {
       "type": "map",
       "fields": {
-        "id": {
-          "type": "integer",
-          "value": "1"
+        "media": {
+          "type": "string",
+          "value": "https://www.linkedin.com/in/pubudu-wijesooriya/"
         },
         "mediaIcon": {
           "type": "string",
           "value": "fa-linkedin"
         },
-        "media": {
-          "type": "string",
-          "value": "https://www.linkedin.com/in/pubudu-wijesooriya/"
+        "id": {
+          "type": "integer",
+          "value": "1"
         }
       }
     }
@@ -24,6 +24,10 @@
     "data": {
       "type": "map",
       "fields": {
+        "media": {
+          "type": "string",
+          "value": "https://github.com/PubuduS/"
+        },
         "id": {
           "type": "integer",
           "value": "2"
@@ -31,10 +35,6 @@
         "mediaIcon": {
           "type": "string",
           "value": "fa-github"
-        },
-        "media": {
-          "type": "string",
-          "value": "https://github.com/PubuduS/"
         }
       }
     }
@@ -44,17 +44,17 @@
     "data": {
       "type": "map",
       "fields": {
-        "mediaIcon": {
+        "media": {
           "type": "string",
-          "value": "fa-envelope"
+          "value": "mock.user@example.test"
         },
         "id": {
           "type": "integer",
           "value": "3"
         },
-        "media": {
+        "mediaIcon": {
           "type": "string",
-          "value": "mock.user@example.test"
+          "value": "fa-envelope"
         }
       }
     }

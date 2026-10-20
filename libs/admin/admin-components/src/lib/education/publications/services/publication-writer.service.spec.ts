@@ -23,11 +23,11 @@ const card: IPublication = {
   id: 1,
   title: 'ARWalker',
   subTitle: 'keywords',
-  imageUrl: 'https://firebasestorage.googleapis.com/cover',
+  imageUrl: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
   shortDesc: 'summary',
   btnMoreDisable: true,
   btnDownloadDisable: true,
-  downloadUrl: 'https://firebasestorage.googleapis.com/paper',
+  downloadUrl: 'storage://portfolio/publications/papers/ID-01-Paper.pdf',
   downloadFileName: 'ARWalker',
 };
 
@@ -127,12 +127,12 @@ describe('PublicationWriter', () => {
 
       expect(setData.uploadFile).toHaveBeenNthCalledWith(
         1,
-        'education/publications/publication-04/cover',
+        'portfolio/publications/publication-card-images/ID-04-Image.webp',
         expect.any(File),
       );
       expect(setData.uploadFile).toHaveBeenNthCalledWith(
         2,
-        'education/publications/publication-04/paper',
+        'portfolio/publications/papers/ID-04-Paper.pdf',
         paper,
       );
       expect(setData.commit).toHaveBeenCalledTimes(1);
@@ -166,7 +166,10 @@ describe('PublicationWriter', () => {
     it('does not upload an asset that is already stored', async () => {
       await writer.save(draft({
         mode: 'edit',
-        cover: { source: 'bundled', url: 'assets/images/publications/Researcher.jpeg' },
+        cover: {
+          source: 'storage',
+          url: 'storage://portfolio/publications/publication-card-images/ID-04-Image.webp',
+        },
       }));
 
       expect(setData.uploadFile).not.toHaveBeenCalled();
@@ -209,6 +212,12 @@ describe('PublicationWriter', () => {
         { kind: 'delete', path: 'publication-section/publication-01' },
         { kind: 'delete', path: 'publication-details-section/publication-01' },
       ]);
+      expect(setData.deleteFileFromStorage).toHaveBeenCalledWith(
+        'portfolio/publications/publication-card-images/ID-01-Image.webp',
+      );
+      expect(setData.deleteFileFromStorage).toHaveBeenCalledWith(
+        'portfolio/publications/papers/ID-01-Paper.pdf',
+      );
     });
 
     it('does not delete bundled files', async () => {

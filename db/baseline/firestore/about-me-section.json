@@ -4,9 +4,22 @@
     "data": {
       "type": "map",
       "fields": {
-        "imageSrc": {
-          "type": "string",
-          "value": "storage://portfolio/about-me-section/profile/MyPhoto.webp"
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "leftPoints": {
+          "type": "array",
+          "values": [
+            {
+              "type": "string",
+              "value": "I love Cooking. I love to create Asian American fusion dishes."
+            },
+            {
+              "type": "string",
+              "value": "I'm a bookworm and fan of Philosophy, Science Fiction, Fictional, and Mystery genre."
+            }
+          ]
         },
         "link": {
           "type": "string",
@@ -29,27 +42,6 @@
             }
           ]
         },
-        "id": {
-          "type": "integer",
-          "value": "1"
-        },
-        "subHeadingIntro": {
-          "type": "string",
-          "value": "When I'm not coding my next project, I enjoy spending my time doing any on the following:"
-        },
-        "leftPoints": {
-          "type": "array",
-          "values": [
-            {
-              "type": "string",
-              "value": "I love Cooking. I love to create Asian American fusion dishes."
-            },
-            {
-              "type": "string",
-              "value": "I'm a bookworm and fan of Philosophy, Science Fiction, Fictional, and Mystery genre."
-            }
-          ]
-        },
         "rightPoints": {
           "type": "array",
           "values": [
@@ -66,6 +58,14 @@
               "value": "I enjoy playing Chess."
             }
           ]
+        },
+        "subHeadingIntro": {
+          "type": "string",
+          "value": "When I'm not coding my next project, I enjoy spending my time doing any on the following:"
+        },
+        "imageSrc": {
+          "type": "string",
+          "value": "storage://portfolio/about-me-section/profile/MyPhoto.webp"
         }
       }
     }

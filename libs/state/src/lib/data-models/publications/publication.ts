@@ -240,13 +240,16 @@ export function publicationDocPaths(id: PublicationId): { card: string; details:
 
 /**
  * Storage object path for a cover or a paper.
- * The path has no extension, so a replacement overwrites the same object.
+ * Names match the live bucket so a replacement overwrites the same object.
  * @param id publication id
  * @param kind cover or paper
  * @returns storage path
  */
 export function publicationFilePath(id: PublicationId, kind: 'cover' | 'paper'): string {
-  return `education/publications/publication-${pad2(id)}/${kind}`;
+  const padded = pad2(id);
+  return kind === 'cover'
+    ? `portfolio/publications/publication-card-images/ID-${padded}-Image.webp`
+    : `portfolio/publications/papers/ID-${padded}-Paper.pdf`;
 }
 
 /**

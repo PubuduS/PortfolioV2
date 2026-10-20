@@ -4,6 +4,14 @@
     "data": {
       "type": "map",
       "fields": {
+        "leftSubHeading": {
+          "type": "string",
+          "value": "FRAMEWORKS AND ENGINES"
+        },
+        "intro": {
+          "type": "string",
+          "value": "I've worked with a wide variety of programming languages. Here are a few technologies I have been working on recently"
+        },
         "framework": {
           "type": "array",
           "values": [
@@ -29,18 +37,39 @@
             }
           ]
         },
+        "toolHeading": {
+          "type": "string",
+          "value": "MOST FREQUENTLY USED TOOLS"
+        },
+        "languagesCol2": {
+          "type": "map",
+          "fields": {
+            "C#": {
+              "type": "integer",
+              "value": "60"
+            },
+            "HTML": {
+              "type": "integer",
+              "value": "90"
+            },
+            "JAVA": {
+              "type": "integer",
+              "value": "50"
+            }
+          }
+        },
         "languagesCol1": {
           "type": "map",
           "fields": {
+            "C++": {
+              "type": "integer",
+              "value": "60"
+            },
             "Angular": {
               "type": "integer",
               "value": "80"
             },
             "CSS": {
-              "type": "integer",
-              "value": "60"
-            },
-            "C++": {
               "type": "integer",
               "value": "60"
             }
@@ -71,42 +100,13 @@
             }
           ]
         },
-        "intro": {
-          "type": "string",
-          "value": "I've worked with a wide variety of programming languages. Here are a few technologies I have been working on recently"
+        "id": {
+          "type": "integer",
+          "value": "1"
         },
         "rightSubHeading": {
           "type": "string",
           "value": "SOFTWARE"
-        },
-        "leftSubHeading": {
-          "type": "string",
-          "value": "FRAMEWORKS AND ENGINES"
-        },
-        "toolHeading": {
-          "type": "string",
-          "value": "MOST FREQUENTLY USED TOOLS"
-        },
-        "languagesCol2": {
-          "type": "map",
-          "fields": {
-            "JAVA": {
-              "type": "integer",
-              "value": "50"
-            },
-            "C#": {
-              "type": "integer",
-              "value": "60"
-            },
-            "HTML": {
-              "type": "integer",
-              "value": "90"
-            }
-          }
-        },
-        "id": {
-          "type": "integer",
-          "value": "1"
         }
       }
     }

@@ -38,7 +38,7 @@ const card: IPublication = {
   id: 1,
   title: 'ARWalker',
   subTitle: 'keywords',
-  imageUrl: 'assets/images/publications/Researcher.jpeg',
+  imageUrl: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
   shortDesc: 'summary',
   btnMoreDisable: false,
   btnDownloadDisable: false,
@@ -127,13 +127,19 @@ describe('SetDataService', () => {
         return 'https://files.example/cover';
       });
 
-      const url = await service.uploadFile('education/publications/publication-01/cover', file);
+      const url = await service.uploadFile(
+        'portfolio/publications/publication-card-images/ID-01-Image.webp',
+        file,
+      );
 
       expect(url).toBe('https://files.example/cover');
       expect(order).toEqual(['upload', 'url']);
-      expect(ref).toHaveBeenCalledWith(mockStorage, 'education/publications/publication-01/cover');
+      expect(ref).toHaveBeenCalledWith(
+        mockStorage,
+        'portfolio/publications/publication-card-images/ID-01-Image.webp',
+      );
       expect(uploadBytes).toHaveBeenCalledWith(
-        { path: 'education/publications/publication-01/cover' },
+        { path: 'portfolio/publications/publication-card-images/ID-01-Image.webp' },
         file,
       );
     });
@@ -142,7 +148,7 @@ describe('SetDataService', () => {
       jest.mocked(uploadBytes).mockRejectedValue(new Error('network'));
 
       await expect(service.uploadFile(
-        'education/publications/publication-01/cover',
+        'portfolio/publications/publication-card-images/ID-01-Image.webp',
         new File(['img'], 'cover.png', { type: 'image/png' }),
       )).rejects.toThrow('network');
       expect(getDownloadURL).not.toHaveBeenCalled();
