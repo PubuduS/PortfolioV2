@@ -18,7 +18,7 @@
   }
 
   .publication-grid {
-    align-items: start;
+    align-items: stretch;
     display: grid;
     gap: 0 32px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -33,16 +33,33 @@
   }
 
   .publication-card {
+    display: flex;
+    flex-direction: column;
     margin-bottom: 110px;
+    min-height: 0;
     position: relative;
 
     p {
       text-align: justify;
     }
 
+    mat-card {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
     img {
-      height: auto;
-      max-width: 100%;
+      aspect-ratio: 4 / 3;
+      flex-shrink: 0;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    mat-card-content {
+      flex: 1 1 auto;
     }
   }
 

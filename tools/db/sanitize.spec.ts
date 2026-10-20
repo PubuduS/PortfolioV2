@@ -95,6 +95,21 @@ describe('sanitizer', () => {
       expect(photoBytes.bytes.length).toBeGreaterThan(1000);
     });
 
+    it('should replace publication papers and other pdfs with a small pdf', () => {
+      const livePaper = storageReplacement('portfolio/publications/papers/ID-01-Paper.pdf');
+      const cover = storageReplacement('portfolio/publications/publication-card-images/ID-01-Image.webp');
+      const otherPdf = storageReplacement('portfolio/certificates/cert-01.pdf');
+      expect(livePaper?.replacement).toBe('pdf');
+      expect(cover).toBeNull();
+      expect(otherPdf?.replacement).toBe('pdf');
+      if (!livePaper) {
+        throw new Error('expected paper rule');
+      }
+      const placeholder = placeholderFor(livePaper);
+      expect(placeholder.contentType).toBe('application/pdf');
+      expect(placeholder.bytes.subarray(0, 8).toString('ascii')).toBe('%PDF-1.1');
+    });
+
     it('should refuse a file over 1 MiB', () => {
       expect(() => assertWithinBaselineLimit(MAX_BASELINE_FILE_BYTES + 1, 'too-big.webp')).toThrow(/1 MiB/);
     });

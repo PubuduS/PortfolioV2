@@ -4,6 +4,18 @@
     "data": {
       "type": "map",
       "fields": {
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "authors": {
+          "type": "string",
+          "value": "Pubudu Wijesooriya, Aaron Likens, Nick Stergiou, and Spyridon Mastorakis"
+        },
+        "citation": {
+          "type": "string",
+          "value": "Pubudu Wijesooriya, Likens, A. D., Stergiou, N., & Spyridon Mastorakis. (2023). ARWalker: A Virtual Walking Companion Application. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2311.07502"
+        },
         "title": {
           "type": "string",
           "value": "ARWalker: A Virtual Walking Companion Application"
@@ -16,18 +28,6 @@
               "value": "Extended Reality (XR) technologies, including Augmented Reality (AR), have attracted significant attention over the past few years and have been utilized in several fields, including education, healthcare, and manufacturing. In this paper, we aim to explore the use of AR in the field of biomechanics and human movement through the development of ARWalker, which is an AR application that features virtual walking companions (avatars). Research participants walk in close synchrony with the virtual companions, whose gait exhibits properties found in the gait of young and healthy adults. As a result, research participants can train their gait to the gait of the avatar, thus regaining the healthy properties of their gait and reducing the risk of falls. ARWalker can especially help older adults and individuals with diseases, who exhibit pathological gait thus being more prone to falls. We implement a prototype of ARWalker and evaluate its systems performance while running on a Microsoft Hololens 2 headset."
             }
           ]
-        },
-        "citation": {
-          "type": "string",
-          "value": "Pubudu Wijesooriya, Likens, A. D., Stergiou, N., & Spyridon Mastorakis. (2023). ARWalker: A Virtual Walking Companion Application. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2311.07502"
-        },
-        "authors": {
-          "type": "string",
-          "value": "Pubudu Wijesooriya, Aaron Likens, Nick Stergiou, and Spyridon Mastorakis"
-        },
-        "id": {
-          "type": "integer",
-          "value": "1"
         }
       }
     }
@@ -37,6 +37,14 @@
     "data": {
       "type": "map",
       "fields": {
+        "authors": {
+          "type": "string",
+          "value": "Pubudu Wijesooriya, Sheikh Muhammad Farjad, Nick Stergiou, and Spyridon Mastorakis"
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
         "abstarct": {
           "type": "array",
           "values": [
@@ -46,21 +54,13 @@
             }
           ]
         },
-        "citation": {
-          "type": "string",
-          "value": "Pubudu Wijesooriya, Sheikh Muhammad Farjad, Stergiou, N., & Spyridon Mastorakis. (2023). Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application  Store. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2303.07523"
-        },
         "title": {
           "type": "string",
           "value": "Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application Store"
         },
-        "id": {
-          "type": "integer",
-          "value": "2"
-        },
-        "authors": {
+        "citation": {
           "type": "string",
-          "value": "Pubudu Wijesooriya, Sheikh Muhammad Farjad, Nick Stergiou, and Spyridon Mastorakis"
+          "value": "Pubudu Wijesooriya, Sheikh Muhammad Farjad, Stergiou, N., & Spyridon Mastorakis. (2023). Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application  Store. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2303.07523"
         }
       }
     }
@@ -70,17 +70,21 @@
     "data": {
       "type": "map",
       "fields": {
+        "authors": {
+          "type": "string",
+          "value": "Pubudu Wijesooriya, Advisor: Dr. Spyridon Mastorakis"
+        },
         "citation": {
           "type": "string",
           "value": "Wijesooriya, P. (2023, May 3). Use of Mixed Reality to Provide Gait Rehabilitation."
         },
+        "title": {
+          "type": "string",
+          "value": "Use of Mixed Reality to Provide Gait Rehabilitation"
+        },
         "id": {
           "type": "integer",
           "value": "3"
-        },
-        "authors": {
-          "type": "string",
-          "value": "Pubudu Wijesooriya, Advisor: Dr. Spyridon Mastorakis"
         },
         "abstarct": {
           "type": "array",
@@ -102,10 +106,6 @@
               "value": "Both systems are designed to help patients with gait disabilities and provide implicit learning. We aim to provide them with cost-effective, self-training methods to restore their gait. The results of this study could have significant implications for the rehabilitation of individuals with gait disabilities."
             }
           ]
-        },
-        "title": {
-          "type": "string",
-          "value": "Use of Mixed Reality to Provide Gait Rehabilitation"
         }
       }
     }

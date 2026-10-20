@@ -14,12 +14,6 @@ p {
   text-align: justify;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 2%;
-}
-
 mat-card-title {
   text-align: center;
 }
@@ -38,13 +32,30 @@ mat-card-title {
 }
 
 .publication-card {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: 2%;
   max-width: 400px;
+
+  img {
+    aspect-ratio: 4 / 3;
+    flex-shrink: 0;
+    margin-bottom: 2%;
+    max-width: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  mat-card-content {
+    flex: 1 1 auto;
+  }
+
+  mat-card-actions {
+    margin-block-start: auto;
+  }
 }
 
 .btnGroup {
-  margin-left: 15%;
-}
-
-.publication-card {
-  margin-left: 2%;
+  margin-inline-start: 15%;
 }

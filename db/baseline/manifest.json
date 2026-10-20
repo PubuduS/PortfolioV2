@@ -1,7 +1,7 @@
 {
   "sourceProjectId": "portfolio-c9b8e",
-  "capturedAt": "2026-10-19T03:02:35.260Z",
-  "sanitizerVersion": 2,
+  "capturedAt": "2026-10-20T02:31:00.803Z",
+  "sanitizerVersion": 3,
   "firestore": {
     "about-me-section": {
       "docCount": 1,
@@ -37,7 +37,7 @@
     },
     "publication-section": {
       "docCount": 3,
-      "sha256": "c27094f3faa9bbb7bf25fdfab3b22b0340211e3c39e4195af4a80f2f8bd57473"
+      "sha256": "be1b08c762830c98147e7ca84ecc9595dca3fb7ce09a1887e30d5e7fe51335ab"
     },
     "skills-section": {
       "docCount": 1,
@@ -207,6 +207,36 @@
     "portfolio/project-screenshots/normal/ID-07-Screenshot.webp": {
       "sha256": "88042cefbb39652179acfd4e71a7c142e0ed12923cc58fe15b1c5ca37e4d4667",
       "bytes": 48762,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/publications/papers/ID-01-Paper.pdf": {
+      "sha256": "aeb3142125f4707795376346666c7e94b9704fa1344e5bd30e9423e475c7c396",
+      "bytes": 45,
+      "contentType": "application/pdf"
+    },
+    "portfolio/publications/papers/ID-02-Paper.pdf": {
+      "sha256": "aeb3142125f4707795376346666c7e94b9704fa1344e5bd30e9423e475c7c396",
+      "bytes": 45,
+      "contentType": "application/pdf"
+    },
+    "portfolio/publications/papers/ID-03-Paper.pdf": {
+      "sha256": "aeb3142125f4707795376346666c7e94b9704fa1344e5bd30e9423e475c7c396",
+      "bytes": 45,
+      "contentType": "application/pdf"
+    },
+    "portfolio/publications/publication-card-images/ID-01-Image.webp": {
+      "sha256": "19ac4216b233a64cc3d52d3f4060fbb1122655c68a1e0406811b5a0d411f983f",
+      "bytes": 47666,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/publications/publication-card-images/ID-02-Image.webp": {
+      "sha256": "82cebd6bd32ad599288565085486df31b6b67e0d03180c3b092bb811b3916863",
+      "bytes": 14808,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/publications/publication-card-images/ID-03-Image.webp": {
+      "sha256": "e306a3b9065a70185adf1f2cdc596187710909e0ac09efff489c20d7a9eadd0c",
+      "bytes": 78052,
       "contentType": "application/octet-stream"
     }
   }

@@ -32,11 +32,11 @@ const card: IPublication = {
   id: 1,
   title: 'ARWalker',
   subTitle: 'keywords',
-  imageUrl: 'assets/images/publications/Researcher.jpeg',
+  imageUrl: 'storage://portfolio/publications/publication-card-images/ID-01-Image.webp',
   shortDesc: 'summary',
   btnMoreDisable: false,
   btnDownloadDisable: false,
-  downloadUrl: 'assets/PDFs/Publications/ARWalker.pdf',
+  downloadUrl: 'storage://portfolio/publications/papers/ID-01-Paper.pdf',
   downloadFileName: 'ARWalker',
 };
 

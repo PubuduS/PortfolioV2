@@ -39,7 +39,7 @@ export interface StorageObjectRule {
   readonly kind: 'storage-object';
   readonly id: string;
   readonly pathPattern: string;
-  readonly replacement: 'gif' | 'webp' | 'resume';
+  readonly replacement: 'gif' | 'webp' | 'resume' | 'pdf';
 }
 
 /** One row in the sanitizer table. */
@@ -209,6 +209,18 @@ export const SANITIZE_RULES: readonly SanitizeRule[] = [
     pathPattern: '(^|/)[^/]*(resume|cv)[^/]*$',
     replacement: 'resume',
   },
+  {
+    kind: 'storage-object',
+    id: 'publication-paper',
+    pathPattern: '^portfolio/publications/papers/',
+    replacement: 'pdf',
+  },
+  {
+    kind: 'storage-object',
+    id: 'pdf',
+    pathPattern: '\\.pdf$',
+    replacement: 'pdf',
+  },
 ];
 
 const PLACEHOLDER_DIR = path.join(REPO_ROOT, 'tools', 'db', 'placeholders');
@@ -310,6 +322,7 @@ export function placeholderFor(rule: StorageObjectRule): { bytes: Buffer; conten
     case 'webp':
       return { bytes: readPlaceholder('profile.png'), contentType: 'image/png' };
     case 'resume':
+    case 'pdf':
       return { bytes: PLACEHOLDER_RESUME, contentType: 'application/pdf' };
     default: {
       const neverReplacement: never = rule.replacement;

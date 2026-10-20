@@ -4,6 +4,22 @@
     "data": {
       "type": "map",
       "fields": {
+        "endDate": {
+          "type": "string",
+          "value": "2015-02-28"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "id": {
+          "type": "integer",
+          "value": "1"
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2013-12-31"
+        },
         "timePeriod": {
           "type": "string",
           "value": "2013 - 2015"
@@ -21,10 +37,6 @@
             }
           ]
         },
-        "endDate": {
-          "type": "string",
-          "value": "2015-02-28"
-        },
         "employer": {
           "type": "string",
           "value": "Java Institute"
@@ -32,18 +44,6 @@
         "shortDescription": {
           "type": "string",
           "value": "Engineered an inventory control software for Sapna, a small business in Sri Lanka, to streamline inventory management processes."
-        },
-        "isCurrent": {
-          "type": "boolean",
-          "value": false
-        },
-        "id": {
-          "type": "integer",
-          "value": "1"
-        },
-        "startDate": {
-          "type": "string",
-          "value": "2013-12-31"
         },
         "position": {
           "type": "string",
@@ -57,6 +57,38 @@
     "data": {
       "type": "map",
       "fields": {
+        "shortDescription": {
+          "type": "string",
+          "value": "Help with day to day operations of the student cafeteria"
+        },
+        "employer": {
+          "type": "string",
+          "value": "Larson Commons"
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2019-03-01"
+        },
+        "position": {
+          "type": "string",
+          "value": "Student Worker (Part-Time) at Larson Commons"
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2018 - 2019"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2018-01-01"
+        },
         "points": {
           "type": "array",
           "values": [
@@ -77,38 +109,6 @@
               "value": "Learned to balance work duties with academic responsibilities."
             }
           ]
-        },
-        "endDate": {
-          "type": "string",
-          "value": "2019-03-01"
-        },
-        "shortDescription": {
-          "type": "string",
-          "value": "Help with day to day operations of the student cafeteria"
-        },
-        "timePeriod": {
-          "type": "string",
-          "value": "2018 - 2019"
-        },
-        "startDate": {
-          "type": "string",
-          "value": "2018-01-01"
-        },
-        "employer": {
-          "type": "string",
-          "value": "Larson Commons"
-        },
-        "id": {
-          "type": "integer",
-          "value": "2"
-        },
-        "position": {
-          "type": "string",
-          "value": "Student Worker (Part-Time) at Larson Commons"
-        },
-        "isCurrent": {
-          "type": "boolean",
-          "value": false
         }
       }
     }
@@ -118,13 +118,37 @@
     "data": {
       "type": "map",
       "fields": {
+        "shortDescription": {
+          "type": "string",
+          "value": "This is my senior capstone project for final year in South Dakota State University."
+        },
+        "position": {
+          "type": "string",
+          "value": "Part-Time Web Developer at Peace Lutheran Early Childhood Center."
+        },
+        "startDate": {
+          "type": "string",
+          "value": "2018-01-01"
+        },
         "isCurrent": {
           "type": "boolean",
           "value": false
         },
-        "shortDescription": {
+        "employer": {
           "type": "string",
-          "value": "This is my senior capstone project for final year in South Dakota State University."
+          "value": "Peace Lutheran Early Childhood Center"
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2018 - 2019"
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2019-08-01"
         },
         "points": {
           "type": "array",
@@ -142,30 +166,6 @@
               "value": "Created technical documents to monitor progress."
             }
           ]
-        },
-        "endDate": {
-          "type": "string",
-          "value": "2019-08-01"
-        },
-        "id": {
-          "type": "integer",
-          "value": "3"
-        },
-        "position": {
-          "type": "string",
-          "value": "Part-Time Web Developer at Peace Lutheran Early Childhood Center."
-        },
-        "employer": {
-          "type": "string",
-          "value": "Peace Lutheran Early Childhood Center"
-        },
-        "startDate": {
-          "type": "string",
-          "value": "2018-01-01"
-        },
-        "timePeriod": {
-          "type": "string",
-          "value": "2018 - 2019"
         }
       }
     }
@@ -175,25 +175,21 @@
     "data": {
       "type": "map",
       "fields": {
-        "isCurrent": {
-          "type": "boolean",
-          "value": false
-        },
-        "id": {
-          "type": "integer",
-          "value": "4"
+        "position": {
+          "type": "string",
+          "value": "Software Engineer (C++) Sencore.Inc"
         },
         "startDate": {
           "type": "string",
           "value": "2019-09-01"
         },
-        "endDate": {
-          "type": "string",
-          "value": "2021-02-01"
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
         },
-        "position": {
+        "employer": {
           "type": "string",
-          "value": "Software Engineer (C++) Sencore.Inc"
+          "value": "Sencore.Inc"
         },
         "points": {
           "type": "array",
@@ -224,13 +220,17 @@
           "type": "string",
           "value": "Contributed to the development and optimization of Sencore MRD5800 and MRD7000 advanced modular decoder product lines, as well as associated sub-brands."
         },
+        "id": {
+          "type": "integer",
+          "value": "4"
+        },
+        "endDate": {
+          "type": "string",
+          "value": "2021-02-01"
+        },
         "timePeriod": {
           "type": "string",
           "value": "2019 - 2021"
-        },
-        "employer": {
-          "type": "string",
-          "value": "Sencore.Inc"
         }
       }
     }
@@ -240,9 +240,25 @@
     "data": {
       "type": "map",
       "fields": {
-        "timePeriod": {
+        "endDate": {
           "type": "string",
-          "value": "2021 - 2023"
+          "value": "2023-08-01"
+        },
+        "position": {
+          "type": "string",
+          "value": "Graduate Research Assistant at University of Nebraska Omaha"
+        },
+        "employer": {
+          "type": "string",
+          "value": "University of Nebraska at Omaha"
+        },
+        "shortDescription": {
+          "type": "string",
+          "value": "Designed and developed a HoloLens 2 Mixed Reality application that provides gait training for patients with gait disorders."
+        },
+        "id": {
+          "type": "integer",
+          "value": "5"
         },
         "points": {
           "type": "array",
@@ -273,33 +289,17 @@
             }
           ]
         },
-        "endDate": {
+        "timePeriod": {
           "type": "string",
-          "value": "2023-08-01"
-        },
-        "shortDescription": {
-          "type": "string",
-          "value": "Designed and developed a HoloLens 2 Mixed Reality application that provides gait training for patients with gait disorders."
-        },
-        "employer": {
-          "type": "string",
-          "value": "University of Nebraska at Omaha"
-        },
-        "isCurrent": {
-          "type": "boolean",
-          "value": false
-        },
-        "id": {
-          "type": "integer",
-          "value": "5"
+          "value": "2021 - 2023"
         },
         "startDate": {
           "type": "string",
           "value": "2021-08-01"
         },
-        "position": {
-          "type": "string",
-          "value": "Graduate Research Assistant at University of Nebraska Omaha"
+        "isCurrent": {
+          "type": "boolean",
+          "value": false
         }
       }
     }
@@ -309,13 +309,9 @@
     "data": {
       "type": "map",
       "fields": {
-        "endDate": {
-          "type": "string",
-          "value": "present"
-        },
-        "shortDescription": {
-          "type": "string",
-          "value": "I joined Election Systems and Software in September 2023 and feel fortunate to be part of an outstanding team of experts in various domains of software engineering. It has been a great learning experience for me to integrate my knowledge of back-end embedded programming with the new front-end technologies I've acquired since joining Election Systems. Currently, I am working with a team of 10 engineers on updating a legacy product line."
+        "isCurrent": {
+          "type": "boolean",
+          "value": true
         },
         "points": {
           "type": "array",
@@ -346,29 +342,33 @@
             }
           ]
         },
-        "position": {
+        "endDate": {
           "type": "string",
-          "value": "Software Engineer at Election Systems and Software"
+          "value": "present"
         },
-        "timePeriod": {
+        "shortDescription": {
           "type": "string",
-          "value": "2023 - 2025"
+          "value": "I joined Election Systems and Software in September 2023 and feel fortunate to be part of an outstanding team of experts in various domains of software engineering. It has been a great learning experience for me to integrate my knowledge of back-end embedded programming with the new front-end technologies I've acquired since joining Election Systems. Currently, I am working with a team of 10 engineers on updating a legacy product line."
         },
         "startDate": {
           "type": "string",
           "value": "2023-09-05"
         },
+        "employer": {
+          "type": "string",
+          "value": "Election Systems and Software"
+        },
+        "timePeriod": {
+          "type": "string",
+          "value": "2023 - 2025"
+        },
         "id": {
           "type": "integer",
           "value": "7"
         },
-        "isCurrent": {
-          "type": "boolean",
-          "value": true
-        },
-        "employer": {
+        "position": {
           "type": "string",
-          "value": "Election Systems and Software"
+          "value": "Software Engineer at Election Systems and Software"
         }
       }
     }
