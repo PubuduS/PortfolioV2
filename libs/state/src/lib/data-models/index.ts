@@ -1,6 +1,20 @@
 export { IResult } from './results/IResult';
 export { IWeather, OpenWeatherResponse } from './weather/IWeather';
 export { ICertificateCard } from './certificate_display/ICertificateCard';
+export {
+  CERTIFICATE_COLLECTION,
+  NO_CREDENTIAL_ID,
+  certificateDocPath,
+  nextCertificateId,
+  toCertificateDraft,
+} from './certificate_display/certificate';
+export type {
+  CertificateDraftFailure,
+  CertificateDraftResult,
+  CertificateEditTarget,
+  CertificateFormValues,
+  CertificateStatus,
+} from './certificate_display/certificate';
 export { IProjectCard, IProjectView } from './project_display/IProjectCard';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
 export {

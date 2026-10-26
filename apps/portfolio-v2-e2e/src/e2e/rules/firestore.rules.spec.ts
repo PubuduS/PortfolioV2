@@ -66,6 +66,28 @@ test.describe('emulator security rules', () => {
     await assertFails(deleteObject(ref(storage, 'portfolio/portfolio-tiles/ID-01-Icon.webp')));
   });
 
+  test('should allow only signed-in writes to certificate documents', async () => {
+    const certificatePath = 'certification-section/certification-99';
+    const certificate = {
+      id: 99,
+      title: 'Rules probe',
+      completedDate: 'In progress',
+      organization: 'Probe',
+      credentialID: 'None',
+      certification: 'In Progress',
+      certificateURL: '',
+      description: 'Rules probe',
+    };
+    const anonymous = testEnv.unauthenticatedContext().firestore();
+    const admin = testEnv.authenticatedContext('e2e-admin').firestore();
+
+    await assertSucceeds(getDoc(doc(anonymous, 'certification-section/certification-01')));
+    await assertFails(setDoc(doc(anonymous, certificatePath), certificate));
+    await assertSucceeds(setDoc(doc(admin, certificatePath), certificate));
+    await assertFails(deleteDoc(doc(anonymous, certificatePath)));
+    await assertSucceeds(deleteDoc(doc(admin, certificatePath)));
+  });
+
   test('should allow authenticated writes', async () => {
     const firestore = testEnv.authenticatedContext('e2e-admin').firestore();
     const storage = testEnv.authenticatedContext('e2e-admin').storage(EMULATOR_BUCKET);

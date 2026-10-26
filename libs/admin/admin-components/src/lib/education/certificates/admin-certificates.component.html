@@ -1,0 +1,40 @@
+<div class="certificates-admin">
+  <div class="container">
+    <div class="section-title">
+      <h2>Certifications</h2>
+    </div>
+
+    <ul class="certificate-grid">
+      @for (certificate of certificates(); track certificate.id) {
+        <li class="certificate-card">
+          <section>
+            <img
+              [src]="certificateIconUrl"
+              [alt]="certificate.title + ' certification'"
+            />
+            <h3>{{ certificate.title }}</h3>
+            <p>Completed: {{ certificate.completedDate }}</p>
+            <p>Issuing Organization: {{ certificate.organization }}</p>
+            <p>Credential ID: {{ certificate.credentialID }}</p>
+            <p>
+              Certificate: <strong>{{ certificate.certification }}</strong>
+            </p>
+            <p>{{ certificate.description }}</p>
+          </section>
+          <admin-update-delete-buttons [config]="buttonConfig(certificate)" />
+        </li>
+      }
+      <li class="add-certificate">
+        <button type="button" mat-button (click)="addCertificate()">
+          <img
+            src="assets/images/portfolio/add.ico"
+            width="120"
+            height="120"
+            alt="Add a certificate"
+          />
+        </button>
+        <h3>Add</h3>
+      </li>
+    </ul>
+  </div>
+</div>

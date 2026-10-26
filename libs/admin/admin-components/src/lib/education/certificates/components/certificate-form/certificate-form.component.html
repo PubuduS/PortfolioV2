@@ -1,0 +1,99 @@
+<form class="certificate-form" [formGroup]="form" (ngSubmit)="submit()">
+  <label for="certificate-title">Title</label>
+  <input id="certificate-title" class="form-control" formControlName="title" />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.title"
+    errorKey="required"
+    message="A title is required"
+  />
+
+  <label for="certificate-organization">Issuing organization</label>
+
+  <input
+    id="certificate-organization"
+    class="form-control"
+    formControlName="organization"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.organization"
+    errorKey="required"
+    message="An issuing organization is required"
+  />
+
+  <label for="certificate-status">Status</label>
+
+  <select
+    id="certificate-status"
+    class="form-select"
+    formControlName="certification"
+  >
+    <option value="Here">Certificate available</option>
+    <option value="In Progress">In progress</option>
+  </select>
+
+  <label for="certificate-completed-date">Completed</label>
+
+  <input
+    id="certificate-completed-date"
+    class="form-control"
+    placeholder="MM/DD/YYYY or In progress"
+    formControlName="completedDate"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.completedDate"
+    errorKey="required"
+    message="A completion date or an in-progress label is required"
+  />
+
+  <label for="certificate-credential-id">Credential ID</label>
+
+  <input
+    id="certificate-credential-id"
+    class="form-control"
+    placeholder="Leave blank when there is none"
+    formControlName="credentialID"
+  />
+
+  <label for="certificate-url">Certificate link</label>
+
+  <input
+    id="certificate-url"
+    class="form-control"
+    placeholder="https://"
+    formControlName="certificateURL"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.certificateURL"
+    errorKey="required"
+    message="A link is required once the certificate is available"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.certificateURL"
+    errorKey="invalidURL"
+    message="Enter a valid http or https link"
+  />
+
+  <label for="certificate-description">Description</label>
+
+  <textarea
+    id="certificate-description"
+    class="form-control"
+    rows="3"
+    formControlName="description"
+  ></textarea>
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.description"
+    errorKey="required"
+    message="A description is required"
+  />
+
+  @if (formError(); as formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+</form>
