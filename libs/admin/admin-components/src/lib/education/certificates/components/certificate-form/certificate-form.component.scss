@@ -1,0 +1,14 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+.certificate-form {
+  label {
+    display: block;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  .form-error {
+    color: $jasper;
+    margin-top: 12px;
+  }
+}

@@ -1,5 +1,6 @@
 import {
   IAboutMe,
+  ICertificateCard,
   IExperience,
   IProjectCard,
   IProjectView,
@@ -10,4 +11,4 @@ import {
 
 /** Allowed Data Types for Database Operations */
 export type AllowedRecords = IAboutMe | ISkills | IExperience | IProjectView | IProjectCard
-| IPublication | IPublicationDetails;
+| IPublication | IPublicationDetails | ICertificateCard;
