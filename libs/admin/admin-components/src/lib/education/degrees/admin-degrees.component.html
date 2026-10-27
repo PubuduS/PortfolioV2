@@ -1,0 +1,52 @@
+<div class="degrees-admin">
+  <div class="container">
+    <div class="section-title">
+      <h2>Degrees</h2>
+    </div>
+
+    <ul class="degree-grid">
+      @for (degree of degrees(); track degree.id) {
+        <li class="degree-card">
+          <section class="uni-wrap">
+            <h4>{{ degree.title }}</h4>
+            <p>{{ degree.period }}</p>
+            <p>{{ degree.degree }}</p>
+            <p>
+              <span
+                >GPA: <strong>{{ degree.gpa }}</strong></span
+              >
+              <span
+                >Awarded: <strong>{{ degree.awards }}</strong></span
+              >
+              @if (degree.extra) {
+                <span
+                  >Honors: <strong>{{ degree.extra }}</strong></span
+                >
+              }
+            </p>
+            <p>
+              <span
+                >Credits: <strong>{{ degree.credits }}</strong></span
+              >
+              <span
+                >Graduated: <strong>{{ degree.graduated }}</strong></span
+              >
+            </p>
+          </section>
+          <admin-update-delete-buttons [config]="buttonConfig(degree)" />
+        </li>
+      }
+      <li class="add-degree">
+        <button type="button" mat-button (click)="addDegree()">
+          <img
+            src="assets/images/portfolio/add.ico"
+            width="120"
+            height="120"
+            alt="Add a degree"
+          />
+        </button>
+        <h3>Add</h3>
+      </li>
+    </ul>
+  </div>
+</div>

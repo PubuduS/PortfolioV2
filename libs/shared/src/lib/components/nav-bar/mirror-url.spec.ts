@@ -13,6 +13,8 @@ describe('mirrorUrl', () => {
     ['/content/featured-projects', '/admin/portfolio/featured-projects'],
     ['/admin/education/publications?edit=3', '/content/education/publications'],
     ['/content/education/publications?edit=3#paper', '/admin/education/publications'],
+    ['/content/education/degrees', '/admin/education/degrees'],
+    ['/admin/education/degrees?edit=2', '/content/education/degrees'],
     ['/content/admin', '/content/admin'],
     ['/content/admin?next=/home', '/content/admin'],
   ])('maps %s to %s', (url, mirrored) => {

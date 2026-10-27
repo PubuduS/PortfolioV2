@@ -1,6 +1,7 @@
 export * from './lib/about-me/about-me.component';
 export * from './lib/admin.routes';
 export * from './lib/education/certificates/admin-certificates.component';
+export * from './lib/education/degrees/admin-degrees.component';
 export * from './lib/education/education.routes';
 export * from './lib/education/publications/admin-publications.component';
 export * from './lib/experience/experience.component';

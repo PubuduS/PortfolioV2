@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Delete degree</h2>
+
+<mat-dialog-content>
+  <p>{{ degree.title }}</p>
+  <p>{{ degree.degree }}</p>
+  @if (errorMessage(); as message) {
+    <p class="save-error" role="alert">{{ message }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    mat-button
+    mat-dialog-close
+    [disabled]="status().kind === 'deleting'"
+  >
+    Cancel
+  </button>
+
+  <button
+    type="button"
+    mat-flat-button
+    color="warn"
+    [disabled]="status().kind === 'deleting'"
+    (click)="confirm()"
+  >
+    Delete
+  </button>
+</mat-dialog-actions>

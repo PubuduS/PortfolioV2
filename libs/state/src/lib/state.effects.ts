@@ -16,6 +16,7 @@ import { GetDataService } from '@portfolio-v2/shared/services';
 import { StateActions } from './state.actions';
 import {
   CERTIFICATE_COLLECTION,
+  EDUCATION_COLLECTION,
   IAboutMe,
   ICertificateCard,
   IEducation,
@@ -73,7 +74,7 @@ export class StateEffects {
    */
   public connectToEducatiuonCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.educationCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IEducation>('education-section', false).pipe(
+    switchMap(() => this.dbService.getDataArray<IEducation>(EDUCATION_COLLECTION, false).pipe(
       map((education: IEducation[]) => StateActions
         .educationCardsStateUpdated({ education })),
       catchError((error: Error) => this.handleErrors('Education card', error)),

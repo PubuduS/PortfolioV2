@@ -11,8 +11,12 @@ export const EDUCATION_ROUTES: Routes = [
     loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.PublicationsComponent),
   },
   {
-    path: 'education',
+    path: 'degrees',
     loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.EducationComponent),
+  },
+  {
+    path: 'education',
+    redirectTo: 'degrees',
   },
   {
     path: 'certificates',
