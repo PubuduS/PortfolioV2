@@ -52,3 +52,15 @@ export {
 export { ISkills } from './skills/ISkills';
 export { IAboutMe } from './about_me/IAboutMe';
 export { IEducation } from './education/IEducation';
+export {
+  EDUCATION_COLLECTION,
+  educationDocPath,
+  nextEducationId,
+  toEducationDraft,
+} from './education/education';
+export type {
+  EducationDraftFailure,
+  EducationDraftResult,
+  EducationEditTarget,
+  EducationFormValues,
+} from './education/education';

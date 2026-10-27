@@ -1,0 +1,62 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/education';
+
+.degrees-admin {
+  @include education-section;
+  min-height: 100vh;
+  // The admin nav bar is two rows tall, so the title needs more room than on the public page.
+  padding: 200px 0 40px;
+
+  .degree-grid {
+    display: grid;
+    gap: 0 30px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    @media (max-width: 768px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .degree-card {
+    display: flex;
+    flex-direction: column;
+    margin-block-end: 70px;
+    position: relative;
+
+    .uni-wrap {
+      @include education-card;
+      flex: 1 1 auto;
+      padding-block-end: 50px;
+    }
+  }
+
+  .add-degree {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    // Material buttons have a fixed height, which made the 120px icon spill over the label.
+    button {
+      height: auto;
+      line-height: 0;
+      padding: 8px;
+    }
+
+    img {
+      display: block;
+    }
+
+    h3 {
+      margin: 8px 0 0;
+    }
+  }
+
+  ::ng-deep .degree-card admin-update-delete-buttons .action-buttons {
+    inset-inline-end: auto;
+    inset-inline-start: 50%;
+    top: calc(100% - 20px);
+    transform: translateX(-50%);
+  }
+}

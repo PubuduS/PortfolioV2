@@ -1,0 +1,108 @@
+<form class="degree-form" [formGroup]="form" (ngSubmit)="submit()">
+  @if (isFeaturedRecord()) {
+    <p class="form-hint">
+      The public page shows this record as the full-width tile. There, Awarded
+      reads as Dean's List and Honors reads as President's List.
+    </p>
+  }
+
+  <label for="degree-title">Institute</label>
+  <input id="degree-title" class="form-control" formControlName="title" />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.title"
+    errorKey="required"
+    message="An institute name is required"
+  />
+
+  <label for="degree-name">Degree</label>
+  <input id="degree-name" class="form-control" formControlName="degree" />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.degree"
+    errorKey="required"
+    message="A degree name is required"
+  />
+
+  <label for="degree-period">Period</label>
+
+  <input
+    id="degree-period"
+    class="form-control"
+    placeholder="2016 - 2019"
+    formControlName="period"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.period"
+    errorKey="required"
+    message="A period is required"
+  />
+
+  <label for="degree-gpa">GPA</label>
+  <input id="degree-gpa" class="form-control" formControlName="gpa" />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.gpa"
+    errorKey="required"
+    message="A GPA is required"
+  />
+
+  <label for="degree-awards">Awarded</label>
+
+  <input
+    id="degree-awards"
+    class="form-control"
+    placeholder="Spring 2019"
+    formControlName="awards"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.awards"
+    errorKey="required"
+    message="An award is required"
+  />
+
+  <label for="degree-extra">Honors</label>
+
+  <input
+    id="degree-extra"
+    class="form-control"
+    placeholder="Optional"
+    formControlName="extra"
+  />
+
+  <label for="degree-credits">Credits</label>
+
+  <input
+    id="degree-credits"
+    class="form-control"
+    placeholder="149/120"
+    formControlName="credits"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.credits"
+    errorKey="required"
+    message="Credits are required"
+  />
+
+  <label for="degree-graduated">Graduated</label>
+
+  <input
+    id="degree-graduated"
+    class="form-control"
+    placeholder="04th of May 2019"
+    formControlName="graduated"
+  />
+
+  <admin-portfolio-display-validator-errors
+    [control]="form.controls.graduated"
+    errorKey="required"
+    message="A graduation date is required"
+  />
+
+  @if (formError(); as formError) {
+    <p class="form-error" role="alert">{{ formError }}</p>
+  }
+</form>

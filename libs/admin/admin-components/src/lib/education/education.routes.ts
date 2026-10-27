@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { CertificateWriter } from './certificates/services/certificate-writer.service';
+import { DegreeWriter } from './degrees/services/degree-writer.service';
 import { PublicationWriter } from './publications/services/publication-writer.service';
 
 /** Admin routes for education content. Each writer is provided only on its own route. */
@@ -10,6 +11,13 @@ export const EDUCATION_ADMIN_ROUTES: Routes = [
     providers: [CertificateWriter],
     loadComponent: () => import('./certificates/admin-certificates.component').then(
       (mod) => mod.AdminCertificatesComponent,
+    ),
+  },
+  {
+    path: 'degrees',
+    providers: [DegreeWriter],
+    loadComponent: () => import('./degrees/admin-degrees.component').then(
+      (mod) => mod.AdminDegreesComponent,
     ),
   },
   {
