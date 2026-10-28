@@ -1,9 +1,9 @@
-import { environment } from '../../portfolio-v2/src/environments/environment.emulator';
+import { environment } from '@portfolio-v2/environment/emulator';
 import {
   assertEmulatorTarget,
   emulatorTarget,
-} from '../../../tools/db/guards';
-import { resetBaseline } from '../../../tools/db/reset';
+} from '@portfolio-v2/tools/db/guards';
+import { resetBaseline } from '@portfolio-v2/tools/db/reset';
 
 /**
  * Aborts the run when the app or emulators point at anything other than the demo target.

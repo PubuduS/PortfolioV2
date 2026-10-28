@@ -25,7 +25,7 @@ import {
   EMULATOR_BUCKET,
   EMULATOR_PORTS,
   EMULATOR_TARGET,
-} from '../../../../../tools/db/constants';
+} from '@portfolio-v2/tools/db/constants';
 
 const REPO_ROOT = path.resolve(__dirname, '../../../../..');
 const PROBE_PATH = 'e2e-rules-probe/doc';
