@@ -1,19 +1,22 @@
-.action-buttons {
+:host {
+  display: block;
+  inset-block-start: 0;
+  inset-inline-end: 0;
   position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column; // Stack buttons vertically
-  gap: 8px;
   z-index: 10;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   button {
-    margin: 0; // Override default button margin
+    margin: 0;
   }
 
-  // Override for horizontal layout
   &.horizontal {
-    flex-direction: row; // Make buttons horizontal
-    gap: 16px; // More spacing for horizontal layout
+    flex-direction: row;
+    gap: 16px;
   }
 }

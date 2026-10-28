@@ -1,22 +1,8 @@
-@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+@import 'apps/portfolio-v2/src/assets/SCSS/certificates';
 
 .certifications-full {
-  background-color: $nocturne-navy;
+  @include certificates-section;
   padding: 100px 0 40px;
-
-  .section-title {
-    text-align: center;
-    margin-bottom: 60px;
-
-    h2 {
-      font-weight: 800;
-      font-size: 40px;
-      line-height: 49px;
-      text-transform: uppercase;
-      margin: 0;
-      color: $icy-petal;
-    }
-  }
 
   .certifications-wrap {
     ul {
@@ -26,52 +12,30 @@
       padding: 0;
 
       li {
-        padding: 15px;
         list-style: none;
+        padding: 15px;
       }
     }
 
     section {
-      padding: 80px 30px 30px;
-      border: 2px solid $icy-petal;
-      border-radius: 20px;
-      color: $ghost-gray;
-      position: relative;
-      margin: 20px;
+      @include certificate-card;
       transition: all 0.4s ease-in-out;
 
       &:hover {
-        border-color: $electric-teal;
         transform: scale(1.02);
       }
 
       img {
-        position: absolute;
-        left: 30px;
-        top: -50px;
         transition: all 0.4s ease-in-out;
-        filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
       }
 
-      h3 {
-        font-size: 20px;
-        margin: 10px 0 15px;
-        color: $white;
-      }
+      p a {
+        color: $electric-teal;
+        font-weight: bold;
 
-      p {
-        margin: 0 0 15px;
-        line-height: 22px;
-        font-size: 16px;
-
-        a {
-          color: $electric-teal;
-          font-weight: bold;
-
-          &:hover {
-            text-decoration: underline;
-            color: $tropical-jade;
-          }
+        &:hover {
+          color: $tropical-jade;
+          text-decoration: underline;
         }
       }
     }
