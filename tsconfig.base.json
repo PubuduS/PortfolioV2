@@ -20,6 +20,9 @@
       "@portfolio-v2/environment": [
         "apps/portfolio-v2/src/environments/index.ts"
       ],
+      "@portfolio-v2/environment/emulator": [
+        "apps/portfolio-v2/src/environments/environment.emulator.ts"
+      ],
       "@portfolio-v2/interfaces": ["libs/interfaces/index.ts"],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
       "@portfolio-v2/shared/components": [
@@ -50,7 +53,10 @@
       ],
       "@portfolio-v2/admin-components": [
         "libs/admin/admin-components/src/index.ts"
-      ]
+      ],
+      "@portfolio-v2/tools/db/constants": ["tools/db/constants.ts"],
+      "@portfolio-v2/tools/db/guards": ["tools/db/guards.ts"],
+      "@portfolio-v2/tools/db/reset": ["tools/db/reset.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

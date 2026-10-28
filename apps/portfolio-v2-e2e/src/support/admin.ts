@@ -3,7 +3,7 @@ import { type Page } from '@playwright/test';
 import {
   TEST_ADMIN_EMAIL,
   TEST_ADMIN_PASSWORD,
-} from '../../../../tools/db/constants';
+} from '@portfolio-v2/tools/db/constants';
 import { expect } from './network';
 
 /**

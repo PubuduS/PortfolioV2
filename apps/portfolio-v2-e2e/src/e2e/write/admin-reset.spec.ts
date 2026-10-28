@@ -3,8 +3,8 @@ import { type Page } from '@playwright/test';
 import {
   TEST_ADMIN_EMAIL,
   TEST_ADMIN_PASSWORD,
-} from '../../../../../tools/db/constants';
-import { resetBaseline } from '../../../../../tools/db/reset';
+} from '@portfolio-v2/tools/db/constants';
+import { resetBaseline } from '@portfolio-v2/tools/db/reset';
 import {
   expect,
   test,

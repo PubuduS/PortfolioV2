@@ -3,7 +3,7 @@ import {
   type Page,
 } from '@playwright/test';
 
-import { resetBaseline } from '../../../../../tools/db/reset';
+import { resetBaseline } from '@portfolio-v2/tools/db/reset';
 import { signInAsAdmin } from '../../support/admin';
 import {
   expect,
