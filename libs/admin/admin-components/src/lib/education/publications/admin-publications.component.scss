@@ -88,9 +88,9 @@
     }
   }
 
-  ::ng-deep .publication-card admin-update-delete-buttons .action-buttons {
-    left: 50%;
-    right: auto;
+  .publication-card admin-update-delete-buttons {
+    inset-inline-end: auto;
+    inset-inline-start: 50%;
     top: calc(100% + 16px);
     transform: translateX(-50%);
   }

@@ -1,0 +1,58 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+// Shared by the public certifications page and the admin certificates page.
+
+@mixin certificates-section {
+  background-color: $nocturne-navy;
+
+  .section-title {
+    margin-bottom: 60px;
+    text-align: center;
+
+    h2 {
+      color: $icy-petal;
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 49px;
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+}
+
+@mixin certificate-card {
+  border: 2px solid $icy-petal;
+  border-radius: 20px;
+  color: $ghost-gray;
+  margin: 20px;
+  padding: 80px 30px 30px;
+  position: relative;
+  transition: border-color 0.4s ease-in-out;
+
+  &:hover {
+    border-color: $electric-teal;
+  }
+
+  img {
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    inset-block-start: -50px;
+    inset-inline-start: 30px;
+    position: absolute;
+  }
+
+  h3 {
+    color: $white;
+    font-size: 20px;
+    margin: 10px 0 15px;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 22px;
+    margin: 0 0 15px;
+  }
+
+  strong {
+    color: $electric-teal;
+  }
+}
