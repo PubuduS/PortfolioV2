@@ -31,14 +31,14 @@
                   mat-button
                   class="btn"
                   (click)="openDialog(publication.id)"
-                  disabled="{{ publication.btnMoreDisable }}"
+                  [disabled]="publication.btnMoreDisable"
                   ><mat-icon>more</mat-icon>More</a
                 >
 
                 <a
                   mat-button
                   class="btn"
-                  disabled="{{ publication.btnDownloadDisable }}"
+                  [disabled]="publication.btnDownloadDisable"
                   [href]="publication.downloadUrl"
                   [attr.download]="publication.downloadFileName"
                   target="_blank"

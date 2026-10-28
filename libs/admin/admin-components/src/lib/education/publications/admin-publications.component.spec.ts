@@ -146,6 +146,25 @@ describe('AdminPublicationsComponent', () => {
     expect((title as HTMLInputElement).value).toBe('');
   });
 
+  describe('when no publications are stored', () => {
+    beforeEach(() => {
+      store.overrideSelector(publicationRecordsSelector, []);
+      store.refreshState();
+      fixture.detectChanges();
+    });
+
+    it('should still offer the add control', () => {
+      expect(fixture.nativeElement.querySelectorAll('.publication-card')).toHaveLength(0);
+      expect(fixture.nativeElement.querySelector('.add-publication button')).not.toBeNull();
+    });
+
+    afterEach(() => {
+      store.overrideSelector(publicationRecordsSelector, publications);
+      store.refreshState();
+      fixture.detectChanges();
+    });
+  });
+
   it('lays the cards and the add tile out in one grid with the label under the button', () => {
     const grid: HTMLElement = fixture.nativeElement.querySelector('.publication-grid');
     const add = grid.querySelector('.add-publication');

@@ -1,0 +1,44 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+
+// Shared by the public publications page and the admin publications page.
+
+@mixin publications-section {
+  background-color: $golden-bloom;
+
+  .section-title {
+    margin-bottom: 60px;
+    text-align: center;
+
+    h2 {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 49px;
+      margin: 0;
+      text-transform: uppercase;
+    }
+  }
+
+  .publication-card {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      text-align: justify;
+    }
+
+    img {
+      aspect-ratio: 4 / 3;
+      flex-shrink: 0;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    mat-card-content {
+      flex: 1 1 auto;
+    }
+  }
+
+  mat-card-title {
+    text-align: center;
+  }
+}

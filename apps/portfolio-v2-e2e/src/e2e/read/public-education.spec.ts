@@ -25,4 +25,27 @@ test.describe('public education pages', () => {
 
     await expect(page).toHaveURL(/\/content\/education\/degrees$/);
   });
+
+  test('should open a publication and its details from the education hub', async ({ page }) => {
+    await page.goto('/home');
+    await page.getByRole('link', { name: 'Education' }).click();
+    await page.locator('portfolio-v2-flower-animation').filter({ hasText: 'Publications' })
+      .getByText('Publications', { exact: true }).click();
+
+    await expect(page).toHaveURL(/\/content\/education\/publications$/);
+    const card = page.locator('portfolio-v2-publications .publication-card').filter({
+      hasText: 'ARWalker',
+    });
+    await expect(card).toContainText('Gait Rehabilitation, Mixed Reality, HoloLens 2');
+    await expect(card.getByRole('img', { name: 'Publication Photo' })).toBeVisible();
+    await expect(card.getByRole('link', { name: 'Download' })).toHaveAttribute('download', 'ARWalker');
+
+    await card.locator('a', { hasText: 'More' }).click();
+    const details = page.getByRole('dialog');
+    await expect(details).toContainText('ARWalker: A Virtual Walking Companion Application');
+    await expect(details).toContainText('Authors:');
+    await expect(details).toContainText('Abstract:');
+    await expect(details).toContainText('Cite:');
+    await expect(details.getByRole('button', { name: 'Copy' })).toBeVisible();
+  });
 });
