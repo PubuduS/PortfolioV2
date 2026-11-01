@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -13,6 +14,10 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
+import {
+  ContactMailService,
+  type ContactSendStatus,
+} from '@portfolio-v2/shared/services';
 import {
   IEmailValidatorMsgs,
   ISenderNameValidatorMsgs,
@@ -39,6 +44,12 @@ export class ContactComponent implements OnInit {
   /** Social infor */
   protected readonly socialInfor = this.store.selectSignal(socialMediaSelector);
 
+  /** True while the send is in flight. */
+  protected readonly isSending = signal(false);
+
+  /** Status shown after a send attempt. */
+  protected readonly feedback = signal<{ kind: 'success' | 'error'; text: string } | null>(null);
+
   /** Name minimum length */
   protected readonly nameMinLen: number = 2;
 
@@ -56,7 +67,7 @@ export class ContactComponent implements OnInit {
 
   /** Email validator messages */
   protected readonly emailValidatorMsgs: IEmailValidatorMsgs = {
-    emailReqError: 'Please enter an email address.',
+    emailReqError: 'Please enter your email address.',
     emailPttrnError: 'Please enter a valid email address.',
   };
 
@@ -79,11 +90,13 @@ export class ContactComponent implements OnInit {
    * constructor
    * @param dialog dialog
    * @param formBuilder form builder
+   * @param mail contact mail
    * @param store ngrx store
    */
   constructor(
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
+    private mail: ContactMailService,
     private store: Store,
   ) {}
 
@@ -95,6 +108,7 @@ export class ContactComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       name: ['', [Validators.required, Validators.minLength(this.nameMinLen), Validators.maxLength(this.nameMaxLen), Validators.pattern(this.nameRegexPattern)]],
       message: ['', [Validators.required, Validators.minLength(this.msgMinLen), Validators.maxLength(this.msgMaxLen)]],
+      faxNumber: [''],
     });
   }
 
@@ -111,9 +125,56 @@ export class ContactComponent implements OnInit {
   }
 
   /**
-   * Send Email
+   * Send the form to the site owner.
    */
-  protected sendEmail(): void {
-    console.log('implement this function');
+  protected async sendEmail(): Promise<void> {
+    if (this.contactForm.invalid || this.isSending()) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+    this.isSending.set(true);
+    this.feedback.set(null);
+    const status = await this.mail.sendMessage({
+      email: String(this.contactForm.get('email')?.value ?? ''),
+      name: String(this.contactForm.get('name')?.value ?? ''),
+      message: String(this.contactForm.get('message')?.value ?? ''),
+      faxNumber: String(this.contactForm.get('faxNumber')?.value ?? ''),
+    });
+    this.isSending.set(false);
+    if (status === 'sent') {
+      this.contactForm.reset();
+      this.feedback.set({
+        kind: 'success',
+        text: 'Your message is on its way. I will reply soon.',
+      });
+      return;
+    }
+    if (status === 'dry-run') {
+      this.contactForm.reset();
+      this.feedback.set({
+        kind: 'success',
+        text: 'This local session accepted the message without sending an email.',
+      });
+      return;
+    }
+    this.feedback.set({
+      kind: 'error',
+      text: this.failureText(status),
+    });
+  }
+
+  /**
+   * Copy for a refused or failed send.
+   * @param status Outcome other than a delivery.
+   * @returns Text for the status line.
+   */
+  private failureText(status: Exclude<ContactSendStatus, 'sent' | 'dry-run'>): string {
+    if (status === 'limited') {
+      return 'Too many messages were sent just now. Please wait a while and try again.';
+    }
+    if (status === 'invalid') {
+      return 'Please check the form and try again.';
+    }
+    return 'The message could not be sent. Email me directly and I will get back to you.';
   }
 }

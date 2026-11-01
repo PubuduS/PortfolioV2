@@ -30,6 +30,7 @@ const READY_TIMEOUT_MS = 90_000;
 async function main(): Promise<void> {
   assertEmulatorTarget(EMULATOR_TARGET);
   clearCredentialEnv();
+  buildFunctions();
   const env = await jdk21Env(process.env);
   const child = startFirebase(env);
   let stopped = false;
@@ -84,6 +85,17 @@ export async function jdk21Env(base: NodeJS.ProcessEnv): Promise<NodeJS.ProcessE
   };
 }
 
+function buildFunctions(): void {
+  const tsc = path.join(REPO_ROOT, 'functions', 'node_modules', 'typescript', 'lib', 'tsc.js');
+  if (!fs.existsSync(tsc)) {
+    throw new Error('functions dependencies are missing. Run npm install in functions/.');
+  }
+  execFileSync(process.execPath, [tsc, '-p', path.join(REPO_ROOT, 'functions')], {
+    cwd: REPO_ROOT,
+    stdio: 'inherit',
+  });
+}
+
 function startFirebase(env: NodeJS.ProcessEnv): ChildProcess {
   const shim = path.join(REPO_ROOT, 'node_modules', '.bin', process.platform === 'win32' ? 'firebase.cmd' : 'firebase');
   const script = path.join(REPO_ROOT, 'node_modules', 'firebase-tools', 'lib', 'bin', 'firebase.js');
@@ -94,7 +106,7 @@ function startFirebase(env: NodeJS.ProcessEnv): ChildProcess {
     script,
     'emulators:start',
     '--only',
-    'auth,firestore,storage',
+    'auth,firestore,storage,functions',
     '--project',
     EMULATOR_TARGET.projectId,
   ];
@@ -114,6 +126,7 @@ async function waitForEmulatorPorts(child: ChildProcess): Promise<void> {
     EMULATOR_PORTS.firestore,
     EMULATOR_PORTS.storage,
     EMULATOR_PORTS.ui,
+    EMULATOR_PORTS.functions,
   ];
   while (Date.now() < deadline) {
     if (child.exitCode !== null) {

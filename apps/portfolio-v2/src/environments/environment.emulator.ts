@@ -17,5 +17,6 @@ export const environment: AppEnvironment = {
     firestore: { host: '127.0.0.1', port: 8080 },
     auth: { host: '127.0.0.1', port: 9099 },
     storage: { host: '127.0.0.1', port: 9199 },
+    functions: { host: '127.0.0.1', port: 5001 },
   },
 };

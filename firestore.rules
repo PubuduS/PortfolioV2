@@ -2,9 +2,16 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Contact-form quotas are written by the Admin SDK. A matching allow elsewhere
+    // would still grant access, so the public rules exclude this tree themselves.
+    // Segment 3 is the collection id: /databases/{db}/documents/{collection}/...
+    function isContactMailGuard() {
+      return request.path[3] == 'contact-mail-guard';
+    }
+
     match /{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read: if !isContactMailGuard();
+      allow write: if request.auth != null && !isContactMailGuard();
     }
   }
 }

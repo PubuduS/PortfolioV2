@@ -8,6 +8,7 @@ export interface EmulatorTarget {
     readonly firestore: string;
     readonly storage: string;
     readonly ui: string;
+    readonly functions: string;
   };
 }
 
@@ -17,6 +18,7 @@ export interface EmulatorPorts {
   readonly firestore: number;
   readonly storage: number;
   readonly ui: number;
+  readonly functions: number;
 }
 
 /** Demo project the emulators, seed, reset, and verify are allowed to touch. */
@@ -27,6 +29,7 @@ export const EMULATOR_TARGET: EmulatorTarget = {
     firestore: '127.0.0.1',
     storage: '127.0.0.1',
     ui: '127.0.0.1',
+    functions: '127.0.0.1',
   },
 };
 
@@ -36,6 +39,7 @@ export const EMULATOR_PORTS: EmulatorPorts = {
   firestore: 8080,
   storage: 9199,
   ui: 4000,
+  functions: 5001,
 };
 
 /** Bucket name the Storage emulator serves for the demo project. */

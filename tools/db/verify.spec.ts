@@ -34,6 +34,18 @@ describe('baseline comparison', () => {
       ]);
     });
 
+    it('should ignore contact mail quota documents', () => {
+      const observed = observedFrom(manifest);
+      const changed: ObservedState = {
+        ...observed,
+        firestore: {
+          ...observed.firestore,
+          'contact-mail-guard': { docCount: 2, sha256: 'quota' },
+        },
+      };
+      expect(compareBaseline(manifest, changed)).toEqual([]);
+    });
+
     it('should report a changed document hash', () => {
       const observed = observedFrom(manifest);
       const changed: ObservedState = {

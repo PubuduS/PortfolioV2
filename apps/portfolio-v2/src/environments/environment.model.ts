@@ -25,5 +25,6 @@ export interface AppEnvironment {
     firestore: EmulatorEndpoint;
     auth: EmulatorEndpoint;
     storage: EmulatorEndpoint;
+    functions: EmulatorEndpoint;
   };
 }
