@@ -1,0 +1,17 @@
+{
+  "name": "tools-coverage",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/coverage",
+  "projectType": "library",
+  "tags": ["tools"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "tools/coverage/jest.config.ts",
+        "tsConfig": "tools/coverage/tsconfig.spec.json"
+      }
+    }
+  }
+}

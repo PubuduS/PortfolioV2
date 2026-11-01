@@ -13,9 +13,12 @@
     "build": "nx build portfolio-v2",
     "clean": "nx reset",
     "test": "nx run-many --target=test --parallel=5 --runInBand",
+    "test:coverage": "nx run-many --target=test --configuration=ci --parallel=5 --runInBand",
     "test-ci": "cross-env NODE_ENV=test NODE_OPTIONS=--max-old-space-size=8192 jest --ci --reporters=default --reporters=jest-junit --collectCoverage  --forceExit",
+    "coverage:jest": "tsx tools/coverage/merge-coverage.ts jest",
+    "coverage:playwright": "tsx tools/coverage/merge-coverage.ts playwright",
     "lint": "nx run-many --target=lint --parallel=5 && nx run-many --target=stylelint --parallel=5",
-    "compodoc": "compodoc -p tsconfig.doc.json && tsx tools/docs/compodoc-routes.ts",
+    "compodoc": "tsx tools/docs/run-compodoc.ts && tsx tools/docs/compodoc-routes.ts && tsx tools/docs/attach-coverage.ts",
     "e2e-tests": "nx run portfolio-v2-e2e:e2e",
     "build-checks": "npm run clean & npm run test & npm run test-ci & npm run lint"
   },
@@ -106,6 +109,9 @@
     "eslint-plugin-prettier": "^5.0.0-alpha.2",
     "firebase-admin": "^14.5.0",
     "firebase-tools": "^15.34.0",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.2.0",
     "jasmine-marbles": "~0.9.1",
     "jest": "30.5.2",
     "jest-createspyobj": "^2.0.0",
@@ -127,7 +133,8 @@
     "ts-node": "10.9.1",
     "tsx": "^4.23.15",
     "typescript": "5.9.3",
-    "undici": "^7.30.1"
+    "undici": "^7.30.1",
+    "v8-to-istanbul": "^9.3.0"
   },
   "resolutions": {
     "webpack": "5.88.2"
