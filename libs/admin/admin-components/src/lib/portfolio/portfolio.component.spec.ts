@@ -68,7 +68,8 @@ describe('PortfolioComponent', () => {
     component = fixture.componentInstance;
 
     // Setup spies for component services manually
-    jest.spyOn(component['dialog'], 'open');
+    // Material nests a child MatDialog over the test double, and the real open() reads the parent.
+    jest.spyOn(component['dialog'], 'open').mockReturnValue({} as never);
     jest.spyOn(component['router'], 'navigate');
 
     fixture.detectChanges();

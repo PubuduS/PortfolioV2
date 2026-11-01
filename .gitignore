@@ -43,6 +43,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
+.audit/
 .nx/cache
 .nx/workspace-data
 .angular
