@@ -1,5 +1,7 @@
 import { Route } from '@angular/router';
 
+import { adminGuard } from '@portfolio-v2/shared/services';
+
 export const appRoutes: Route[] = [
   {
     path: '',
@@ -16,6 +18,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadChildren: () => import('@portfolio-v2/admin-components').then(((route) => route.ADMIN_PAGE_ROUTES)),
   },
   { path: '**', loadComponent: () => import('@portfolio-v2/portfolio-pages').then((mod) => mod.PageNotFoundComponent) },
