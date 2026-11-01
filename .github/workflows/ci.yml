@@ -29,8 +29,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.23.4
           cache: npm
+
+      - name: Use npm 12.2.1
+        run: npm install -g npm@12.2.1
 
       - name: Install dependencies
         run: npm ci
@@ -57,7 +60,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.23.4
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -68,6 +71,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
+      - name: Use npm 12.2.1
+        run: npm install -g npm@12.2.1
 
       - name: Install dependencies
         run: npm ci
@@ -111,8 +117,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.23.4
           cache: npm
+
+      - name: Use npm 12.2.1
+        run: npm install -g npm@12.2.1
 
       - name: Install dependencies
         run: npm ci
