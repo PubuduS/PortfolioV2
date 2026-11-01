@@ -17,6 +17,11 @@ describe('mirrorUrl', () => {
     ['/admin/education/degrees?edit=2', '/content/education/degrees'],
     ['/content/admin', '/content/admin'],
     ['/content/admin?next=/home', '/content/admin'],
+    ['/admin/resume', '/home'],
+    ['/admin/resume?from=nav', '/home'],
+    ['/admin/coverletter', '/content/coverletter'],
+    ['/content/coverletter', '/admin/coverletter'],
+    ['/content/coverletter?draft=1', '/admin/coverletter'],
   ])('maps %s to %s', (url, mirrored) => {
     expect(mirrorUrl(url)).toBe(mirrored);
   });

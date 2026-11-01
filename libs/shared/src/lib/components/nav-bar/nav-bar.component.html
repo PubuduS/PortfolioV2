@@ -39,15 +39,18 @@
             <a [routerLink]="['content/education']">Education</a>
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link"
-              href="assets/PDFs/Resume/Pubudu_Resumes.pdf"
-              target="_blank"
-              >Resume</a
-            >
+            @if (resumeTarget(); as resume) {
+              @if (resume.kind === 'file') {
+                <a class="nav-link" [attr.href]="resume.href" target="_blank"
+                  >Resume</a
+                >
+              } @else {
+                <a class="nav-link" [routerLink]="resume.path">Resume</a>
+              }
+            }
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/coverletter']">Cover Letter</a>
+            <a [routerLink]="coverLetterTarget().path">Cover Letter</a>
           </li>
           <li class="nav-item">
             <a [routerLink]="['content/admin']">Admin</a>
@@ -75,7 +78,7 @@
 </div>
 
 <div class="row col-12 weather">
-  @if (isAdmin | async) {
+  @if (isAdminMode()) {
     <div class="col-1 mx-2">
       @if (!isPreviewMode()) {
         <button

@@ -1,0 +1,78 @@
+[
+  {
+    "id": "cover-letter",
+    "data": {
+      "type": "map",
+      "fields": {
+        "versions": {
+          "type": "array",
+          "values": [
+            {
+              "type": "map",
+              "fields": {
+                "id": {
+                  "type": "string",
+                  "value": "1730000000000-000001"
+                },
+                "pendingDeletes": {
+                  "type": "array",
+                  "values": []
+                },
+                "uploadedAt": {
+                  "type": "string",
+                  "value": "2026-10-31T00:00:00.000Z"
+                },
+                "storagePath": {
+                  "type": "string",
+                  "value": "portfolio/documents/cover-letter/1730000000000-000001.docx"
+                },
+                "downloadUrl": {
+                  "type": "string",
+                  "value": "storage://portfolio/documents/cover-letter/1730000000000-000001.docx"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "resume",
+    "data": {
+      "type": "map",
+      "fields": {
+        "versions": {
+          "type": "array",
+          "values": [
+            {
+              "type": "map",
+              "fields": {
+                "uploadedAt": {
+                  "type": "string",
+                  "value": "2026-10-31T00:00:00.000Z"
+                },
+                "downloadUrl": {
+                  "type": "string",
+                  "value": "storage://portfolio/documents/resume/resume-1730000000000-000001.pdf"
+                },
+                "pendingDeletes": {
+                  "type": "array",
+                  "values": []
+                },
+                "id": {
+                  "type": "string",
+                  "value": "1730000000000-000001"
+                },
+                "storagePath": {
+                  "type": "string",
+                  "value": "portfolio/documents/resume/resume-1730000000000-000001.pdf"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+]

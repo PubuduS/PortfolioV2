@@ -1,3 +1,5 @@
+import { mirrorDocumentPath } from '@portfolio-v2/state/dataModels';
+
 /**
  * @param url router url
  * @returns the path with query, fragment, and a trailing slash removed
@@ -29,6 +31,10 @@ function pathOnly(url: string): string {
  */
 export function mirrorUrl(url: string): string {
   const path = pathOnly(url);
+  const documents = mirrorDocumentPath(path);
+  if (documents !== null) {
+    return documents;
+  }
   if (path === '/content/admin') {
     return path;
   }

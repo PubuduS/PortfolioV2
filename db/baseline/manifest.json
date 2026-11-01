@@ -1,6 +1,6 @@
 {
   "sourceProjectId": "portfolio-c9b8e",
-  "capturedAt": "2026-10-20T02:31:00.803Z",
+  "capturedAt": "2026-11-01T04:02:51.455Z",
   "sanitizerVersion": 3,
   "firestore": {
     "about-me-section": {
@@ -10,6 +10,10 @@
     "certification-section": {
       "docCount": 7,
       "sha256": "18f1dbb7fec5033d101e8a992de3390cf6e4bb711b6b881c870084872bf6c7ef"
+    },
+    "document-versions": {
+      "docCount": 2,
+      "sha256": "2f4422526f90f090a8876320f7a329c13814b7b41542f27f1012503e154a7f17"
     },
     "education-section": {
       "docCount": 3,
@@ -58,6 +62,16 @@
       "sha256": "ff23052c9032bde9e215347a5a73da7e1abf511860a2dedc931e3792549402d9",
       "bytes": 3632,
       "contentType": "image/png"
+    },
+    "portfolio/documents/cover-letter/1730000000000-000001.docx": {
+      "sha256": "41753db4146e543064a2af3de1f586b3cec9cb9c992cebaf478f6b145967d239",
+      "bytes": 36975,
+      "contentType": "application/octet-stream"
+    },
+    "portfolio/documents/resume/resume-1730000000000-000001.pdf": {
+      "sha256": "aeb3142125f4707795376346666c7e94b9704fa1344e5bd30e9423e475c7c396",
+      "bytes": 45,
+      "contentType": "application/pdf"
     },
     "portfolio/featured-projects/ID-01-Image.webp": {
       "sha256": "9054e2b3b5003a2f68dacc951621217537f14c5a36187b1740dfacf93596d3cd",

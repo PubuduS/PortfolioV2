@@ -1,0 +1,93 @@
+@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+@import 'apps/portfolio-v2/src/assets/SCSS/cover-letter';
+
+:host {
+  display: block;
+}
+
+@include cover-letter-page;
+
+.documents-admin {
+  min-block-size: 100vh;
+
+  .kind-option {
+    align-items: center;
+    display: flex;
+    margin-block-end: 20px;
+    text-decoration: none;
+  }
+
+  .kind-option.is-selected {
+    border-color: $electric-teal;
+    color: $electric-teal;
+  }
+
+  .version-table {
+    border-collapse: collapse;
+    color: $ghost-gray;
+    inline-size: 100%;
+    margin-block-end: 40px;
+
+    th,
+    td {
+      border-block-end: 1px solid $icy-petal;
+      padding-block: 16px;
+      padding-inline: 12px;
+      text-align: start;
+      vertical-align: middle;
+    }
+
+    th {
+      color: $icy-petal;
+      font-weight: 800;
+    }
+
+    th:last-child,
+    td:last-child {
+      text-align: center;
+    }
+
+    a {
+      color: $icy-petal;
+      text-decoration: none;
+    }
+
+    .submit-btn {
+      align-items: center;
+      block-size: 40px;
+      display: inline-flex;
+      height: auto;
+      inline-size: auto;
+      justify-content: center;
+      padding-block: 8px;
+      padding-inline: 16px;
+      width: auto;
+    }
+
+    .submit-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .submit-btn mat-icon {
+      block-size: 20px;
+      font-size: 20px;
+      inline-size: 20px;
+      line-height: 20px;
+    }
+  }
+
+  .cover-form input[type='file'] {
+    block-size: auto;
+    color: $ghost-gray;
+    padding-block: 16px;
+  }
+
+  .cover-form label {
+    color: $ghost-gray;
+  }
+
+  .save-error {
+    color: $jasper;
+  }
+}

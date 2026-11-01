@@ -4,21 +4,21 @@
     "data": {
       "type": "map",
       "fields": {
+        "title": {
+          "type": "string",
+          "value": "ARWalker: A Virtual Walking Companion Application"
+        },
         "id": {
           "type": "integer",
           "value": "1"
-        },
-        "authors": {
-          "type": "string",
-          "value": "Pubudu Wijesooriya, Aaron Likens, Nick Stergiou, and Spyridon Mastorakis"
         },
         "citation": {
           "type": "string",
           "value": "Pubudu Wijesooriya, Likens, A. D., Stergiou, N., & Spyridon Mastorakis. (2023). ARWalker: A Virtual Walking Companion Application. ArXiv (Cornell University). https://doi.org/10.48550/arxiv.2311.07502"
         },
-        "title": {
+        "authors": {
           "type": "string",
-          "value": "ARWalker: A Virtual Walking Companion Application"
+          "value": "Pubudu Wijesooriya, Aaron Likens, Nick Stergiou, and Spyridon Mastorakis"
         },
         "abstarct": {
           "type": "array",
@@ -41,6 +41,10 @@
           "type": "string",
           "value": "Pubudu Wijesooriya, Sheikh Muhammad Farjad, Nick Stergiou, and Spyridon Mastorakis"
         },
+        "title": {
+          "type": "string",
+          "value": "Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application Store"
+        },
         "id": {
           "type": "integer",
           "value": "2"
@@ -53,10 +57,6 @@
               "value": "Augmented Reality (AR) based on Head-Mounted Displays (HMDs) has gained significant traction over the recent years. Nevertheless, it remains unclear what AR HMD-based applications have been developed over the years and what their system performance is when they are run on HMDs. In this paper, we aim to shed light into this direction. Our study focuses on the applications available on the Microsoft Hololens application store given the wide use of the Hololens headset. Our study has two major parts: (i) we collect metadata about the applications available on the Microsoft Hololens application store to understand their characteristics (e.g., categories, pricing, permissions requested, hardware and software compatibility); and (ii) we interact with these applications while running on a Hololens 2 headset and collect data about systems-related metrics (e.g., memory and storage usage, time spent on CPU and GPU related operations) to investigate the systems performance of applications. Our study has resulted in several interesting findings, which we share with the research community."
             }
           ]
-        },
-        "title": {
-          "type": "string",
-          "value": "Investigating the Characteristics and Performance of Augmented Reality Applications on Head-Mounted Displays: A Study of the Hololens Application Store"
         },
         "citation": {
           "type": "string",
@@ -78,14 +78,6 @@
           "type": "string",
           "value": "Wijesooriya, P. (2023, May 3). Use of Mixed Reality to Provide Gait Rehabilitation."
         },
-        "title": {
-          "type": "string",
-          "value": "Use of Mixed Reality to Provide Gait Rehabilitation"
-        },
-        "id": {
-          "type": "integer",
-          "value": "3"
-        },
         "abstarct": {
           "type": "array",
           "values": [
@@ -106,6 +98,14 @@
               "value": "Both systems are designed to help patients with gait disabilities and provide implicit learning. We aim to provide them with cost-effective, self-training methods to restore their gait. The results of this study could have significant implications for the rehabilitation of individuals with gait disabilities."
             }
           ]
+        },
+        "id": {
+          "type": "integer",
+          "value": "3"
+        },
+        "title": {
+          "type": "string",
+          "value": "Use of Mixed Reality to Provide Gait Rehabilitation"
         }
       }
     }

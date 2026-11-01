@@ -15,6 +15,7 @@ import {
 } from '@angular/fire/firestore';
 import {
   Storage,
+  getBlob,
   getDownloadURL,
   ref,
 } from '@angular/fire/storage';
@@ -111,6 +112,17 @@ export class GetDataService {
       }))),
     );
     return experienceData;
+  }
+
+  /**
+   * Read one storage object as bytes.
+   * @param storagePath bucket-relative path
+   * @returns file bytes
+   */
+  public async getFileBytes(storagePath: string): Promise<ArrayBuffer> {
+    const fileRef = ref(this.storage, storagePath);
+    const blob = await getBlob(fileRef);
+    return blob.arrayBuffer();
   }
 
   /**

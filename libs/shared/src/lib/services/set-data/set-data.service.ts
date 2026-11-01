@@ -13,6 +13,7 @@ import {
   setDoc,
   deleteDoc,
   writeBatch,
+  runTransaction,
 } from '@angular/fire/firestore';
 import {
   catchError,
@@ -28,6 +29,17 @@ import { AllowedRecords } from '../../types';
 export type WriteOp =
   | { readonly kind: 'set'; readonly path: string; readonly value: AllowedRecords }
   | { readonly kind: 'delete'; readonly path: string };
+
+/**
+ * Recipe result for one transaction.
+ * `next` null means do not call set. Business refusals are results, not thrown errors.
+ */
+export interface TransactionRecipe<T> {
+  /** Document body to write. Null leaves the document untouched. */
+  readonly next: { readonly [key: string]: unknown } | null;
+  /** Value returned to the caller after the transaction commits. */
+  readonly result: T;
+}
 
 /**
  * Set/Modify Data in the database
@@ -183,6 +195,28 @@ export class SetDataService {
       }
     });
     await batch.commit();
+  }
+
+  /**
+   * Read one document and write it back inside a transaction.
+   * A null `next` commits without calling set. The recipe must not throw for a business refusal.
+   * @param path document path
+   * @param recipe pure read of the current snapshot data
+   * @returns the recipe result after the transaction commits
+   */
+  public async transact<T>(
+    path: string,
+    recipe: (current: unknown) => TransactionRecipe<T>,
+  ): Promise<T> {
+    const docRef = doc(this.firestore, path);
+    return runTransaction(this.firestore, async (transaction) => {
+      const snapshot = await transaction.get(docRef);
+      const recipeResult = recipe(snapshot.data());
+      if (recipeResult.next !== null) {
+        transaction.set(docRef, recipeResult.next);
+      }
+      return recipeResult.result;
+    });
   }
 
   /**

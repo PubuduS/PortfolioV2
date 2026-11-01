@@ -1,7 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -13,11 +16,11 @@ import {
 } from '@angular/forms';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
 import { saveAs } from 'file-saver';
 import { Observable } from 'rxjs';
 
 import {
+  DocumentCatalogReader,
   GetDataService,
   GetDateTimeService,
 } from '@portfolio-v2/shared/services';
@@ -26,17 +29,6 @@ import {
   IManagerValidatorMsgs,
   ICompanyValidatorMsgs,
 } from '@portfolio-v2/state/dataModels';
-
-/**
- * Load File
- * @param url url
- * @param callback callback function
- */
-function loadFile(url: string, callback: {
-  (error: Error | null, content: string): void;
-  (err: Error, data: string): void; }): void {
-  PizZipUtils.getBinaryContent(url, callback);
-}
 
 /**
  * Dynamic cover letter creation
@@ -71,6 +63,14 @@ export class CoverLetterComponent implements OnInit {
   /** Social infor */
   protected readonly socialInfor: Observable<ISocialInfor[]>;
 
+  /** True while the cover-letter catalog has not produced a snapshot. */
+  protected readonly isTemplateLoading = computed(
+    () => this.documents.view('cover-letter')().status === 'loading',
+  );
+
+  /** Shown when the template bytes cannot be read. */
+  protected readonly templateMessage = signal<string | null>(null);
+
   /** Name max length */
   protected readonly nameMaxLen: number = 12;
 
@@ -91,6 +91,9 @@ export class CoverLetterComponent implements OnInit {
     cmpNameReqError: 'Please enter the company name.',
     cmpNameMaxLen: `The name cannot be more than ${this.cmpMaxLen} characters.`,
   };
+
+  /** Catalog reads for the current cover-letter template. */
+  private readonly documents = inject(DocumentCatalogReader);
 
   /**
    * constructor
@@ -129,7 +132,7 @@ export class CoverLetterComponent implements OnInit {
   /**
    * On submit
    */
-  protected onSubmit(): void {
+  protected async onSubmit(): Promise<void> {
     const formValues = this.coverLetterForm.value;
     let manager = formValues.managerName;
     const date = this.dateTimeService.getDate();
@@ -138,38 +141,28 @@ export class CoverLetterComponent implements OnInit {
       manager = 'Hiring Committee';
     }
 
-    loadFile(
-      'assets/CoverLetter/PubuduCoverLetter.docx',
-      (error: Error | null, content: string) => {
-        if (error) {
-          throw error;
-        }
-        const zip = new PizZip(content);
-        const doc = new Docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
-        doc.setData({
-          Date: date,
-          Manager: manager,
-          Position: formValues.position,
-          Company: formValues.company,
-        });
-        try {
-          // render the document (replace all occurences of {first_name}
-          //  by John, {last_name} by Doe, ...)
-          doc.render();
-        } catch (err) {
-          console.log(JSON.stringify({ err }));
-        }
-        const out = doc.getZip().generate({
-          type: 'blob',
-          mimeType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-        // Output the document using Data-URI
-        saveAs(out, 'PWijesooriya_Cover_Letter.docx');
-      },
-    );
+    try {
+      const bytes = await this.documents.coverLetterTemplate();
+      const zip = new PizZip(bytes);
+      const doc = new Docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+      });
+      doc.setData({
+        Date: date,
+        Manager: manager,
+        Position: formValues.position,
+        Company: formValues.company,
+      });
+      doc.render();
+      const out = doc.getZip().generate({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      });
+      saveAs(out, 'PWijesooriya_Cover_Letter.docx');
+      this.templateMessage.set(null);
+    } catch {
+      this.templateMessage.set('The template could not be read.');
+    }
   }
 }

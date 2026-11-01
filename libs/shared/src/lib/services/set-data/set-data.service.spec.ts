@@ -9,6 +9,7 @@ import { createSpyObj } from 'jest-createspyobj';
 import {
   doc,
   Firestore,
+  runTransaction,
   writeBatch,
 } from '@angular/fire/firestore';
 
@@ -21,6 +22,7 @@ jest.mock('@angular/fire/firestore', () => {
     ...actual,
     doc: jest.fn((_firestore: unknown, path: string) => ({ path })),
     writeBatch: jest.fn(),
+    runTransaction: jest.fn(),
   };
 });
 
@@ -152,6 +154,69 @@ describe('SetDataService', () => {
         new File(['img'], 'cover.png', { type: 'image/png' }),
       )).rejects.toThrow('network');
       expect(getDownloadURL).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('transact', () => {
+    /**
+     * @param data snapshot body, or undefined when the document is missing
+     * @returns the transaction double runTransaction will hand to the recipe
+     */
+    function transactionFor(data: unknown): { get: jest.Mock; set: jest.Mock } {
+      return {
+        get: jest.fn().mockResolvedValue({ data: () => data }),
+        set: jest.fn(),
+      };
+    }
+
+    it('should pass the snapshot data and write the recipe body', async () => {
+      const transaction = transactionFor({ versions: [] });
+      jest.mocked(runTransaction).mockImplementation(
+        async (_firestore, update) => update(transaction as never),
+      );
+
+      const result = await service.transact('document-versions/resume', (current) => ({
+        next: { versions: [{ id: '1730000000000-000001' }] },
+        result: current,
+      }));
+
+      expect(result).toEqual({ versions: [] });
+      expect(doc).toHaveBeenCalledWith(mockFireStore, 'document-versions/resume');
+      expect(transaction.get).toHaveBeenCalledWith({ path: 'document-versions/resume' });
+      expect(transaction.set).toHaveBeenCalledWith(
+        { path: 'document-versions/resume' },
+        { versions: [{ id: '1730000000000-000001' }] },
+      );
+    });
+
+    it('should write nothing when the recipe next value is null', async () => {
+      const transaction = transactionFor(undefined);
+      jest.mocked(runTransaction).mockImplementation(
+        async (_firestore, update) => update(transaction as never),
+      );
+
+      const result = await service.transact('document-versions/resume', () => ({
+        next: null,
+        result: 'kept',
+      }));
+
+      expect(result).toBe('kept');
+      expect(transaction.set).not.toHaveBeenCalled();
+    });
+
+    it('should pass undefined when the document is missing', async () => {
+      const transaction = transactionFor(undefined);
+      jest.mocked(runTransaction).mockImplementation(
+        async (_firestore, update) => update(transaction as never),
+      );
+      const seen: unknown[] = [];
+
+      await service.transact('document-versions/cover-letter', (current) => {
+        seen.push(current);
+        return { next: null, result: 'empty' };
+      });
+
+      expect(seen).toEqual([undefined]);
     });
   });
 });
