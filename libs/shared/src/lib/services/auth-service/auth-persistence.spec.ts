@@ -105,7 +105,7 @@ describe('auth persistence', () => {
   });
 
   describe('when indexedDB cannot be deleted', () => {
-    it('should keep the old marker so the next load tries again', async () => {
+    it('should still record the current backend', async () => {
       const local = memoryStorage({
         [AUTH_TARGET_STORAGE_KEY]: 'emulator',
       });
@@ -113,7 +113,22 @@ describe('auth persistence', () => {
 
       await isolateAuthPersistence('live', storage);
 
-      expect(local.getItem(AUTH_TARGET_STORAGE_KEY)).toBe('emulator');
+      expect(storage.deleteDatabase).toHaveBeenCalledWith(FIREBASE_AUTH_DATABASE);
+      expect(local.getItem(AUTH_TARGET_STORAGE_KEY)).toBe('live');
+    });
+
+    it('should not wait for a delete that never finishes', async () => {
+      const local = memoryStorage({
+        [AUTH_TARGET_STORAGE_KEY]: 'emulator',
+      });
+      const storage = ports(local, memoryStorage(), true);
+      storage.deleteDatabase.mockReturnValue(new Promise(() => {
+        // Never settles, so startup must not wait on this delete.
+      }));
+
+      await isolateAuthPersistence('live', storage);
+
+      expect(local.getItem(AUTH_TARGET_STORAGE_KEY)).toBe('live');
     });
   });
 

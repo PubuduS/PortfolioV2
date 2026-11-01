@@ -69,7 +69,8 @@ export function browserAuthPersistencePorts(): AuthPersistencePorts {
 
 /**
  * Drops persisted Auth users when this page load uses a different backend.
- * A matching marker is left untouched so a reload of the same build keeps its session.
+ * Web Storage is cleared before Auth starts. IndexedDB deletion is not awaited,
+ * because a blocked database must not keep the page blank.
  * @param target Auth backend for this build.
  * @param ports Browser storage. Defaults to window storage.
  * @returns Resolves once the marker matches this backend.
@@ -84,9 +85,6 @@ export async function isolateAuthPersistence(
   }
   removeKeysWithPrefix(ports.local, FIREBASE_PERSISTENCE_PREFIX);
   removeKeysWithPrefix(ports.session, FIREBASE_PERSISTENCE_PREFIX);
-  const deleted = await ports.deleteDatabase(FIREBASE_AUTH_DATABASE);
-  if (!deleted) {
-    return;
-  }
   ports.local.setItem(AUTH_TARGET_STORAGE_KEY, target);
+  ports.deleteDatabase(FIREBASE_AUTH_DATABASE).catch(() => false);
 }
