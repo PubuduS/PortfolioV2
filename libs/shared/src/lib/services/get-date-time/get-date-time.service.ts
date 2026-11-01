@@ -20,7 +20,7 @@ export class GetDateTimeService {
   private year: number;
 
   /**
-   * @inheritdoc
+   * Capture today's date parts for later formatting.
    */
   constructor() {
     this.today = new Date();

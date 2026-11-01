@@ -10,17 +10,24 @@ import { FirebaseError } from 'firebase/app';
 
 /** Fields the contact form is allowed to send. */
 export interface ContactMailRequest {
+  /** Address the visitor typed. */
   email: string;
+  /** Name the visitor typed. */
   name: string;
+  /** Message the visitor typed. */
   message: string;
+  /** Honeypot field. A filled value is rejected. */
   faxNumber: string;
 }
 
 /** Outcome the form can show after a send attempt. */
 export type ContactSendStatus = 'sent' | 'dry-run' | 'limited' | 'invalid' | 'failed';
 
+/** Body returned when the contact callable accepts the message. */
 interface ContactMailResponse {
+  /** The callable accepted the payload. */
   accepted: true;
+  /** True when the function recorded the message without sending mail. */
   dryRun: boolean;
 }
 

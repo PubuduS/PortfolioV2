@@ -67,6 +67,7 @@ export class CertificateDialogComponent {
     return current.kind === 'error' ? current.message : null;
   });
 
+  /** Closes this dialog after a successful save. */
   private readonly dialogRef = inject<MatDialogRef<CertificateDialogComponent, boolean>>(
     MatDialogRef,
   );

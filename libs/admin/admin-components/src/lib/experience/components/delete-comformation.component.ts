@@ -48,6 +48,7 @@ export class DeleteComformationComponent implements OnInit {
   ) {}
 
   /**
+   * Copy the experience record this dialog was opened with.
    * @inheritdoc
    */
   public ngOnInit(): void {

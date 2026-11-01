@@ -134,6 +134,7 @@ export class DegreeFormComponent {
   }
 
   /**
+   * Fill the form from the record this dialog was opened with.
    * @param target record the editor should show
    */
   private applyTarget(target: EducationEditTarget): void {

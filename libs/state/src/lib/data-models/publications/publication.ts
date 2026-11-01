@@ -120,6 +120,7 @@ function toPublicationId(value: number): PublicationId {
 }
 
 /**
+ * Pad a publication id to two digits.
  * @param id publication id
  * @returns at least two digits
  */
@@ -128,6 +129,7 @@ function pad2(id: PublicationId): string {
 }
 
 /**
+ * Classify a stored URL as a bundled asset or a storage object.
  * @param url stored url
  * @returns bundled when the file ships under `assets/`, otherwise storage
  */
@@ -139,6 +141,7 @@ function parseAsset(url: string): PublicationAsset {
 }
 
 /**
+ * Join a card document to its details document.
  * @param card card document
  * @param details matching details document, when one exists
  * @returns joined publication
@@ -164,6 +167,7 @@ function toPublication(
 }
 
 /**
+ * Split abstract text into paragraphs.
  * @param abstractText text area value
  * @returns paragraphs split on blank lines, trimmed, with empty ones removed
  */

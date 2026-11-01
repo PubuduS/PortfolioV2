@@ -119,6 +119,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Release the object URL created for a local cover preview.
    * @inheritdoc
    */
   public ngOnDestroy(): void {
@@ -207,6 +208,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Fill the form from the record this dialog was opened with.
    * @param target record the editor should show
    */
   private applyTarget(target: EditTarget): void {
@@ -235,6 +237,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Store the cover and refresh its preview.
    * @param asset cover file or stored asset
    */
   private setCover(asset: AssetInput | null): void {
@@ -251,6 +254,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Store the paper and require a file name when one is present.
    * @param asset paper file or stored asset
    */
   private setPaper(asset: AssetInput | null): void {
@@ -267,6 +271,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Show the first rule that blocked a save.
    * @param reason draft rule that failed
    */
   private showDraftFailure(reason: DraftFailure): void {
@@ -294,6 +299,7 @@ export class PublicationFormComponent implements OnDestroy {
   }
 
   /**
+   * Read the first file from a file-input change.
    * @param event file input change
    * @returns the first selected file, or null
    */

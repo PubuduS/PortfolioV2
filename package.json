@@ -15,7 +15,7 @@
     "test": "nx run-many --target=test --parallel=5 --runInBand",
     "test-ci": "cross-env NODE_ENV=test NODE_OPTIONS=--max-old-space-size=8192 jest --ci --reporters=default --reporters=jest-junit --collectCoverage  --forceExit",
     "lint": "nx run-many --target=lint --parallel=5 && nx run-many --target=stylelint --parallel=5",
-    "compodoc": "npx compodoc -p tsconfig.doc.json",
+    "compodoc": "compodoc -p tsconfig.doc.json && tsx tools/docs/compodoc-routes.ts",
     "e2e-tests": "nx run portfolio-v2-e2e:e2e",
     "build-checks": "npm run clean & npm run test & npm run test-ci & npm run lint"
   },
@@ -69,7 +69,7 @@
     "@angular/compiler-cli": "21.0.6",
     "@angular/language-service": "21.0.6",
     "@angular/localize": "21.0.6",
-    "@compodoc/compodoc": "^1.1.23",
+    "@compodoc/compodoc": "2.0.0",
     "@firebase/rules-unit-testing": "^5.0.2",
     "@ngrx/schematics": "21.0.0",
     "@ngrx/store-devtools": "21.0.0",

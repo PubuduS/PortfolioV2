@@ -52,6 +52,7 @@ export class AdminDegreesComponent implements OnInit {
   private readonly nextId = this.store.selectSignal(nextEducationIdSelector);
 
   /**
+   * Connect the store to the degree collection.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -66,6 +67,7 @@ export class AdminDegreesComponent implements OnInit {
   }
 
   /**
+   * Build the edit and delete actions for one degree.
    * @param degree record the buttons belong to
    * @returns button configuration
    */

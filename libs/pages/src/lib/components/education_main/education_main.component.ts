@@ -22,6 +22,7 @@ declare function FlowerAnimation(): void;
 })
 export class EducationMainComponent implements OnInit {
   /**
+   * Start the flower animation for this page.
    * @inheritdoc
    */
   public ngOnInit(): void {

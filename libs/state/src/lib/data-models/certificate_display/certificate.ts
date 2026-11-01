@@ -45,6 +45,7 @@ export type CertificateEditTarget =
   | { readonly mode: 'edit'; readonly certificate: ICertificateCard };
 
 /**
+ * Whether the text is an http or https URL.
  * @param value text to check
  * @returns true when the text parses as an http or https url
  */

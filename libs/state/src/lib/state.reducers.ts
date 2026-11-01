@@ -26,6 +26,7 @@ const initialState: StoreState = {
   isPartyMode: false,
 };
 
+/** Reducer that applies each state action to the portfolio store. */
 export const stateReducers = createReducer<StoreState>(
   initialState,
 

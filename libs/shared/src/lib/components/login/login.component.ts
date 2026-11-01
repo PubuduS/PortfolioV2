@@ -59,6 +59,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   /**
+   * Build the email and password form.
    * @inheritdoc
    */
   public ngOnInit(): void {

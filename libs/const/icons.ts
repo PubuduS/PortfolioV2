@@ -1,3 +1,4 @@
+/** Icon paths and tooltips for featured-project links. */
 export type IconURLType = {
     githubIco: string,
     gitIcoTooltip: string,
@@ -9,6 +10,7 @@ export type IconURLType = {
     screenshotIcoTooltip: string,
 }
 
+/** Icon paths and tooltips used by featured-project cards. */
 export const IconURLs: IconURLType = {
     githubIco: 'assets/images/featured_projects/git.png',
     gitIcoTooltip: 'Go to GitHub repository',

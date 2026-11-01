@@ -75,7 +75,10 @@ export class ChangeLanguageComponent implements OnInit {
     this.skillsData = this.store.selectSignal(skillsSelector);
   }
 
-  /** @inheritdoc */
+  /**
+   * Fill the language form from the skills currently in the store.
+   * @inheritdoc
+   */
   public ngOnInit(): void {
     const data = this.skillsData();
 

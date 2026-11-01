@@ -81,6 +81,7 @@ export class LandingPageComponent implements OnInit {
   ) {}
 
   /**
+   * Build the banner form with the winter season selected.
    * @inheritdoc
    */
   public ngOnInit(): void {

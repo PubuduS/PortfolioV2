@@ -31,11 +31,13 @@ import {
 import { DocumentWriter } from './services/document-writer.service';
 import { DeleteDocumentDialogComponent } from './components/delete-document-dialog/delete-document-dialog.component';
 
+/** Labels shown for each document kind. */
 const KIND_LABELS: Record<DocumentKind, string> = {
   resume: 'Resume',
   'cover-letter': 'Cover Letter',
 };
 
+/** File-name stem used when a version is downloaded. */
 const VERSION_NAME_STEM: Record<DocumentKind, string> = {
   resume: 'resume',
   'cover-letter': 'cover_letter',
@@ -70,9 +72,13 @@ function versionEntropy(): number {
 
 /** One table row. Older rows come first, and the current row is last. */
 interface VersionRow {
+  /** Whether the delete button is enabled for this row. */
   readonly canDelete: boolean;
+  /** File name shown in the table. */
   readonly name: string;
+  /** Upload time formatted for the table. */
   readonly uploadedAtLabel: string;
+  /** Stored version this row represents. */
   readonly version: DocumentVersion;
 }
 
@@ -211,7 +217,7 @@ export class AdminDocumentsComponent {
   private readonly attempt = signal<{ file: File; id: VersionId } | null>(null);
 
   /**
-   *
+   * Send a bad kind back to the resume admin page.
    */
   constructor() {
     effect(() => {
@@ -222,6 +228,7 @@ export class AdminDocumentsComponent {
   }
 
   /**
+   * Whether this version can be removed without emptying the catalog.
    * @param version row
    * @returns true when the row may be deleted
    */

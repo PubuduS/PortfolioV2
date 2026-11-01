@@ -46,6 +46,7 @@ type DeleteStatus =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeletePublicationDialogComponent {
+  /** Closes this dialog after a successful delete. */
   private readonly dialogRef = inject<MatDialogRef<DeletePublicationDialogComponent, boolean>>(
     MatDialogRef,
   );

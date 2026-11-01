@@ -39,6 +39,7 @@ export class DocumentCatalogReader {
   private readonly views: Record<DocumentKind, Signal<CatalogView>>;
 
   /**
+   * Share one Firestore listener per catalog kind.
    * @param firestore Firestore
    * @param getData storage reads for the cover-letter template
    */
@@ -72,6 +73,7 @@ export class DocumentCatalogReader {
   }
 
   /**
+   * Return the shared signal for one kind.
    * @param kind resume or cover letter
    * @returns the shared signal for that kind. The first snapshot ends the loading status.
    */
@@ -80,6 +82,7 @@ export class DocumentCatalogReader {
   }
 
   /**
+   * Turn the snapshot stream for one kind into a signal.
    * @param kind resume or cover letter
    * @returns a signal that starts as loading
    */
@@ -90,6 +93,7 @@ export class DocumentCatalogReader {
   }
 
   /**
+   * Return the shared snapshot stream for one kind, creating it on first use.
    * @param kind resume or cover letter
    * @returns one replayed snapshot stream
    */

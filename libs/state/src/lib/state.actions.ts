@@ -17,6 +17,7 @@ import {
   ISocialInfor,
 } from './data-models';
 
+/** Actions that load and replace slices of the portfolio store. */
 export const StateActions = createActionGroup({
   source: 'State',
   events: {

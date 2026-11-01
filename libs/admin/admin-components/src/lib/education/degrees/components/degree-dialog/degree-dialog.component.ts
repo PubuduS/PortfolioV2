@@ -67,6 +67,7 @@ export class DegreeDialogComponent {
     return current.kind === 'error' ? current.message : null;
   });
 
+  /** Closes this dialog after a successful save. */
   private readonly dialogRef = inject<MatDialogRef<DegreeDialogComponent, boolean>>(
     MatDialogRef,
   );

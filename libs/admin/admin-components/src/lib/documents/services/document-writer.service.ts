@@ -27,6 +27,7 @@ import {
 @Injectable()
 export class DocumentWriter {
   /**
+   * Build the writer with Firestore, Storage, and the signed-in check.
    * @param setData Firestore and Storage access
    * @param auth signed-in check
    */
@@ -79,6 +80,7 @@ export class DocumentWriter {
   }
 
   /**
+   * Refuse the write when nobody is signed in.
    * @param kind resume or cover letter
    * @throws DocumentWriteError when nobody is signed in
    */
@@ -89,6 +91,7 @@ export class DocumentWriter {
   }
 
   /**
+   * Apply one catalog command inside a Firestore transaction.
    * @param kind document id
    * @param command upload or remove
    * @returns a command that committed, or that left the document alone on purpose
