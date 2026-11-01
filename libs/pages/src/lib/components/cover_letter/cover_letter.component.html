@@ -110,10 +110,13 @@
               <button
                 type="submit"
                 class="submit-btn"
-                [disabled]="!coverLetterForm.valid"
+                [disabled]="!coverLetterForm.valid || isTemplateLoading()"
               >
                 Generate
               </button>
+              @if (templateMessage(); as message) {
+                <p class="text-danger" role="alert">{{ message }}</p>
+              }
             </ul>
           </form>
         </div>

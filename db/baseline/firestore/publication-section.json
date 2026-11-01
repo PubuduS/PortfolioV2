@@ -4,9 +4,13 @@
     "data": {
       "type": "map",
       "fields": {
-        "btnMoreDisable": {
-          "type": "boolean",
-          "value": false
+        "imageUrl": {
+          "type": "string",
+          "value": "storage://portfolio/publications/publication-card-images/ID-01-Image.webp"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "value": "storage://portfolio/publications/papers/ID-01-Paper.pdf"
         },
         "downloadFileName": {
           "type": "string",
@@ -16,29 +20,25 @@
           "type": "boolean",
           "value": false
         },
-        "subTitle": {
-          "type": "string",
-          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
-        },
-        "downloadUrl": {
-          "type": "string",
-          "value": "storage://portfolio/publications/papers/ID-01-Paper.pdf"
-        },
-        "title": {
-          "type": "string",
-          "value": "ARWalker"
+        "id": {
+          "type": "integer",
+          "value": "1"
         },
         "shortDesc": {
           "type": "string",
           "value": "The paper investigates the use of Augmented Reality (AR) in biomechanics through ARWalker, an application enabling participants, especially older adults and those with diseases, to synchronize their gait with virtual companions, ultimately reducing the risk of falls."
         },
-        "imageUrl": {
+        "title": {
           "type": "string",
-          "value": "storage://portfolio/publications/publication-card-images/ID-01-Image.webp"
+          "value": "ARWalker"
         },
-        "id": {
-          "type": "integer",
-          "value": "1"
+        "btnMoreDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "subTitle": {
+          "type": "string",
+          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
         }
       }
     }
@@ -48,41 +48,41 @@
     "data": {
       "type": "map",
       "fields": {
-        "imageUrl": {
+        "subTitle": {
           "type": "string",
-          "value": "storage://portfolio/publications/publication-card-images/ID-02-Image.webp"
-        },
-        "downloadFileName": {
-          "type": "string",
-          "value": "HLStore"
-        },
-        "id": {
-          "type": "integer",
-          "value": "2"
-        },
-        "btnDownloadDisable": {
-          "type": "boolean",
-          "value": false
-        },
-        "title": {
-          "type": "string",
-          "value": "A Study of the Hololens Application Store"
-        },
-        "shortDesc": {
-          "type": "string",
-          "value": "This paper investigates the landscape of Augmented Reality (AR) applications based on Head-Mounted Displays (HMDs), particularly focusing on those available on the Microsoft Hololens application store, examining their characteristics and system performance to provide valuable insights to the research community."
+          "value": "System Analysis, Mixed Reality, HoloLens 2"
         },
         "btnMoreDisable": {
           "type": "boolean",
           "value": false
         },
-        "subTitle": {
+        "shortDesc": {
           "type": "string",
-          "value": "System Analysis, Mixed Reality, HoloLens 2"
+          "value": "This paper investigates the landscape of Augmented Reality (AR) applications based on Head-Mounted Displays (HMDs), particularly focusing on those available on the Microsoft Hololens application store, examining their characteristics and system performance to provide valuable insights to the research community."
+        },
+        "downloadFileName": {
+          "type": "string",
+          "value": "HLStore"
+        },
+        "title": {
+          "type": "string",
+          "value": "A Study of the Hololens Application Store"
+        },
+        "imageUrl": {
+          "type": "string",
+          "value": "storage://portfolio/publications/publication-card-images/ID-02-Image.webp"
         },
         "downloadUrl": {
           "type": "string",
           "value": "storage://portfolio/publications/papers/ID-02-Paper.pdf"
+        },
+        "btnDownloadDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "id": {
+          "type": "integer",
+          "value": "2"
         }
       }
     }
@@ -92,37 +92,37 @@
     "data": {
       "type": "map",
       "fields": {
-        "title": {
-          "type": "string",
-          "value": "Gait Rehabillitation with Mixed Reality"
-        },
         "imageUrl": {
           "type": "string",
           "value": "storage://portfolio/publications/publication-card-images/ID-03-Image.webp"
-        },
-        "btnDownloadDisable": {
-          "type": "boolean",
-          "value": false
-        },
-        "subTitle": {
-          "type": "string",
-          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
-        },
-        "shortDesc": {
-          "type": "string",
-          "value": "This study introduces two portable mixed reality systems for gait training in individuals with gait disabilities, employing an avatar-based approach backed by the proteus effect and complexity matching theories, as well as a system using rhythmic visual cues through a moving bar, with promising pilot study results and ongoing large-scale human trials to evaluate their effectiveness in restoring gait patterns."
         },
         "btnMoreDisable": {
           "type": "boolean",
           "value": false
         },
+        "downloadUrl": {
+          "type": "string",
+          "value": "storage://portfolio/publications/papers/ID-03-Paper.pdf"
+        },
+        "title": {
+          "type": "string",
+          "value": "Gait Rehabillitation with Mixed Reality"
+        },
         "downloadFileName": {
           "type": "string",
           "value": "Thesis"
         },
-        "downloadUrl": {
+        "subTitle": {
           "type": "string",
-          "value": "storage://portfolio/publications/papers/ID-03-Paper.pdf"
+          "value": "Gait Rehabilitation, Mixed Reality, HoloLens 2"
+        },
+        "btnDownloadDisable": {
+          "type": "boolean",
+          "value": false
+        },
+        "shortDesc": {
+          "type": "string",
+          "value": "This study introduces two portable mixed reality systems for gait training in individuals with gait disabilities, employing an avatar-based approach backed by the proteus effect and complexity matching theories, as well as a system using rhythmic visual cues through a moving bar, with promising pilot study results and ongoing large-scale human trials to evaluate their effectiveness in restoring gait patterns."
         },
         "id": {
           "type": "integer",

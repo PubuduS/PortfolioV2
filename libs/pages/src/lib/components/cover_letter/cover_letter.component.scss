@@ -1,56 +1,26 @@
-@import 'apps/portfolio-v2/src/assets/SCSS/colors.scss';
+@import 'apps/portfolio-v2/src/assets/SCSS/cover-letter';
 
-.cover-letter-full {
-  background-color: $nocturne-navy;
-  padding: 100px 0 80px;
-  padding-top: 10%;
-}
-
-h2 {
-  font-size: 24px;
-}
-
-/*section-title*/
-.section-title h2 {
-  color: $icy-petal;
-  text-align: center;
-  margin-bottom: 60px;
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 49px;
-  text-transform: uppercase;
-  margin-top: 3%;
-}
+@include cover-letter-page;
 
 .bottom {
-  margin-top: 4%;
   margin-bottom: 10%;
+  margin-top: 4%;
 }
 
-.cover-letter-full .section-title {
-  margin-bottom: 40px;
-  text-align: left;
-}
-/*contact-detail*/
-.contact-detail {
-  color: $ghost-gray;
-  padding-right: 55px;
-}
 .contact-detail h2 {
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 49px;
-  text-transform: uppercase;
-  margin: 73px 0 40px;
   color: $icy-petal;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 49px;
+  margin: 73px 0 40px;
+  text-transform: uppercase;
 }
-.contact-detail p {
-  margin: 0 0 35px;
-}
+
 .contact-detail p a {
-  font-weight: 500;
   color: $ghost-gray;
+  font-weight: 500;
 }
+
 .contact-detail p a:hover {
   text-decoration: underline;
 }
@@ -58,58 +28,30 @@ h2 {
 .social {
   display: flex;
 }
+
 .social li {
   margin-right: 50px;
 }
+
+.social li a {
+  align-items: center;
+  background-color: $sky-byte;
+  border-radius: 7px;
+  color: $white;
+  display: flex;
+  font-size: 32px;
+  height: 60px;
+  justify-content: center;
+  transition: all 0.4s ease-in-out;
+  width: 60px;
+}
+
 .social li a:hover {
   background: $white;
   color: $midnigh-graphite;
 }
-.social li a {
-  transition: all 0.4s ease-in-out;
-  width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  height: 60px;
-  border-radius: 7px;
-  background-color: $sky-byte;
-  color: $white;
-}
-/*cover-form*/
-.cover-form ul li {
-  margin-bottom: 20px;
-}
-.form-control {
-  border: 1px solid $icy-petal;
-  background-color: $nocturne-navy;
-  color: $ghost-gray;
-  height: 59px;
-  padding-left: 20px;
-  border-radius: 8px;
-}
-.form-control:focus {
-  background-color: $nocturne-navy;
-  color: $ghost-gray;
-}
-.form-control::placeholder {
-  color: $ghost-gray;
-}
+
 textarea.form-control {
   height: 140px;
   padding-top: 18px;
-}
-.submit-btn {
-  background-color: $electric-teal;
-  height: 59px;
-  width: 139px;
-  color: $nocturne-navy;
-  border: none;
-  border-radius: 8px;
-  transition: all 0.4s ease-in-out;
-}
-.submit-btn:hover {
-  opacity: 0.9;
-  box-shadow: 0 0 10px $obsidian-veil;
 }

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { DocumentWriter } from './documents/services/document-writer.service';
+
 /** Admin Pages Routes */
 export const ADMIN_PAGE_ROUTES: Routes = [
   {
@@ -27,5 +29,21 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     loadChildren: () => import('@portfolio-v2/admin-components').then(
       (route) => route.EDUCATION_ADMIN_ROUTES,
     ),
+  },
+  {
+    path: 'resume',
+    loadComponent: () => import('./documents/admin-documents.component').then(
+      (mod) => mod.AdminDocumentsComponent,
+    ),
+    providers: [DocumentWriter],
+    data: { kind: 'resume' },
+  },
+  {
+    path: 'coverletter',
+    loadComponent: () => import('./documents/admin-documents.component').then(
+      (mod) => mod.AdminDocumentsComponent,
+    ),
+    providers: [DocumentWriter],
+    data: { kind: 'cover-letter' },
   },
 ];

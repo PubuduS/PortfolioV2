@@ -1,3 +1,4 @@
+import { createVersionId, storageObjectPath } from '@portfolio-v2/state/dataModels';
 import { MAX_BASELINE_FILE_BYTES } from './constants';
 import {
   assertNoResidualPii,
@@ -108,6 +109,14 @@ describe('sanitizer', () => {
       const placeholder = placeholderFor(livePaper);
       expect(placeholder.contentType).toBe('application/pdf');
       expect(placeholder.bytes.subarray(0, 8).toString('ascii')).toBe('%PDF-1.1');
+    });
+
+    it('should replace a catalog resume and leave a cover letter', () => {
+      const id = createVersionId(1730000000000, 1);
+      const resume = storageReplacement(storageObjectPath('resume', id));
+      const letter = storageReplacement(storageObjectPath('cover-letter', id));
+      expect(resume?.replacement).toBe('resume');
+      expect(letter).toBeNull();
     });
 
     it('should refuse a file over 1 MiB', () => {

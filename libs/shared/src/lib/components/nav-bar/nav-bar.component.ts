@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   Signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   RouterModule,
   RouterLink,
@@ -12,15 +12,23 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
 
+import {
+  AuthService,
+  DocumentCatalogReader,
+} from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
+import {
+  coverLetterNavTarget,
+  resumeNavTarget,
+  type CoverLetterNavTarget,
+  type ResumeNavTarget,
+} from '@portfolio-v2/state/dataModels';
 import {
   isAdminModeSelector,
   isPreviewModeSelector,
   isPartyModeSelector,
 } from '@portfolio-v2/state/selectors';
-import { AuthService } from '@portfolio-v2/shared/services';
-import { StateActions } from '@portfolio-v2/state';
 import { WeatherDisplayComponent } from '../weather_display/weather_display.component';
 import { mirrorUrl } from './mirror-url';
 
@@ -36,7 +44,6 @@ import { mirrorUrl } from './mirror-url';
     WeatherDisplayComponent,
     MatIconModule,
     MatButtonModule,
-    CommonModule,
   ],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss',
@@ -44,26 +51,45 @@ import { mirrorUrl } from './mirror-url';
 })
 export class NavBarComponent {
   /** Returns true if admin mode is on; false otherwise */
-  protected readonly isAdmin: Observable<boolean>;
+  protected readonly isAdminMode: Signal<boolean>;
+
   /** Returns true if preview mode is on; false otherwise */
   protected readonly isPreviewMode: Signal<boolean>;
+
   /** Returns true if party mode is on; false otherwise */
   protected readonly isPartyMode: Signal<boolean>;
+
+  /** Resume link for the current admin and preview flags. */
+  protected readonly resumeTarget: Signal<ResumeNavTarget>;
+
+  /** Cover letter link for the current admin and preview flags. */
+  protected readonly coverLetterTarget: Signal<CoverLetterNavTarget>;
 
   /**
    * constructor
    * @param store ngrx store
    * @param authService auth Service
    * @param router Router
+   * @param documents catalog reader for the visitor resume href
    */
   constructor(
     private store: Store,
     private authService: AuthService,
     private router: Router,
+    private documents: DocumentCatalogReader,
   ) {
-    this.isAdmin = this.store.select(isAdminModeSelector);
+    this.isAdminMode = this.store.selectSignal(isAdminModeSelector);
     this.isPreviewMode = this.store.selectSignal(isPreviewModeSelector);
     this.isPartyMode = this.store.selectSignal(isPartyModeSelector);
+    this.resumeTarget = computed(() => resumeNavTarget(
+      this.isAdminMode(),
+      this.isPreviewMode(),
+      this.documents.view('resume')(),
+    ));
+    this.coverLetterTarget = computed(() => coverLetterNavTarget(
+      this.isAdminMode(),
+      this.isPreviewMode(),
+    ));
   }
 
   /**

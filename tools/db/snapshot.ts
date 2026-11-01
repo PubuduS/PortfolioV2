@@ -47,6 +47,7 @@ const LIVE_COLLECTIONS = [
   'publication-details-section',
   'skills-section',
   'social-infor-section',
+  'document-versions',
 ] as const;
 
 interface ListedObject {
