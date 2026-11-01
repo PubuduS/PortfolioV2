@@ -21,7 +21,7 @@ jobs:
   unit-and-lint:
     name: Unit tests and lint
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,14 +45,27 @@ jobs:
         run: npm run lint
 
       - name: Unit tests
-        run: npm test
+        run: npm run test:coverage
         env:
-          NODE_OPTIONS: --max-old-space-size=4096
+          NODE_OPTIONS: --max-old-space-size=8192
+
+      - name: Merge Jest coverage
+        if: always()
+        run: npm run coverage:jest
+
+      - name: Upload Jest coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-jest
+          path: coverage/jest
+          retention-days: 14
+          if-no-files-found: ignore
 
   e2e:
     name: E2E tests
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -91,7 +104,21 @@ jobs:
       - name: E2E tests
         run: npm run e2e-tests
         env:
+          COVERAGE: '1'
           NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Merge Playwright coverage
+        if: always()
+        run: npm run coverage:playwright
+
+      - name: Upload Playwright coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-playwright
+          path: coverage/playwright
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Upload Playwright results
         if: failure()
@@ -105,9 +132,95 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+  coverage-report:
+    name: Coverage report
+    needs: [unit-and-lint, e2e]
+    if: always() && github.event_name == 'pull_request' && needs.unit-and-lint.result != 'cancelled' && needs.e2e.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.4
+          cache: npm
+
+      - name: Use npm 12.2.1
+        run: npm install -g npm@12.2.1
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Jest coverage
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-jest
+          path: coverage/jest
+
+      - name: Download Playwright coverage
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-playwright
+          path: coverage/playwright
+
+      - name: Write the coverage summary
+        run: npx tsx tools/coverage/write-pr-comment.ts
+        env:
+          PAGES_BASE_URL: ${{ vars.PAGES_BASE_URL }}
+
+      - name: Comment on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- portfolio-v2-coverage -->';
+            const body = fs.readFileSync('coverage/pr-comment.md', 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body && comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+              return;
+            }
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+
+      - name: Annotate changed files
+        run: npx tsx tools/coverage/annotate-pr.ts
+        env:
+          COVERAGE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          COVERAGE_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
   compodoc:
     name: Build Compodoc
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [unit-and-lint, e2e]
+    if: always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.unit-and-lint.result != 'cancelled' && needs.e2e.result != 'cancelled'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -128,6 +241,20 @@ jobs:
 
       - name: Provide a local environment file
         run: cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+
+      - name: Download Jest coverage
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-jest
+          path: coverage/jest
+
+      - name: Download Playwright coverage
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-playwright
+          path: coverage/playwright
 
       - name: Build documentation
         run: npm run compodoc

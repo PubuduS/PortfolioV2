@@ -9,7 +9,7 @@ const nxPreset = nxE2EPreset(__filename, { testDir: './src' });
 export default defineConfig({
   ...nxPreset,
   fullyParallel: false,
-  timeout: 60_000,
+  timeout: process.env['COVERAGE'] === '1' ? 120_000 : 60_000,
   globalSetup: require.resolve('./src/global-setup'),
   use: {
     baseURL: 'http://127.0.0.1:4300',
