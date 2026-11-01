@@ -1,6 +1,7 @@
 import { mirrorDocumentPath } from '@portfolio-v2/state/dataModels';
 
 /**
+ * Keep only the path of a router URL.
  * @param url router url
  * @returns the path with query, fragment, and a trailing slash removed
  */

@@ -26,6 +26,7 @@ export type PublicationWriteFailure = 'unauthenticated' | 'upload-failed' | 'com
  */
 export class PublicationWriteError extends Error {
   /**
+   * Record which step failed and the error that caused it.
    * @param reason which step failed
    * @param cause underlying error, when the failure came from Firebase
    */
@@ -48,6 +49,7 @@ export class PublicationWriteError extends Error {
 @Injectable()
 export class PublicationWriter {
   /**
+   * Build the writer with Firestore, Storage, and the signed-in check.
    * @param setData Firestore and Storage access
    * @param auth signed-in check
    */
@@ -104,6 +106,7 @@ export class PublicationWriter {
   }
 
   /**
+   * Refuse the write when nobody is signed in.
    * @throws PublicationWriteError when nobody is signed in
    */
   private assertSignedIn(): void {
@@ -136,6 +139,7 @@ export class PublicationWriter {
   }
 
   /**
+   * Upload a picked file, or keep an asset that is already stored.
    * @param id publication id
    * @param kind cover or paper
    * @param asset file or already-stored asset

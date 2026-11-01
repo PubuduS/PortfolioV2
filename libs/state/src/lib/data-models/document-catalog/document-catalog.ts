@@ -45,6 +45,7 @@ export const DOCUMENT_KIND_SPECS = {
 /** Resume or cover letter. */
 export type DocumentKind = keyof typeof DOCUMENT_KIND_SPECS;
 
+/** Brand that keeps a version id distinct from a plain string. */
 declare const versionIdBrand: unique symbol;
 
 /**
@@ -53,6 +54,7 @@ declare const versionIdBrand: unique symbol;
  */
 export type VersionId = string & { readonly [versionIdBrand]: true };
 
+/** Brand that keeps a parsed catalog distinct from a plain object. */
 declare const catalogBrand: unique symbol;
 
 /** A catalog only parseCatalog and applyCatalogCommand can build. */
@@ -103,6 +105,7 @@ export type CatalogCommand =
 
 /** Private Firestore body. The document id is the kind, so the body has no kind field. */
 interface CatalogWireBody {
+  /** Stored versions, oldest first. Index 0 is current. */
   readonly versions: readonly {
     readonly id: string;
     readonly uploadedAt: string;
@@ -112,6 +115,7 @@ interface CatalogWireBody {
   }[];
 }
 
+/** Brand that keeps a Firestore body distinct from an unparsed object. */
 declare const catalogWireBrand: unique symbol;
 
 /**
@@ -176,6 +180,7 @@ export type CoverLetterNavTarget =
  */
 export class DocumentWriteError extends Error {
   /**
+   * Record which step failed and the error that caused it.
    * @param reason which step failed
    * @param kind resume or cover letter, when the failure belongs to one
    * @param cause underlying error, when the failure came from Firebase
@@ -191,6 +196,7 @@ export class DocumentWriteError extends Error {
   }
 }
 
+/** Text pattern of a stored version id: epoch milliseconds, a hyphen, then six digits. */
 const VERSION_ID_TEXT = /^(\d+)-(\d{6})$/;
 
 /**
@@ -211,6 +217,7 @@ export function createVersionId(epochMs: number, entropy: number): VersionId {
 }
 
 /**
+ * Read a resume or cover-letter kind from raw text.
  * @param value route param or other raw text
  * @returns the kind, or null when the text is not one
  */
@@ -240,6 +247,7 @@ export function storageObjectPath(kind: DocumentKind, id: VersionId): string {
 }
 
 /**
+ * Firestore path of the catalog document for one kind.
  * @param kind resume or cover letter
  * @returns `document-versions/{kind}`
  */
@@ -272,6 +280,7 @@ export function acceptUpload(kind: DocumentKind, file: File): AcceptResult {
 }
 
 /**
+ * Brand a kind and its versions as a catalog.
  * @param kind resume or cover letter
  * @param versions rows in insert order, index 0 current
  * @returns branded catalog
@@ -281,6 +290,7 @@ function brandCatalog(kind: DocumentKind, versions: readonly DocumentVersion[]):
 }
 
 /**
+ * Copy a catalog into the Firestore body.
  * @param catalog ready catalog
  * @returns body safe to pass to Firestore. The brand is not a field.
  */
@@ -298,6 +308,7 @@ function toWire(catalog: DocumentCatalog): CatalogWire {
 }
 
 /**
+ * Whether a snapshot field is a plain object.
  * @param value raw snapshot field
  * @returns true when value is a plain object
  */
@@ -306,6 +317,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
+ * Brand a version id when the text matches the stored pattern.
  * @param value raw id
  * @returns branded id, or null when the text is not `{epochMs}-{six digits}`
  */
@@ -327,6 +339,7 @@ function parseVersionId(value: string): VersionId | null {
 }
 
 /**
+ * Read a version id from a storage path that belongs to this kind.
  * @param kind resume or cover letter
  * @param storagePath candidate path
  * @returns the id when the path is exactly `storageObjectPath` for this kind
@@ -347,6 +360,7 @@ function idFromStoragePath(kind: DocumentKind, storagePath: string): VersionId |
 }
 
 /**
+ * Read one versions entry, or reject it when an invariant fails.
  * @param kind document id
  * @param raw one versions entry
  * @param seen ids already accepted in this document
@@ -400,6 +414,7 @@ function parseVersion(
 }
 
 /**
+ * Prepend a stored file as the current version.
  * @param kind document id
  * @param catalog current catalog
  * @param attempt file just stored
@@ -444,6 +459,7 @@ function uploadVersion(
 }
 
 /**
+ * Drop delete candidates that a remaining row still names.
  * @param candidates paths the command wants deleted
  * @param versions rows that will remain
  * @returns candidates that no remaining row still names
@@ -459,6 +475,7 @@ function pathsStillOwed(
 }
 
 /**
+ * Sentence shown when the picked file is the wrong type.
  * @param kind resume or cover letter, when the writer knows it
  * @returns the rejection sentence for that kind
  */
@@ -473,6 +490,7 @@ function rejectedTypeMessage(kind: DocumentKind | null): string {
 }
 
 /**
+ * Drop one version, or refuse when it is the only one.
  * @param kind document id
  * @param catalog current catalog
  * @param version row the caller wants removed
@@ -565,6 +583,7 @@ export function applyCatalogCommand(
 }
 
 /**
+ * Whether this id is the current version.
  * @param catalog ready catalog
  * @param versionId row id
  * @returns true when the id is index 0
@@ -574,6 +593,7 @@ export function isCurrent(catalog: DocumentCatalog, versionId: VersionId): boole
 }
 
 /**
+ * Whether this id can be removed without emptying the catalog.
  * @param catalog ready catalog
  * @param versionId row id
  * @returns true when the id is in the list and another version would remain

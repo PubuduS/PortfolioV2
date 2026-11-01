@@ -48,6 +48,7 @@ export class DisplayValidatorErrorsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the status subscription created for this control.
    * @inheritdoc
    */
   public ngOnDestroy(): void {

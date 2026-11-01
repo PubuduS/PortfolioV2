@@ -23,5 +23,6 @@ import { IUpdateDeleteBtnConfigs } from '@portfolio-v2/admin/shared/types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateDeleteButtonsComponent {
+  /** Labels and click handlers for the update and delete buttons. */
   public readonly config = input.required<IUpdateDeleteBtnConfigs>();
 }

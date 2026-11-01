@@ -59,6 +59,9 @@ export class FeaturedProjectsComponent {
     this.featuredProjectCards = this.store.selectSignal(featuredProjectCardsSelector);
   }
 
+  /**
+   * Open a dialog for a new featured project.
+   */
   protected addNewRecord(): void {
     this.dialog.open(AddPortfolioRecordComponent, {
       autoFocus: 'first-tabbable',

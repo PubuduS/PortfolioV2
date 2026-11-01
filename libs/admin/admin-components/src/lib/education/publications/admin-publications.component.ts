@@ -54,6 +54,7 @@ export class AdminPublicationsComponent implements OnInit {
   private readonly nextId = this.store.selectSignal(nextPublicationRecordIdSelector);
 
   /**
+   * Connect the store to the publication cards and their details.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -62,6 +63,7 @@ export class AdminPublicationsComponent implements OnInit {
   }
 
   /**
+   * Build the edit and delete actions for one publication.
    * @param publication record the buttons belong to
    * @returns button configuration
    */

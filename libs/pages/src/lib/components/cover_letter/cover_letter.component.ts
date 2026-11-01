@@ -112,6 +112,7 @@ export class CoverLetterComponent implements OnInit {
   }
 
   /**
+   * Build the cover-letter form with the default position filled in.
    * @inheritdoc
    */
   public ngOnInit(): void {

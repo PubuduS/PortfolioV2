@@ -9,9 +9,11 @@ import { StoreState } from '@portfolio-v2/state';
 
 /** Root store shape persisted by the browser. */
 interface PersistedAppState {
+  /** Cached page data. Admin flags are cleared before they are stored. */
   stateBanks: StoreState;
 }
 
+/** Action type NgRx emits when storage rehydration finishes. */
 const REHYDRATE_ACTION = '@ngrx/store/init';
 
 /**

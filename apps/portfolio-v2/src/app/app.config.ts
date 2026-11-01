@@ -66,6 +66,7 @@ import { AppEnvironment } from '../environments/environment.model';
 import { adminSessionMetaReducers } from './admin-session-storage';
 import { appRoutes } from './app.routes';
 
+/** Emulator hosts for this build, when the environment defines them. */
 const { emulators }: AppEnvironment = environment;
 
 /** Auth backend this build is allowed to trust. Emulator and live never share a user. */
@@ -91,6 +92,7 @@ const liveOnlyProviders: Array<Provider | EnvironmentProviders> = emulators
     UserTrackingService,
   ];
 
+/** Root providers for routing, Firebase, and the store. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),

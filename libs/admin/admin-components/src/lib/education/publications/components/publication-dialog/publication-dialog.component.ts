@@ -52,6 +52,7 @@ type SaveStatus =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicationDialogComponent {
+  /** Closes this dialog after a successful save. */
   private readonly dialogRef = inject<MatDialogRef<PublicationDialogComponent, boolean>>(
     MatDialogRef,
   );

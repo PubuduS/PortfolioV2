@@ -146,6 +146,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the image subscription and any upload timer still running.
    * @inheritdoc
    */
   public ngOnDestroy(): void {
@@ -158,6 +159,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Build the card form from the project this dialog was opened with.
    * @inheritdoc
    */
   public ngOnInit(): void {

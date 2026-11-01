@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+/** Admin routes for the portfolio section and featured projects. */
 export const PORTFOLIO_ROUTES: Routes = [
   {
     path: '',

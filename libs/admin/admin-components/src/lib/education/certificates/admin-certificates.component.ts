@@ -55,6 +55,7 @@ export class AdminCertificatesComponent implements OnInit {
   private readonly nextId = this.store.selectSignal(nextCertificateIdSelector);
 
   /**
+   * Connect the store to the certificate collection.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -69,6 +70,7 @@ export class AdminCertificatesComponent implements OnInit {
   }
 
   /**
+   * Build the edit and delete actions for one certificate.
    * @param certificate record the buttons belong to
    * @returns button configuration
    */

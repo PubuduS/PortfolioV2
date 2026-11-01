@@ -5,16 +5,23 @@ import {
 
 /** Clock used to decide when an admin session has gone idle. */
 export interface IdleClock {
+  /** Current time in milliseconds. */
   now(): number;
+  /** Start a repeating check and return its handle. */
   every(intervalMs: number, check: () => void): number;
+  /** Stop a check started by `every`. */
   cancel(handle: number): void;
 }
 
 /** Activity signals that count as the admin still being present. */
 export interface IdleActivity {
+  /** Subscribe to one activity event. */
   listen(type: string, handler: () => void): void;
+  /** Remove a subscription created by `listen`. */
   forget(type: string, handler: () => void): void;
+  /** Run a handler when the tab becomes visible. */
   onVisible(handler: () => void): void;
+  /** Remove a visibility handler created by `onVisible`. */
   offVisible(handler: () => void): void;
 }
 

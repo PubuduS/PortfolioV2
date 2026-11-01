@@ -122,6 +122,7 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Build the tile form from the project this dialog was opened with.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -133,6 +134,7 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the image subscription and any upload timer still running.
    * @inheritdoc
    */
   public ngOnDestroy(): void {

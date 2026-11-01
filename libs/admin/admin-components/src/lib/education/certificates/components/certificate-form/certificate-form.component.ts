@@ -131,6 +131,7 @@ export class CertificateFormComponent {
   }
 
   /**
+   * Fill the form from the record this dialog was opened with.
    * @param target record the editor should show
    */
   private applyTarget(target: CertificateEditTarget): void {
@@ -156,6 +157,7 @@ export class CertificateFormComponent {
   }
 
   /**
+   * Show the first rule that blocked a save.
    * @param reason rule that failed
    */
   private showDraftFailure(reason: CertificateDraftFailure): void {

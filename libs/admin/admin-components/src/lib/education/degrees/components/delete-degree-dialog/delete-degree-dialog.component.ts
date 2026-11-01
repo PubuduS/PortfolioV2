@@ -58,6 +58,7 @@ export class DeleteDegreeDialogComponent {
     return current.kind === 'error' ? current.message : null;
   });
 
+  /** Closes this dialog after a successful delete. */
   private readonly dialogRef = inject<MatDialogRef<DeleteDegreeDialogComponent, boolean>>(
     MatDialogRef,
   );

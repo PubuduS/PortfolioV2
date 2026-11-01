@@ -153,6 +153,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Build an empty tile form.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -163,6 +164,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the image subscription and any upload timer still running.
    * @inheritdoc
    */
   public ngOnDestroy(): void {

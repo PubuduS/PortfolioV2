@@ -31,9 +31,7 @@ import {
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 import { DisplayValidatorErrorsComponent } from '../validator-errors/display-validator-errors.component';
 
-/**
- *
- */
+/** Dialog that uploads a replacement photo and previews it. */
 @Component({
   selector: 'admin-upload-photo',
   standalone: true,
@@ -103,6 +101,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Build the file form and load the photo this dialog was opened with.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -120,6 +119,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the image subscriptions and any upload timer still running.
    * @inheritdoc
    */
   public ngOnDestroy(): void {

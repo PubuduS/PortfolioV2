@@ -101,6 +101,7 @@ export class ContactComponent implements OnInit {
   ) {}
 
   /**
+   * Build the contact form, including the honeypot field.
    * @inheritdoc
    */
   public ngOnInit(): void {

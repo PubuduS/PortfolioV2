@@ -7,8 +7,11 @@ import {
 
 /** Browser stores that can hold a Firebase Auth user. */
 export interface AuthPersistencePorts {
+  /** `localStorage` for this window. */
   local: Storage;
+  /** `sessionStorage` for this window. */
   session: Storage;
+  /** Delete one IndexedDB database by name. */
   deleteDatabase: (name: string) => Promise<boolean>;
 }
 

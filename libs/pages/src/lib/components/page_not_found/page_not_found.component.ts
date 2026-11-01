@@ -48,6 +48,7 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
   private readonly visibilityTimer: number = 4000;
 
   /**
+   * Swap the two missing-page animations on a timer.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -62,7 +63,10 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
     console.log(this.randomQuote);
   }
 
-  /** @inheritdoc */
+  /**
+   * Stop the animation timer.
+   * @inheritdoc
+   */
   public ngOnDestroy(): void {
     if (this.sub) {
       this.sub.unsubscribe();

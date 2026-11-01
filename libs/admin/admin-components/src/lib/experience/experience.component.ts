@@ -130,6 +130,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Build the experience form and keep the time period in step with the dates.
    * @inheritdoc
    */
   public ngOnInit(): void {
@@ -162,6 +163,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Drop the form subscription created for the time-period calculation.
    * @inheritdoc
    */
   public ngOnDestroy(): void {

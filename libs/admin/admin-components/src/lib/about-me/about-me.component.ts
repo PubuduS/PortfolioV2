@@ -91,6 +91,7 @@ export class AboutMeComponent implements OnInit {
   }
 
   /**
+   * Fill the about-me form from the current store slice.
    * @inheritdoc
    */
   public ngOnInit(): void {

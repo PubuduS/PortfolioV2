@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+/** Public routes for the education section and its child pages. */
 export const EDUCATION_ROUTES: Routes = [
   {
     path: '',

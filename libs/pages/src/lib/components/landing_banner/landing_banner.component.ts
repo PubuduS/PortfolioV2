@@ -43,6 +43,7 @@ export class LandingBannerComponent implements OnInit {
   }
 
   /**
+   * Choose the banner image for the current season.
    * @inheritdoc
    */
   public ngOnInit(): void {

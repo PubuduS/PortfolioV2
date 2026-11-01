@@ -98,3 +98,48 @@ jobs:
             test-results
           retention-days: 7
           if-no-files-found: ignore
+
+  compodoc:
+    name: Build Compodoc
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Provide a local environment file
+        run: cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+
+      - name: Build documentation
+        run: npm run compodoc
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: documentation
+
+  pages:
+    name: Publish Compodoc
+    needs: compodoc
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

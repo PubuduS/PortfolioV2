@@ -80,6 +80,7 @@ export class SkillsComponent implements OnInit {
   }
 
   /**
+   * Fill the skills form from the slice currently in the store.
    * @inheritdoc
    */
   public ngOnInit(): void {

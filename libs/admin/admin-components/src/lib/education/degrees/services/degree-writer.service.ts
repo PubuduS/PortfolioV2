@@ -18,6 +18,7 @@ export type DegreeWriteFailure = 'unauthenticated' | 'commit-failed';
  */
 export class DegreeWriteError extends Error {
   /**
+   * Record which step failed and the error that caused it.
    * @param reason which step failed
    * @param cause underlying error, when the failure came from Firebase
    */
@@ -40,6 +41,7 @@ export class DegreeWriteError extends Error {
 @Injectable()
 export class DegreeWriter {
   /**
+   * Build the writer with Firestore and the signed-in check.
    * @param setData Firestore access
    * @param auth signed-in check
    */
@@ -85,6 +87,7 @@ export class DegreeWriter {
   }
 
   /**
+   * Refuse the write when nobody is signed in.
    * @throws DegreeWriteError when nobody is signed in
    */
   private assertSignedIn(): void {

@@ -19,9 +19,13 @@ import { WeatherService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherDisplayComponent {
+  /** Service that loads the current forecast. */
   public weatherService = inject(WeatherService);
 
+  /** Latest forecast, once the request succeeds. */
   public weatherData: Signal<IWeather | undefined> = this.weatherService.weatherData;
+  /** Message shown when the forecast request fails. */
   public weatherErr: Signal<string | undefined> = this.weatherService.weatherError;
+  /** Path of the animation for the current condition. */
   public weatherIcon: Signal<string> = this.weatherService.weatherAnimationPath;
 }

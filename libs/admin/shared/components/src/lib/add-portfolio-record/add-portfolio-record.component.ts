@@ -134,6 +134,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   /**
+   * Drop the image subscription and any upload timer still running.
    * @inheritdoc
    */
   public ngOnDestroy(): void {
@@ -149,6 +150,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Build an empty form for a featured card or a regular card.
    * @inheritdoc
    */
   public ngOnInit(): void {

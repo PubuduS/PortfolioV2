@@ -4,9 +4,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-/**
- *
- */
+/** Animated link into one education section. */
 @Component({
   selector: 'portfolio-v2-flower-animation',
   standalone: true,
