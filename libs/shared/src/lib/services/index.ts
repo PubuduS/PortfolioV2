@@ -1,4 +1,11 @@
+export { adminGuard } from './auth-service/admin.guard';
 export { AuthService } from './auth-service/auth.service';
+export { isolateAuthPersistence } from './auth-service/auth-persistence';
+export {
+  AUTH_TARGET,
+  authAppName,
+  resolveAuthTarget,
+} from './auth-service/auth-target';
 export { DocumentCatalogReader } from './document-catalog/document-catalog.reader';
 export { ErrorService } from './error-message/error.service';
 export { GetDataService } from './get-data/get-data.service';

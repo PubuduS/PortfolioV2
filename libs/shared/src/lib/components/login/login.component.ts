@@ -73,7 +73,6 @@ export class LoginComponent implements OnInit {
    */
   public async login(): Promise<void> {
     const { email, password } = this.loginForm.value;
-    this.authService.logout();
     this.isCredentialsRight = await this.authService.signIn(email, password);
     if (!this.isCredentialsRight) {
       this.loginForm.reset();

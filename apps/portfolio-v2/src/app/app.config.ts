@@ -1,12 +1,14 @@
 import {
   ApplicationConfig,
   EnvironmentProviders,
+  provideAppInitializer,
   Provider,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
+  getApp,
   initializeApp,
   provideFirebaseApp,
 } from '@angular/fire/app';
@@ -17,8 +19,9 @@ import {
   UserTrackingService,
 } from '@angular/fire/analytics';
 import {
+  browserSessionPersistence,
   connectAuthEmulator,
-  getAuth,
+  initializeAuth,
   provideAuth,
 } from '@angular/fire/auth';
 import {
@@ -39,86 +42,83 @@ import {
   getPerformance,
   providePerformance,
 } from '@angular/fire/performance';
-import {
-  ActionReducer,
-  MetaReducer,
-  provideStore,
-} from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { localStorageSync } from 'ngrx-store-localstorage';
 
 import {
-  AppState,
+  AUTH_TARGET,
+  authAppName,
+  isolateAuthPersistence,
+  resolveAuthTarget,
+} from '@portfolio-v2/shared/services';
+import {
   stateReducers,
   StateEffects,
 } from '@portfolio-v2/state';
 import { environment } from '../environments/environment';
 import { AppEnvironment } from '../environments/environment.model';
+import { adminSessionMetaReducers } from './admin-session-storage';
 import { appRoutes } from './app.routes';
 
 const { emulators }: AppEnvironment = environment;
+
+/** Auth backend this build is allowed to trust. Emulator and live never share a user. */
+const sessionTarget = resolveAuthTarget(Boolean(emulators));
+
+/**
+ * The Firebase app for this auth backend.
+ * Its name is part of the Auth persistence key, so emulator and live users stay apart.
+ * @returns The initialized Firebase app.
+ */
+function firebaseApp(): ReturnType<typeof getApp> {
+  return getApp(authAppName(sessionTarget));
+}
 
 /** Providers that only make sense against the live project. */
 const liveOnlyProviders: Array<Provider | EnvironmentProviders> = emulators
   ? []
   : [
-    provideAnalytics(() => getAnalytics()),
-    provideDatabase(() => getDatabase()),
-    providePerformance(() => getPerformance()),
+    provideAnalytics(() => getAnalytics(firebaseApp())),
+    provideDatabase(() => getDatabase(firebaseApp())),
+    providePerformance(() => getPerformance(firebaseApp())),
     ScreenTrackingService,
     UserTrackingService,
   ];
-
-/**
- * Sync the state with local storage to rehydrate
- * @param reducer reducer
- * @returns Action Reducer
- */
-export function localStorageSyncReducer(reducer: ActionReducer<AppState>)
-  : ActionReducer<AppState> {
-  return localStorageSync({ keys: ['stateBanks'], rehydrate: true })(reducer);
-}
-
-/**
- * Meta Reducer
- * This is used as a rehydration.
- * This will basically cash immediate previous visits.
- * When the user reclick an immediate previous visit,
- * instead of contacting database, this will pull the
- * data from local cache from the browswer.
- */
-const metaReducer: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
     provideRouter(appRoutes),
     provideAnimations(),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAppInitializer(() => isolateAuthPersistence(sessionTarget)),
+    { provide: AUTH_TARGET, useValue: sessionTarget },
+    provideFirebaseApp(() => initializeApp(environment.firebase, authAppName(sessionTarget))),
     provideAuth(() => {
-      const auth = getAuth();
+      const auth = initializeAuth(firebaseApp(), {
+        persistence: browserSessionPersistence,
+      });
       if (emulators) {
         connectAuthEmulator(auth, `http://${emulators.auth.host}:${emulators.auth.port}`, { disableWarnings: true });
       }
       return auth;
     }),
     provideStorage(() => {
-      const storage = getStorage();
+      const storage = getStorage(firebaseApp());
       if (emulators) {
         connectStorageEmulator(storage, emulators.storage.host, emulators.storage.port);
       }
       return storage;
     }),
     provideFirestore(() => {
-      const firestore = getFirestore();
+      const firestore = getFirestore(firebaseApp());
       if (emulators) {
         connectFirestoreEmulator(firestore, emulators.firestore.host, emulators.firestore.port);
       }
       return firestore;
     }),
     ...liveOnlyProviders,
-    provideStore({ stateBanks: stateReducers }, { metaReducers: metaReducer }),
+    provideStore({ stateBanks: stateReducers }, { metaReducers: adminSessionMetaReducers() }),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: true,
