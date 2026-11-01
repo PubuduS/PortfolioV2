@@ -15,7 +15,7 @@
           <p>
             Drop me an email at
             <a href="mailto:pubudusupun@gmail.com">pubudusupun&#64;gmail.com</a>
-            or simply fill out the form below and I will reply yo you soon!
+            or simply fill out the form below and I will reply to you soon!
           </p>
           <h2>Follow Me</h2>
           @if (socialInfor(); as socialInfor) {
@@ -50,7 +50,7 @@
                 <input
                   class="form-control"
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Your Email Address"
                   formControlName="email"
                   [ngClass]="{
                     'is-invalid':
@@ -145,13 +145,36 @@
                 </span>
               </li>
 
+              <li class="contact-trap" aria-hidden="true">
+                <label for="fax-number">Fax number</label>
+                <input
+                  id="fax-number"
+                  class="form-control"
+                  type="text"
+                  tabindex="-1"
+                  autocomplete="off"
+                  formControlName="faxNumber"
+                />
+              </li>
+
               <li>
+                @if (feedback(); as note) {
+                  <p
+                    class="contact-feedback"
+                    [class.is-error]="note.kind === 'error'"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {{ note.text }}
+                  </p>
+                }
                 <button
                   type="submit"
                   class="submit-btn"
-                  [disabled]="!contactForm.valid"
+                  [disabled]="contactForm.invalid || isSending()"
+                  [attr.aria-busy]="isSending()"
                 >
-                  Send
+                  {{ isSending() ? 'Sending' : 'Send' }}
                 </button>
               </li>
             </ul>

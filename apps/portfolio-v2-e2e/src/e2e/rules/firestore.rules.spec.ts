@@ -111,6 +111,16 @@ test.describe('emulator security rules', () => {
     await assertSucceeds(deleteDoc(doc(admin, educationPath)));
   });
 
+  test('should hide contact mail quotas from clients', async () => {
+    const quota = 'contact-mail-guard/hourly';
+    const anonymous = testEnv.unauthenticatedContext().firestore();
+    const admin = testEnv.authenticatedContext('e2e-admin').firestore();
+    await assertFails(getDoc(doc(anonymous, quota)));
+    await assertFails(setDoc(doc(anonymous, quota), { count: 0 }));
+    await assertFails(getDoc(doc(admin, quota)));
+    await assertFails(setDoc(doc(admin, quota), { count: 0 }));
+  });
+
   test('should allow authenticated writes', async () => {
     const firestore = testEnv.authenticatedContext('e2e-admin').firestore();
     const storage = testEnv.authenticatedContext('e2e-admin').storage(EMULATOR_BUCKET);

@@ -1,4 +1,5 @@
 export { adminGuard } from './auth-service/admin.guard';
+export { ContactMailService, type ContactSendStatus } from './contact-mail/contact-mail.service';
 export { AuthService } from './auth-service/auth.service';
 export { isolateAuthPersistence } from './auth-service/auth-persistence';
 export {

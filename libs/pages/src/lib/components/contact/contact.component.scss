@@ -112,3 +112,26 @@ textarea.form-control {
   opacity: 0.9;
   box-shadow: 0 0 10px $obsidian-veil;
 }
+.submit-btn:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+}
+.contact-form {
+  position: relative;
+}
+.contact-trap {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.contact-feedback {
+  color: $electric-teal;
+  margin-bottom: 20px;
+}
+.contact-feedback.is-error {
+  color: $jasper;
+}

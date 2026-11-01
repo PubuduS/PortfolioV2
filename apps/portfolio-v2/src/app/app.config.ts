@@ -39,6 +39,11 @@ import {
   provideDatabase,
 } from '@angular/fire/database';
 import {
+  connectFunctionsEmulator,
+  getFunctions,
+  provideFunctions,
+} from '@angular/fire/functions';
+import {
   getPerformance,
   providePerformance,
 } from '@angular/fire/performance';
@@ -116,6 +121,13 @@ export const appConfig: ApplicationConfig = {
         connectFirestoreEmulator(firestore, emulators.firestore.host, emulators.firestore.port);
       }
       return firestore;
+    }),
+    provideFunctions(() => {
+      const functions = getFunctions(firebaseApp(), 'us-central1');
+      if (emulators) {
+        connectFunctionsEmulator(functions, emulators.functions.host, emulators.functions.port);
+      }
+      return functions;
     }),
     ...liveOnlyProviders,
     provideStore({ stateBanks: stateReducers }, { metaReducers: adminSessionMetaReducers() }),

@@ -11,6 +11,9 @@ export interface ObservedState {
   readonly hasAdminUser: boolean;
 }
 
+/** Firestore trees written by the contact-mail function, not by the content baseline. */
+const OPERATIONAL_COLLECTIONS: ReadonlySet<string> = new Set(['contact-mail-guard']);
+
 /**
  * Lists differences between the manifest and an observed emulator or baseline.
  * An empty list means the observed state matches.
@@ -36,7 +39,7 @@ export function compareBaseline(manifest: BaselineManifest, observed: ObservedSt
     }
   }
   for (const name of Object.keys(observed.firestore)) {
-    if (!manifest.firestore[name]) {
+    if (!manifest.firestore[name] && !OPERATIONAL_COLLECTIONS.has(name)) {
       problems.push(`extra firestore collection ${name}`);
     }
   }

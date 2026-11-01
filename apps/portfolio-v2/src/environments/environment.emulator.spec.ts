@@ -18,7 +18,7 @@ describe('emulator environment', () => {
     const endpoints = Object.entries(environment.emulators ?? {});
 
     it('should define firestore, auth, and storage', () => {
-      expect(endpoints.map(([name]) => name).sort()).toEqual(['auth', 'firestore', 'storage']);
+      expect(endpoints.map(([name]) => name).sort()).toEqual(['auth', 'firestore', 'functions', 'storage']);
     });
 
     it.each(endpoints)('should point %s at a localhost host', (_name, { host }) => {

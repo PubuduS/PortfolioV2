@@ -1,0 +1,17 @@
+{
+  "name": "contact-functions",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "functions/src",
+  "projectType": "application",
+  "tags": ["functions"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "functions/jest.config.ts",
+        "tsConfig": "functions/tsconfig.spec.json"
+      }
+    }
+  }
+}
