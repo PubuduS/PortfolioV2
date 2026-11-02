@@ -27,7 +27,33 @@ function main(): void {
   }
   const bin = path.join(ROOT, 'node_modules', '@compodoc', 'compodoc', 'bin', 'index-cli.js');
   const result = spawnSync(process.execPath, [bin, ...args], { stdio: 'inherit', cwd: ROOT });
-  process.exit(result.status ?? 1);
+  if ((result.status ?? 1) !== 0) {
+    process.exit(result.status ?? 1);
+  }
+
+  readableArchitectureGraph();
+  process.exit(0);
+}
+
+/**
+ * Compodoc draws architecture labels in near-white while dark mode is on,
+ * and leaves the graph panel white. Match the panel to the label color.
+ */
+function readableArchitectureGraph(): void {
+  const stylesheet = path.join(ROOT, 'documentation', 'styles', 'dark.css');
+  const marker = 'architecture-graph-readable';
+  const current = fs.readFileSync(stylesheet, 'utf8');
+  if (current.includes(marker)) {
+    return;
+  }
+
+  fs.appendFileSync(stylesheet, `
+/* ${marker}: dark mode uses #f0f0f0 labels, so the canvas cannot stay white. */
+.dark #architecture-graph {
+    border-color: #4a4a4a;
+    background: #171717;
+}
+`);
 }
 
 function includesDirectory(

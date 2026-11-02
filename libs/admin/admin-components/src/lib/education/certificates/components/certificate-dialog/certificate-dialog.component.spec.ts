@@ -2,6 +2,7 @@ import {
   Component,
   inject,
   ViewContainerRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   ComponentFixture,
@@ -74,6 +75,7 @@ function dialogButton(label: string): HTMLButtonElement {
   selector: 'admin-certificate-dialog-host',
   standalone: true,
   template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: CertificateWriter, useFactory: writerFromRoute }],
 })
 class CertificateDialogHost {

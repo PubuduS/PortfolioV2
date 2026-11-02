@@ -1,6 +1,7 @@
 import {
   Component,
   Input,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -9,6 +10,7 @@ import { Router } from '@angular/router';
   selector: 'portfolio-v2-flower-animation',
   standalone: true,
   templateUrl: './flower-animation.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './flower-animation.component.scss',
 })
 export class FlowerAnimationComponent {

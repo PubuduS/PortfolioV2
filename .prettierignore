@@ -12,3 +12,5 @@ test-results
 **/*.json
 **/*.ts
 /.nx/workspace-data
+
+.nx/self-healing

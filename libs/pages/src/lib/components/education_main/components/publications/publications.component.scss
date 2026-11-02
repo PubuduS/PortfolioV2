@@ -1,4 +1,4 @@
-@import 'apps/portfolio-v2/src/assets/SCSS/publications';
+@use 'apps/portfolio-v2/src/assets/SCSS/publications' as *;
 
 .publications-full {
   @include publications-section;

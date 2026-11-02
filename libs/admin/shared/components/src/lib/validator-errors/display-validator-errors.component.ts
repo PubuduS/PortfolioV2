@@ -4,6 +4,7 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -16,6 +17,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   templateUrl: './display-validator-errors.component.html',
   styleUrl: './display-validator-errors.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'd-block', // Makes the component a block element
   },
@@ -38,11 +40,11 @@ export class DisplayValidatorErrorsComponent implements OnInit, OnDestroy {
   constructor(private cdr: ChangeDetectorRef) {}
 
   /**
-   * on initialization
-   * Subscribe to value changes to trigger change detection
+   * Refresh when the control is marked touched or its status changes.
+   * Marking a control touched does not emit `statusChanges` when validity stays the same.
    */
   public ngOnInit(): void {
-    this.subscription = this.control?.statusChanges.subscribe(() => {
+    this.subscription = this.control?.events.subscribe(() => {
       this.cdr.markForCheck();
     });
   }

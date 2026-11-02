@@ -195,7 +195,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
         await firstValueFrom(
           this.setDataService.deleteFileFromStorage(`portfolio/portfolio-tiles/ID-${this.utility.getPaddedDigits(this.currentCardId, 2)}-Icon.webp`),
         );
-      } catch (iconError) {
+      } catch (_iconError) {
         // Icon file doesn't exist or can't be deleted - this is OK, continue with database deletion
       }
 
@@ -205,7 +205,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
         // Close the dialog if database deletion was successful (icon deletion is optional)
         this.dialogRef.close();
       }
-    } catch (error) {
+    } catch (_error) {
       // Handle any errors that might occur during the delete operation
       // Error handling can be added here if needed
     }
@@ -277,7 +277,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
       try {
         // Upload file and wait for Firebase Storage URL
         imageURL = await this.uploadFileAndGetUrl(fileStoragePath);
-      } catch (error) {
+      } catch (_error) {
         // If upload fails, keep default image URL
         // Error handling can be added here if needed
       }

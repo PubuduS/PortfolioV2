@@ -59,7 +59,11 @@
       "@portfolio-v2/tools/db/reset": ["tools/db/reset.ts"],
       "@portfolio-v2/tools/coverage/remap": ["tools/coverage/remap.ts"],
       "@portfolio-v2/tools/coverage/workspace-path": ["tools/coverage/workspace-path.ts"]
-    }
+    },
+    "strict": false,
+    "noUncheckedSideEffectImports": false,
+    "esModuleInterop": false,
+    "ignoreDeprecations": "6.0"
   },
   "exclude": ["node_modules", "tmp"]
 }

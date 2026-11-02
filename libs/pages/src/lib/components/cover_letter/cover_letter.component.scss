@@ -1,4 +1,5 @@
-@import 'apps/portfolio-v2/src/assets/SCSS/cover-letter';
+@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'apps/portfolio-v2/src/assets/SCSS/cover-letter' as *;
 
 @include cover-letter-page;
 
