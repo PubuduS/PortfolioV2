@@ -18,7 +18,7 @@ export function urlValidator(): ValidatorFn {
 
     try {
       return urlPattern.test(control.value.toString()) ? null : { invalidURL: true };
-    } catch (error) {
+    } catch (_error) {
       // Fallback to basic validation if regex fails
       return { invalidURL: true };
     }
@@ -38,7 +38,7 @@ export function firebaseURLValidator(): ValidatorFn {
     const urlPattern = /^https?:\/\/.+$/;
     try {
       return urlPattern.test(control.value.toString()) ? null : { invalidURL: true };
-    } catch (error) {
+    } catch (_error) {
       // Fallback to basic validation if regex fails
       return { invalidURL: true };
     }

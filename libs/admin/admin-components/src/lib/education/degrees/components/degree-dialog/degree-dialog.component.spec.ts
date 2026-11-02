@@ -2,6 +2,7 @@ import {
   Component,
   inject,
   ViewContainerRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   ComponentFixture,
@@ -75,6 +76,7 @@ function dialogButton(label: string): HTMLButtonElement {
   selector: 'admin-degree-dialog-host',
   standalone: true,
   template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: DegreeWriter, useFactory: writerFromRoute }],
 })
 class DegreeDialogHost {

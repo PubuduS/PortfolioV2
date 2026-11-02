@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "outDir": "../../dist/out-tsc/tools/coverage"
+    "outDir": "../../dist/out-tsc/tools/coverage",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["**/*.ts"]
 }

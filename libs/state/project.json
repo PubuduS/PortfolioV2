@@ -4,11 +4,15 @@
   "sourceRoot": "libs/state/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": ["state"],
+  "tags": [
+    "state"
+  ],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "libs/state/jest.config.ts",
         "tsConfig": "libs/state/tsconfig.spec.json"

@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "outDir": "../../dist/out-tsc/tools/db"
+    "outDir": "../../dist/out-tsc/tools/db",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["**/*.ts"]
 }

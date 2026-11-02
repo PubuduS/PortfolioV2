@@ -5,7 +5,10 @@ import {
   Provider,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withXhr,
+} from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {
   getApp,
@@ -95,7 +98,7 @@ const liveOnlyProviders: Array<Provider | EnvironmentProviders> = emulators
 /** Root providers for routing, Firebase, and the store. */
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     provideRouter(appRoutes),
     provideAnimations(),
     provideAppInitializer(() => isolateAuthPersistence(sessionTarget)),

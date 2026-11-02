@@ -2,6 +2,7 @@ import {
   Component,
   inject,
   ViewContainerRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   ComponentFixture,
@@ -89,6 +90,7 @@ function dialogButton(label: string): HTMLButtonElement {
   selector: 'admin-publication-dialog-host',
   standalone: true,
   template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: PublicationWriter, useFactory: writerFromRoute }],
 })
 class PublicationDialogHost {

@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { NavBarComponent } from '@portfolio-v2/shared/components';
@@ -12,6 +15,7 @@ import { NavBarComponent } from '@portfolio-v2/shared/components';
   ],
   selector: 'portfolio-v2-root',
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.component.scss',
 })
 export class AppComponent {

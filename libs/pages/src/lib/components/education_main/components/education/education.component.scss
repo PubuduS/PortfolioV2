@@ -1,4 +1,4 @@
-@import 'apps/portfolio-v2/src/assets/SCSS/education';
+@use 'apps/portfolio-v2/src/assets/SCSS/education' as *;
 
 .education-full {
   @include education-section;

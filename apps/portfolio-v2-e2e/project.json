@@ -4,7 +4,9 @@
   "projectType": "application",
   "sourceRoot": "apps/portfolio-v2-e2e/src",
   "tags": [],
-  "implicitDependencies": ["portfolio-v2"],
+  "implicitDependencies": [
+    "portfolio-v2"
+  ],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
