@@ -20,7 +20,8 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
-.cursor/
+.cursor/*
+!.cursor/mcp.json
 
 # IDE - VSCode
 .vscode/*
@@ -60,6 +61,9 @@ blob-report/
 
 .claude/worktrees
 .claude/settings.local.json
+
+# personal mise overrides; shared tools live in mise.toml
+mise.local.toml
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs

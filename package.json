@@ -18,7 +18,9 @@
     "coverage:jest": "tsx tools/coverage/merge-coverage.ts jest",
     "coverage:playwright": "tsx tools/coverage/merge-coverage.ts playwright",
     "lint": "nx run-many --target=lint --parallel=5 && nx run-many --target=stylelint --parallel=5",
-    "compodoc": "tsx tools/docs/run-compodoc.ts && tsx tools/docs/compodoc-routes.ts && tsx tools/docs/attach-coverage.ts",
+    "compodoc:site": "tsx tools/docs/run-compodoc.ts && tsx tools/docs/compodoc-routes.ts && tsx tools/docs/attach-coverage.ts",
+    "compodoc:nx-graph": "tsx tools/docs/attach-nx-graph.ts",
+    "compodoc": "npm run compodoc:site && npm run compodoc:nx-graph",
     "e2e-tests": "nx run portfolio-v2-e2e:e2e",
     "build-checks": "npm run clean & npm run test & npm run test-ci & npm run lint"
   },

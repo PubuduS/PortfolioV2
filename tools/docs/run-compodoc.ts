@@ -64,9 +64,12 @@ function includesDirectory(
     return path.join('docs', 'coverage');
   }
   const directory = path.join('tmp', 'compodoc-coverage');
-  fs.mkdirSync(path.join(ROOT, directory), { recursive: true });
-  fs.copyFileSync(path.join(ROOT, 'docs', 'coverage', 'summary.json'), path.join(ROOT, directory, 'summary.json'));
-  fs.writeFileSync(path.join(ROOT, directory, 'test-coverage.md'), compodocCoverageMarkdown({
+  const destination = path.join(ROOT, directory);
+  const coverageDocs = path.join(ROOT, 'docs', 'coverage');
+  fs.mkdirSync(destination, { recursive: true });
+  fs.copyFileSync(path.join(coverageDocs, 'summary.json'), path.join(destination, 'summary.json'));
+  fs.copyFileSync(path.join(coverageDocs, 'project-graph.md'), path.join(destination, 'project-graph.md'));
+  fs.writeFileSync(path.join(destination, 'test-coverage.md'), compodocCoverageMarkdown({
     jestSummary,
     playwrightSummary,
   }));

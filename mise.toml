@@ -1,0 +1,8 @@
+# Machine tools for this repo. From a fresh clone: install mise, then run `mise install`.
+# https://mise.jdx.dev/getting-started.html
+# Angular, Nx, and the Firebase CLI are npm packages. `npm ci` installs them. Do not install nvm.
+
+[tools]
+node = "22.23.4"
+npm = "12.2.1"
+java = "temurin-21"
