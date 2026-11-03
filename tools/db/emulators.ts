@@ -11,7 +11,6 @@ import path from 'node:path';
 import {
   EMULATOR_PORTS,
   EMULATOR_TARGET,
-  JDK21_HOME,
   REPO_ROOT,
 } from './constants';
 import {
@@ -58,7 +57,8 @@ async function main(): Promise<void> {
 }
 
 /**
- * Prepends the bundled JDK 21 when the first java on PATH is older than 21.
+ * Uses JDK 21 from PATH, or the Temurin JDK that `mise install` put on this machine.
+ * Firebase emulators refuse the Java 8 that is often already on PATH.
  *
  * @param base Environment inherited by the emulator process.
  * @returns Environment for the child process.
@@ -73,13 +73,16 @@ export async function jdk21Env(base: NodeJS.ProcessEnv): Promise<NodeJS.ProcessE
   if (major !== null && major >= 21) {
     return base;
   }
-  if (!fs.existsSync(JDK21_HOME)) {
-    throw new Error(`JDK 21 is not at ${JDK21_HOME}`);
+  const javaHome = await miseJavaHome();
+  if (!javaHome) {
+    throw new Error(
+      'JDK 21 was not found. Install mise from https://mise.jdx.dev/getting-started.html and run `mise install` in the repository root.',
+    );
   }
-  const nextPath = `${path.join(JDK21_HOME, 'bin')}${path.delimiter}${currentPath}`;
+  const nextPath = `${path.join(javaHome, 'bin')}${path.delimiter}${currentPath}`;
   return {
     ...base,
-    JAVA_HOME: JDK21_HOME,
+    JAVA_HOME: javaHome,
     Path: nextPath,
     PATH: nextPath,
   };
@@ -183,13 +186,57 @@ function killProcessTree(child: ChildProcess): void {
   child.kill('SIGTERM');
 }
 
-function firstJava(pathValue: string): string | null {
-  const fileName = process.platform === 'win32'
+async function miseJavaHome(): Promise<string | null> {
+  const stdout = await commandOutput('mise', ['where', 'java']);
+  const installPath = stdout?.split(/\r?\n/).map((line) => line.trim()).find((line) => line.length > 0);
+  if (!installPath) {
+    return null;
+  }
+  const javaHome = jdkHome(installPath);
+  if (!javaHome) {
+    return null;
+  }
+  const installedMajor = await javaMajor(path.join(javaHome, 'bin', javaExecutable()));
+  return installedMajor !== null && installedMajor >= 21
+    ? javaHome
+    : null;
+}
+
+function commandOutput(command: string, args: string[]): Promise<string | null> {
+  return new Promise((resolve) => {
+    execFile(command, args, {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      windowsHide: true,
+    }, (error, stdout) => {
+      resolve(error
+        ? null
+        : stdout);
+    });
+  });
+}
+
+function jdkHome(installPath: string): string | null {
+  const bundledHome = path.join(installPath, 'Contents', 'Home');
+  if (fs.existsSync(path.join(installPath, 'bin', javaExecutable()))) {
+    return installPath;
+  }
+  if (fs.existsSync(path.join(bundledHome, 'bin', javaExecutable()))) {
+    return bundledHome;
+  }
+  return null;
+}
+
+function javaExecutable(): string {
+  return process.platform === 'win32'
     ? 'java.exe'
     : 'java';
+}
+
+function firstJava(pathValue: string): string | null {
   const found = pathValue.split(path.delimiter)
     .filter((entry) => entry.length > 0)
-    .map((entry) => path.join(entry, fileName))
+    .map((entry) => path.join(entry, javaExecutable()))
     .find((candidate) => fs.existsSync(candidate));
   return found ?? null;
 }

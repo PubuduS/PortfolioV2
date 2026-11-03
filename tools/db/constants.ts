@@ -66,9 +66,6 @@ export const SANITIZER_VERSION = 3;
 /** Snapshot refuses to write a file larger than this. */
 export const MAX_BASELINE_FILE_BYTES = 1024 * 1024;
 
-/** JDK 21 used to start the emulators. The default java on PATH is Java 8. */
-export const JDK21_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot';
-
 /** Repository root, two levels above this file. */
 export const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
