@@ -72,6 +72,9 @@ export class NavBarComponent {
   /** Section links for the current admin and preview flags. */
   protected readonly sectionPath: Signal<NavSectionPaths>;
 
+  /** True when the analytics link should show. */
+  protected readonly showAnalytics: Signal<boolean>;
+
   /** Address to reopen when party mode is turned off. */
   private partyReturnUrl: string | null = null;
 
@@ -104,6 +107,7 @@ export class NavBarComponent {
       this.isAdminMode(),
       this.isPreviewMode(),
     ));
+    this.showAnalytics = computed(() => this.isAdminMode() && !this.isPreviewMode());
   }
 
   /**

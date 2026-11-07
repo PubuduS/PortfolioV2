@@ -72,10 +72,14 @@ function partyButton(root: ParentNode): HTMLElement {
   return party;
 }
 
-function navLink(root: ParentNode, label: string): HTMLAnchorElement {
-  const anchor = [...root.querySelectorAll('a')].find(
+function navAnchor(root: ParentNode, label: string): HTMLAnchorElement | undefined {
+  return [...root.querySelectorAll('a')].find(
     (item) => item.textContent?.trim() === label,
   );
+}
+
+function navLink(root: ParentNode, label: string): HTMLAnchorElement {
+  const anchor = navAnchor(root, label);
   if (!(anchor instanceof HTMLAnchorElement)) {
     throw new Error(`missing ${label} link`);
   }
@@ -146,6 +150,10 @@ describe('NavBarComponent', () => {
       it('should not display preview button', () => {
         const previewBtn = nativeElement.querySelector('#previewMode');
         expect(previewBtn).toBeFalsy();
+      });
+
+      it('should hide the analytics link', () => {
+        expect(navAnchor(nativeElement, 'Analytics')).toBeUndefined();
       });
 
       it('should display admin button', () => {
@@ -260,6 +268,7 @@ describe('NavBarComponent', () => {
         expect(navLink(nativeElement, 'Home').getAttribute('href')).toBe('/admin/home');
         expect(navLink(nativeElement, 'Skills').getAttribute('href')).toBe('/admin/skills');
         expect(navLink(nativeElement, 'Contact').getAttribute('href')).toBe('/admin/contact');
+        expect(navLink(nativeElement, 'Analytics').getAttribute('href')).toBe('/admin/analytics');
       });
     });
 
@@ -279,6 +288,7 @@ describe('NavBarComponent', () => {
         expect(navLink(nativeElement, 'Cover Letter').getAttribute('href')).toBe('/content/coverletter');
         expect(navLink(nativeElement, 'Home').getAttribute('href')).toBe('/home');
         expect(navLink(nativeElement, 'Skills').getAttribute('href')).toBe('/content/skills');
+        expect(navAnchor(nativeElement, 'Analytics')).toBeUndefined();
       });
     });
   });

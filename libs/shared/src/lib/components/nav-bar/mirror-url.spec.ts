@@ -25,6 +25,8 @@ describe('mirrorUrl', () => {
     ['/content/admin?next=/home', '/content/admin'],
     ['/admin/resume', '/home'],
     ['/admin/resume?from=nav', '/home'],
+    ['/admin/analytics', '/home'],
+    ['/admin/analytics?from=nav', '/home'],
     ['/admin/coverletter', '/content/coverletter'],
     ['/content/coverletter', '/admin/coverletter'],
     ['/content/coverletter?draft=1', '/admin/coverletter'],
@@ -68,6 +70,7 @@ describe('modeUrl', () => {
 
     it('should leave an admin page and the login page', () => {
       expect(modeUrl('/admin/skills', false)).toBeNull();
+      expect(modeUrl('/admin/analytics', false)).toBeNull();
       expect(modeUrl('/content/admin', false)).toBeNull();
       expect(modeUrl('/content/party-mode', false)).toBeNull();
     });
@@ -77,6 +80,7 @@ describe('modeUrl', () => {
     it('should send an admin page to its public page', () => {
       expect(modeUrl('/admin/aboutme', true)).toBe('/content/aboutme');
       expect(modeUrl('/admin/home', true)).toBe('/home');
+      expect(modeUrl('/admin/analytics', true)).toBe('/home');
     });
 
     it('should leave a public page', () => {

@@ -8,7 +8,7 @@ import {
 import {
   Subscription,
   interval,
-  tap,
+  map,
 } from 'rxjs';
 
 import { quoteForLanding } from './page-not-found-quotes';
@@ -45,13 +45,11 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
     this.quoteWords = quoteForLanding(new Date()).split(' ');
     this.sub = interval(this.visibilityTimer)
       .pipe(
-        tap(() => {
+        map(() => {
           this.isLeftGIFVisible.set(!this.isLeftGIFVisible());
           this.isRightGIFVisible.set(!this.isLeftGIFVisible());
-          console.log(`left ${this.isLeftGIFVisible}: right ${this.isRightGIFVisible}`);
         }),
       ).subscribe();
-    console.log(this.quoteWords);
   }
 
   /**

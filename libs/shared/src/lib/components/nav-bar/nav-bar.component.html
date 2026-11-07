@@ -52,6 +52,11 @@
           <li class="nav-item">
             <a [routerLink]="coverLetterTarget().path">Cover Letter</a>
           </li>
+          @if (showAnalytics()) {
+            <li class="nav-item">
+              <a routerLink="/admin/analytics">Analytics</a>
+            </li>
+          }
           <li class="nav-item">
             <a [routerLink]="['content/admin']">Admin</a>
           </li>

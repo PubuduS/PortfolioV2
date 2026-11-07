@@ -1,4 +1,5 @@
 export * from './lib/about-me/about-me.component';
+export * from './lib/analytics/analytics-dashboard.component';
 export * from './lib/admin.routes';
 export * from './lib/contact/admin-contact.component';
 export * from './lib/education/certificates/admin-certificates.component';
