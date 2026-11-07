@@ -39,12 +39,13 @@ export interface StorageObjectRule {
   readonly kind: 'storage-object';
   readonly id: string;
   readonly pathPattern: string;
-  readonly replacement: 'gif' | 'webp' | 'resume' | 'pdf';
+  readonly replacement: 'gif' | 'webp' | 'banner-webp' | 'banner-mp4' | 'banner-webm' | 'resume' | 'pdf';
 }
 
 /** One row in the sanitizer table. */
 export type SanitizeRule = FieldSanitizeRule | GlobalSanitizeRule | StorageObjectRule;
 
+/** Order in which rewrite rules are applied. */
 const REWRITE_ORDER: readonly SanitizeKind[] = [
   'storage-url',
   'mailto',
@@ -193,6 +194,24 @@ export const SANITIZE_RULES: readonly SanitizeRule[] = [
   },
   {
     kind: 'storage-object',
+    id: 'banner-webp',
+    pathPattern: '^portfolio/landing-page/banners/(fall|spring|winter)/[^/]+\\.webp$',
+    replacement: 'banner-webp',
+  },
+  {
+    kind: 'storage-object',
+    id: 'banner-mp4',
+    pathPattern: '^portfolio/landing-page/banners/(fall|spring|winter)/[^/]+\\.mp4$',
+    replacement: 'banner-mp4',
+  },
+  {
+    kind: 'storage-object',
+    id: 'banner-webm',
+    pathPattern: '^portfolio/landing-page/banners/(fall|spring|winter)/[^/]+\\.webm$',
+    replacement: 'banner-webm',
+  },
+  {
+    kind: 'storage-object',
     id: 'banner-gif',
     pathPattern: '^portfolio/landing-page/banners/(fall|spring|winter)/',
     replacement: 'gif',
@@ -223,159 +242,198 @@ export const SANITIZE_RULES: readonly SanitizeRule[] = [
   },
 ];
 
+/** Directory containing placeholder files. */
 const PLACEHOLDER_DIR = path.join(REPO_ROOT, 'tools', 'db', 'placeholders');
+/** Placeholder for a resume PDF file. */
 const PLACEHOLDER_RESUME = Buffer.from('%PDF-1.1\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n', 'utf8');
+/** Live storage hosts. */
+const LIVE_STORAGE_HOSTS = [
+  'firebasestorage.googleapis.com',
+  'portfolio-c9b8e.firebasestorage.app',
+  'portfolio-c9b8e.appspot.com',
+] as const;
+/** Live project ID. */
+const LIVE_PROJECT_ID = 'portfolio-c9b8e';
+/** Regular expression to match URLs. */
+const URL_CANDIDATE = /(?:https?:)?\/\/[^\s"'<>]+/gi;
 
+/**
+ * Escapes a string for use in a regular expression.
+ * @param value String to escape.
+ * @returns Escaped string.
+ */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Checks if a value is a plain object.
+ * @param value Value to check.
+ * @returns True if the value is a plain object.
+ */
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+  const proto: unknown = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+/**
+ * Checks if a field path matches a rule path.
+ * @param rulePath Rule path.
+ * @param fieldPath Field path.
+ * @returns True if the field path matches the rule path.
+ */
+function fieldMatches(rulePath: string, fieldPath: string): boolean {
+  return fieldPath === rulePath || fieldPath.startsWith(`${rulePath}.`);
+}
+
+/**
+ * Returns all global rules.
+ * @returns List of global rules.
+ */
+function globalRules(): GlobalSanitizeRule[] {
+  return SANITIZE_RULES.filter((rule): rule is GlobalSanitizeRule => rule.kind === 'global');
+}
+
+/**
+ * Returns all field rules.
+ * @returns List of field rules.
+ */
+function fieldRules(): FieldSanitizeRule[] {
+  return SANITIZE_RULES.filter((rule): rule is FieldSanitizeRule => rule.kind === 'field');
+}
+
+/**
+ * Checks if a hostname is a live storage host.
+ * @param hostname Hostname to check.
+ * @returns True if the hostname is a live storage host.
+ */
+function isLiveStorageHost(hostname: string): boolean {
+  const host = hostname.toLowerCase();
+  return LIVE_STORAGE_HOSTS.some((blocked) => host === blocked || host.endsWith(`.${blocked}`));
+}
+
+/**
+ * Returns the emulator media URL for a storage object.
+ * @param objectPath Storage object path.
+ * @returns Emulator media URL.
+ */
+function emulatorMediaUrl(objectPath: string): string {
+  const encoded = encodeURIComponent(objectPath);
+  const host = EMULATOR_TARGET.hosts.storage;
+  const port = EMULATOR_PORTS.storage;
+  return `http://${host}:${port}/v0/b/${EMULATOR_BUCKET}/o/${encoded}?alt=media`;
+}
+
+/**
+ * Reads a placeholder file from the placeholder directory.
+ * @param fileName File name.
+ * @returns Buffer containing the file contents.
+ */
 function readPlaceholder(fileName: string): Buffer {
   return fs.readFileSync(path.join(PLACEHOLDER_DIR, fileName));
 }
 
 /**
- * Rewrites personal data and live storage URLs in one collection.
- *
- * @param collection Collection id.
- * @param documents Encoded documents.
- * @returns Sanitized copies.
+ * Returns a regular expression for a global rewrite rule.
+ * @param kind Rewrite kind.
+ * @returns Regular expression for the rule.
  */
-export function sanitizeDocuments(
-  collection: string,
-  documents: readonly BaselineDocument[],
-): BaselineDocument[] {
-  return documents.map((document) => ({
-    id: document.id,
-    data: mapStrings(document.data, '', (fieldPath, text) => sanitizeString(collection, fieldPath, text)),
-  }));
+function globalPattern(kind: SanitizeKind): RegExp {
+  const rule = globalRules().find((candidate) => candidate.rewrite === kind);
+  if (!rule) {
+    throw new Error(`missing global rule ${kind}`);
+  }
+  return new RegExp(rule.pattern, 'g');
 }
 
 /**
- * Rewrites one string using field rules for its path and every global rule.
- *
- * @param collection Collection id.
- * @param fieldPath Dot path of the string inside the document.
- * @param value Raw string.
- * @returns Sanitized string.
+ * Checks if a string contains a live project ID.
+ * @param value String to check.
+ * @returns True if the string contains a live project ID.
  */
-export function sanitizeString(collection: string, fieldPath: string, value: string): string {
-  const kinds = new Set<SanitizeKind>();
-  for (const rule of globalRules()) {
-    kinds.add(rule.rewrite);
-  }
-  for (const rule of fieldRules()) {
-    if (rule.collection === collection && fieldMatches(rule.fieldPath, fieldPath)) {
-      for (const rewrite of rule.rewrites) {
-        kinds.add(rewrite);
-      }
-    }
-  }
-  return REWRITE_ORDER.reduce((current, kind) => {
-    if (!kinds.has(kind)) {
-      return current;
-    }
-    return applyRewrite(kind, current);
-  }, value);
+function hasLiveProjectId(value: string): boolean {
+  return new RegExp(`(?<![a-z0-9-])${escapeRegExp(LIVE_PROJECT_ID)}(?![a-z0-9-])`, 'i').test(value);
 }
 
 /**
- * Throws when a sanitized document still contains personal data or a live bucket URL.
- *
- * @param collections Sanitized documents keyed by collection.
+ * Checks if a string contains a live storage host.
+ * @param value String to check.
+ * @returns True if the string contains a live storage host.
  */
-export function assertNoResidualPii(
-  collections: Readonly<Record<string, readonly BaselineDocument[]>>,
-): void {
-  const problems: string[] = [];
-  for (const [collection, documents] of Object.entries(collections)) {
-    for (const document of documents) {
-      collectResidual(document.data, `${collection}/${document.id}`, problems);
+function hasLiveStorageHost(value: string): boolean {
+  return (value.match(URL_CANDIDATE) ?? []).some((raw) => {
+    try {
+      const parsed = new URL(raw.startsWith('//')
+        ? `https:${raw}`
+        : raw);
+      return isLiveStorageHost(parsed.hostname);
+    } catch {
+      return false;
     }
-  }
-  if (problems.length > 0) {
-    throw new Error(`sanitized baseline still has personal data at ${problems.join(', ')}`);
-  }
+  });
 }
 
 /**
- * Returns the first storage rule that matches this object, if one does.
- *
- * @param objectPath Bucket-relative object path.
- * @returns Matching rule, or null when the object should be copied.
+ * Checks if a rewrite rule is allowed for a string.
+ * @param kind Rewrite kind.
+ * @param match String to check.
+ * @returns True if the rule applies.
  */
-export function storageReplacement(objectPath: string): StorageObjectRule | null {
-  for (const rule of SANITIZE_RULES) {
-    if (rule.kind === 'storage-object' && new RegExp(rule.pathPattern, 'i').test(objectPath)) {
-      return rule;
-    }
-  }
-  return null;
-}
-
-/**
- * Bytes and content type written instead of a matched live object.
- *
- * @param rule Storage rule that matched.
- * @returns Small generated file.
- */
-export function placeholderFor(rule: StorageObjectRule): { bytes: Buffer; contentType: string } {
-  switch (rule.replacement) {
-    case 'gif':
-      return { bytes: readPlaceholder('banner.gif'), contentType: 'image/gif' };
-    case 'webp':
-      return { bytes: readPlaceholder('profile.png'), contentType: 'image/png' };
-    case 'resume':
-    case 'pdf':
-      return { bytes: PLACEHOLDER_RESUME, contentType: 'application/pdf' };
+function isAllowed(kind: SanitizeKind, match: string): boolean {
+  switch (kind) {
+    case 'email':
+      return match.toLowerCase() === MOCK_EMAIL;
+    case 'mailto':
+      return match.toLowerCase() === `mailto:${MOCK_EMAIL}`;
+    case 'tel':
+      return match.toLowerCase() === `tel:${MOCK_PHONE}`;
+    case 'phone':
+      return match === MOCK_PHONE;
+    case 'token':
+      return match.endsWith(`token=${MOCK_TOKEN}`);
+    case 'storage-url':
+      return false;
     default: {
-      const neverReplacement: never = rule.replacement;
-      throw new Error(`unsupported placeholder ${String(neverReplacement)}`);
+      const neverKind: never = kind;
+      return neverKind;
     }
   }
 }
 
 /**
- * Throws when a baseline file would exceed 1 MiB.
- *
- * @param bytes File length.
- * @param label Path or description used in the error.
+ * Rewrites a storage:// URL to the emulator media URL.
+ * @param value Storage URL.
+ * @returns Emulator media URL.
  */
-export function assertWithinBaselineLimit(bytes: number, label: string): void {
-  if (bytes > MAX_BASELINE_FILE_BYTES) {
-    throw new Error(`${label} is ${bytes} bytes, over the 1 MiB baseline limit`);
-  }
+function rewriteSeedString(value: string): string {
+  return value.replace(/storage:\/\/([^\s"'<>]+)/g, (_match, objectPath: string) => emulatorMediaUrl(objectPath));
 }
 
 /**
- * Rewrites storage:// links to emulator media URLs.
- *
- * @param value Decoded Firestore value.
- * @returns Value with emulator URLs.
+ * Rewrites a storage:// URL back to the emulator media URL.
+ * @param value Storage URL.
+ * @returns Emulator media URL.
  */
-export function rewriteSeedValue(value: unknown): unknown {
-  if (typeof value === 'string') {
-    return rewriteSeedString(value);
-  }
-  if (Array.isArray(value)) {
-    return value.map((item) => rewriteSeedValue(item));
-  }
-  if (!isPlainRecord(value)) {
-    return value;
-  }
-  const next: Record<string, unknown> = {};
-  for (const [key, child] of Object.entries(value)) {
-    next[key] = rewriteSeedValue(child);
-  }
-  return next;
+function toBaselineStorageString(value: string): string {
+  const host = escapeRegExp(EMULATOR_TARGET.hosts.storage);
+  const port = EMULATOR_PORTS.storage;
+  const bucket = escapeRegExp(EMULATOR_BUCKET);
+  const pattern = new RegExp(
+    `http://(?:${host}|localhost):${port}/v0/b/${bucket}/o/([^?\\s]+)(?:\\?[^\\s]*)?`,
+    'g',
+  );
+  return value.replace(pattern, (_match, encoded: string) => `storage://${decodeURIComponent(encoded)}`);
 }
 
 /**
- * Rewrites emulator media URLs back to storage:// so hashes match the baseline.
- *
- * @param value Typed document value read from the emulator.
- * @returns Value with baseline storage URLs.
+ * Rewrites a string using a rewrite rule.
+ * @param kind Rewrite kind.
+ * @param value String to rewrite.
+ * @returns Rewritten string.
  */
-export function normalizeEmulatorUrls(value: TypedValue): TypedValue {
-  return mapStrings(value, '', (_fieldPath, text) => toBaselineStorageString(text));
-}
-
 function applyRewrite(kind: SanitizeKind, value: string): string {
   switch (kind) {
     case 'storage-url':
@@ -407,126 +465,33 @@ function applyRewrite(kind: SanitizeKind, value: string): string {
   }
 }
 
-function collectResidual(value: TypedValue, fieldPath: string, problems: string[]): void {
-  switch (value.type) {
-    case 'string':
-      if (residualKinds(value.value).length > 0) {
-        problems.push(fieldPath);
-      }
-      return;
-    case 'array':
-      value.values.forEach((item, index) => {
-        collectResidual(item, `${fieldPath}.${index}`, problems);
-      });
-      return;
-    case 'map':
-      for (const [key, child] of Object.entries(value.fields)) {
-        const nextPath = fieldPath
-          ? `${fieldPath}.${key}`
-          : key;
-        collectResidual(child, nextPath, problems);
-      }
-      return;
-    default:
-  }
-}
-
-const LIVE_STORAGE_HOSTS = [
-  'firebasestorage.googleapis.com',
-  'portfolio-c9b8e.firebasestorage.app',
-  'portfolio-c9b8e.appspot.com',
-] as const;
-
-const LIVE_PROJECT_ID = 'portfolio-c9b8e';
-const URL_CANDIDATE = /(?:https?:)?\/\/[^\s"'<>]+/gi;
-
+/**
+ * Finds which rewrite rules apply to a string.
+ * @param value String to check.
+ * @returns List of rewrite kinds that apply.
+ */
 function residualKinds(value: string): SanitizeKind[] {
   const hits: SanitizeKind[] = [];
-  for (const rule of globalRules()) {
+  globalRules().forEach((rule) => {
     const matches = value.match(new RegExp(rule.pattern, 'gi')) ?? [];
     const blocked = matches.some((match) => !isAllowed(rule.rewrite, match));
     if (blocked) {
       hits.push(rule.rewrite);
     }
-  }
+  });
   if (hasLiveStorageHost(value) || hasLiveProjectId(value)) {
     hits.push('storage-url');
   }
   return hits;
 }
 
-function hasLiveStorageHost(value: string): boolean {
-  for (const raw of value.match(URL_CANDIDATE) ?? []) {
-    try {
-      const parsed = new URL(raw.startsWith('//')
-        ? `https:${raw}`
-        : raw);
-      if (isLiveStorageHost(parsed.hostname)) {
-        return true;
-      }
-    } catch {
-      // The candidate was not a URL. Skip it.
-    }
-  }
-  return false;
-}
-
-function isLiveStorageHost(hostname: string): boolean {
-  const host = hostname.toLowerCase();
-  return LIVE_STORAGE_HOSTS.some((blocked) => host === blocked || host.endsWith(`.${blocked}`));
-}
-
-function hasLiveProjectId(value: string): boolean {
-  return new RegExp(`(?<![a-z0-9-])${escapeRegExp(LIVE_PROJECT_ID)}(?![a-z0-9-])`, 'i').test(value);
-}
-
-function isAllowed(kind: SanitizeKind, match: string): boolean {
-  switch (kind) {
-    case 'email':
-      return match.toLowerCase() === MOCK_EMAIL;
-    case 'mailto':
-      return match.toLowerCase() === `mailto:${MOCK_EMAIL}`;
-    case 'tel':
-      return match.toLowerCase() === `tel:${MOCK_PHONE}`;
-    case 'phone':
-      return match === MOCK_PHONE;
-    case 'token':
-      return match.endsWith(`token=${MOCK_TOKEN}`);
-    case 'storage-url':
-      return false;
-    default: {
-      const neverKind: never = kind;
-      return neverKind;
-    }
-  }
-}
-
-function rewriteSeedString(value: string): string {
-  return value.replace(/storage:\/\/([^\s"'<>]+)/g, (_match, objectPath: string) => emulatorMediaUrl(objectPath));
-}
-
-function toBaselineStorageString(value: string): string {
-  const host = escapeRegExp(EMULATOR_TARGET.hosts.storage);
-  const port = EMULATOR_PORTS.storage;
-  const bucket = escapeRegExp(EMULATOR_BUCKET);
-  const pattern = new RegExp(
-    `http://(?:${host}|localhost):${port}/v0/b/${bucket}/o/([^?\\s]+)(?:\\?[^\\s]*)?`,
-    'g',
-  );
-  return value.replace(pattern, (_match, encoded: string) => `storage://${decodeURIComponent(encoded)}`);
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function emulatorMediaUrl(objectPath: string): string {
-  const encoded = encodeURIComponent(objectPath);
-  const host = EMULATOR_TARGET.hosts.storage;
-  const port = EMULATOR_PORTS.storage;
-  return `http://${host}:${port}/v0/b/${EMULATOR_BUCKET}/o/${encoded}?alt=media`;
-}
-
+/**
+ * Rewrites strings inside a typed value using a visitor function.
+ * @param value Typed value.
+ * @param fieldPath Dot path of the string inside the document.
+ * @param visit Function that transforms each string.
+ * @returns Transformed value.
+ */
 function mapStrings(
   value: TypedValue,
   fieldPath: string,
@@ -548,12 +513,12 @@ function mapStrings(
       };
     case 'map': {
       const fields: Record<string, TypedValue> = {};
-      for (const [key, child] of Object.entries(value.fields)) {
+      Object.entries(value.fields).forEach(([key, child]) => {
         const nextPath = fieldPath
           ? `${fieldPath}.${key}`
           : key;
         fields[key] = mapStrings(child, nextPath, visit);
-      }
+      });
       return { type: 'map', fields };
     }
     case 'null':
@@ -572,30 +537,178 @@ function mapStrings(
   }
 }
 
-function globalPattern(kind: SanitizeKind): RegExp {
-  const rule = globalRules().find((candidate) => candidate.rewrite === kind);
-  if (!rule) {
-    throw new Error(`missing global rule ${kind}`);
+/**
+ * Collects field paths that still contain personal data or live storage URLs.
+ * @param value Typed document value read from the emulator.
+ * @param fieldPath Dot path of the string inside the document.
+ * @param problems List of field paths.
+ */
+function collectResidual(value: TypedValue, fieldPath: string, problems: string[]): void {
+  switch (value.type) {
+    case 'string':
+      if (residualKinds(value.value).length > 0) {
+        problems.push(fieldPath);
+      }
+      break;
+    case 'array':
+      value.values.forEach((item, index) => {
+        collectResidual(item, `${fieldPath}.${index}`, problems);
+      });
+      break;
+    case 'map':
+      Object.entries(value.fields).forEach(([key, child]) => {
+        const nextPath = fieldPath
+          ? `${fieldPath}.${key}`
+          : key;
+        collectResidual(child, nextPath, problems);
+      });
+      break;
+    default:
+      break;
   }
-  return new RegExp(rule.pattern, 'g');
 }
 
-function globalRules(): GlobalSanitizeRule[] {
-  return SANITIZE_RULES.filter((rule): rule is GlobalSanitizeRule => rule.kind === 'global');
+/**
+ * Rewrites one string using field rules for its path and every global rule.
+ * @param collection Collection id.
+ * @param fieldPath Dot path of the string inside the document.
+ * @param value Raw string.
+ * @returns Sanitized string.
+ */
+export function sanitizeString(collection: string, fieldPath: string, value: string): string {
+  const kinds = new Set<SanitizeKind>();
+  globalRules().forEach((rule) => {
+    kinds.add(rule.rewrite);
+  });
+  fieldRules().forEach((rule) => {
+    if (rule.collection === collection && fieldMatches(rule.fieldPath, fieldPath)) {
+      rule.rewrites.forEach((rewrite) => {
+        kinds.add(rewrite);
+      });
+    }
+  });
+  return REWRITE_ORDER.reduce((current, kind) => {
+    if (!kinds.has(kind)) {
+      return current;
+    }
+    return applyRewrite(kind, current);
+  }, value);
 }
 
-function fieldRules(): FieldSanitizeRule[] {
-  return SANITIZE_RULES.filter((rule): rule is FieldSanitizeRule => rule.kind === 'field');
+/**
+ * Rewrites personal data and live storage URLs in one collection.
+ * @param collection Collection id.
+ * @param documents Encoded documents.
+ * @returns Sanitized copies.
+ */
+export function sanitizeDocuments(
+  collection: string,
+  documents: readonly BaselineDocument[],
+): BaselineDocument[] {
+  return documents.map((document) => ({
+    id: document.id,
+    data: mapStrings(document.data, '', (fieldPath, text) => sanitizeString(collection, fieldPath, text)),
+  }));
 }
 
-function fieldMatches(rulePath: string, fieldPath: string): boolean {
-  return fieldPath === rulePath || fieldPath.startsWith(`${rulePath}.`);
-}
-
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
+/**
+ * Throws when a sanitized document still contains personal data or a live bucket URL.
+ * @param collections Sanitized documents keyed by collection.
+ */
+export function assertNoResidualPii(
+  collections: Readonly<Record<string, readonly BaselineDocument[]>>,
+): void {
+  const problems: string[] = [];
+  Object.entries(collections).forEach(([collection, documents]) => {
+    documents.forEach((document) => {
+      collectResidual(document.data, `${collection}/${document.id}`, problems);
+    });
+  });
+  if (problems.length > 0) {
+    throw new Error(`sanitized baseline still has personal data at ${problems.join(', ')}`);
   }
-  const proto: unknown = Object.getPrototypeOf(value);
-  return proto === Object.prototype || proto === null;
+}
+
+/**
+ * Returns the first storage rule that matches this object, if one does.
+ * @param objectPath Bucket-relative object path.
+ * @returns Matching rule, or null when the object should be copied.
+ */
+export function storageReplacement(objectPath: string): StorageObjectRule | null {
+  const match = SANITIZE_RULES.find((rule) => (
+    rule.kind === 'storage-object' && new RegExp(rule.pathPattern, 'i').test(objectPath)
+  ));
+  if (!match || match.kind !== 'storage-object') {
+    return null;
+  }
+  return match;
+}
+
+/**
+ * Bytes and content type written instead of a matched live object.
+ * @param rule Storage rule that matched.
+ * @returns Small generated file.
+ */
+export function placeholderFor(rule: StorageObjectRule): { bytes: Buffer; contentType: string } {
+  switch (rule.replacement) {
+    case 'gif':
+      return { bytes: readPlaceholder('banner.gif'), contentType: 'image/gif' };
+    case 'banner-webp':
+      return { bytes: readPlaceholder('banner.webp'), contentType: 'image/webp' };
+    case 'banner-mp4':
+      return { bytes: readPlaceholder('banner.mp4'), contentType: 'video/mp4' };
+    case 'banner-webm':
+      return { bytes: readPlaceholder('banner.webm'), contentType: 'video/webm' };
+    case 'webp':
+      return { bytes: readPlaceholder('profile.png'), contentType: 'image/png' };
+    case 'resume':
+    case 'pdf':
+      return { bytes: PLACEHOLDER_RESUME, contentType: 'application/pdf' };
+    default: {
+      const neverReplacement: never = rule.replacement;
+      throw new Error(`unsupported placeholder ${String(neverReplacement)}`);
+    }
+  }
+}
+
+/**
+ * Throws when a baseline file would exceed 1 MiB.
+ * @param bytes File length.
+ * @param label Path or description used in the error.
+ */
+export function assertWithinBaselineLimit(bytes: number, label: string): void {
+  if (bytes > MAX_BASELINE_FILE_BYTES) {
+    throw new Error(`${label} is ${bytes} bytes, over the 1 MiB baseline limit`);
+  }
+}
+
+/**
+ * Rewrites storage:// links to emulator media URLs.
+ * @param value Decoded Firestore value.
+ * @returns Value with emulator URLs.
+ */
+export function rewriteSeedValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return rewriteSeedString(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => rewriteSeedValue(item));
+  }
+  if (!isPlainRecord(value)) {
+    return value;
+  }
+  const next: Record<string, unknown> = {};
+  Object.entries(value).forEach(([key, child]) => {
+    next[key] = rewriteSeedValue(child);
+  });
+  return next;
+}
+
+/**
+ * Rewrites emulator media URLs back to storage:// so hashes match the baseline.
+ * @param value Typed document value read from the emulator.
+ * @returns Value with baseline storage URLs.
+ */
+export function normalizeEmulatorUrls(value: TypedValue): TypedValue {
+  return mapStrings(value, '', (_fieldPath, text) => toBaselineStorageString(text));
 }

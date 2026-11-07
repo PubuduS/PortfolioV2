@@ -1,7 +1,7 @@
 {
   "sourceProjectId": "portfolio-c9b8e",
-  "capturedAt": "2026-11-01T04:02:51.455Z",
-  "sanitizerVersion": 3,
+  "capturedAt": "2026-11-07T09:54:49.449Z",
+  "sanitizerVersion": 4,
   "firestore": {
     "about-me-section": {
       "docCount": 1,
@@ -88,20 +88,95 @@
       "bytes": 30586,
       "contentType": "application/octet-stream"
     },
-    "portfolio/landing-page/banners/fall/Fall_Banner.gif": {
-      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
-      "bytes": 134771,
-      "contentType": "image/gif"
+    "portfolio/landing-page/banners/fall/Fall_Banner-desktop.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
     },
-    "portfolio/landing-page/banners/spring/Spring_Banner.gif": {
-      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
-      "bytes": 134771,
-      "contentType": "image/gif"
+    "portfolio/landing-page/banners/fall/Fall_Banner-desktop.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
     },
-    "portfolio/landing-page/banners/winter/Winter_Banner.gif": {
-      "sha256": "d105c51bf44c0eca4913735e11518aff2c1b3fe5cbebbe92c5777888363830e7",
-      "bytes": 134771,
-      "contentType": "image/gif"
+    "portfolio/landing-page/banners/fall/Fall_Banner-mobile.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
+    },
+    "portfolio/landing-page/banners/fall/Fall_Banner-mobile.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
+    },
+    "portfolio/landing-page/banners/fall/Fall_Banner-poster-desktop.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
+    },
+    "portfolio/landing-page/banners/fall/Fall_Banner-poster-mobile.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-desktop.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-desktop.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-mobile.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-mobile.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-poster-desktop.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
+    },
+    "portfolio/landing-page/banners/spring/Spring_Banner-poster-mobile.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-desktop.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-desktop.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-mobile.mp4": {
+      "sha256": "e0509a6371ac294d9396ae9b4ddc5022ce2684589cf003e8a77e4ecdcd4f219a",
+      "bytes": 1665,
+      "contentType": "video/mp4"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-mobile.webm": {
+      "sha256": "4b230df57c46c7a1835a5c661d4cd44e0eeb76a0887287f6fb9994545c8cc9e5",
+      "bytes": 586,
+      "contentType": "video/webm"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-poster-desktop.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
+    },
+    "portfolio/landing-page/banners/winter/Winter_Banner-poster-mobile.webp": {
+      "sha256": "d0252918c8ae70ae4a4239018130afe958c06245b1556040c5d384d2c55e6b29",
+      "bytes": 70,
+      "contentType": "image/webp"
     },
     "portfolio/portfolio-tiles/ID-01-Icon.webp": {
       "sha256": "4c68ec38f4694c1694442e8a082e12a11b9b73a72b1fab4e5d64ea1802a4b457",
