@@ -8,6 +8,8 @@ describe('mirrorUrl', () => {
     ['/admin/home#top', '/home'],
     ['/content/aboutme', '/admin/aboutme'],
     ['/admin/aboutme/', '/content/aboutme'],
+    ['/content/contact', '/admin/contact'],
+    ['/admin/contact', '/content/contact'],
     ['/content/portfolio/featured-projects', '/admin/portfolio/featured-projects'],
     ['/admin/portfolio/featured-projects', '/content/portfolio/featured-projects'],
     ['/content/featured-projects', '/admin/portfolio/featured-projects'],

@@ -99,4 +99,21 @@ test.describe('admin section editors', () => {
     await expect(page.getByRole('heading', { name: 'Gait Trainer' })).toBeVisible();
     await expect(page.getByText(GAIT_DESCRIPTION)).toBeVisible();
   });
+
+  test('should open the contact editor from the public page', async ({ page }) => {
+    await signInAsAdmin(page);
+    await page.locator('#previewMode').click();
+    await page.getByRole('link', { name: 'Contact' }).click();
+    await expect(page.getByRole('link', { name: 'mock.user@example.test' })).toBeVisible();
+
+    await page.locator('#previewMode').click();
+
+    await expect(page).toHaveURL(/\/admin\/contact$/);
+    await expect(page.getByRole('heading', { name: 'Contact Page' })).toBeVisible();
+    await expect(page.getByLabel('LinkedIn')).toHaveValue(
+      'https://www.linkedin.com/in/pubudu-wijesooriya/',
+    );
+    await expect(page.getByLabel('GitHub')).toHaveValue('https://github.com/PubuduS/');
+    await expect(page.getByLabel('Email')).toHaveValue('mock.user@example.test');
+  });
 });

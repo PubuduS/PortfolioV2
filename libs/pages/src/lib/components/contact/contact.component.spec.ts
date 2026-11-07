@@ -19,11 +19,18 @@ describe('ContactComponent', () => {
   let fixture: ComponentFixture<ContactComponent>;
   let store: MockStore;
   let mail: jest.Mocked<ContactMailService>;
-  const mockData: ISocialInfor[] = [{
-    id: 1,
-    media: 'media',
-    mediaIcon: 'media icon',
-  }];
+  const mockData: ISocialInfor[] = [
+    {
+      id: 1,
+      media: 'https://www.linkedin.com/in/ada',
+      mediaIcon: 'fa-linkedin',
+    },
+    {
+      id: 3,
+      media: 'ada@example.test',
+      mediaIcon: 'fa-envelope',
+    },
+  ];
 
   function setField(selector: string, value: string): void {
     const field = fixture.nativeElement.querySelector(selector) as
@@ -80,6 +87,11 @@ describe('ContactComponent', () => {
 
   it('should connect social links when the page opens', () => {
     expect(store.dispatch).toHaveBeenCalledWith(StateActions.socialMediaInformationStateConnect());
+  });
+
+  it('should show the stored email address', () => {
+    const link = fixture.nativeElement.querySelector('a[href="mailto:ada@example.test"]');
+    expect(link?.textContent?.trim()).toBe('ada@example.test');
   });
 
   it('should keep send disabled until the form is valid', () => {

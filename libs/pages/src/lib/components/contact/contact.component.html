@@ -13,15 +13,18 @@
             opportunity or simply want to have a chat?
           </p>
           <p>
-            Drop me an email at
-            <a href="mailto:pubudusupun@gmail.com">pubudusupun&#64;gmail.com</a>
+            Drop me an email
+            @if (contactEmail(); as email) {
+              at
+              <a [href]="'mailto:' + email">{{ email }}</a>
+            }
             or simply fill out the form below and I will reply to you soon!
           </p>
           <h2>Follow Me</h2>
           @if (socialInfor(); as socialInfor) {
             <ul class="social">
               @for (social of socialInfor; track $index) {
-                @if (social.id === 3) {
+                @if (social.id === emailLinkId) {
                   <li>
                     <a
                       (click)="openDialog(social.media)"
