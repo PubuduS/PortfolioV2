@@ -31,8 +31,11 @@ import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 
 /** Editable contact links. */
 interface ContactLinkForm {
+  /** LinkedIn URL. */
   linkedin: FormControl<string>;
+  /** GitHub URL. */
   github: FormControl<string>;
+  /** Email address. */
   email: FormControl<string>;
 }
 

@@ -27,6 +27,7 @@ function pathOnly(url: string): string {
  * Query and fragment are dropped. `/home` swaps with `/admin/home`.
  * Featured projects keep their current admin path under `portfolio`.
  * `/content/admin` is the login page and stays put.
+ * `/admin/analytics` has no public page, so preview opens home.
  * @param url router url, including an optional query or fragment
  * @returns the mirrored path
  */
@@ -42,7 +43,7 @@ export function mirrorUrl(url: string): string {
   if (path === '/home') {
     return '/admin/home';
   }
-  if (path === '/admin/home') {
+  if (path === '/admin/home' || path === '/admin/analytics') {
     return '/home';
   }
   const lastSegment = path.slice(path.lastIndexOf('/') + 1);

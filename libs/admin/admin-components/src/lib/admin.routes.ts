@@ -66,4 +66,10 @@ export const ADMIN_PAGE_ROUTES: Routes = [
       (mod) => mod.AdminContactComponent,
     ),
   },
+  {
+    path: 'analytics',
+    loadComponent: () => import('./analytics/analytics-dashboard.component').then(
+      (mod) => mod.AnalyticsDashboardComponent,
+    ),
+  },
 ];

@@ -445,7 +445,9 @@ const MISSING_PAGE_VISIT_KEY = 'portfolio-v2-missing-page-quote';
 
 /** How many times the missing page has been opened on one ordinary day. */
 interface MissingPageVisit {
+  /** Month and day key used by the quote map. */
   dateKey: string;
+  /** How many times the missing page has been opened on one ordinary day. */
   visitIndex: number;
 }
 

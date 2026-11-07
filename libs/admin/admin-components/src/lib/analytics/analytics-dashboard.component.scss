@@ -1,0 +1,185 @@
+@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+
+.analytics {
+  background-color: $midnight-steel;
+  color: $white;
+  min-height: calc(100vh - 14vh);
+
+  h2,
+  h3,
+  h4 {
+    color: $white;
+  }
+
+  .content {
+    margin-top: 14vh;
+  }
+
+  .summary-note,
+  .hint,
+  .empty,
+  .legend,
+  .ticks {
+    color: $cloud-gray;
+  }
+
+  .alert-note {
+    color: $golden-bloom;
+  }
+
+  button {
+    background-color: $electric-teal;
+    border: 1px solid $electric-teal;
+    border-radius: 3px;
+    color: $midnight-steel;
+    padding-block: 0.4rem;
+    padding-inline: 1rem;
+
+    &:disabled {
+      background-color: $slate-grey;
+      border-color: $slate-grey;
+      color: $cloud-gray;
+    }
+  }
+
+  .summary-card,
+  .panel {
+    border: 1px solid $slate-grey;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .summary-card {
+    height: 100%;
+
+    .label {
+      color: $electric-teal;
+      margin-block-end: 0.25rem;
+    }
+
+    .value {
+      color: $electric-teal;
+      font-size: 1.75rem;
+      margin-block-end: 0.25rem;
+    }
+
+    .hint {
+      margin-block-end: 0;
+    }
+  }
+
+  .legend {
+    margin-block-end: 0.5rem;
+  }
+
+  .swatch {
+    display: inline-block;
+    block-size: 0.6rem;
+    inline-size: 1.2rem;
+    margin-inline: 0.35rem 0.4rem;
+  }
+
+  .users-swatch,
+  .users-line {
+    background-color: $electric-teal;
+    stroke: $electric-teal;
+  }
+
+  .views-swatch,
+  .views-line {
+    background-color: $golden-bloom;
+    stroke: $golden-bloom;
+  }
+
+  .trend-line {
+    fill: none;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 8rem;
+  }
+
+  .ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-block-start: 0.35rem;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .analytics-table {
+    border-collapse: collapse;
+    inline-size: 100%;
+
+    caption {
+      caption-side: bottom;
+    }
+
+    th,
+    td {
+      border-block-end: 1px solid $slate-grey;
+      padding-block: 0.5rem;
+      padding-inline: 0.75rem;
+      text-align: start;
+    }
+
+    th {
+      color: $electric-teal;
+      font-weight: 600;
+    }
+
+    .num {
+      text-align: end;
+    }
+  }
+
+  .up {
+    color: $electric-aloe;
+  }
+
+  .down {
+    color: $jasper;
+  }
+
+  .flat {
+    color: $cloud-gray;
+  }
+
+  .ranks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      align-items: center;
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: minmax(7rem, 1.2fr) minmax(4rem, 2fr) auto;
+      margin-block-end: 0.5rem;
+    }
+  }
+
+  .rank-track {
+    background-color: $dune;
+    block-size: 0.45rem;
+    border-radius: 999px;
+    display: block;
+  }
+
+  .rank-fill {
+    background-color: $electric-teal;
+    block-size: 100%;
+    border-radius: 999px;
+    display: block;
+  }
+
+  .rank-count {
+    color: $electric-teal;
+  }
+}

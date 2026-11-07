@@ -1,0 +1,259 @@
+<section class="analytics" [attr.aria-busy]="isLoading()">
+  <div class="content px-3 px-lg-5 pb-5">
+    <div
+      class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
+    >
+      <div>
+        <h2 class="mb-1">Analytics</h2>
+        <p class="mb-0 summary-note">
+          Public pages only. Admin pages are left out.
+        </p>
+      </div>
+      <button type="button" (click)="refresh()" [disabled]="isLoading()">
+        Refresh
+      </button>
+    </div>
+
+    @if (loadError(); as message) {
+      <p class="alert-note" role="alert">{{ message }}</p>
+    }
+    @if (isLoading() && view() === null) {
+      <p role="status">Loading analytics.</p>
+    } @else if (view(); as dashboard) {
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg">
+          <article class="summary-card">
+            <p class="label">{{ dashboard.realtimeLabel }}</p>
+            <p class="value">{{ dashboard.activeUsersNow }}</p>
+            <p class="hint">On the site</p>
+          </article>
+        </div>
+        <div class="col-6 col-lg">
+          <article class="summary-card">
+            <p class="label">Today</p>
+            <p class="value">{{ dashboard.usersToday }}</p>
+            <p class="hint">Users</p>
+          </article>
+        </div>
+        <div class="col-6 col-lg">
+          <article class="summary-card">
+            <p class="label">Last 7 days</p>
+            <p class="value">{{ dashboard.usersLast7Days }}</p>
+            <p class="hint">Users</p>
+          </article>
+        </div>
+        <div class="col-6 col-lg">
+          <article class="summary-card">
+            <p class="label">{{ dashboard.rangeLabel }}</p>
+            <p class="value">{{ dashboard.usersLast28Days }}</p>
+            <p class="hint">Users</p>
+          </article>
+        </div>
+        <div class="col-6 col-lg">
+          <article class="summary-card">
+            <p class="label">{{ dashboard.rangeLabel }}</p>
+            <p class="value">{{ dashboard.engagementRate }}</p>
+            <p class="hint">Engagement</p>
+          </article>
+        </div>
+      </div>
+
+      <h3>Visitors by day</h3>
+      <div class="panel mb-4">
+        <p class="legend">
+          <span class="swatch users-swatch"></span>
+          Users
+          <span class="swatch views-swatch"></span>
+          Page views
+        </p>
+        <svg
+          viewBox="0 0 100 36"
+          role="img"
+          [attr.aria-label]="dashboard.trend.label"
+        >
+          <polyline
+            class="trend-line users-line"
+            [attr.points]="dashboard.trend.usersPoints"
+          />
+          <polyline
+            class="trend-line views-line"
+            [attr.points]="dashboard.trend.pageViewPoints"
+          />
+        </svg>
+        <div class="ticks">
+          @for (tick of dashboard.trend.ticks; track $index) {
+            <span>{{ tick }}</span>
+          }
+        </div>
+      </div>
+
+      <h3>Sections</h3>
+      <div class="panel mb-4 table-wrap">
+        <table class="analytics-table">
+          <caption class="visually-hidden">
+            Page views by section compared with the previous 28 days.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Section</th>
+              <th class="num" scope="col">Page views</th>
+              <th class="num" scope="col">{{ dashboard.comparisonLabel }}</th>
+              <th class="num" scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (section of dashboard.sections; track section.label) {
+              <tr>
+                <th scope="row">{{ section.label }}</th>
+                <td class="num">{{ section.pageViews }}</td>
+                <td class="num">{{ section.previousPageViews }}</td>
+                <td
+                  class="num"
+                  [class.up]="section.tone === 'up'"
+                  [class.down]="section.tone === 'down'"
+                  [class.flat]="section.tone === 'flat'"
+                >
+                  {{ section.change }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Arrival</h3>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Landing page',
+              rows: dashboard.landingPages,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Source / medium',
+              rows: dashboard.sources,
+            }"
+          />
+        </div>
+      </div>
+
+      <h3>Audience</h3>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Country',
+              rows: dashboard.countries,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Device category',
+              rows: dashboard.devices,
+            }"
+          />
+        </div>
+      </div>
+
+      <h3>Devices and browsers</h3>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Browser',
+              rows: dashboard.browsers,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Browser version',
+              rows: dashboard.browserVersions,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Operating system',
+              rows: dashboard.operatingSystems,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Mobile device',
+              rows: dashboard.mobileDevices,
+              empty: 'No mobile devices in this range.',
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Screen resolution',
+              rows: dashboard.screenResolutions,
+            }"
+          />
+        </div>
+        <div class="col-12 col-lg-6">
+          <ng-container
+            [ngTemplateOutlet]="ranks"
+            [ngTemplateOutletContext]="{
+              title: 'Language',
+              rows: dashboard.languages,
+            }"
+          />
+        </div>
+      </div>
+
+      <h3>Unknown pages</h3>
+      <ng-container
+        [ngTemplateOutlet]="ranks"
+        [ngTemplateOutletContext]="{
+          title: 'Requested path',
+          rows: dashboard.misses,
+          empty: 'No unknown pages in this range.',
+        }"
+      />
+    }
+  </div>
+</section>
+
+<ng-template #ranks let-title="title" let-rows="rows" let-empty="empty">
+  <section class="panel h-100">
+    <h4>{{ title }}</h4>
+    @if (rows.length === 0) {
+      <p class="empty">{{ empty || 'No data in this range.' }}</p>
+    } @else {
+      <ul class="ranks">
+        @for (row of rows; track row.label) {
+          <li>
+            <span class="rank-label">{{ row.label }}</span>
+            <span class="rank-track" aria-hidden="true">
+              <span class="rank-fill" [style.inline-size.%]="row.share"></span>
+            </span>
+            <span class="rank-count">{{ row.count }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</ng-template>
