@@ -9,6 +9,7 @@ import {
 import { createSpyObj } from 'jest-createspyobj';
 
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { IExperience } from '@portfolio-v2/state/dataModels';
 import { ExperienceComponent } from './experience.component';
@@ -45,6 +46,7 @@ describe('ExperienceComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(experienceSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(ExperienceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -52,5 +54,9 @@ describe('ExperienceComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect the experience section when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.experienceStateConnect());
   });
 });

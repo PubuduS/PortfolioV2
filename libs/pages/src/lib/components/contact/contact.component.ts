@@ -23,6 +23,7 @@ import {
   ISenderNameValidatorMsgs,
   IMessageValidatorMsgs,
 } from '@portfolio-v2/state/dataModels';
+import { StateActions } from '@portfolio-v2/state';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { ContactPopupComponent } from './components/contact_popup/contact_popup.component';
 
@@ -98,7 +99,9 @@ export class ContactComponent implements OnInit {
     private formBuilder: FormBuilder,
     private mail: ContactMailService,
     private store: Store,
-  ) {}
+  ) {
+    this.store.dispatch(StateActions.socialMediaInformationStateConnect());
+  }
 
   /**
    * Build the contact form, including the honeypot field.

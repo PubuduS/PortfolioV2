@@ -7,6 +7,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
+import { StateActions } from '@portfolio-v2/state';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { SkillsComponent } from './skills.component';
@@ -46,6 +47,7 @@ describe('SkillsComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(skillsSelector, mockSkills);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(SkillsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -53,5 +55,9 @@ describe('SkillsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect the skills section when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.skillsStateConnect());
   });
 });

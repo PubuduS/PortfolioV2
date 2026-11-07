@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { StateActions } from '@portfolio-v2/state';
 import { educationSelector } from '@portfolio-v2/state/selectors';
 
 /**
@@ -24,5 +25,7 @@ export class EducationComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {}
+  constructor(private store: Store) {
+    this.store.dispatch(StateActions.educationCardsStateConnect());
+  }
 }

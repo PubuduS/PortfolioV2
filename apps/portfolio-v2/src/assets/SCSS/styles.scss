@@ -5,7 +5,7 @@
 @use 'colors' as *;
 @import '~bootstrap/dist/css/bootstrap.css';
 @import '~font-awesome/css/font-awesome.css';
-@import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap';
 
 * {
   margin: 0;
@@ -381,4 +381,9 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
 }

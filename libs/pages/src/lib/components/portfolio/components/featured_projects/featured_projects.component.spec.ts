@@ -8,6 +8,7 @@ import {
 } from '@ngrx/store/testing';
 
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
+import { StateActions } from '@portfolio-v2/state';
 import { featuredProjectCardsSelector } from '@portfolio-v2/state/selectors';
 import { FeaturedProjectsComponent } from './featured_projects.component';
 
@@ -41,6 +42,7 @@ describe('FeaturedProjectsComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(featuredProjectCardsSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(FeaturedProjectsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -48,5 +50,9 @@ describe('FeaturedProjectsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect featured projects when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
   });
 });

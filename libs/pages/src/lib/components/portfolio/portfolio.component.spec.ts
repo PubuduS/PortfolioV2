@@ -7,6 +7,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
+import { StateActions } from '@portfolio-v2/state';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { PortfolioComponent } from './portfolio.component';
@@ -32,6 +33,7 @@ describe('PortfolioComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(portfolioCardsSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(PortfolioComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -39,5 +41,9 @@ describe('PortfolioComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect the portfolio tiles when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
   });
 });

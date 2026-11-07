@@ -5,6 +5,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 
+import { StateActions } from '@portfolio-v2/state';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 
 /** Skill page */
@@ -27,5 +28,7 @@ export class SkillsComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {}
+  constructor(private store: Store) {
+    this.store.dispatch(StateActions.skillsStateConnect());
+  }
 }

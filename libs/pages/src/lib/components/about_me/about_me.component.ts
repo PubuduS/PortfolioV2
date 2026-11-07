@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { StateActions } from '@portfolio-v2/state';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 
 /**
@@ -26,7 +27,9 @@ export class AboutMeComponent {
    */
   constructor(
     private store: Store,
-  ) {}
+  ) {
+    this.store.dispatch(StateActions.aboutMeStateConnect());
+  }
 
   /**
    * Remove the link tag and returns the string without that

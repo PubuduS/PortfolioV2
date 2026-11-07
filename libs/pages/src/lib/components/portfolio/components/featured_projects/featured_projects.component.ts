@@ -10,6 +10,7 @@ import {
   IconURLs,
   IconURLType,
 } from '@portfolio-v2/const';
+import { StateActions } from '@portfolio-v2/state';
 import { featuredProjectCardsSelector } from '@portfolio-v2/state/selectors';
 
 /** Featured project page */
@@ -32,6 +33,7 @@ export class FeaturedProjectsComponent {
    * @param store ngrx store
    */
   constructor(private store: Store) {
+    this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
     this.featuredProjectCards = this.store.selectSignal(featuredProjectCardsSelector);
   }
 }

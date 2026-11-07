@@ -45,7 +45,9 @@ export class PortfolioComponent {
     private router: Router,
     private store: Store,
     public dialog: MatDialog,
-  ) {}
+  ) {
+    this.store.dispatch(StateActions.portfolioCardsStateConnect());
+  }
 
   /**
    * Open dialog

@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { StateActions } from '@portfolio-v2/state';
 import { certificatesSelector } from '@portfolio-v2/state/selectors';
 
 /**
@@ -28,5 +29,7 @@ export class CertificationsComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {}
+  constructor(private store: Store) {
+    this.store.dispatch(StateActions.certificatesCardsStateConnect());
+  }
 }

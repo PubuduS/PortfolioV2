@@ -5,10 +5,8 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
-import { StateActions } from '@portfolio-v2/state';
 import {
   BannerMedia,
   bannerMediaForMonth,
@@ -30,29 +28,33 @@ export class LandingBannerComponent implements AfterViewInit {
   /** True once the motion clip has painted a frame. */
   public motionVisible = false;
 
+  /** Still that paints before the clip is requested. */
+  @ViewChild('poster')
+  private poster?: ElementRef<HTMLImageElement>;
+
   /** Motion clip stacked on the still. */
   @ViewChild('motion')
   private motion?: ElementRef<HTMLVideoElement>;
 
+  /** True after the clip download has been started. */
+  private hasStartedMotion = false;
+
   /**
    * constructor
    * @param dateTimeService date time service
-   * @param store ngrx store
    */
   constructor(
     private dateTimeService: GetDateTimeService,
-    private store: Store,
   ) {
     this.media = bannerMediaForMonth(this.dateTimeService.getMonth());
-    this.populateStore();
   }
 
   /**
-   * Start the clip after the sources exist.
+   * Start the clip once a cached still is already on screen.
    * @inheritdoc
    */
   public ngAfterViewInit(): void {
-    this.playMotion();
+    this.playMotionAfterPoster();
   }
 
   /**
@@ -63,34 +65,30 @@ export class LandingBannerComponent implements AfterViewInit {
   }
 
   /**
-   * Load the selected source and play it.
-   * A cached poster does not fire a load event, so playback cannot wait on that event.
+   * Start the clip after the still has loaded.
+   * A cached poster is already complete and does not fire a load event.
    */
-  private playMotion(): void {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  public playMotionAfterPoster(): void {
+    if (this.hasStartedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
+    const poster = this.poster?.nativeElement;
+    if (!poster?.complete) {
+      return;
+    }
+    this.hasStartedMotion = true;
+    this.playMotion();
+  }
+
+  /**
+   * Load the selected source and play it.
+   */
+  private playMotion(): void {
     const video = this.motion?.nativeElement;
     if (!video) {
       return;
     }
     video.load();
     video.play()?.catch(() => undefined);
-  }
-
-  /** Dispatch all the actions to populate data */
-  private populateStore(): void {
-    this.store.dispatch(StateActions.aboutMeStateConnect());
-    this.store.dispatch(StateActions.skillsStateConnect());
-    this.store.dispatch(StateActions.experienceStateConnect());
-    this.store.dispatch(StateActions.portfolioCardsStateConnect());
-    this.store.dispatch(StateActions.projectCardsStateConnect());
-    this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
-    this.store.dispatch(StateActions.certificatesCardsStateConnect());
-    this.store.dispatch(StateActions.educationCardsStateConnect());
-    this.store.dispatch(StateActions.publicationCardsStateConnect());
-    this.store.dispatch(StateActions.publicationDetailCardsStateConnect());
-    this.store.dispatch(StateActions.socialMediaInformationStateConnect());
-    this.store.dispatch(StateActions.adminStateConnect());
   }
 }
