@@ -21,22 +21,22 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a [routerLink]="['/home']">Home</a>
+            <a [routerLink]="sectionPath().home">Home</a>
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/aboutme']">About Me</a>
+            <a [routerLink]="sectionPath().about">About Me</a>
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/skills']">Skills</a>
+            <a [routerLink]="sectionPath().skills">Skills</a>
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/experience']">Experience</a>
+            <a [routerLink]="sectionPath().experience">Experience</a>
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/portfolio']">Portfolio</a>
+            <a [routerLink]="sectionPath().portfolio">Portfolio</a>
           </li>
           <li class="nav-item">
-            <a [routerLink]="['content/education']">Education</a>
+            <a [routerLink]="sectionPath().education">Education</a>
           </li>
           <li class="nav-item">
             @if (resumeTarget(); as resume) {
@@ -65,7 +65,7 @@
   <div class="col-lg-1 col-3">
     <a
       class="header-btn ml-auto"
-      [routerLink]="['content/contact']"
+      [routerLink]="sectionPath().contact"
       data-contact-btn="Contact"
       >Contact</a
     >

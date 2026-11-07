@@ -60,6 +60,18 @@ function storedResume(): CatalogView {
  * @param label link text
  * @returns the anchor
  */
+/**
+ * @param root nav element
+ * @returns the party-mode button
+ */
+function partyButton(root: ParentNode): HTMLElement {
+  const party = root.querySelector('#partyMode');
+  if (!(party instanceof HTMLElement)) {
+    throw new Error('party button missing');
+  }
+  return party;
+}
+
 function navLink(root: ParentNode, label: string): HTMLAnchorElement {
   const anchor = [...root.querySelectorAll('a')].find(
     (item) => item.textContent?.trim() === label,
@@ -140,6 +152,37 @@ describe('NavBarComponent', () => {
         const partyBtn = nativeElement.querySelector('#partyMode');
         expect(partyBtn).toBeTruthy();
       });
+
+      it('returns to the page party mode was opened from', () => {
+        const router = TestBed.inject(Router);
+        jest.spyOn(router, 'url', 'get').mockReturnValue('/content/skills');
+        const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+        partyButton(nativeElement).click();
+
+        expect(navigate).toHaveBeenCalledWith('/content/party-mode');
+
+        isPartyModeSelector.setResult(true);
+        store.refreshState();
+        fixture.detectChanges();
+        jest.spyOn(router, 'url', 'get').mockReturnValue('/content/party-mode');
+        partyButton(nativeElement).click();
+
+        expect(navigate).toHaveBeenLastCalledWith('/content/skills');
+      });
+
+      it('returns to about me when party mode was opened directly', () => {
+        isPartyModeSelector.setResult(true);
+        store.refreshState();
+        fixture.detectChanges();
+        const router = TestBed.inject(Router);
+        jest.spyOn(router, 'url', 'get').mockReturnValue('/content/party-mode');
+        const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+        partyButton(nativeElement).click();
+
+        expect(navigate).toHaveBeenCalledWith('/content/aboutme');
+      });
     });
 
     describe('When in admin mode', () => {
@@ -152,6 +195,22 @@ describe('NavBarComponent', () => {
       it('should display preview button', () => {
         const previewBtn = nativeElement.querySelector('#previewMode');
         expect(previewBtn).toBeTruthy();
+      });
+
+      it('returns to the admin page party mode was opened from', () => {
+        const router = TestBed.inject(Router);
+        jest.spyOn(router, 'url', 'get').mockReturnValue('/admin/experience?tab=2');
+        const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+        const party = partyButton(nativeElement);
+
+        party.click();
+        isPartyModeSelector.setResult(true);
+        store.refreshState();
+        fixture.detectChanges();
+        jest.spyOn(router, 'url', 'get').mockReturnValue('/content/party-mode');
+        party.click();
+
+        expect(navigate).toHaveBeenLastCalledWith('/admin/experience?tab=2');
       });
 
       it('mirrors the current page when preview is clicked', () => {
@@ -198,6 +257,9 @@ describe('NavBarComponent', () => {
         expect(navLink(nativeElement, 'Resume').getAttribute('href')).toBe('/admin/resume');
         expect(navLink(nativeElement, 'Resume').getAttribute('target')).toBeNull();
         expect(navLink(nativeElement, 'Cover Letter').getAttribute('href')).toBe('/admin/coverletter');
+        expect(navLink(nativeElement, 'Home').getAttribute('href')).toBe('/admin/home');
+        expect(navLink(nativeElement, 'Skills').getAttribute('href')).toBe('/admin/skills');
+        expect(navLink(nativeElement, 'Contact').getAttribute('href')).toBe('/admin/contact');
       });
     });
 
@@ -215,6 +277,8 @@ describe('NavBarComponent', () => {
         expect(resume.getAttribute('target')).toBe('_blank');
         expect(resume.getAttribute('href')).toBe('https://files.example/resume.pdf');
         expect(navLink(nativeElement, 'Cover Letter').getAttribute('href')).toBe('/content/coverletter');
+        expect(navLink(nativeElement, 'Home').getAttribute('href')).toBe('/home');
+        expect(navLink(nativeElement, 'Skills').getAttribute('href')).toBe('/content/skills');
       });
     });
   });

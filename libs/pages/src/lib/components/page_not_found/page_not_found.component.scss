@@ -7,15 +7,19 @@ body {
   overflow: hidden;
 }
 
-div {
+.missing-stage,
+.missing-backdrop {
   position: absolute;
   top: 0%;
   left: 0%;
   height: 100%;
   width: 100%;
   margin: 0px;
-  background: radial-gradient(circle, $gondola 0%, $night 100%);
   overflow: hidden;
+}
+
+.missing-backdrop {
+  background: radial-gradient(circle, $gondola 0%, $night 100%);
 }
 
 .wrap {
@@ -71,7 +75,7 @@ h2 {
 
 #svgWrap_1,
 #svgWrap_2,
-div {
+.missing-backdrop {
   animation: hueRotate 6s ease-in-out 3s infinite;
 }
 

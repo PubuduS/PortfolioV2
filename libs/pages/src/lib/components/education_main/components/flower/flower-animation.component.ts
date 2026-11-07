@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   styleUrl: './flower-animation.component.scss',
 })
 export class FlowerAnimationComponent {
-  /** Link to the icon. Must be 128px x 128px */
+  /** Path to the icon in assets. Must be 128px x 128px. */
   @Input({ required: true }) public iconLink!: string;
   /** Title to display under the icon */
   @Input({ required: true }) public title!: string;

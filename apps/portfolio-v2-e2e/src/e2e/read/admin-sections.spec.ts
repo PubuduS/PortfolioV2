@@ -100,6 +100,24 @@ test.describe('admin section editors', () => {
     await expect(page.getByText(GAIT_DESCRIPTION)).toBeVisible();
   });
 
+  test('should keep the education hub in admin mode', async ({ page }) => {
+    await signInAsAdmin(page);
+    await page.locator('#previewMode').click();
+    await page.getByRole('link', { name: 'Education' }).click();
+    await expect(page.getByRole('heading', { name: 'EDUCATION AND CREDENTIALS' })).toBeVisible();
+
+    await page.locator('#previewMode').click();
+
+    await expect(page).toHaveURL(/\/admin\/education$/);
+    await expect(page.getByRole('heading', { name: 'EDUCATION AND CREDENTIALS' })).toBeVisible();
+    await expect(page.locator('portfolio-v2-flower-animation')).toHaveCount(3);
+
+    await page.locator('portfolio-v2-flower-animation').filter({ hasText: 'Publications' })
+      .getByText('Publications', { exact: true }).click();
+
+    await expect(page).toHaveURL(/\/admin\/education\/publications$/);
+  });
+
   test('should open the contact editor from the public page', async ({ page }) => {
     await signInAsAdmin(page);
     await page.locator('#previewMode').click();
