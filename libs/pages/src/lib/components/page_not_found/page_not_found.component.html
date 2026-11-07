@@ -19,8 +19,8 @@
 </div>
 
 <h1 class="quote">
-  @for (word of randomQuote; track word) {
-    <span>{{ word }}</span>
+  @for (word of quoteWords; track $index) {
+    <span [style.animation-delay]="($index + 1) * 0.1 + 's'">{{ word }}</span>
   }
 </h1>
 
