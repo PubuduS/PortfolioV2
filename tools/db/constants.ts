@@ -61,7 +61,7 @@ export const MOCK_PHONE = '+1-555-0100';
 export const MOCK_TOKEN = 'mock-token';
 
 /** Bump when sanitizer output changes shape or replacements. */
-export const SANITIZER_VERSION = 3;
+export const SANITIZER_VERSION = 4;
 
 /** Snapshot refuses to write a file larger than this. */
 export const MAX_BASELINE_FILE_BYTES = 1024 * 1024;

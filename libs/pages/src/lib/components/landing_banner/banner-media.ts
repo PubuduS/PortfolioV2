@@ -23,6 +23,7 @@ export interface BannerMedia {
 /** Season chosen from a calendar month numbered 1 through 12. */
 export type BannerSeason = 'fall' | 'spring' | 'winter';
 
+/** Map a banner season to the file prefix. */
 const SEASON_FILE_PREFIX: Record<BannerSeason, string> = {
   fall: 'Fall',
   spring: 'Spring',
