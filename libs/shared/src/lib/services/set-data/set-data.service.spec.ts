@@ -4,6 +4,7 @@ import {
   ref,
   Storage,
   uploadBytes,
+  uploadBytesResumable,
 } from '@angular/fire/storage';
 import { createSpyObj } from 'jest-createspyobj';
 import {
@@ -32,6 +33,7 @@ jest.mock('@angular/fire/storage', () => {
     ...actual,
     ref: jest.fn((_storage: unknown, path: string) => ({ path })),
     uploadBytes: jest.fn(),
+    uploadBytesResumable: jest.fn(),
     getDownloadURL: jest.fn(),
   };
 });
@@ -217,6 +219,68 @@ describe('SetDataService', () => {
       });
 
       expect(seen).toEqual([undefined]);
+    });
+  });
+
+  describe('pushFileToStorage', () => {
+    const originalFetch = global.fetch;
+
+    afterEach(() => {
+      global.fetch = originalFetch;
+    });
+
+    /**
+     * Stub fetch and the resumable upload task.
+     * @param notify Calls the upload callbacks.
+     */
+    function stubUpload(
+      notify: (
+        progress: (snapshot: { bytesTransferred: number; totalBytes: number }) => void,
+        failed: (error: Error) => void,
+        finished: () => void,
+      ) => void,
+    ): void {
+      global.fetch = jest.fn().mockResolvedValue({
+        blob: () => Promise.resolve(new Blob(['bytes'])),
+      }) as typeof fetch;
+      jest.mocked(uploadBytesResumable).mockReturnValue({
+        on: (
+          _event: string,
+          progress: (snapshot: { bytesTransferred: number; totalBytes: number }) => void,
+          failed: (error: Error) => void,
+          finished: () => void,
+        ) => notify(progress, failed, finished),
+      } as never);
+    }
+
+    it('should reset progress and resolve when the upload finishes', async () => {
+      service['progressValue'] = 100;
+      service['isUploadCompleted'] = true;
+      stubUpload((progress, _failed, finished) => {
+        progress({ bytesTransferred: 80, totalBytes: 80 });
+        finished();
+      });
+
+      const pending = service.pushFileToStorage('portfolio/file.webp', 'blob:file');
+      expect(service.getProgressValue()).toBe(0);
+      expect(service.getUploadCompleteState()).toBe(false);
+
+      await pending;
+
+      expect(service.getProgressValue()).toBe(100);
+      expect(service.getUploadCompleteState()).toBe(true);
+      expect(ref).toHaveBeenCalledWith(mockStorage, 'portfolio/file.webp');
+    });
+
+    it('should reject when the upload fails', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => undefined);
+      stubUpload((_progress, failed) => {
+        failed(new Error('quota'));
+      });
+
+      await expect(
+        service.pushFileToStorage('portfolio/file.webp', 'blob:file'),
+      ).rejects.toThrow('quota');
     });
   });
 });

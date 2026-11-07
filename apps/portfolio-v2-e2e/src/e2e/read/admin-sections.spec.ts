@@ -14,7 +14,29 @@ test.describe('admin section editors', () => {
 
     await expect(page.getByRole('heading', { name: 'Landing Page' })).toBeVisible();
     await expect(page.locator('select[formcontrolname="seasonsPicker"]')).toHaveValue('winter');
-    await expect(page.getByRole('button', { name: 'Upload' })).toBeVisible();
+    await expect(page.getByLabel('Phone still (WebP)')).toBeVisible();
+    await expect(page.getByLabel('Desktop still (WebP)')).toBeVisible();
+    await expect(page.getByLabel('Phone clip (WebM)')).toBeVisible();
+    await expect(page.getByLabel('Phone clip (MP4)')).toBeVisible();
+    await expect(page.getByLabel('Desktop clip (WebM)')).toBeVisible();
+    await expect(page.getByLabel('Desktop clip (MP4)')).toBeVisible();
+    const upload = page.getByRole('button', { name: 'Upload' });
+    await expect(upload).toBeDisabled();
+    await page.getByLabel('Phone still (WebP)').setInputFiles({
+      name: 'poster.webp',
+      mimeType: 'image/webp',
+      buffer: Buffer.from('still'),
+    });
+    await expect(upload).toBeEnabled();
+  });
+
+  test('should fill the about editor from the stored record', async ({ page }) => {
+    await signInAsAdmin(page);
+    await page.goto('/admin/aboutme');
+
+    await expect(page.locator('textarea[formcontrolname="mainIntro"]')).toHaveValue(
+      /My name is Pubudu\. Currently, I live in Omaha, Nebraska\./,
+    );
   });
 
   test('should open the skills editor from the public page', async ({ page }) => {

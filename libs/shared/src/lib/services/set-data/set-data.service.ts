@@ -71,24 +71,30 @@ export class SetDataService {
    */
   public async pushFileToStorage(fileDBPath: string, fileUrl: string): Promise<void> {
     const storageRef = ref(this.storage, fileDBPath);
+    this.progressValue = 0;
+    this.isUploadCompleted = false;
 
     const response = await fetch(fileUrl);
     const imageFile = await response.blob();
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and
-        // the total number of bytes to be uploaded
-        this.progressValue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        this.isUploadCompleted = this.progressValue === 100;
-      },
-      (error) => {
-        console.log(`error ${error}`);
-      },
-    );
+    await new Promise<void>((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and
+          // the total number of bytes to be uploaded
+          this.progressValue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.isUploadCompleted = this.progressValue === 100;
+        },
+        (error) => {
+          console.log(`error ${error}`);
+          reject(error);
+        },
+        () => resolve(),
+      );
+    });
   }
 
   /**

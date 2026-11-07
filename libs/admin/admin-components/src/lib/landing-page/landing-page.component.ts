@@ -20,8 +20,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { SetDataService } from '@portfolio-v2/shared/services';
+
+/** One public banner file the landing editor can replace. */
+interface BannerAsset {
+  /** Storage suffix after `{Season}_Banner-`. */
+  suffix: string;
+  /** Label shown beside the file input. */
+  label: string;
+  /** File types the input accepts. */
+  accept: string;
+}
 
 /**
  * Landing page admin section
@@ -37,7 +46,6 @@ import { SetDataService } from '@portfolio-v2/shared/services';
     MatInputModule,
     MatFormFieldModule,
     MatProgressBarModule,
-    DisplayValidatorErrorsComponent,
   ],
   providers: [TitleCasePipe],
   templateUrl: './landing-page.component.html',
@@ -45,6 +53,16 @@ import { SetDataService } from '@portfolio-v2/shared/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPageComponent implements OnInit {
+  /** Files the public banner requests for the selected season. */
+  protected readonly bannerAssets: BannerAsset[] = [
+    { suffix: 'poster-mobile.webp', label: 'Phone still (WebP)', accept: 'image/webp' },
+    { suffix: 'poster-desktop.webp', label: 'Desktop still (WebP)', accept: 'image/webp' },
+    { suffix: 'mobile.webm', label: 'Phone clip (WebM)', accept: 'video/webm' },
+    { suffix: 'mobile.mp4', label: 'Phone clip (MP4)', accept: 'video/mp4' },
+    { suffix: 'desktop.webm', label: 'Desktop clip (WebM)', accept: 'video/webm' },
+    { suffix: 'desktop.mp4', label: 'Desktop clip (MP4)', accept: 'video/mp4' },
+  ];
+
   /** Landing form */
   protected landingnForm!: FormGroup;
 
@@ -54,17 +72,20 @@ export class LandingPageComponent implements OnInit {
   /** Preview Image URL */
   protected imagePreview = this.defaultImageSrc;
 
-  /** Selected Image URL */
-  protected imageUrl = '';
-
   /** Image Upload Progress Value */
   protected progressValue = 0;
 
   /** Upload Complete Flag */
   protected isUploadCompleted = false;
 
+  /** True once at least one banner file is chosen. */
+  protected hasSelectedFile = false;
+
   /** Base Path */
   private readonly basePath = 'portfolio/landing-page/banners';
+
+  /** Files chosen for this upload, keyed by the public suffix. */
+  private readonly selectedFiles = new Map<string, File>();
 
   /**
    * constructor
@@ -86,56 +107,101 @@ export class LandingPageComponent implements OnInit {
    */
   public ngOnInit(): void {
     this.landingnForm = this.formBuilder.group({
-      filePicker: ['', [Validators.required]],
       seasonsPicker: ['winter', [Validators.required]],
     });
   }
 
   /**
-   * Handle the file picker.
-   * Display preview image when user
-   * selected an image from the file picker.
-   * @param event event
+   * Keep the chosen file and preview a still when the file is an image.
+   * @param suffix Public banner suffix this input replaces.
+   * @param event File input change event.
    */
-  protected onFileChange(event: Event): void {
-    if (event.target instanceof HTMLInputElement) {
-      const file = event.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imageUrl = reader.result as string;
-          this.imagePreview = this.imageUrl;
-          this.cdr.detectChanges();
-        };
-        reader.readAsDataURL(file);
-      }
+  protected onBannerFile(suffix: string, event: Event): void {
+    if (!(event.target instanceof HTMLInputElement)) {
+      return;
     }
-  }
-
-  /**
-   * Upload data
-   */
-  public uploadData(): void {
-    const { filePicker, seasonsPicker } = this.landingnForm.value;
-    if (filePicker && seasonsPicker) {
-      const databseFilePath = this.getCorrectBannerPath(seasonsPicker);
-      this.setDataService.pushFileToStorage(databseFilePath, this.imageUrl);
-      setInterval(() => {
-        this.progressValue = this.setDataService.getProgressValue();
-        this.isUploadCompleted = this.setDataService.getUploadCompleteState();
+    const file = event.target.files?.[0];
+    if (!file) {
+      this.selectedFiles.delete(suffix);
+      this.hasSelectedFile = this.selectedFiles.size > 0;
+      this.cdr.detectChanges();
+      return;
+    }
+    this.selectedFiles.set(suffix, file);
+    this.hasSelectedFile = true;
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = String(reader.result);
         this.cdr.detectChanges();
-      }, 100);
+      };
+      reader.readAsDataURL(file);
     }
+    this.cdr.detectChanges();
   }
 
   /**
-   * Get the correct banner path based on the user selection
-   * @param season season
-   * @returns path for the correct database location
+   * Upload each chosen file to the public banner path for the selected season.
    */
-  private getCorrectBannerPath(season: string): string {
+  protected startUpload(): void {
+    this.uploadSelectedFiles().catch(() => undefined);
+  }
+
+  /**
+   * Upload the chosen files one after another.
+   * @returns Resolves when every chosen file has finished uploading.
+   */
+  public async uploadSelectedFiles(): Promise<void> {
+    const season = String(this.landingnForm.value.seasonsPicker ?? '');
+    const uploads = this.bannerAssets.flatMap((asset) => {
+      const file = this.selectedFiles.get(asset.suffix);
+      return file ? [{ file, suffix: asset.suffix }] : [];
+    });
+    if (!season || uploads.length === 0) {
+      return;
+    }
+    this.isUploadCompleted = false;
+    await uploads.reduce(
+      (chain, upload) => chain.then(() => this.uploadOne(season, upload.file, upload.suffix)),
+      Promise.resolve(),
+    );
+    this.isUploadCompleted = true;
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Upload one banner file and refresh the progress bar while it runs.
+   * @param season Selected season.
+   * @param file Chosen file.
+   * @param suffix Public suffix this file replaces.
+   * @returns Resolves when that file has finished uploading.
+   */
+  private async uploadOne(season: string, file: File, suffix: string): Promise<void> {
+    const url = URL.createObjectURL(file);
+    const path = this.bannerStoragePath(season, suffix);
+    const pending = this.setDataService.pushFileToStorage(path, url);
+    const timer = setInterval(() => {
+      this.progressValue = this.setDataService.getProgressValue();
+      this.cdr.detectChanges();
+    }, 100);
+    try {
+      await pending;
+    } finally {
+      clearInterval(timer);
+      URL.revokeObjectURL(url);
+    }
+    this.progressValue = this.setDataService.getProgressValue();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Storage path for one public banner file.
+   * @param season Selected season.
+   * @param suffix File suffix, such as `poster-mobile.webp`.
+   * @returns Path inside the storage bucket.
+   */
+  private bannerStoragePath(season: string, suffix: string): string {
     const seasonName = this.titleCasePipe.transform(season);
-    const bannerName = `${seasonName}_Banner.gif`;
-    return `${this.basePath}/${season}/${bannerName}`;
+    return `${this.basePath}/${season}/${seasonName}_Banner-${suffix}`;
   }
 }

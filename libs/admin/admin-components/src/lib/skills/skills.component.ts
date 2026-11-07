@@ -1,7 +1,9 @@
 import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  effect,
   OnInit,
   Signal,
 } from '@angular/core';
@@ -61,6 +63,9 @@ export class SkillsComponent implements OnInit {
   /** Returns true if the save is successful */
   protected isSaveSuccess = of(false);
 
+  /** True after the form has been filled from a stored record. */
+  private hasAppliedSkills = false;
+
   /**
    * constructor
    * @param formBuilder form builder
@@ -68,6 +73,7 @@ export class SkillsComponent implements OnInit {
    * @param utility utility service
    * @param setDataService set data service
    * @param dialog mat dialog
+   * @param changeDetector change detector
    */
   constructor(
     private formBuilder: FormBuilder,
@@ -75,8 +81,13 @@ export class SkillsComponent implements OnInit {
     private utility: UtilityService,
     private setDataService: SetDataService,
     private dialog: MatDialog,
+    private changeDetector: ChangeDetectorRef,
   ) {
+    this.store.dispatch(StateActions.skillsStateConnect());
     this.skillsData = this.store.selectSignal(skillsSelector);
+    effect(() => {
+      this.applySkills(this.skillsData());
+    });
   }
 
   /**
@@ -84,8 +95,17 @@ export class SkillsComponent implements OnInit {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    const data = this.skillsData();
+    this.applySkills(this.skillsData());
+  }
 
+  /**
+   * Build the skills form from the stored record.
+   * @param data Stored skills record, once the listener has delivered it.
+   */
+  private applySkills(data: ISkills | undefined): void {
+    if (this.hasAppliedSkills) {
+      return;
+    }
     const introControl = {
       skillsIntro: [data?.intro ?? '', [Validators.required]],
       toolHeading: [data?.toolHeading ?? '', [Validators.required]],
@@ -94,17 +114,18 @@ export class SkillsComponent implements OnInit {
       leftPoints: [this.utility.seperateSentences(data?.framework), [Validators.required]],
       rightPoints: [this.utility.seperateSentences(data?.software), [Validators.required]],
     };
-
-    // Merge both language columns and create controls
     const languageControls = _.mapValues(
       _.merge({}, data?.languagesCol1, data?.languagesCol2),
       (value) => [value],
     );
-
     this.skillsForm = this.formBuilder.group({
       ...introControl,
       ...languageControls,
     });
+    if (data) {
+      this.hasAppliedSkills = true;
+      this.changeDetector.markForCheck();
+    }
   }
 
   /**

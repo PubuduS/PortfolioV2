@@ -3,11 +3,15 @@ import {
   TestBed,
 } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { provideMockStore } from '@ngrx/store/testing';
+import {
+  MockStore,
+  provideMockStore,
+} from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
+import { StateActions } from '@portfolio-v2/state';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import {
   GetDataService,
@@ -44,6 +48,7 @@ describe('ProjectCardsComponent', () => {
   let getDataService: jest.Mocked<GetDataService>;
   let setDataService: jest.Mocked<SetDataService>;
   let utilityService: jest.Mocked<UtilityService>;
+  let store: MockStore;
 
   const mockProjectData = {
     cardId: mockProjectCard.id,
@@ -79,6 +84,8 @@ describe('ProjectCardsComponent', () => {
       ],
     }).compileComponents();
 
+    store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(ProjectCardsComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
@@ -96,6 +103,10 @@ describe('ProjectCardsComponent', () => {
       expect(form.get('youtube')?.value).toBe(mockProjectCard.demoURL);
       expect(form.get('screenshot')?.value).toBe(mockProjectCard.screenshotURL);
       expect(form.get('documentation')?.value).toBe(mockProjectCard.documentationURL);
+    });
+
+    it('should open the project-card listener when the dialog opens', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.projectCardsStateConnect());
     });
 
     it('should set up form validators correctly', () => {
@@ -411,6 +422,7 @@ describe('ProjectCardsComponent', () => {
   describe('Featured Project Support', () => {
     let featuredComponent: ProjectCardsComponent;
     let featuredFixture: ComponentFixture<ProjectCardsComponent>;
+    let featuredStore: MockStore;
 
     const mockFeaturedProjectData = {
       cardId: mockProjectCard.id,
@@ -443,9 +455,17 @@ describe('ProjectCardsComponent', () => {
         ],
       }).compileComponents();
 
+      featuredStore = TestBed.inject(MockStore);
+      jest.spyOn(featuredStore, 'dispatch');
       featuredFixture = TestBed.createComponent(ProjectCardsComponent);
       featuredComponent = featuredFixture.componentInstance;
       await featuredFixture.whenStable();
+    });
+
+    it('should open the featured-project listener when the dialog opens', () => {
+      expect(featuredStore.dispatch).toHaveBeenCalledWith(
+        StateActions.featuredProjectCardsStateConnect(),
+      );
     });
 
     it('should initialize with featured project data', () => {
@@ -465,5 +485,61 @@ describe('ProjectCardsComponent', () => {
       expect(featuredComponent['cardEditorForm']?.get('description')?.value).toBe(mockProjectCard.description);
       expect(featuredComponent['cardEditorForm']?.get('technologies')?.value).toBe(mockProjectCard.tools);
     });
+  });
+});
+
+describe('ProjectCardsComponent when the card arrives after the dialog opens', () => {
+  let fixture: ComponentFixture<ProjectCardsComponent>;
+  let store: MockStore;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        ProjectCardsComponent,
+        MockComponents(DisplayValidatorErrorsComponent),
+      ],
+      providers: [
+        provideMockStore({
+          initialState: {
+            stateBanks: {
+              projectCards: [],
+              featuredProjectCards: [],
+              selectedProjectCardID: 1,
+            },
+          },
+        }),
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { cardId: mockProjectCard.id, type: ProjectCardType.standard },
+        },
+        { provide: GetDataService, useValue: createSpyObj(GetDataService) },
+        { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+        { provide: UtilityService, useValue: createSpyObj(UtilityService) },
+      ],
+    }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    fixture = TestBed.createComponent(ProjectCardsComponent);
+    fixture.detectChanges();
+  });
+
+  it('should fill the editor from the first stored card', () => {
+    expect(fixture.componentInstance['cardEditorForm'].get('description')?.value).toBe('');
+
+    store.setState({
+      stateBanks: {
+        projectCards: [mockProjectCard],
+        featuredProjectCards: [],
+        selectedProjectCardID: 1,
+      },
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['cardEditorForm'].get('description')?.value).toBe(
+      mockProjectCard.description,
+    );
+    expect(fixture.componentInstance['cardEditorForm'].get('codebase')?.value).toBe(
+      mockProjectCard.githubURL,
+    );
   });
 });

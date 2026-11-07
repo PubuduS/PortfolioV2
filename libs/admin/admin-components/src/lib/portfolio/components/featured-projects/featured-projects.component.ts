@@ -12,6 +12,7 @@ import {
   IconURLs,
   IconURLType,
 } from '@portfolio-v2/const';
+import { StateActions } from '@portfolio-v2/state';
 import {
   featuredProjectCardsSelector,
   newFeaturedProjectRecordIdSelector,
@@ -56,6 +57,7 @@ export class FeaturedProjectsComponent {
     public dialog: MatDialog,
     private store: Store,
   ) {
+    this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
     this.featuredProjectCards = this.store.selectSignal(featuredProjectCardsSelector);
   }
 

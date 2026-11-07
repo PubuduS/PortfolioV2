@@ -236,7 +236,7 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
       clearInterval(this.uploadProgressIntervalId);
     }
 
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl);
+    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
     this.uploadProgressIntervalId = window.setInterval(() => {
       this.progressValue = this.setDataService.getProgressValue();
       this.isUploadCompleted = this.setDataService.getUploadCompleteState();

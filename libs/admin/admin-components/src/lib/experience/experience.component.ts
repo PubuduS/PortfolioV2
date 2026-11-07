@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   OnDestroy,
   OnInit,
@@ -122,11 +123,21 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     private store: Store,
     private utility: UtilityService,
   ) {
+    this.store.dispatch(StateActions.experienceStateConnect());
     this.experienceData = this.store.selectSignal(experienceSelector);
-    if (this.experienceData()) {
-      [this.experience] = this.experienceData()!;
+    const firstJob = this.experienceData()?.[0];
+    if (firstJob) {
+      this.experience = firstJob;
+      this.selectedJob = firstJob.employer;
       this.totalYearsOfExperience();
     }
+    effect(() => {
+      const nextJob = this.experienceData()?.[0];
+      if (!nextJob || this.experience || !this.experienceForm) {
+        return;
+      }
+      this.displaySelected(nextJob);
+    });
   }
 
   /**

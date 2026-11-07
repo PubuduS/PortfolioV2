@@ -9,28 +9,25 @@
       <div class="row d-flex justify-content-center mt-5">
         <form [formGroup]="landingnForm!">
           <div class="admin-form col-12 px-5 text-center">
-            <!-- File Input Row -->
-            <div class="row mb-3 d-flex justify-content-center">
-              <div class="col-2">
-                <input
-                  type="file"
-                  class="form-control"
-                  formControlName="filePicker"
-                  accept="image/*"
-                  (change)="onFileChange($event)"
-                />
-                <admin-portfolio-display-validator-errors
-                  [control]="landingnForm.get('filePicker')"
-                  errorKey="required"
-                  message="A valid image is required"
-                >
-                </admin-portfolio-display-validator-errors>
+            @for (asset of bannerAssets; track asset.suffix) {
+              <div class="row mb-3 d-flex justify-content-center">
+                <div class="col-12 col-md-6">
+                  <label class="form-label" [attr.for]="asset.suffix">{{
+                    asset.label
+                  }}</label>
+                  <input
+                    [id]="asset.suffix"
+                    type="file"
+                    class="form-control"
+                    [accept]="asset.accept"
+                    (change)="onBannerFile(asset.suffix, $event)"
+                  />
+                </div>
               </div>
-            </div>
+            }
 
-            <!-- Season Selector Row -->
             <div class="row mb-3 d-flex justify-content-center">
-              <div class="col-2">
+              <div class="col-12 col-md-6">
                 <select
                   name="seasons"
                   class="form-select"
@@ -43,18 +40,16 @@
               </div>
             </div>
 
-            <!-- Progress Bar -->
             <div class="row mb-3 d-flex justify-content-center">
               <mat-progress-bar
-                class="col-2 w-25"
+                class="col-12 col-md-6"
                 mode="determinate"
                 [value]="progressValue"
               ></mat-progress-bar>
             </div>
 
-            <!-- Progress Row -->
             <div class="row mb-3 d-flex justify-content-center">
-              <div class="col-2">
+              <div class="col-12 col-md-6">
                 <span
                   >File Upload Progress:
                   {{ progressValue | number: '2.2-2' }}%</span
@@ -65,19 +60,26 @@
               </div>
             </div>
 
-            <!-- Upload Button Row -->
             <div class="row mb-3 d-flex justify-content-center">
-              <div class="col-2">
-                <button class="btn btn-primary" (click)="uploadData()">
+              <div class="col-12 col-md-6">
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  [disabled]="!hasSelectedFile"
+                  (click)="startUpload()"
+                >
                   Upload
                 </button>
               </div>
             </div>
 
-            <!-- Preview Image Row -->
             <div class="row d-flex justify-content-center">
               <div class="col-12">
-                <img class="imagePreview mt-3" [src]="imagePreview" />
+                <img
+                  class="imagePreview mt-3"
+                  [src]="imagePreview"
+                  alt="Banner still preview"
+                />
               </div>
             </div>
           </div>
