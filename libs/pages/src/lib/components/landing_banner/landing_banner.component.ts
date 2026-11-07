@@ -1,66 +1,81 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  OnInit,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
 
-import {
-  GetDataService,
-  GetDateTimeService,
-} from '@portfolio-v2/shared/services';
+import { GetDateTimeService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
+import {
+  BannerMedia,
+  bannerMediaForMonth,
+} from './banner-media';
 
-/** Landing page */
+/** Landing page banner. The still paints first, then the video covers it. */
 @Component({
   selector: 'portfolio-v2-landing-banner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './landing_banner.component.html',
   styleUrl: './landing_banner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingBannerComponent implements OnInit {
-  /** Base path */
-  private readonly basePath = 'portfolio/landing-page/banners';
-  /** Banner image */
-  public bannerImageSrc = of(`${this.basePath}/spring/Spring_Banner.gif`);
+export class LandingBannerComponent implements AfterViewInit {
+  /** Poster and video URLs for the current season. */
+  public readonly media: BannerMedia;
+
+  /** True once the motion clip has painted a frame. */
+  public motionVisible = false;
+
+  /** Motion clip stacked on the still. */
+  @ViewChild('motion')
+  private motion?: ElementRef<HTMLVideoElement>;
 
   /**
    * constructor
    * @param dateTimeService date time service
-   * @param getDataService get data service
    * @param store ngrx store
    */
   constructor(
     private dateTimeService: GetDateTimeService,
-    private getDataService: GetDataService,
     private store: Store,
   ) {
+    this.media = bannerMediaForMonth(this.dateTimeService.getMonth());
     this.populateStore();
   }
 
   /**
-   * Choose the banner image for the current season.
+   * Start the clip after the sources exist.
    * @inheritdoc
    */
-  public ngOnInit(): void {
-    this.getSeasonalBanner();
+  public ngAfterViewInit(): void {
+    this.playMotion();
   }
 
-  /** Get the correct banner according to the season of the year */
-  private getSeasonalBanner(): void {
-    const month: number = this.dateTimeService.getMonth();
+  /**
+   * Hide the still once the clip is painting frames.
+   */
+  public showMotion(): void {
+    this.motionVisible = true;
+  }
 
-    if (month <= 3 || month === 12) {
-      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/winter/Winter_Banner.gif`);
-    } else if (month > 3 && month <= 8) {
-      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/spring/Spring_Banner.gif`);
-    } else {
-      this.bannerImageSrc = this.getDataService.getPhotoURL(`${this.basePath}/fall/Fall_Banner.gif`);
+  /**
+   * Load the selected source and play it.
+   * A cached poster does not fire a load event, so playback cannot wait on that event.
+   */
+  private playMotion(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
     }
+    const video = this.motion?.nativeElement;
+    if (!video) {
+      return;
+    }
+    video.load();
+    video.play()?.catch(() => undefined);
   }
 
   /** Dispatch all the actions to populate data */
