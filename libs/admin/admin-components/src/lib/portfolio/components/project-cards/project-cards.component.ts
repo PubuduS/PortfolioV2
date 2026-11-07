@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  effect,
   Inject,
   OnDestroy,
   OnInit,
@@ -105,6 +106,9 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   /** Selected project card */
   protected readonly projectCard: Signal<IProjectCard | undefined> = signal(undefined);
 
+  /** True after the editor has been filled from a stored card. */
+  private hasAppliedCard = false;
+
   /** Image URL Subscription */
   private imageUrlSubscription!: Subscription;
 
@@ -139,10 +143,15 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   ) {
     this.cardId = this.data.cardId ?? 1;
     if (this.data.type === ProjectCardType.featured) {
+      this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
       this.projectCard = this.store.selectSignal(featuredProjectCardSelector(this.cardId));
     } else {
+      this.store.dispatch(StateActions.projectCardsStateConnect());
       this.projectCard = this.store.selectSignal(projectCardSelector(this.cardId));
     }
+    effect(() => {
+      this.applyCard(this.projectCard());
+    });
   }
 
   /**
@@ -163,14 +172,38 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
+    const card = this.projectCard();
     this.cardEditorForm = this.formBuilder.group({
-      description: [this.projectCard()?.description ?? '', [Validators.required]],
-      technologies: [this.projectCard()?.tools ?? '', [Validators.required]],
-      codebase: [this.projectCard()?.githubURL ?? '', [urlValidator()]],
-      youtube: [this.projectCard()?.demoURL ?? '', [urlValidator()]],
-      screenshot: [this.projectCard()?.screenshotURL ?? '', [firebaseURLValidator()]],
-      documentation: [this.projectCard()?.documentationURL ?? '', [urlValidator()]],
+      description: [card?.description ?? '', [Validators.required]],
+      technologies: [card?.tools ?? '', [Validators.required]],
+      codebase: [card?.githubURL ?? '', [urlValidator()]],
+      youtube: [card?.demoURL ?? '', [urlValidator()]],
+      screenshot: [card?.screenshotURL ?? '', [firebaseURLValidator()]],
+      documentation: [card?.documentationURL ?? '', [urlValidator()]],
     });
+    if (card) {
+      this.hasAppliedCard = true;
+    }
+  }
+
+  /**
+   * Fill the editor once the stored card arrives.
+   * @param card Stored project card.
+   */
+  private applyCard(card: IProjectCard | undefined): void {
+    if (!card || this.hasAppliedCard || !this.cardEditorForm) {
+      return;
+    }
+    this.hasAppliedCard = true;
+    this.cardEditorForm.patchValue({
+      description: card.description ?? '',
+      technologies: card.tools ?? '',
+      codebase: card.githubURL ?? '',
+      youtube: card.demoURL ?? '',
+      screenshot: card.screenshotURL ?? '',
+      documentation: card.documentationURL ?? '',
+    });
+    this.cdr.markForCheck();
   }
 
   /**
@@ -309,7 +342,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       clearInterval(this.uploadProgressIntervalId);
     }
 
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl);
+    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
     this.uploadProgressIntervalId = window.setInterval(() => {
       this.progressValue = this.setDataService.getProgressValue();
       this.isUploadCompleted = this.setDataService.getUploadCompleteState();

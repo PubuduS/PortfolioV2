@@ -329,7 +329,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       }
 
       // Start the upload
-      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl);
+      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
 
       // Set up progress tracking and wait for completion
       this.uploadProgressIntervalId = window.setInterval(() => {

@@ -12,6 +12,7 @@ import { MockComponent } from 'ng-mocks';
 
 import { SetDataService } from '@portfolio-v2/shared/services';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
+import { StateActions } from '@portfolio-v2/state';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { AboutMeComponent } from './about-me.component';
@@ -49,6 +50,7 @@ describe('AboutMeComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
     store.overrideSelector(aboutMeSelector, mockData);
     fixture = TestBed.createComponent(AboutMeComponent);
     component = fixture.componentInstance;
@@ -57,5 +59,66 @@ describe('AboutMeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should open the about listener when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.aboutMeStateConnect());
+  });
+
+  it('should keep an edited form when a later store update arrives', () => {
+    component['aboutMeForm'].patchValue({ mainIntro: 'edited intro' });
+    store.overrideSelector(aboutMeSelector, {
+      ...mockData,
+      intro: ['a replacement intro'],
+    });
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(component['aboutMeForm'].get('mainIntro')?.value).toBe('edited intro');
+  });
+});
+
+describe('AboutMeComponent when the record arrives after the page opens', () => {
+  let fixture: ComponentFixture<AboutMeComponent>;
+  let store: MockStore;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        AboutMeComponent,
+        MockComponent(DisplayValidatorErrorsComponent),
+      ],
+      providers: [
+        provideMockStore(),
+        FormBuilder,
+        { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+      ],
+    }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    store.overrideSelector(aboutMeSelector, undefined);
+    fixture = TestBed.createComponent(AboutMeComponent);
+    fixture.detectChanges();
+  });
+
+  it('should fill the form from the first stored record', () => {
+    expect(fixture.componentInstance['aboutMeForm'].get('mainIntro')?.value).toBe('');
+
+    store.overrideSelector(aboutMeSelector, {
+      id: 1,
+      imageSrc: 'some url',
+      intro: ['some intro1', 'another intro'],
+      subHeadingIntro: 'sub heading intro',
+      leftPoints: ['point 1'],
+      rightPoints: ['point 4'],
+      link: 'some link',
+    });
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['aboutMeForm'].get('mainIntro')?.value).toBe(
+      'some intro1\n\nanother intro',
+    );
+    expect(fixture.componentInstance['aboutMeForm'].get('linkField')?.value).toBe('some link');
   });
 });

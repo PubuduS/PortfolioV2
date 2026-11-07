@@ -171,7 +171,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
         clearInterval(this.uploadProgressIntervalId);
       }
 
-      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl);
+      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl).catch(() => undefined);
       this.uploadProgressIntervalId = window.setInterval(() => {
         this.progressValue = this.setDataService.getProgressValue();
         this.isUploadCompleted = this.setDataService.getUploadCompleteState();

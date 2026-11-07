@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { MatIconModule } from '@angular/material/icon';
 
+import { StateActions } from '@portfolio-v2/state';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
@@ -55,7 +56,9 @@ export class PortfolioComponent {
     private router: Router,
     private store: Store,
     public dialog: MatDialog,
-  ) {}
+  ) {
+    this.store.dispatch(StateActions.portfolioCardsStateConnect());
+  }
 
   /**
    * Add new record

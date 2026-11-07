@@ -42,8 +42,10 @@ function omitRemovedTypescriptEslintRules(configs) {
   });
 }
 
+const rootDir = dirname(fileURLToPath(import.meta.url));
+
 const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
+  baseDirectory: rootDir,
   recommendedConfig: js.configs.recommended,
 });
 
@@ -209,7 +211,7 @@ export default [
             devDependencies: true,
             optionalDependencies: false,
             peerDependencies: false,
-            packageDir: ['./'],
+            packageDir: [rootDir],
           },
         ],
         'import/prefer-default-export': 'off',

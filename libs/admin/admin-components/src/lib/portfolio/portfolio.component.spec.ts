@@ -11,6 +11,7 @@ import {
 } from '@ngrx/store/testing';
 import { MockComponents } from 'ng-mocks';
 
+import { StateActions } from '@portfolio-v2/state';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
@@ -60,6 +61,7 @@ describe('PortfolioComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
 
     store.overrideSelector(portfolioCardsSelector, mockData);
     store.refreshState();
@@ -79,6 +81,10 @@ describe('PortfolioComponent', () => {
   describe('Component Properties', () => {
     it('should have correct tooltip text', () => {
       expect((component as any).toolTip).toBe('Click here to see more');
+    });
+
+    it('should open the portfolio listener when the page opens', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
 
     it('should initialize projectView signal with store selector', () => {

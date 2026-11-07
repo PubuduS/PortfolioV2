@@ -8,6 +8,7 @@ import {
 } from '@ngrx/store/testing';
 import { MockComponents } from 'ng-mocks';
 
+import { StateActions } from '@portfolio-v2/state';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import {
   featuredProjectCardsSelector,
@@ -78,6 +79,7 @@ describe('FeaturedProjectsComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
     store.overrideSelector(featuredProjectCardsSelector, mockData);
     store.overrideSelector(newFeaturedProjectRecordIdSelector, 3);
 
@@ -93,6 +95,10 @@ describe('FeaturedProjectsComponent', () => {
   });
 
   describe('Component Initialization', () => {
+    it('should open the featured-project listener when the page opens', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
+    });
+
     it('should initialize with featured project cards from store', () => {
       expect(component.featuredProjectCards()).toEqual(mockData);
     });

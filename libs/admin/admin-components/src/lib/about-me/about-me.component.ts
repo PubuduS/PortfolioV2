@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  effect,
   OnInit,
   Signal,
 } from '@angular/core';
@@ -72,6 +74,9 @@ export class AboutMeComponent implements OnInit {
   /** Signal containing About Me section data */
   public readonly aboutMeData: Signal<IAboutMe | undefined>;
 
+  /** True after the form has been filled from a stored record. */
+  private hasAppliedAbout = false;
+
   /**
    * constructor
    * @param formBuilder form builder
@@ -79,6 +84,7 @@ export class AboutMeComponent implements OnInit {
    * @param store ngrx store
    * @param dialog Mat Dialog
    * @param utility utility service
+   * @param changeDetector change detector
    */
   constructor(
     private formBuilder: FormBuilder,
@@ -86,8 +92,13 @@ export class AboutMeComponent implements OnInit {
     private store: Store,
     private dialog: MatDialog,
     private utility: UtilityService,
+    private changeDetector: ChangeDetectorRef,
   ) {
+    this.store.dispatch(StateActions.aboutMeStateConnect());
     this.aboutMeData = this.store.selectSignal(aboutMeSelector);
+    effect(() => {
+      this.applyAboutMe(this.aboutMeData());
+    });
   }
 
   /**
@@ -95,16 +106,39 @@ export class AboutMeComponent implements OnInit {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    const aboutObject = this.aboutMeData();
-    const allParagraphs = this.utility.seperateSentences(aboutObject?.intro);
+    this.applyAboutMe(this.aboutMeData());
+  }
 
-    this.aboutMeForm = this.formBuilder.group({
-      mainIntro: [`${allParagraphs}`, [Validators.required]],
-      subIntro: [`${aboutObject?.subHeadingIntro}`, [Validators.required]],
-      leftPoints: [`${this.utility.seperateSentences(aboutObject?.leftPoints)}`, [Validators.required]],
-      rightPoints: [`${this.utility.seperateSentences(aboutObject?.rightPoints)}`, [Validators.required]],
-      linkField: [`${aboutObject?.link}`, [Validators.required, urlValidator()]],
-    });
+  /**
+   * Build or fill the form from the stored about record.
+   * @param aboutObject Stored about record, once the listener has delivered it.
+   */
+  private applyAboutMe(aboutObject: IAboutMe | undefined): void {
+    if (this.hasAppliedAbout) {
+      return;
+    }
+    const values = {
+      mainIntro: aboutObject ? this.utility.seperateSentences(aboutObject.intro) : '',
+      subIntro: aboutObject?.subHeadingIntro ?? '',
+      leftPoints: aboutObject ? this.utility.seperateSentences(aboutObject.leftPoints) : '',
+      rightPoints: aboutObject ? this.utility.seperateSentences(aboutObject.rightPoints) : '',
+      linkField: aboutObject?.link ?? '',
+    };
+    if (!this.aboutMeForm) {
+      this.aboutMeForm = this.formBuilder.group({
+        mainIntro: [values.mainIntro, [Validators.required]],
+        subIntro: [values.subIntro, [Validators.required]],
+        leftPoints: [values.leftPoints, [Validators.required]],
+        rightPoints: [values.rightPoints, [Validators.required]],
+        linkField: [values.linkField, [Validators.required, urlValidator()]],
+      });
+    } else if (aboutObject) {
+      this.aboutMeForm.patchValue(values);
+    }
+    if (aboutObject) {
+      this.hasAppliedAbout = true;
+      this.changeDetector.markForCheck();
+    }
   }
 
   /**
