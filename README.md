@@ -6,7 +6,27 @@ Personal portfolio for Pubudu Wijesooriya. The site is an Angular application in
 
 Node 22.23.4, npm 12.2.1, and JDK 21 (Eclipse Temurin) are declared in `mise.toml`. Angular, Nx, and the Firebase CLI are installed by `npm ci`.
 
-1. Install [mise](https://mise.jdx.dev/getting-started.html) and activate it in your shell.
+1. Install [mise](https://mise.jdx.dev/getting-started.html), then activate it so a new terminal picks up this repo's tools.
+
+On a Mac, install mise and add it to Zsh. Zsh is the shell Terminal and iTerm use:
+
+```bash
+curl -fsSL https://mise.run | sh
+echo 'eval "$(~/.local/bin/mise activate zsh)"' >> "${ZDOTDIR:-$HOME}/.zshrc"
+```
+
+If Homebrew already installed mise, use `mise` in that line instead of `~/.local/bin/mise`.
+
+On Windows, install mise and add it to PowerShell:
+
+```powershell
+winget install jdx.mise
+if (-not (Test-Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force | Out-Null }
+Add-Content $PROFILE '(&mise activate pwsh) | Out-String | Invoke-Expression'
+```
+
+Windows PowerShell 5.1 applies the tools at the next prompt. PowerShell 7 applies them when you change directories. Open a new terminal after either setup, then run `mise doctor`. It should report that mise is activated.
+
 2. From this directory, install the pinned tools:
 
 ```bash
@@ -34,8 +54,6 @@ On macOS or Linux:
 ```bash
 test -f apps/portfolio-v2/src/environments/environment.ts || cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
 ```
-
-Open a new terminal after installing mise so `node`, `npm`, and `java` resolve to the versions in `mise.toml`.
 
 ## Run
 

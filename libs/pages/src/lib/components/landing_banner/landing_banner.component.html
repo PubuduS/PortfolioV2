@@ -1,8 +1,39 @@
 <div class="banner w-100" id="section_1" data-anchor="home">
-  <img
-    class="w-100"
-    [src]="bannerImageSrc | async"
-    alt="banner"
-    data-banner-img="sesonal-img"
-  />
+  <picture [class.banner-covered]="motionVisible">
+    <source
+      media="(min-width: 768px)"
+      [srcset]="media.posterDesktop"
+      type="image/webp"
+    />
+    <img
+      [src]="media.posterMobile"
+      alt="Seasonal scene at the window"
+      width="1200"
+      height="800"
+      fetchpriority="high"
+      data-banner-img="sesonal-img"
+    />
+  </picture>
+  <video
+    #motion
+    autoplay
+    muted
+    loop
+    playsinline
+    aria-hidden="true"
+    (playing)="showMotion()"
+  >
+    <source
+      media="(min-width: 768px)"
+      [src]="media.desktopWebm"
+      type="video/webm"
+    />
+    <source
+      media="(min-width: 768px)"
+      [src]="media.desktopMp4"
+      type="video/mp4"
+    />
+    <source [src]="media.mobileWebm" type="video/webm" />
+    <source [src]="media.mobileMp4" type="video/mp4" />
+  </video>
 </div>
