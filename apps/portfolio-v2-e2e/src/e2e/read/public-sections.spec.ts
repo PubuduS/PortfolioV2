@@ -84,8 +84,20 @@ test.describe('public sections', () => {
 
     await page.locator('#partyMode').click();
 
-    await expect(page).toHaveURL(/\/content\/aboutme$/);
+    await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole('heading', { name: 'PUBUDU WIJESOORIYA' })).toHaveCount(0);
+  });
+
+  test('should return to the page party mode was opened from', async ({ page }) => {
+    await page.goto('/content/skills');
+    await page.locator('#partyMode').click();
+
+    await expect(page).toHaveURL(/\/content\/party-mode$/);
+
+    await page.locator('#partyMode').click();
+
+    await expect(page).toHaveURL(/\/content\/skills$/);
+    await expect(page.getByRole('heading', { name: 'Tecnical Skills' })).toBeVisible();
   });
 
   test('should show the missing page for an unknown address', async ({ page }) => {

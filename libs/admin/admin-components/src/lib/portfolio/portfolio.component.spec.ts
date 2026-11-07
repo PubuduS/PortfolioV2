@@ -172,7 +172,7 @@ describe('PortfolioComponent', () => {
     it('should navigate to featured projects page', () => {
       callComponentMethod(component, 'goToFeaturedPRojectsPage');
 
-      expect(component['router'].navigate).toHaveBeenCalledWith(['/content/portfolio/featured-projects']);
+      expect(component['router'].navigate).toHaveBeenCalledWith(['/admin/portfolio/featured-projects']);
     });
   });
 

@@ -1,20 +1,75 @@
 @use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
 
 .landing {
-  height: calc(100vh - 14vh);
+  --bs-body-bg: #{$midnight-steel};
+  --bs-body-color: #{$white};
+  --bs-border-color: #{$slate-grey};
+  --bs-secondary-bg: #{$dune};
+  --bs-secondary-color: #{$cloud-gray};
+  --bs-tertiary-bg: #{$slate-grey};
+  background-color: $midnight-steel;
+  color: $white;
+  min-height: calc(100vh - 14vh);
   z-index: 300;
+
+  h2 {
+    color: $white;
+  }
+
+  label {
+    color: $electric-teal;
+  }
+
   .content {
     margin-top: 14vh;
     width: 100%;
+
     .admin-form {
+      .form-control:focus,
+      .form-select:focus {
+        border-color: $electric-teal;
+        box-shadow: 0 0 0 0.25rem rgba($electric-teal, 0.25);
+      }
+
+      // Arrow stroke is $electric-teal. Bootstrap bakes it into the image.
+      .form-select {
+        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2361f8d5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      }
+
+      option {
+        background-color: $midnight-steel;
+        color: $white;
+      }
+
+      mat-progress-bar {
+        --mat-progress-bar-active-indicator-color: #{$electric-teal};
+        --mat-progress-bar-track-color: #{$slate-grey};
+        --mdc-linear-progress-active-indicator-color: #{$electric-teal};
+        --mdc-linear-progress-track-color: #{$slate-grey};
+      }
+
       .imagePreview {
         max-width: 60%;
         max-height: 60%;
       }
+
       button {
-        border: 1px solid $black;
+        --bs-btn-color: #{$midnight-steel};
+        --bs-btn-bg: #{$electric-teal};
+        --bs-btn-border-color: #{$electric-teal};
+        --bs-btn-hover-color: #{$midnight-steel};
+        --bs-btn-hover-bg: #{$electric-aloe};
+        --bs-btn-hover-border-color: #{$electric-aloe};
+        --bs-btn-focus-shadow-rgb: #{red($electric-teal)}, #{green($electric-teal)}, #{blue($electric-teal)};
+        --bs-btn-active-color: #{$midnight-steel};
+        --bs-btn-active-bg: #{$tropical-jade};
+        --bs-btn-active-border-color: #{$tropical-jade};
+        --bs-btn-disabled-color: #{$cloud-gray};
+        --bs-btn-disabled-bg: #{$slate-grey};
+        --bs-btn-disabled-border-color: #{$slate-grey};
         border-radius: 3px;
       }
+
       mat-icon {
         color: $electric-aloe;
       }

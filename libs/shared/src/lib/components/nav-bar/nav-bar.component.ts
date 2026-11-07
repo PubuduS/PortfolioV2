@@ -30,7 +30,11 @@ import {
   isPartyModeSelector,
 } from '@portfolio-v2/state/selectors';
 import { WeatherDisplayComponent } from '../weather_display/weather_display.component';
-import { mirrorUrl } from './mirror-url';
+import {
+  mirrorUrl,
+  navSectionPaths,
+  type NavSectionPaths,
+} from './mirror-url';
 
 /**
  * Navigation bar
@@ -65,6 +69,12 @@ export class NavBarComponent {
   /** Cover letter link for the current admin and preview flags. */
   protected readonly coverLetterTarget: Signal<CoverLetterNavTarget>;
 
+  /** Section links for the current admin and preview flags. */
+  protected readonly sectionPath: Signal<NavSectionPaths>;
+
+  /** Address to reopen when party mode is turned off. */
+  private partyReturnUrl: string | null = null;
+
   /**
    * constructor
    * @param store ngrx store
@@ -90,6 +100,10 @@ export class NavBarComponent {
       this.isAdminMode(),
       this.isPreviewMode(),
     ));
+    this.sectionPath = computed(() => navSectionPaths(
+      this.isAdminMode(),
+      this.isPreviewMode(),
+    ));
   }
 
   /**
@@ -110,16 +124,30 @@ export class NavBarComponent {
   }
 
   /**
-   * Toggle Part Mode
+   * Toggle party mode, returning to the page it was opened from.
    */
   protected togglePartyMode(): void {
-    this.store.dispatch(
-      StateActions.partyModeStateUpdated({ isPartyMode: !this.isPartyMode() }),
-    );
-    if (this.isPartyMode()) {
-      this.router.navigate(['content/party-mode']);
-    } else {
-      this.router.navigate(['content/aboutme']);
+    const leaving = this.isPartyMode();
+    if (!leaving) {
+      this.partyReturnUrl = this.pageBeforePartyMode();
     }
+    this.store.dispatch(
+      StateActions.partyModeStateUpdated({ isPartyMode: !leaving }),
+    );
+    const target = leaving
+      ? this.partyReturnUrl ?? this.sectionPath().about
+      : '/content/party-mode';
+    this.router.navigateByUrl(target);
+  }
+
+  /**
+   * Address to restore after party mode.
+   * The about page stands in when party mode is already open.
+   * @returns the current address, unless it is the party page
+   */
+  private pageBeforePartyMode(): string {
+    const { url }= this.router;
+    const path = url.split(/[?#]/)[0];
+    return path === '/content/party-mode' ? this.sectionPath().about : url;
   }
 }

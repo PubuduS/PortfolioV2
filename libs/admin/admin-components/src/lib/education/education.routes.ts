@@ -4,8 +4,19 @@ import { CertificateWriter } from './certificates/services/certificate-writer.se
 import { DegreeWriter } from './degrees/services/degree-writer.service';
 import { PublicationWriter } from './publications/services/publication-writer.service';
 
-/** Admin routes for education content. Each writer is provided only on its own route. */
+/**
+ * Admin routes for education content.
+ * The hub is the public page, because it has nothing to edit.
+ * Each writer is provided only on its own route.
+ */
 export const EDUCATION_ADMIN_ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('@portfolio-v2/portfolio-pages').then(
+      (mod) => mod.EducationMainComponent,
+    ),
+  },
   {
     path: 'certificates',
     providers: [CertificateWriter],
