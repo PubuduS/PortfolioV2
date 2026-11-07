@@ -275,6 +275,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      deployments: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -282,3 +283,51 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Delete stale GitHub Pages deployments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const deployments = await github.paginate(
+              github.rest.repos.listDeployments,
+              { owner, repo, environment: 'github-pages', per_page: 100 }
+            );
+
+            deployments.sort(
+              (left, right) => new Date(right.created_at) - new Date(left.created_at)
+            );
+
+            const stale = deployments.slice(1);
+            let failed = 0;
+
+            for (const deployment of stale) {
+              try {
+                await github.rest.repos.createDeploymentStatus({
+                  owner,
+                  repo,
+                  deployment_id: deployment.id,
+                  state: 'inactive',
+                  description: 'Superseded by a newer Pages deployment',
+                });
+                await github.rest.repos.deleteDeployment({
+                  owner,
+                  repo,
+                  deployment_id: deployment.id,
+                });
+                core.info(`Deleted deployment ${deployment.id}`);
+              } catch (error) {
+                failed += 1;
+                core.warning(
+                  `Could not delete deployment ${deployment.id}: ${error.message}`
+                );
+              }
+            }
+
+            core.info(
+              `Kept the latest Pages deployment and removed ${stale.length - failed} older one(s).`
+            );
+
+            if (failed > 0) {
+              core.setFailed(`Could not delete ${failed} stale Pages deployment(s).`);
+            }
