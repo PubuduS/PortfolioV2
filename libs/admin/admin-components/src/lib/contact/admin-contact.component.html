@@ -1,0 +1,110 @@
+<div class="main">
+  <div class="content d-flex justify-content-center col-12">
+    <div class="col-12 text-center">
+      <div class="row my-3">
+        <div class="col-12">
+          <h2>Contact Page</h2>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center mt-5 col-12">
+        <form
+          class="admin-form col-12 px-5 text-start"
+          novalidate
+          [formGroup]="contactForm"
+          (ngSubmit)="save()"
+        >
+          <div class="row mb-3">
+            <label class="col-12" for="linkedin">LinkedIn</label>
+            <div class="col-8">
+              <input
+                id="linkedin"
+                class="p-2 w-100"
+                type="url"
+                formControlName="linkedin"
+              />
+            </div>
+          </div>
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.linkedin"
+            errorKey="required"
+            message="A LinkedIn address is required"
+          />
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.linkedin"
+            errorKey="invalidURL"
+            message="Enter a full LinkedIn address, starting with https://"
+          />
+
+          <div class="row mb-3 mt-4">
+            <label class="col-12" for="github">GitHub</label>
+            <div class="col-8">
+              <input
+                id="github"
+                class="p-2 w-100"
+                type="url"
+                formControlName="github"
+              />
+            </div>
+          </div>
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.github"
+            errorKey="required"
+            message="A GitHub address is required"
+          />
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.github"
+            errorKey="invalidURL"
+            message="Enter a full GitHub address, starting with https://"
+          />
+
+          <div class="row mb-3 mt-4">
+            <label class="col-12" for="email">Email</label>
+            <div class="col-8">
+              <input
+                id="email"
+                class="p-2 w-100"
+                type="email"
+                formControlName="email"
+              />
+            </div>
+          </div>
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.email"
+            errorKey="required"
+            message="An email address is required"
+          />
+          <admin-portfolio-display-validator-errors
+            [control]="contactForm.controls.email"
+            errorKey="email"
+            message="Enter a valid email address"
+          />
+
+          <div class="row align-items-center mt-4">
+            <div class="col-auto">
+              <button
+                mat-fab
+                extended
+                color="primary"
+                type="submit"
+                [disabled]="isSaving()"
+              >
+                <mat-icon>save</mat-icon>
+                {{ isSaving() ? 'Saving' : 'Save' }}
+              </button>
+            </div>
+            @if (isSaveSuccess()) {
+              <div class="col-auto">
+                <mat-icon class="success">check_circle</mat-icon>
+              </div>
+            }
+          </div>
+
+          @if (saveError(); as error) {
+            <p class="save-error mt-3" role="alert">{{ error }}</p>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

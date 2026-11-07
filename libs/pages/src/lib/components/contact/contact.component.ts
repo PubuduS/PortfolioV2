@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   OnInit,
   signal,
 } from '@angular/core';
@@ -20,8 +21,9 @@ import {
 } from '@portfolio-v2/shared/services';
 import {
   IEmailValidatorMsgs,
-  ISenderNameValidatorMsgs,
   IMessageValidatorMsgs,
+  ISenderNameValidatorMsgs,
+  SOCIAL_LINK_IDS,
 } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
@@ -44,6 +46,13 @@ export class ContactComponent implements OnInit {
 
   /** Social infor */
   protected readonly socialInfor = this.store.selectSignal(socialMediaSelector);
+
+  /** Email address shown in the introduction and the envelope dialog. */
+  protected readonly contactEmail = computed(() => this.socialInfor()
+    ?.find((social) => social.id === SOCIAL_LINK_IDS.email)?.media ?? '');
+
+  /** Id of the envelope link, which opens the address dialog. */
+  protected readonly emailLinkId = SOCIAL_LINK_IDS.email;
 
   /** True while the send is in flight. */
   protected readonly isSending = signal(false);

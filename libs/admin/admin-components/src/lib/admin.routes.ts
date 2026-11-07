@@ -2,31 +2,45 @@ import { Routes } from '@angular/router';
 
 import { DocumentWriter } from './documents/services/document-writer.service';
 
-/** Admin Pages Routes */
+/**
+ * Admin page routes.
+ * Loads stay relative. Importing `@portfolio-v2/admin-components`
+ * here cycles through `src/index.ts`.
+ */
 export const ADMIN_PAGE_ROUTES: Routes = [
   {
     path: 'home',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.LandingPageComponent),
+    loadComponent: () => import('./landing-page/landing-page.component').then(
+      (mod) => mod.LandingPageComponent,
+    ),
   },
   {
     path: 'aboutme',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.AboutMeComponent),
+    loadComponent: () => import('./about-me/about-me.component').then(
+      (mod) => mod.AboutMeComponent,
+    ),
   },
   {
     path: 'skills',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.SkillsComponent),
+    loadComponent: () => import('./skills/skills.component').then(
+      (mod) => mod.SkillsComponent,
+    ),
   },
   {
     path: 'experience',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.AdminExperienceComponent),
+    loadComponent: () => import('./experience/experience.component').then(
+      (mod) => mod.AdminExperienceComponent,
+    ),
   },
   {
     path: 'portfolio',
-    loadChildren: () => import('@portfolio-v2/admin-components').then((route) => route.PORTFOLIO_ROUTES),
+    loadChildren: () => import('./portfolio/portfolio.route').then(
+      (route) => route.PORTFOLIO_ROUTES,
+    ),
   },
   {
     path: 'education',
-    loadChildren: () => import('@portfolio-v2/admin-components').then(
+    loadChildren: () => import('./education/education.routes').then(
       (route) => route.EDUCATION_ADMIN_ROUTES,
     ),
   },
@@ -45,5 +59,11 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     ),
     providers: [DocumentWriter],
     data: { kind: 'cover-letter' },
+  },
+  {
+    path: 'contact',
+    loadComponent: () => import('./contact/admin-contact.component').then(
+      (mod) => mod.AdminContactComponent,
+    ),
   },
 ];

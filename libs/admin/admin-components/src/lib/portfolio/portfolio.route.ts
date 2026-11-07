@@ -1,14 +1,21 @@
 import { Routes } from '@angular/router';
 
-/** Admin routes for the portfolio section and featured projects. */
+/**
+ * Admin routes for the portfolio section and featured projects.
+ * Relative loads avoid a cycle through `src/index.ts`.
+ */
 export const PORTFOLIO_ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.PortfolioComponent),
+    loadComponent: () => import('./portfolio.component').then(
+      (mod) => mod.PortfolioComponent,
+    ),
   },
   {
     path: 'featured-projects',
-    loadComponent: () => import('@portfolio-v2/admin-components').then((mod) => mod.FeaturedProjectsComponent),
+    loadComponent: () => import('./components/featured-projects/featured-projects.component').then(
+      (mod) => mod.FeaturedProjectsComponent,
+    ),
   },
 ];

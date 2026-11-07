@@ -42,6 +42,12 @@ export type {
 export { IExperience } from './experience/IExperience';
 export { ISocialInfor } from './social/ISocialInfor';
 export {
+  SOCIAL_COLLECTION,
+  SOCIAL_LINK_ICONS,
+  SOCIAL_LINK_IDS,
+  socialDocPath,
+} from './social/social';
+export {
   ICompanyValidatorMsgs,
   IManagerValidatorMsgs,
   IEmailValidatorMsgs,
