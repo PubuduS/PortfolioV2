@@ -7,6 +7,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
+import { StateActions } from '@portfolio-v2/state';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { AboutMeComponent } from './about_me.component';
@@ -35,6 +36,7 @@ describe('AboutMeComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(aboutMeSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(AboutMeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -42,5 +44,9 @@ describe('AboutMeComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect the about section when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.aboutMeStateConnect());
   });
 });

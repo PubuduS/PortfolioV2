@@ -19,7 +19,11 @@ import {
 } from '@portfolio-v2/state/dataModels';
 import { PublicationsComponent } from './publications.component';
 
-/** Store slice the publication selectors read. */
+/**
+ * Store slice the publication selectors read.
+ * @param publications
+ * @param details
+ */
 function stateBanks(
   publications: IPublication[] | undefined,
   details: IPublicationDetails[],
@@ -85,6 +89,7 @@ describe('PublicationsComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
 
     fixture = TestBed.createComponent(PublicationsComponent);
     fixture.detectChanges();
@@ -95,6 +100,10 @@ describe('PublicationsComponent', () => {
   });
 
   describe('when publications are stored', () => {
+    it('should connect publication cards when the page opens', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.publicationCardsStateConnect());
+    });
+
     it('should list the title, keywords, summary, and cover', () => {
       const card: HTMLElement = fixture.nativeElement.querySelector('.publication-card');
       const image = card.querySelector('img');

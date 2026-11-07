@@ -6,20 +6,23 @@
       type="image/webp"
     />
     <img
+      #poster
       [src]="media.posterMobile"
       alt="Seasonal scene at the window"
       width="1200"
       height="800"
       fetchpriority="high"
       data-banner-img="sesonal-img"
+      (load)="playMotionAfterPoster()"
+      (error)="playMotionAfterPoster()"
     />
   </picture>
   <video
     #motion
-    autoplay
     muted
     loop
     playsinline
+    preload="none"
     aria-hidden="true"
     (playing)="showMotion()"
   >

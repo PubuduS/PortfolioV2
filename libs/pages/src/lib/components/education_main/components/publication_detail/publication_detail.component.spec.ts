@@ -7,7 +7,10 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
-import { StoreState } from '@portfolio-v2/state';
+import {
+  StateActions,
+  StoreState,
+} from '@portfolio-v2/state';
 import { IPublicationDetails } from '@portfolio-v2/state/dataModels';
 import { PublicationDetailComponent } from './publication_detail.component';
 
@@ -51,6 +54,7 @@ describe('PublicationDetailComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+    jest.spyOn(store, 'dispatch');
 
     fixture = TestBed.createComponent(PublicationDetailComponent);
     fixture.detectChanges();
@@ -61,6 +65,12 @@ describe('PublicationDetailComponent', () => {
   });
 
   describe('when a publication is selected', () => {
+    it('should connect publication details when the dialog opens', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(
+        StateActions.publicationDetailCardsStateConnect(),
+      );
+    });
+
     it('should show the title, authors, abstract, citation, and copy control', () => {
       const text = fixture.nativeElement.textContent;
 

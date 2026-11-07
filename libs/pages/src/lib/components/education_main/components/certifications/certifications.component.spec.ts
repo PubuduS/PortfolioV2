@@ -7,6 +7,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
+import { StateActions } from '@portfolio-v2/state';
 import { certificatesSelector } from '@portfolio-v2/state/selectors';
 import { ICertificateCard } from '@portfolio-v2/state/dataModels';
 import { CertificationsComponent } from './certifications.component';
@@ -36,6 +37,7 @@ describe('CertificationsComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(certificatesSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(CertificationsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -43,5 +45,9 @@ describe('CertificationsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect certificates when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.certificatesCardsStateConnect());
   });
 });

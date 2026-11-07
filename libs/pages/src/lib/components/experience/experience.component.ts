@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-str */
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,6 +15,7 @@ import { Store } from '@ngrx/store';
 
 import { IExperience } from '@portfolio-v2/state/dataModels';
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
 
@@ -59,6 +59,7 @@ export class ExperienceComponent {
   constructor(
     private store: Store,
   ) {
+    this.store.dispatch(StateActions.experienceStateConnect());
     this.experienceData.pipe(
       take(1),
       filter((data) => data !== undefined),

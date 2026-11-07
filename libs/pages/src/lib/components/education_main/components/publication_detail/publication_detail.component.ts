@@ -7,6 +7,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 
+import { StateActions } from '@portfolio-v2/state';
 import {
   publicationDetailCardSelector,
   selectedPublicationIDSelector,
@@ -40,5 +41,7 @@ export class PublicationDetailComponent {
    * constructor
    * @param store ngrx store
    */
-  constructor(private store: Store) {}
+  constructor(private store: Store) {
+    this.store.dispatch(StateActions.publicationDetailCardsStateConnect());
+  }
 }

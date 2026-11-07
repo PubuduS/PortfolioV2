@@ -11,6 +11,7 @@ import {
 
 import { ContactMailService } from '@portfolio-v2/shared/services';
 import { ISocialInfor } from '@portfolio-v2/state/dataModels';
+import { StateActions } from '@portfolio-v2/state';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { ContactComponent } from './contact.component';
 
@@ -68,12 +69,17 @@ describe('ContactComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(socialMediaSelector, mockData);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(ContactComponent);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should connect social links when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.socialMediaInformationStateConnect());
   });
 
   it('should keep send disabled until the form is valid', () => {

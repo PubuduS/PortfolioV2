@@ -43,7 +43,9 @@ export class PublicationsComponent {
   constructor(
     private dialog: MatDialog,
     private store: Store,
-  ) {}
+  ) {
+    this.store.dispatch(StateActions.publicationCardsStateConnect());
+  }
 
   /**
    * Open a dialog

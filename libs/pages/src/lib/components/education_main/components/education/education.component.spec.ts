@@ -7,6 +7,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 
+import { StateActions } from '@portfolio-v2/state';
 import { educationSelector } from '@portfolio-v2/state/selectors';
 import { IEducation } from '@portfolio-v2/state/dataModels';
 import { EducationComponent } from './education.component';
@@ -38,6 +39,7 @@ describe('EducationComponent', () => {
 
     store = TestBed.inject(MockStore);
     store.overrideSelector(educationSelector, mockEducation);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(EducationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -45,5 +47,9 @@ describe('EducationComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should connect degrees when the page opens', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.educationCardsStateConnect());
   });
 });
