@@ -11,6 +11,8 @@ import {
   tap,
 } from 'rxjs';
 
+import { quoteForLanding } from './page-not-found-quotes';
+
 /** Page not found error page */
 @Component({
   selector: 'portfolio-v2-page-not-found',
@@ -26,23 +28,11 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
   /** Is right GIF visible */
   public isRightGIFVisible = signal(false);
 
+  /** Words of the line chosen for this landing. */
+  public quoteWords: string[] = [];
+
   /** Subscription */
   public sub!: Subscription;
-
-  /** Quote array */
-  private readonly quotesArray: string[] = [
-    "99 bugs in my code, 99 bugs in my code... Take one down, fix em' around, 404 bugs in my code",
-    'Error 404. Your Haiku could not be found',
-    "Webpages? Where we're going, we don't need webpages",
-    "The page you're looking for is on a coffee break. It needs its caffeine fix to get back online.",
-    'How do we know we exist?',
-  ];
-
-  /** Random quote index */
-  private readonly qIndex: number = Math.floor(Math.random() * this.quotesArray.length);
-
-  /** Random quote */
-  public randomQuote: string[] = this.quotesArray[this.qIndex].split(' ');
 
   /** GIF visibility timer */
   private readonly visibilityTimer: number = 4000;
@@ -52,6 +42,7 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
+    this.quoteWords = quoteForLanding(new Date()).split(' ');
     this.sub = interval(this.visibilityTimer)
       .pipe(
         tap(() => {
@@ -60,7 +51,7 @@ export class PageNotFoundComponent implements OnInit, OnDestroy {
           console.log(`left ${this.isLeftGIFVisible}: right ${this.isRightGIFVisible}`);
         }),
       ).subscribe();
-    console.log(this.randomQuote);
+    console.log(this.quoteWords);
   }
 
   /**
