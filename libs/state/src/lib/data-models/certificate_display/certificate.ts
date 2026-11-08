@@ -1,3 +1,4 @@
+import { isWebUrl } from '@portfolio-v2/shared/validators/url-pattern';
 import { ICertificateCard } from './ICertificateCard';
 
 /** Firestore collection that holds one document per certificate. */
@@ -43,20 +44,6 @@ export type CertificateDraftResult =
 export type CertificateEditTarget =
   | { readonly mode: 'new'; readonly id: number }
   | { readonly mode: 'edit'; readonly certificate: ICertificateCard };
-
-/**
- * Whether the text is an http or https URL.
- * @param value text to check
- * @returns true when the text parses as an http or https url
- */
-function isWebUrl(value: string): boolean {
-  try {
-    const { protocol } = new URL(value);
-    return protocol === 'https:' || protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Firestore document path for a certificate.

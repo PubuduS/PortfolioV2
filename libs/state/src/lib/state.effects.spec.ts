@@ -11,8 +11,11 @@ import {
 
 import { GetDataService } from '@portfolio-v2/shared/services';
 import {
+  ABOUT_ME_COLLECTION,
   CERTIFICATE_COLLECTION,
   EDUCATION_COLLECTION,
+  EXPERIENCE_COLLECTION,
+  FEATURED_PROJECT_COLLECTION,
   IAboutMe,
   ICertificateCard,
   IEducation,
@@ -23,7 +26,11 @@ import {
   IPublicationDetails,
   ISkills,
   ISocialInfor,
+  PROJECT_DATA_COLLECTION,
+  PROJECT_ICON_COLLECTION,
   PUBLICATION_COLLECTIONS,
+  SKILLS_COLLECTION,
+  SOCIAL_COLLECTION,
 } from './data-models';
 import { StateActions } from './state.actions';
 import { StateEffects } from './state.effects';
@@ -52,7 +59,7 @@ const cases: LoadCase[] = [
   {
     label: 'about me',
     method: 'getData',
-    args: ['about-me-section'],
+    args: [ABOUT_ME_COLLECTION],
     read: (effects) => effects.connectToAboutMeState,
     connect: StateActions.aboutMeStateConnect(),
     updated: (payload) => StateActions.aboutMeStateUpdated({ aboutMe: payload as IAboutMe }),
@@ -60,7 +67,7 @@ const cases: LoadCase[] = [
   {
     label: 'skills',
     method: 'getData',
-    args: ['skills-section'],
+    args: [SKILLS_COLLECTION],
     read: (effects) => effects.connectToSkillsState,
     connect: StateActions.skillsStateConnect(),
     updated: (payload) => StateActions.skillsStateUpdated({ skills: payload as ISkills }),
@@ -68,7 +75,7 @@ const cases: LoadCase[] = [
   {
     label: 'experience',
     method: 'getExperienceSectionData',
-    args: ['experience-section'],
+    args: [EXPERIENCE_COLLECTION],
     read: (effects) => effects.connectToExperiencesState,
     connect: StateActions.experienceStateConnect(),
     updated: (payload) => StateActions.experienceStateUpdated({
@@ -78,7 +85,7 @@ const cases: LoadCase[] = [
   {
     label: 'portfolio cards',
     method: 'getDataArray',
-    args: ['project-icon-section'],
+    args: [PROJECT_ICON_COLLECTION],
     read: (effects) => effects.connectToPortfolioCardsState,
     connect: StateActions.portfolioCardsStateConnect(),
     updated: (payload) => StateActions.portfolioCardsStateUpdated({
@@ -88,7 +95,7 @@ const cases: LoadCase[] = [
   {
     label: 'project cards',
     method: 'getDataArray',
-    args: ['project-data-section'],
+    args: [PROJECT_DATA_COLLECTION],
     read: (effects) => effects.connectToProjectCardsState,
     connect: StateActions.projectCardsStateConnect(),
     updated: (payload) => StateActions.projectCardsStateUpdated({
@@ -98,7 +105,7 @@ const cases: LoadCase[] = [
   {
     label: 'featured project cards',
     method: 'getDataArray',
-    args: ['featured-project-section'],
+    args: [FEATURED_PROJECT_COLLECTION],
     read: (effects) => effects.connectToFeaturedProjectCardsState,
     connect: StateActions.featuredProjectCardsStateConnect(),
     updated: (payload) => StateActions.featuredProjectCardsStateUpdated({
@@ -148,7 +155,7 @@ const cases: LoadCase[] = [
   {
     label: 'social links',
     method: 'getDataArray',
-    args: ['social-infor-section'],
+    args: [SOCIAL_COLLECTION],
     read: (effects) => effects.connectToSocialMediaInformationState,
     connect: StateActions.socialMediaInformationStateConnect(),
     updated: (payload) => StateActions.socialMediaInformationStateUpdated({

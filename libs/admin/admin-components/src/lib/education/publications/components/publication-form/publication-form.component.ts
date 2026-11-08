@@ -20,6 +20,7 @@ import {
   validate,
 } from '@angular/forms/signals';
 
+import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
   abstractAsText,
   type AssetInput,
@@ -185,16 +186,8 @@ export class PublicationFormComponent implements OnInit, OnDestroy {
     this.revokePreview();
   }
 
-  /**
-   * Whether a touched or dirty field currently has this error.
-   * @param field field to read
-   * @param kind error kind
-   * @returns true when that error should be shown
-   */
-  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
-    const state = field();
-    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
-  }
+  /** Whether a touched or dirty field currently has this error. */
+  protected readonly hasError = fieldHasError;
 
   /**
    * Store a picked cover and show a preview.

@@ -11,7 +11,6 @@ import {
   catchError,
   map,
   of,
-  tap,
 } from 'rxjs';
 
 import {
@@ -85,7 +84,6 @@ export class WeatherService {
     ? of({ data: EMULATOR_WEATHER })
     : this.http.get<OpenWeatherResponse>(this.openweatherURL)
       .pipe(
-        tap((p) => console.log(p)),
         map((p) => ({
           data: {
             condition: p.weather[0].main,
@@ -96,7 +94,6 @@ export class WeatherService {
             iconCode: p.weather[0].icon,
           },
         } as IResult<IWeather>)),
-        tap((p) => console.log(p)),
         catchError((err) => of({
           data: {},
           error: this.errService.formatHttpError(err),

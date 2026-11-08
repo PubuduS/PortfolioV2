@@ -39,7 +39,6 @@ export const StateActions = createActionGroup({
     'Featured Project Cards State Connect': emptyProps(),
     'Featured Project Cards State Updated': props<{ projectCards: IProjectCard[] }>(),
 
-    'Project Card ID State Connect': emptyProps(),
     'Project Card ID State Updated': props<{ selectedProjectCardID: number }>(),
 
     'Certificates Cards State Connect': emptyProps(),
@@ -51,7 +50,6 @@ export const StateActions = createActionGroup({
     'Publication Cards State Connect': emptyProps(),
     'Publication Cards State Updated': props<{ publications: IPublication[] }>(),
 
-    'Selected Publication Card ID State Connect': emptyProps(),
     'Selected Publication Card ID State Updated': props<{ selectedPublicationID: number }>(),
 
     'Publication Detail Cards State Connect': emptyProps(),
@@ -60,13 +58,10 @@ export const StateActions = createActionGroup({
     'Social Media Information State Connect': emptyProps(),
     'Social Media Information State Updated': props<{ socialInfor: ISocialInfor[] }>(),
 
-    'Admin State Connect': emptyProps(),
     'Admin State Updated': props<{ isAdmin: boolean }>(),
 
-    'Preview Mode State Connect': emptyProps(),
     'Preview Mode State Updated': props<{ isPreviewMode: boolean }>(),
 
-    'Party Mode State Connect': emptyProps(),
     'Party Mode State Updated': props<{ isPartyMode: boolean }>(),
   },
 });

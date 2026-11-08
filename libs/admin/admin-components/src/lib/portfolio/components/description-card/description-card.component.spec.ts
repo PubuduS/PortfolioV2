@@ -332,7 +332,6 @@ describe('DescriptionCardComponent', () => {
         'Test Project',
         'heading',
       );
-      expect(store.dispatch).toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
       expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
     });
 
@@ -369,7 +368,6 @@ describe('DescriptionCardComponent', () => {
 
       expect(saved).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
-      expect(store.dispatch).not.toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
 
@@ -388,7 +386,7 @@ describe('DescriptionCardComponent', () => {
       component['saveChanges']();
       component['isEditSuccess'].subscribe();
 
-      expect(store.dispatch).not.toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
+      expect(setData.modifyAField).toHaveBeenCalled();
     });
 
     it('should not change the featured card heading', () => {

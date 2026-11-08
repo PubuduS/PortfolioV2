@@ -10,7 +10,7 @@
         <div class="contact-detail">
           <p>Please fill in this information to generate my cover letter.</p>
           <h2>Follow Me</h2>
-          @if (socialInfor | async; as socialInfor) {
+          @if (socialInfor(); as socialInfor) {
             <ul class="social">
               @for (social of socialInfor; track $index) {
                 @if (social.id === 3) {

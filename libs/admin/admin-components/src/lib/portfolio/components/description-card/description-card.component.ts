@@ -290,15 +290,7 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
     if (this.data.project.id !== 1) {
       const projectCardPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`;
       this.setDataService.modifyAField(projectCardPath, title, 'heading')
-        .pipe(
-          take(1),
-          map((result) => {
-            if (result === 'successfull') {
-              this.store.dispatch(StateActions.projectCardIDStateConnect());
-            }
-            return result;
-          }),
-        )
+        .pipe(take(1))
         .subscribe();
     }
   }

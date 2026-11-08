@@ -9,7 +9,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import {
-  type FieldTree,
   form,
   FormField,
   required,
@@ -26,6 +25,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 
+import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
   SetDataService,
   UtilityService,
@@ -136,16 +136,8 @@ export class SkillsComponent implements OnInit {
     this.applySkills(this.skillsData());
   }
 
-  /**
-   * Whether a touched or dirty field currently has this error.
-   * @param field field to read
-   * @param kind error kind
-   * @returns true when that error should be shown
-   */
-  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
-    const state = field();
-    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
-  }
+  /** Whether a touched or dirty field currently has this error. */
+  protected readonly hasError = fieldHasError;
 
   /**
    * Store one language percentage.

@@ -140,7 +140,13 @@ describe('certificate model', () => {
         });
       });
 
-      it.each(['ftp://example.com/c', 'data:text/html,hello', 'example.com/c', 'nonsense'])(
+      it.each([
+        'ftp://example.com/c',
+        'data:text/html,hello',
+        'example.com/c',
+        'https://localhost/cert',
+        'nonsense',
+      ])(
         'should reject the link %s',
         (certificateURL) => {
           expect(toCertificateDraft(1, { ...earned, certificateURL })).toEqual({
