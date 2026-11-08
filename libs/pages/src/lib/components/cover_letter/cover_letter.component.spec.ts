@@ -3,19 +3,24 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
+import {
+  MockStore,
+  provideMockStore,
+} from '@ngrx/store/testing';
 import Docxtemplater from 'docxtemplater';
 import { createSpyObj } from 'jest-createspyobj';
-import { of } from 'rxjs';
 
 import {
   DocumentCatalogReader,
-  GetDataService,
   GetDateTimeService,
 } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 import {
   parseCatalog,
   type CatalogView,
+  type ISocialInfor,
 } from '@portfolio-v2/state/dataModels';
+import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { CoverLetterComponent } from './cover_letter.component';
 
 jest.mock('pizzip', () => ({
@@ -58,15 +63,25 @@ describe('CoverLetterComponent', () => {
   let component: CoverLetterComponent;
   let fixture: ComponentFixture<CoverLetterComponent>;
   let mockDateTimeService: jest.Mocked<GetDateTimeService>;
-  let mockDataService: jest.Mocked<GetDataService>;
+  let store: MockStore;
   let documents: { view: jest.Mock; coverLetterTemplate: jest.Mock };
   let view: ReturnType<typeof signal<CatalogView>>;
+  const links: ISocialInfor[] = [
+    {
+      id: 1,
+      media: 'https://www.linkedin.com/in/ada',
+      mediaIcon: 'fa-linkedin',
+    },
+    {
+      id: 3,
+      media: 'ada@example.test',
+      mediaIcon: 'fa-envelope',
+    },
+  ];
 
   beforeEach(async () => {
     mockDateTimeService = createSpyObj(GetDateTimeService);
-    mockDataService = createSpyObj(GetDataService);
     mockDateTimeService.getDate.mockReturnValue('January 1, 2026');
-    mockDataService.getDataArray.mockReturnValue(of([]));
     view = signal(coverView('ready'));
     documents = {
       view: jest.fn(() => view),
@@ -75,15 +90,24 @@ describe('CoverLetterComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CoverLetterComponent],
       providers: [
+        provideMockStore(),
         { provide: GetDateTimeService, useValue: mockDateTimeService },
-        { provide: GetDataService, useValue: mockDataService },
         { provide: DocumentCatalogReader, useValue: documents },
       ],
     }).compileComponents();
 
+    store = TestBed.inject(MockStore);
+    store.overrideSelector(socialMediaSelector, links);
+    jest.spyOn(store, 'dispatch');
     fixture = TestBed.createComponent(CoverLetterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  it('should read social links from the store', () => {
+    expect(store.dispatch).toHaveBeenCalledWith(StateActions.socialMediaInformationStateConnect());
+    const icons = fixture.nativeElement.querySelectorAll('ul.social a');
+    expect(icons).toHaveLength(2);
   });
 
   it('should create', () => {

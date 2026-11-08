@@ -22,7 +22,9 @@ function deleteButtons(page: Page, disabled: boolean): Locator {
 }
 
 async function openResume(page: Page): Promise<void> {
-  await page.locator('nav').getByRole('link', { name: 'Resume' }).click();
+  const resume = page.locator('nav').getByRole('link', { name: 'Resume' });
+  await expect(resume).toHaveAttribute('href', '/admin/resume');
+  await resume.click();
   await expect(page).toHaveURL(/\/admin\/resume$/);
   await expect(rows(page)).toHaveCount(1);
   await expect(rows(page).first()).toContainText(SEEDED_AT);
@@ -47,7 +49,9 @@ test.describe('admin documents', () => {
     await expect(deleteButtons(page, false)).toHaveCount(0);
     await expect(deleteButtons(page, true)).toHaveCount(1);
 
-    await page.locator('nav').getByRole('link', { name: 'Cover Letter' }).click();
+    const coverLetter = page.locator('nav').getByRole('link', { name: 'Cover Letter' });
+    await expect(coverLetter).toHaveAttribute('href', '/admin/coverletter');
+    await coverLetter.click();
     await expect(page).toHaveURL(/\/admin\/coverletter$/);
     await expect(page.locator('admin-documents h2')).toHaveText('Cover Letter');
     await expect(rows(page)).toHaveCount(1);

@@ -13,7 +13,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {
-  type FieldTree,
   form,
   FormField,
   required,
@@ -29,6 +28,7 @@ import {
   take,
 } from 'rxjs';
 
+import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
   SetDataService,
   UtilityService,
@@ -139,16 +139,8 @@ export class AboutMeComponent implements OnInit {
     this.applyAboutMe(this.aboutMeData());
   }
 
-  /**
-   * Whether a touched or dirty field currently has this error.
-   * @param field field to read
-   * @param kind error kind
-   * @returns true when that error should be shown
-   */
-  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
-    const state = field();
-    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
-  }
+  /** Whether a touched or dirty field currently has this error. */
+  protected readonly hasError = fieldHasError;
 
   /**
    * Build or fill the form from the stored about record.

@@ -15,8 +15,11 @@ import {
 import { GetDataService } from '@portfolio-v2/shared/services';
 import { StateActions } from './state.actions';
 import {
+  ABOUT_ME_COLLECTION,
   CERTIFICATE_COLLECTION,
   EDUCATION_COLLECTION,
+  EXPERIENCE_COLLECTION,
+  FEATURED_PROJECT_COLLECTION,
   IAboutMe,
   ICertificateCard,
   IEducation,
@@ -27,7 +30,11 @@ import {
   IPublicationDetails,
   ISkills,
   ISocialInfor,
+  PROJECT_DATA_COLLECTION,
+  PROJECT_ICON_COLLECTION,
   PUBLICATION_COLLECTIONS,
+  SKILLS_COLLECTION,
+  SOCIAL_COLLECTION,
 } from './data-models';
 
 /**
@@ -50,7 +57,7 @@ export class StateEffects {
    */
   public connectToAboutMeState = createEffect(() => this.actions.pipe(
     ofType(StateActions.aboutMeStateConnect),
-    switchMap(() => this.dbService.getData<IAboutMe>('about-me-section').pipe(
+    switchMap(() => this.dbService.getData<IAboutMe>(ABOUT_ME_COLLECTION).pipe(
       map((aboutMe: IAboutMe) => StateActions.aboutMeStateUpdated({ aboutMe })),
       catchError((error: Error) => this.handleErrors('About-me', error)),
     )),
@@ -86,7 +93,7 @@ export class StateEffects {
    */
   public connectToExperiencesState = createEffect(() => this.actions.pipe(
     ofType(StateActions.experienceStateConnect),
-    switchMap(() => this.dbService.getExperienceSectionData('experience-section').pipe(
+    switchMap(() => this.dbService.getExperienceSectionData(EXPERIENCE_COLLECTION).pipe(
       map((experiences: IExperience[]) => StateActions.experienceStateUpdated({ experiences })),
       catchError((error: Error) => this.handleErrors('Experience', error)),
     )),
@@ -97,7 +104,7 @@ export class StateEffects {
    */
   public connectToPortfolioCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.portfolioCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectView>('project-icon-section').pipe(
+    switchMap(() => this.dbService.getDataArray<IProjectView>(PROJECT_ICON_COLLECTION).pipe(
       map((portfolioCards: IProjectView[]) => StateActions
         .portfolioCardsStateUpdated({ portfolioCards })),
       catchError((error: Error) => this.handleErrors('Portfolio card error', error)),
@@ -109,7 +116,7 @@ export class StateEffects {
    */
   public connectToProjectCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.projectCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectCard>('project-data-section').pipe(
+    switchMap(() => this.dbService.getDataArray<IProjectCard>(PROJECT_DATA_COLLECTION).pipe(
       map((projectCards: IProjectCard[]) => StateActions
         .projectCardsStateUpdated({ projectCards })),
       catchError((error: Error) => this.handleErrors('Project card', error)),
@@ -121,7 +128,7 @@ export class StateEffects {
    */
   public connectToFeaturedProjectCardsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.featuredProjectCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectCard>('featured-project-section').pipe(
+    switchMap(() => this.dbService.getDataArray<IProjectCard>(FEATURED_PROJECT_COLLECTION).pipe(
       map((projectCards: IProjectCard[]) => StateActions
         .featuredProjectCardsStateUpdated({ projectCards })),
       catchError((error: Error) => this.handleErrors('Featured project card', error)),
@@ -159,7 +166,7 @@ export class StateEffects {
    */
   public connectToSkillsState = createEffect(() => this.actions.pipe(
     ofType(StateActions.skillsStateConnect),
-    switchMap(() => this.dbService.getData<ISkills>('skills-section').pipe(
+    switchMap(() => this.dbService.getData<ISkills>(SKILLS_COLLECTION).pipe(
       map((skills: ISkills) => StateActions.skillsStateUpdated({ skills })),
       catchError((error: Error) => this.handleErrors('Skills', error)),
     )),
@@ -170,7 +177,7 @@ export class StateEffects {
    */
   public connectToSocialMediaInformationState = createEffect(() => this.actions.pipe(
     ofType(StateActions.socialMediaInformationStateConnect),
-    switchMap(() => this.dbService.getDataArray<ISocialInfor>('social-infor-section').pipe(
+    switchMap(() => this.dbService.getDataArray<ISocialInfor>(SOCIAL_COLLECTION).pipe(
       map((socialInfor: ISocialInfor[]) => StateActions
         .socialMediaInformationStateUpdated({ socialInfor })),
       catchError((error: Error) => this.handleErrors('Social media information state', error)),
@@ -178,13 +185,12 @@ export class StateEffects {
   ));
 
   /**
-   * Handle Erros
-   * @param place where did this error occurs
-   * @param error error
+   * Drop a failed load so the slice stays at its last value.
+   * @param _place which collection failed
+   * @param _error failure from Firestore
    * @returns empty observable
    */
-  private handleErrors(place: string, error: Error): Observable<never> {
-    console.log(`An error occured in [${place}] Error ${error}`);
+  private handleErrors(_place: string, _error: Error): Observable<never> {
     return EMPTY;
   }
 }

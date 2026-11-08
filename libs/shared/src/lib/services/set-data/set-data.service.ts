@@ -89,7 +89,6 @@ export class SetDataService {
           this.isUploadCompleted = this.progressValue === 100;
         },
         (error) => {
-          console.log(`error ${error}`);
           reject(error);
         },
         () => resolve(),

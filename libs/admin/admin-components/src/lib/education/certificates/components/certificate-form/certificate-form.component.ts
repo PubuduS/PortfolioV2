@@ -17,6 +17,7 @@ import {
   submit as submitForm,
 } from '@angular/forms/signals';
 
+import { fieldHasError } from '@portfolio-v2/shared/forms';
 import { webUrl } from '@portfolio-v2/shared/validators';
 import {
   type CertificateDraftFailure,
@@ -113,16 +114,8 @@ export class CertificateFormComponent implements OnInit {
     this.applyTarget(this.target());
   }
 
-  /**
-   * Whether a touched or dirty field currently has this error.
-   * @param field field to read
-   * @param kind error kind
-   * @returns true when that error should be shown
-   */
-  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
-    const state = field();
-    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
-  }
+  /** Whether a touched or dirty field currently has this error. */
+  protected readonly hasError = fieldHasError;
 
   /**
    * Emit a certificate, or show the first rule that failed.

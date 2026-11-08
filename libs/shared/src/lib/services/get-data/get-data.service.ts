@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import {
+  from,
   map,
   Observable,
-  of,
-  from,
 } from 'rxjs';
 import {
   Firestore,
@@ -45,12 +44,6 @@ IProjectView | IPublication | ISkills | ISocialInfor | IProjectCard | IPublicati
   providedIn: 'root',
 })
 export class GetDataService {
-  /** Holds publication detail card for now. todo: move this to ngrx state */
-  public publicationDetailCard: Observable<IPublicationDetails | undefined> = of(undefined);
-
-  /** Holds project card for now. todo: move this to ngrx state */
-  public projectCard: Observable<IProjectCard | undefined> = of(undefined);
-
   /**
    * constructor
    * @param storage angular fire storage

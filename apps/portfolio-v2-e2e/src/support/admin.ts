@@ -16,4 +16,5 @@ export async function signInAsAdmin(page: Page): Promise<void> {
   await page.getByPlaceholder('Password').fill(TEST_ADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Login' }).click();
   await expect(page).toHaveURL(/\/admin\/home/);
+  await expect(page.locator('#logout')).toBeVisible();
 }

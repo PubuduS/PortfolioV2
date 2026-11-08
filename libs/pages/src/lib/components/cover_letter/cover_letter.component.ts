@@ -5,7 +5,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   form,
@@ -15,21 +14,21 @@ import {
   required,
   submit,
 } from '@angular/forms/signals';
+import { Store } from '@ngrx/store';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import { saveAs } from 'file-saver';
-import { Observable } from 'rxjs';
 
 import {
   DocumentCatalogReader,
-  GetDataService,
   GetDateTimeService,
 } from '@portfolio-v2/shared/services';
+import { StateActions } from '@portfolio-v2/state';
 import {
-  ISocialInfor,
-  IManagerValidatorMsgs,
   ICompanyValidatorMsgs,
+  IManagerValidatorMsgs,
 } from '@portfolio-v2/state/dataModels';
+import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 
 /** Fields written into the cover-letter template. */
 interface CoverLetterValues {
@@ -47,7 +46,7 @@ interface CoverLetterValues {
 @Component({
   selector: 'portfolio-v2-cover-letter',
   standalone: true,
-  imports: [CommonModule, FormField],
+  imports: [FormField],
   templateUrl: './cover_letter.component.html',
   styleUrl: './cover_letter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,8 +91,8 @@ export class CoverLetterComponent {
     'Web Developer',
   ];
 
-  /** Social infor */
-  protected readonly socialInfor: Observable<ISocialInfor[]>;
+  /** Social links from the store. */
+  protected readonly socialInfor = this.store.selectSignal(socialMediaSelector);
 
   /** True while the cover-letter catalog has not produced a snapshot. */
   protected readonly isTemplateLoading = computed(
@@ -120,16 +119,16 @@ export class CoverLetterComponent {
 
   /**
    * constructor
-   * @param dataService data service
    * @param dateTimeService date time service
    * @param router router
+   * @param store ngrx store
    */
   constructor(
-    private dataService: GetDataService,
     private dateTimeService: GetDateTimeService,
     private router: Router,
+    private store: Store,
   ) {
-    this.socialInfor = this.dataService.getDataArray<ISocialInfor>('social-infor-section');
+    this.store.dispatch(StateActions.socialMediaInformationStateConnect());
   }
 
   /**
