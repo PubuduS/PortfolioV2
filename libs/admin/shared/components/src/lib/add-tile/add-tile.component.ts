@@ -24,7 +24,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import {
   map,
-  Subscription,
   take,
   Observable,
   firstValueFrom,
@@ -34,7 +33,6 @@ import { Store } from '@ngrx/store';
 
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
-  GetDataService,
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
@@ -46,6 +44,7 @@ import {
 } from '@portfolio-v2/state/selectors';
 import { AddPortfolioRecordComponent } from '../add-portfolio-record/add-portfolio-record.component';
 import { ProjectCardType } from '../types/project-cards-type.enum';
+import { TilePreviewComponent } from '../tile-preview/tile-preview.component';
 
 /**
  * Add Tile Component
@@ -63,6 +62,7 @@ import { ProjectCardType } from '../types/project-cards-type.enum';
     MatIconModule,
     FormField,
     MatDialogClose,
+    TilePreviewComponent,
   ],
   templateUrl: './add-tile.component.html',
   styleUrl: './add-tile.component.scss',
@@ -120,26 +120,19 @@ export class AddTileComponent implements OnInit, OnDestroy {
   /** Current Card ID */
   private readonly currentCardId = this.nextCardId();
 
-  /** Image URL Subscription */
-  private imageUrlSubscription!: Subscription;
-
   /** Observable of project data such as icons, headings and descriptions */
   private readonly projectView = this.store.selectSignal(portfolioCardsSelector);
 
   /** Timeout limit for upload in milliseconds (30 seconds) */
   private static readonly THIRTY_SECONDS_TIMEOUT = 30000;
 
-  /** Upload Progress Interval ID */
-  private uploadProgressIntervalId: number | undefined;
-
-  /** Upload Timeout ID */
+  /** Upload timeout, cleared when the dialog closes. */
   private uploadTimeoutId: number | undefined;
 
   /**
    * constructor
    * @param dialog dialog
    * @param dialogRef dialog reference
-   * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
@@ -147,7 +140,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private dialogRef: MatDialogRef<AddTileComponent>,
-    private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
@@ -166,15 +158,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnDestroy(): void {
-    if (this.imageUrlSubscription) {
-      this.imageUrlSubscription.unsubscribe();
-    }
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-    if (this.uploadTimeoutId !== undefined) {
-      clearTimeout(this.uploadTimeoutId);
-    }
+    this.clearUploadTimeout();
   }
 
   /**
@@ -323,64 +307,36 @@ export class AddTileComponent implements OnInit, OnDestroy {
    * @returns Promise that resolves with the Firebase Storage URL
    */
   private async uploadFileAndGetUrl(fileStoragePath: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // Clear any existing interval before starting a new one
-      if (this.uploadProgressIntervalId !== undefined) {
-        clearInterval(this.uploadProgressIntervalId);
-      }
-
-      // Start the upload
-      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl())
-        .catch(() => undefined);
-
-      // Set up progress tracking and wait for completion
-      this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue.set(this.setDataService.getProgressValue());
-        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
-
-        // Check if upload is complete
-        if (this.isUploadCompleted()) {
-          // Clear the interval
-          clearInterval(this.uploadProgressIntervalId);
-          this.uploadProgressIntervalId = undefined;
-
-          // Clear the timeout since upload completed successfully
-          if (this.uploadTimeoutId !== undefined) {
-            clearTimeout(this.uploadTimeoutId);
-            this.uploadTimeoutId = undefined;
-          }
-
-          // Now get the download URL
-          const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
-          this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
-            next: (result) => {
-              if (result) {
-                this.imageUrl.set(result); // Update local imageUrl for consistency
-                resolve(result); // Return the Firebase Storage URL
-              } else {
-                reject(new Error('Failed to get upload URL'));
-              }
-            },
-            error: (error) => {
-              reject(error);
-            },
-          });
-        }
-      }, 100);
-
-      // Timeout after 30 seconds
+    this.clearUploadTimeout();
+    const timeout = new Promise<never>((_resolve, reject) => {
       this.uploadTimeoutId = window.setTimeout(() => {
-        if (this.uploadProgressIntervalId !== undefined) {
-          clearInterval(this.uploadProgressIntervalId);
-          this.uploadProgressIntervalId = undefined;
-        }
-        if (this.uploadTimeoutId !== undefined) {
-          clearTimeout(this.uploadTimeoutId);
-          this.uploadTimeoutId = undefined;
-        }
         reject(new Error('Upload timeout'));
       }, AddTileComponent.THIRTY_SECONDS_TIMEOUT);
     });
+
+    try {
+      const result = await Promise.race([
+        this.setDataService.uploadDataUrl(fileStoragePath, this.imageUrl(), (percent) => {
+          this.progressValue.set(percent);
+          this.isUploadCompleted.set(percent === 100);
+        }),
+        timeout,
+      ]);
+      this.imageUrl.set(result);
+      return result;
+    } finally {
+      this.clearUploadTimeout();
+    }
+  }
+
+  /**
+   * Stop a pending upload timeout.
+   */
+  private clearUploadTimeout(): void {
+    if (this.uploadTimeoutId !== undefined) {
+      window.clearTimeout(this.uploadTimeoutId);
+      this.uploadTimeoutId = undefined;
+    }
   }
 
   /**

@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   Inject,
-  OnDestroy,
   OnInit,
   signal,
 } from '@angular/core';
@@ -25,15 +24,14 @@ import { CommonModule } from '@angular/common';
 import {
   map,
   of,
-  Subscription,
   take,
   Observable,
 } from 'rxjs';
 import { Store } from '@ngrx/store';
 
+import { TilePreviewComponent } from '@portfolio-v2/admin/shared/components';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
-  GetDataService,
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
@@ -55,12 +53,13 @@ import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
     MatIconModule,
     FormField,
     MatDialogClose,
+    TilePreviewComponent,
   ],
   templateUrl: './description-card.component.html',
   styleUrl: './description-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DescriptionCardComponent implements OnInit, OnDestroy {
+export class DescriptionCardComponent implements OnInit {
   /** Title and description the editor is changing. */
   private readonly model = signal({ title: '', description: '' });
 
@@ -94,12 +93,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   /** Base Path Docs */
   private readonly basePathForDocs = 'project-icon-section';
 
-  /** Image URL Subscription */
-  private imageUrlSubscription!: Subscription;
-
-  /** Upload Progress Interval ID */
-  private uploadProgressIntervalId: number | undefined;
-
   /** Observable of project data such as icons, headings and descriptions */
   private readonly projectView = this.store.selectSignal(portfolioCardsSelector);
 
@@ -108,7 +101,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * @param dialogRef dialog ref
    * @param data data
    * @param data.project project view
-   * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
@@ -116,7 +108,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
   constructor(
     public dialogRef: MatDialogRef<DescriptionCardComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { project: IProjectView },
-    private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
@@ -131,19 +122,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
       title: this.data.project.viewHeading ?? 'title',
       description: this.data.project.viewDescription ?? 'description',
     });
-  }
-
-  /**
-   * Drop the image subscription and any upload timer still running.
-   * @inheritdoc
-   */
-  public ngOnDestroy(): void {
-    if (this.imageUrlSubscription) {
-      this.imageUrlSubscription.unsubscribe();
-    }
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
   }
 
   /**
@@ -231,24 +209,12 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * @param fileStoragePath path to store the file
    */
   private handleFileUpload(fileStoragePath: string): void {
-    // Clear any existing interval before starting a new one
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl()).catch(() => undefined);
-    this.uploadProgressIntervalId = window.setInterval(() => {
-      this.progressValue.set(this.setDataService.getProgressValue());
-      this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
-    }, 100);
-
-    // Handle image URL retrieval with proper subscription management
-    const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
-    this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe((result) => {
-      if (result) {
-        this.imageUrl.set(result);
-      }
-    });
+    this.setDataService.uploadDataUrl(fileStoragePath, this.imageUrl(), (percent) => {
+      this.progressValue.set(percent);
+      this.isUploadCompleted.set(percent === 100);
+    }).then((result) => {
+      this.imageUrl.set(result);
+    }).catch(() => undefined);
   }
 
   /**

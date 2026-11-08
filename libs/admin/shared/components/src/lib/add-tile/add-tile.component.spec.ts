@@ -11,7 +11,6 @@ import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
 import {
   of,
-  Subscription,
   throwError,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -254,21 +253,13 @@ describe('AddTileComponent', () => {
   });
 
   describe('Cleanup', () => {
-    it('should clear intervals and timeouts on destroy', () => {
-      component['uploadProgressIntervalId'] = 123;
+    it('should clear a pending upload timeout on destroy', () => {
       component['uploadTimeoutId'] = 456;
-      component['imageUrlSubscription'] = { unsubscribe: jest.fn() } as unknown as Subscription;
-
-      const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
       const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
       component.ngOnDestroy();
 
-      expect(clearIntervalSpy).toHaveBeenCalledWith(123);
       expect(clearTimeoutSpy).toHaveBeenCalledWith(456);
-      expect(component['imageUrlSubscription'].unsubscribe).toHaveBeenCalled();
-
-      clearIntervalSpy.mockRestore();
       clearTimeoutSpy.mockRestore();
     });
 
@@ -280,10 +271,10 @@ describe('AddTileComponent', () => {
   describe('when the tile is stored', () => {
     beforeEach(() => {
       mockUtilityService.getPaddedDigits.mockReturnValue('03');
-      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
-      mockSetDataService.getProgressValue.mockReturnValue(80);
-      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
-      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
+      mockSetDataService.uploadDataUrl.mockImplementation(async (_path, _dataUrl, onProgress) => {
+        onProgress?.(80);
+        return 'https://cdn.example/icon.webp';
+      });
       mockSetDataService.setRecord.mockReturnValue(of('successfull'));
       component['tileEditorForm'].title().value.set('Test Title');
       component['tileEditorForm'].description().value.set('Test Description');
@@ -316,16 +307,15 @@ describe('AddTileComponent', () => {
     });
 
     it('should save the download url after the file uploads', async () => {
-      jest.useFakeTimers();
       component['selectedFile'] = new File(['icon'], 'icon.webp', { type: 'image/webp' });
       component['imageUrl'].set('data:image/webp;base64,abc');
-      const pending = component['saveChanges']();
-      await jest.advanceTimersByTimeAsync(100);
-      await pending;
 
-      expect(mockSetDataService.pushFileToStorage).toHaveBeenCalledWith(
+      await component['saveChanges']();
+
+      expect(mockSetDataService.uploadDataUrl).toHaveBeenCalledWith(
         'portfolio/portfolio-tiles/ID-03-Icon.webp',
         'data:image/webp;base64,abc',
+        expect.any(Function),
       );
       expect(component['progressValue']()).toBe(80);
       expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
@@ -335,16 +325,16 @@ describe('AddTileComponent', () => {
       expect(component['newUpdatedImage']()).toBe('https://cdn.example/icon.webp');
     });
 
-    it('should keep the placeholder when the upload does not return a url', async () => {
-      jest.useFakeTimers();
-      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
+    it('should keep the placeholder when the upload fails', async () => {
+      mockSetDataService.uploadDataUrl.mockRejectedValue(new Error('offline'));
       component['selectedFile'] = new File(['icon'], 'icon.webp', { type: 'image/webp' });
-      const pending = component['saveChanges']();
-      const saved = pending.then(() => mockSetDataService.setRecord.mock.calls[0]?.[1]);
-      await jest.advanceTimersByTimeAsync(100);
-      await expect(saved).resolves.toEqual(expect.objectContaining({
-        imageURL: component['defaultImageSrc'],
-      }));
+
+      await component['saveChanges']();
+
+      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
+        'project-icon-section/project-03/',
+        expect.objectContaining({ imageURL: component['defaultImageSrc'] }),
+      );
     });
 
     it('should mark the save failed when the record errors', async () => {
@@ -381,9 +371,9 @@ describe('AddTileComponent', () => {
 
     it('should give up when storage does not finish', async () => {
       jest.useFakeTimers();
-      mockSetDataService.getUploadCompleteState.mockReturnValue(false);
-      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
-      component['uploadProgressIntervalId'] = 19;
+      mockSetDataService.uploadDataUrl.mockImplementation(() => new Promise(() => {
+        // The upload never finishes, so the dialog timeout wins.
+      }));
       const pending = component['uploadFileAndGetUrl']('portfolio/portfolio-tiles/ID-03-Icon.webp');
       const failed = expect(pending).rejects.toThrow('Upload timeout');
 
@@ -392,15 +382,12 @@ describe('AddTileComponent', () => {
       await failed;
     });
 
-    it('should reject when the download lookup fails', async () => {
-      jest.useFakeTimers();
-      mockGetDataService.getPhotoURL.mockReturnValue(throwError(() => new Error('storage down')));
-      const pending = component['uploadFileAndGetUrl']('portfolio/portfolio-tiles/ID-03-Icon.webp');
-      const failed = expect(pending).rejects.toThrow('storage down');
+    it('should reject when the upload fails', async () => {
+      mockSetDataService.uploadDataUrl.mockRejectedValue(new Error('storage down'));
 
-      await jest.advanceTimersByTimeAsync(100);
-
-      await failed;
+      await expect(
+        component['uploadFileAndGetUrl']('portfolio/portfolio-tiles/ID-03-Icon.webp'),
+      ).rejects.toThrow('storage down');
     });
   });
 

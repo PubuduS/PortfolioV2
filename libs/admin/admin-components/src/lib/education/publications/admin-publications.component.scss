@@ -38,24 +38,8 @@
   }
 
   .add-publication {
-    align-items: center;
     display: flex;
-    flex-direction: column;
-
-    // Material buttons have a fixed height, which made the 120px icon spill over the label.
-    button {
-      height: auto;
-      line-height: 0;
-      padding: 8px;
-    }
-
-    img {
-      display: block;
-    }
-
-    h3 {
-      margin: 8px 0 0;
-    }
+    justify-content: center;
   }
 
   .publication-card admin-update-delete-buttons {

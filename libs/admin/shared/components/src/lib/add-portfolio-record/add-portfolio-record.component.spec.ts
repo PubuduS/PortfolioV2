@@ -12,12 +12,9 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
-import {
-  of,
-  Subscription,
-  throwError,
-} from 'rxjs';
+import { of } from 'rxjs';
 
+import { fieldHasError } from '@portfolio-v2/shared/forms';
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
@@ -369,11 +366,11 @@ describe('AddPortfolioRecordComponent', () => {
     it('should show a required error only after the field is touched', () => {
       const {description} = component['cardAddForm'];
 
-      expect(component['hasError'](description, 'required')).toBe(false);
+      expect(fieldHasError(description, 'required')).toBe(false);
 
       description().markAsTouched();
 
-      expect(component['hasError'](description, 'required')).toBe(true);
+      expect(fieldHasError(description, 'required')).toBe(true);
     });
 
     it('should preview the chosen file', () => {
@@ -407,40 +404,19 @@ describe('AddPortfolioRecordComponent', () => {
       component['openUploadPhotoPanel']();
       const data = open.mock.calls[0][1]?.data as {
         onImageUploaded: (imageUrl: string) => void;
-        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
       };
       data.onImageUploaded('https://cdn.example/shot.webp');
 
       expect(component['cardAddForm'].screenshot().value()).toBe('https://cdn.example/shot.webp');
-      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
-        StateActions.projectCardsStateUpdated({
-          projectCards: [{ ...mockData[0], screenshotURL: 'https://cdn.example/shot.webp' }],
-        }),
-      );
-    });
-
-    it('should send an empty list when the card selector has no array', () => {
-      store.overrideSelector(portfolioCardsSelector, undefined);
-      store.refreshState();
-      const open = jest.spyOn(component['dialog'], 'open');
-
-      component['openUploadPhotoPanel']();
-      const data = open.mock.calls[0][1]?.data as {
-        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
-      };
-
-      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
-        StateActions.projectCardsStateUpdated({ projectCards: [] }),
-      );
     });
   });
 
   describe('when the image upload runs', () => {
     beforeEach(() => {
-      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
-      mockSetDataService.getProgressValue.mockReturnValue(55);
-      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
-      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/card.webp'));
+      mockSetDataService.uploadDataUrl.mockImplementation(async (_path, _dataUrl, onProgress) => {
+        onProgress?.(55);
+        return 'https://cdn.example/card.webp';
+      });
     });
 
     afterEach(() => {
@@ -448,44 +424,24 @@ describe('AddPortfolioRecordComponent', () => {
     });
 
     it('should resolve with the download url', async () => {
-      jest.useFakeTimers();
-      component['uploadProgressIntervalId'] = 8;
-      const pending = component['uploadFileAndGetUrl']('portfolio/project-card-images/ID-01-Image.webp/');
-      const done = expect(pending).resolves.toBe('https://cdn.example/card.webp');
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      await done;
+      await expect(
+        component['uploadFileAndGetUrl']('portfolio/project-card-images/ID-01-Image.webp/'),
+      ).resolves.toBe('https://cdn.example/card.webp');
       expect(component['progressValue']()).toBe(55);
       expect(component['imageUrl']()).toBe('https://cdn.example/card.webp');
     });
 
-    it('should reject an empty download url', async () => {
-      jest.useFakeTimers();
-      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
-      const pending = component['uploadFileAndGetUrl']('path');
-      const failed = expect(pending).rejects.toThrow('Failed to get upload URL');
+    it('should reject when the upload fails', async () => {
+      mockSetDataService.uploadDataUrl.mockRejectedValue(new Error('storage down'));
 
-      await jest.advanceTimersByTimeAsync(100);
-
-      await failed;
-    });
-
-    it('should reject when the download lookup fails', async () => {
-      jest.useFakeTimers();
-      mockGetDataService.getPhotoURL.mockReturnValue(throwError(() => new Error('storage down')));
-      const pending = component['uploadFileAndGetUrl']('path');
-      const failed = expect(pending).rejects.toThrow('storage down');
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      await failed;
+      await expect(component['uploadFileAndGetUrl']('path')).rejects.toThrow('storage down');
     });
 
     it('should reject when storage does not finish', async () => {
       jest.useFakeTimers();
-      mockSetDataService.getUploadCompleteState.mockReturnValue(false);
-      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
+      mockSetDataService.uploadDataUrl.mockImplementation(() => new Promise(() => {
+        // The upload never finishes, so the dialog timeout wins.
+      }));
       const pending = component['uploadFileAndGetUrl']('path');
       const failed = expect(pending).rejects.toThrow('Upload timeout');
 
@@ -494,15 +450,14 @@ describe('AddPortfolioRecordComponent', () => {
       await failed;
     });
 
-    it('should drop the upload listeners on destroy', () => {
-      const unsubscribe = jest.fn();
-      component['imageUrlSubscription'] = { unsubscribe } as unknown as Subscription;
-      component['uploadProgressIntervalId'] = 4;
-      component['uploadCheckTimeoutId'] = 5;
+    it('should clear a pending upload timeout on destroy', () => {
+      component['uploadTimeoutId'] = 5;
+      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
       component.ngOnDestroy();
 
-      expect(unsubscribe).toHaveBeenCalled();
+      expect(clearTimeoutSpy).toHaveBeenCalledWith(5);
+      clearTimeoutSpy.mockRestore();
     });
 
     it('should destroy cleanly when nothing is in flight', () => {
@@ -558,40 +513,16 @@ describe('AddPortfolioRecordComponent', () => {
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
     });
 
-    it('should update the matching featured card after a screenshot upload', () => {
-      store.overrideSelector(portfolioCardsSelector, [{ ...mockData[0], id: 2 }]);
-      store.refreshState();
+    it('should write the screenshot url onto the featured card form', () => {
       const open = jest.spyOn(featured['dialog'], 'open');
 
       featured['openUploadPhotoPanel']();
       const data = open.mock.calls[0][1]?.data as {
-        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
+        onImageUploaded: (imageUrl: string) => void;
       };
+      data.onImageUploaded('https://cdn.example/shot.webp');
 
-      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
-        StateActions.featuredProjectCardsStateUpdated({
-          projectCards: [{
-            ...mockData[0],
-            id: 2,
-            screenshotURL: 'https://cdn.example/shot.webp',
-          }],
-        }),
-      );
-    });
-
-    it('should send an empty featured list when the selector has no array', () => {
-      store.overrideSelector(portfolioCardsSelector, undefined);
-      store.refreshState();
-      const open = jest.spyOn(featured['dialog'], 'open');
-
-      featured['openUploadPhotoPanel']();
-      const data = open.mock.calls[0][1]?.data as {
-        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
-      };
-
-      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
-        StateActions.featuredProjectCardsStateUpdated({ projectCards: [] }),
-      );
+      expect(featured['cardAddForm'].screenshot().value()).toBe('https://cdn.example/shot.webp');
     });
   });
 });

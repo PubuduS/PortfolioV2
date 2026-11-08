@@ -17,6 +17,7 @@ import {
   of,
   forkJoin,
   catchError,
+  type Observable,
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
@@ -102,36 +103,19 @@ export class DeletePortfolioTileComponent {
 
     // Combine all delete operations into one
     const deleteOperations = [
-      // Delete icon file from storage (optional - don't fail if doesn't exist)
-      this.setDataService.deleteFileFromStorage(`portfolio/portfolio-tiles/ID-${paddedId}-Icon.webp`).pipe(
-        map((result) => result === 'successfull'),
-        // Treat storage delete as optional (return true even if file doesn't exist)
-        catchError(() => of(true)),
-      ),
-
-      this.setDataService.deleteFileFromStorage(`portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp`).pipe(
-        map((result) => result === 'successfull'),
-        // Treat screenshot delete as optional (return true even if file doesn't exist)
-        catchError(() => of(true)),
-      ),
-
-      // Delete icon metadata from database
+      this.optionalStorageDelete(`portfolio/portfolio-tiles/ID-${paddedId}-Icon.webp`),
+      this.optionalStorageDelete(`portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp`),
       this.setDataService.deleteRecord(`project-icon-section/project-${paddedId}/`).pipe(
         map((result) => result === 'successfull'),
       ),
-
-      // Delete project data from database
       this.setDataService.deleteRecord(`project-data-section/project-${paddedId}/`).pipe(
         map((result) => result === 'successfull'),
       ),
     ];
 
-    // Execute all delete operations in parallel and wait for all to complete
     forkJoin(deleteOperations).subscribe({
-      next: ([storageSuccess, screenshotSuccess, iconSuccess, cardSuccess]) => {
-        // Only consider successful if both database operations succeed
-        // Storage delete is optional (may not exist)
-        this.isOverallSuccess = iconSuccess && screenshotSuccess && cardSuccess && storageSuccess;
+      next: ([_storage, _screenshot, iconSuccess, cardSuccess]) => {
+        this.isOverallSuccess = iconSuccess && cardSuccess;
 
         if (this.isOverallSuccess) {
           // Update the store to reflect the deletion
@@ -158,30 +142,16 @@ export class DeletePortfolioTileComponent {
 
     // Combine all delete operations into one
     const deleteOperations = [
-      this.setDataService.deleteFileFromStorage(`portfolio/project-screenshots/featured/ID-${paddedId}-Screenshot.webp`).pipe(
-        map((result) => result === 'successfull'),
-        // Treat screenshot delete as optional (return true even if file doesn't exist)
-        catchError(() => of(true)),
-      ),
-
-      this.setDataService.deleteFileFromStorage(`portfolio/featured-projects/ID-${paddedId}-Image.webp`).pipe(
-        map((result) => result === 'successfull'),
-        // Treat screenshot delete as optional (return true even if file doesn't exist)
-        catchError(() => of(true)),
-      ),
-
-      // Delete project data from database
+      this.optionalStorageDelete(`portfolio/project-screenshots/featured/ID-${paddedId}-Screenshot.webp`),
+      this.optionalStorageDelete(`portfolio/featured-projects/ID-${paddedId}-Image.webp`),
       this.setDataService.deleteRecord(`featured-project-section/project-${paddedId}/`).pipe(
         map((result) => result === 'successfull'),
       ),
     ];
 
-    // Execute all delete operations in parallel and wait for all to complete
     forkJoin(deleteOperations).subscribe({
-      next: ([screenshotSuccess, cardSuccess]) => {
-        // Only consider successful if both database operations succeed
-        // Storage delete is optional (may not exist)
-        this.isOverallSuccess = screenshotSuccess && cardSuccess;
+      next: ([_screenshot, _image, cardSuccess]) => {
+        this.isOverallSuccess = cardSuccess;
 
         if (this.isOverallSuccess) {
           // Update the store to reflect the deletion
@@ -193,5 +163,18 @@ export class DeletePortfolioTileComponent {
         this.dialogRef.close(false);
       },
     });
+  }
+
+  /**
+   * Remove a storage object.
+   * A missing file still counts as removed, so a new tile can be confirmed.
+   * @param path storage path
+   * @returns true when the attempt finishes
+   */
+  private optionalStorageDelete(path: string): Observable<boolean> {
+    return this.setDataService.deleteFileFromStorage(path).pipe(
+      map(() => true),
+      catchError(() => of(true)),
+    );
   }
 }

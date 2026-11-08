@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -16,10 +15,9 @@ import {
 } from '@angular/material/dialog';
 
 import {
-  documentWriteMessage,
-  type DeleteDocumentRequest,
-} from '@portfolio-v2/state/dataModels';
-import { DocumentWriter } from '../../services/document-writer.service';
+  type AdminDeleteDialogData,
+  type RecordRemover,
+} from './admin-delete-dialog.data';
 
 /** Idle, a delete in flight, or the last write error. */
 type DeleteStatus =
@@ -28,11 +26,11 @@ type DeleteStatus =
   | { readonly kind: 'error'; readonly message: string };
 
 /**
- * Confirm before an older version is removed.
+ * Confirm before one record is removed.
  * The page opens this with its view container so the route-provided writer can be injected.
  */
 @Component({
-  selector: 'admin-delete-document-dialog',
+  selector: 'admin-delete-dialog',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -41,42 +39,36 @@ type DeleteStatus =
     MatDialogContent,
     MatDialogModule,
   ],
-  templateUrl: './delete-document-dialog.component.html',
-  styleUrl: './delete-document-dialog.component.scss',
+  templateUrl: './admin-delete-dialog.component.html',
+  styleUrl: './admin-delete-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeleteDocumentDialogComponent {
-  /** Row the owner is about to remove. */
-  protected readonly request = inject<DeleteDocumentRequest>(MAT_DIALOG_DATA);
+export class AdminDeleteDialogComponent<TRecord> {
+  /** Record and writer this dialog was opened with. */
+  protected readonly data = inject<AdminDeleteDialogData<TRecord>>(MAT_DIALOG_DATA);
 
   /** Idle, deleting, or the last write error. */
   protected readonly status = signal<DeleteStatus>({ kind: 'idle' });
 
-  /** Message from the last failed delete, or null. */
-  protected readonly errorMessage = computed(() => {
-    const current = this.status();
-    return current.kind === 'error' ? current.message : null;
-  });
-
-  /** Dialog close handle. */
-  private readonly dialogRef = inject<MatDialogRef<DeleteDocumentDialogComponent, boolean>>(
+  /** Closes this dialog after a successful delete. */
+  private readonly dialogRef = inject<MatDialogRef<AdminDeleteDialogComponent<TRecord>, boolean>>(
     MatDialogRef,
   );
 
   /** The writer to use for the delete. */
-  private readonly writer = inject(DocumentWriter);
+  private readonly writer = inject<RecordRemover<TRecord>>(this.data.writer);
 
   /**
-   * Remove the version and close, or keep the dialog open with the failure.
+   * Remove the record and close, or keep the dialog open with the failure.
    */
   protected async confirm(): Promise<void> {
     this.status.set({ kind: 'deleting' });
 
     try {
-      await this.writer.remove(this.request.kind, this.request.version);
+      await this.writer.remove(this.data.record);
       this.dialogRef.close(true);
     } catch (error) {
-      this.status.set({ kind: 'error', message: documentWriteMessage(error) });
+      this.status.set({ kind: 'error', message: this.data.writeMessage(error) });
     }
   }
 }

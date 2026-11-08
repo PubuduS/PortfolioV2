@@ -3,23 +3,33 @@ import {
   Component,
   inject,
   OnInit,
-  Type,
   ViewContainerRef,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
-import { UpdateDeleteButtonsComponent } from '@portfolio-v2/admin/shared/components';
+import {
+  AddRecordComponent,
+  AdminDeleteDialogComponent,
+  AdminRecordDialogComponent,
+  openAdminDialog,
+  UpdateDeleteButtonsComponent,
+} from '@portfolio-v2/admin/shared/components';
 import { IUpdateDeleteBtnConfigs } from '@portfolio-v2/admin/shared/types';
 import { StateActions } from '@portfolio-v2/state';
-import { ICertificateCard } from '@portfolio-v2/state/dataModels';
+import {
+  type CertificateEditTarget,
+  ICertificateCard,
+} from '@portfolio-v2/state/dataModels';
 import {
   certificatesSelector,
   nextCertificateIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { CertificateDialogComponent } from './components/certificate-dialog/certificate-dialog.component';
-import { DeleteCertificateDialogComponent } from './components/delete-certificate-dialog/delete-certificate-dialog.component';
+import { CertificateFormComponent } from './components/certificate-form/certificate-form.component';
+import {
+  certificateWriteMessage,
+  CertificateWriter,
+} from './services/certificate-writer.service';
 
 /**
  * Admin list of certificates.
@@ -28,7 +38,7 @@ import { DeleteCertificateDialogComponent } from './components/delete-certificat
   selector: 'admin-certificates',
   standalone: true,
   imports: [
-    MatButtonModule,
+    AddRecordComponent,
     UpdateDeleteButtonsComponent,
   ],
   templateUrl: './admin-certificates.component.html',
@@ -66,7 +76,7 @@ export class AdminCertificatesComponent implements OnInit {
    * Open a dialog for the next certificate id.
    */
   protected addCertificate(): void {
-    this.openDialog(CertificateDialogComponent, { mode: 'new', id: this.nextId() });
+    this.openRecordDialog('New certificate', { mode: 'new', id: this.nextId() });
   }
 
   /**
@@ -89,7 +99,13 @@ export class AdminCertificatesComponent implements OnInit {
    * @param certificate record to remove
    */
   protected deleteCertificate(certificate: ICertificateCard): void {
-    this.openDialog(DeleteCertificateDialogComponent, certificate);
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminDeleteDialogComponent, {
+      title: 'Delete certificate',
+      lines: [certificate.title],
+      record: certificate,
+      writer: CertificateWriter,
+      writeMessage: certificateWriteMessage,
+    }, '800px');
   }
 
   /**
@@ -97,21 +113,21 @@ export class AdminCertificatesComponent implements OnInit {
    * @param certificate record to edit
    */
   protected editCertificate(certificate: ICertificateCard): void {
-    this.openDialog(CertificateDialogComponent, { mode: 'edit', certificate });
+    this.openRecordDialog('Edit certificate', { mode: 'edit', certificate });
   }
 
   /**
-   * Open a dialog in this page's injector so it can see the route writer.
-   * @param component dialog type
-   * @param data record or editor target
+   * Open the shared record dialog for a new or existing certificate.
+   * @param heading dialog title
+   * @param target record the form loads
    */
-  private openDialog<T, D>(component: Type<T>, data: D): void {
-    this.dialog.open(component, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      viewContainerRef: this.viewContainerRef,
-      data,
-    });
+  private openRecordDialog(heading: string, target: CertificateEditTarget): void {
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminRecordDialogComponent, {
+      heading,
+      target,
+      form: CertificateFormComponent,
+      writer: CertificateWriter,
+      writeMessage: certificateWriteMessage,
+    }, '800px');
   }
 }

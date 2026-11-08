@@ -18,22 +18,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import {
   form,
-  FormField,
   required,
 } from '@angular/forms/signals';
 import {
   map,
   Observable,
   of,
-  Subscription,
   take,
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
-import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
-import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
-  GetDataService,
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
@@ -43,6 +38,7 @@ import {
 } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
+import { ProjectCardFieldsComponent } from '../project-card-fields/project-card-fields.component';
 import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
 import { ProjectCardType } from '../types/project-cards-type.enum';
 
@@ -93,7 +89,7 @@ function emptyCard(): NewCardValues {
     MatIconModule,
     MatDialogModule,
     MatDialogClose,
-    FormField,
+    ProjectCardFieldsComponent,
   ],
   templateUrl: './add-portfolio-record.component.html',
   styleUrl: './add-portfolio-record.component.scss',
@@ -142,14 +138,8 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /** Project card type */
   protected readonly typeFeatured = ProjectCardType.featured;
 
-  /** Image URL Subscription */
-  private imageUrlSubscription!: Subscription;
-
-  /** Upload Progress Interval ID */
-  private uploadProgressIntervalId: number | undefined;
-
-  /** Upload Check Timeout ID */
-  private uploadCheckTimeoutId: number | undefined;
+  /** Upload timeout, cleared when the dialog closes. */
+  private uploadTimeoutId: number | undefined;
 
   /** Timeout limit for upload in milliseconds (30 seconds) */
   private static readonly THIRTY_SECONDS_TIMEOUT = 30000;
@@ -157,14 +147,12 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * constructor
    * @param dialog dialog ref
-   * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
    */
   constructor(
     public dialog: MatDialog,
-    private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
@@ -175,15 +163,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnDestroy(): void {
-    if (this.imageUrlSubscription) {
-      this.imageUrlSubscription.unsubscribe();
-    }
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-    if (this.uploadCheckTimeoutId !== undefined) {
-      clearTimeout(this.uploadCheckTimeoutId);
-    }
+    this.clearUploadTimeout();
   }
 
   /**
@@ -193,9 +173,6 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.cardAddForm().reset(emptyCard());
   }
-
-  /** Whether a touched or dirty field currently has this error. */
-  protected readonly hasError = fieldHasError;
 
   /**
    * Handle the file picker.
@@ -231,26 +208,6 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       fieldPath = `portfolio/project-screenshots/normal/ID-${paddedId}-Screenshot.webp/`;
     }
 
-    // Get all project cards and create update action
-    const allProjectCards = this.store.selectSignal(portfolioCardsSelector)();
-    const stateUpdateAction = (updatedData: any): any => {
-      if (allProjectCards && Array.isArray(allProjectCards)) {
-        // Update the specific card with new screenshot URL
-        const updatedCards = allProjectCards.map((card: any) => (
-          card.id === this.data.currentId ? { ...card, screenshotURL: updatedData.imageSrc } : card
-        ));
-        if (this.data.type === ProjectCardType.featured) {
-          return StateActions.featuredProjectCardsStateUpdated({ projectCards: updatedCards });
-        }
-        return StateActions.projectCardsStateUpdated({ projectCards: updatedCards });
-      }
-
-      if (this.data.type === ProjectCardType.featured) {
-        return StateActions.featuredProjectCardsStateUpdated({ projectCards: [] });
-      }
-      return StateActions.projectCardsStateUpdated({ projectCards: [] });
-    };
-
     this.dialog.open(
       UploadPhotoComponent,
       {
@@ -260,9 +217,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
           title: 'Upload Project Screenshot',
           fieldPath,
           currentImageUrl: this.defaultImageSrc,
-          stateUpdateAction,
           onImageUploaded: (imageUrl: string) => {
-            // Update the form field with the uploaded image URL
             this.cardAddForm.screenshot().value.set(imageUrl);
           },
         },
@@ -340,64 +295,36 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * @returns Promise that resolves with the Firebase Storage URL
    */
   private async uploadFileAndGetUrl(fileStoragePath: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // Clear any existing interval before starting a new one
-      if (this.uploadProgressIntervalId !== undefined) {
-        clearInterval(this.uploadProgressIntervalId);
-      }
-
-      // Start the upload
-      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl())
-        .catch(() => undefined);
-
-      // Set up progress tracking and wait for completion
-      this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue.set(this.setDataService.getProgressValue());
-        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
-
-        // Check if upload is complete
-        if (this.isUploadCompleted()) {
-          // Clear the interval
-          clearInterval(this.uploadProgressIntervalId);
-          this.uploadProgressIntervalId = undefined;
-
-          // Clear the timeout since upload completed successfully
-          if (this.uploadCheckTimeoutId !== undefined) {
-            clearTimeout(this.uploadCheckTimeoutId);
-            this.uploadCheckTimeoutId = undefined;
-          }
-
-          // Now get the download URL
-          const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
-          this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
-            next: (result) => {
-              if (result) {
-                this.imageUrl.set(result); // Update local imageUrl for consistency
-                resolve(result); // Return the Firebase Storage URL
-              } else {
-                reject(new Error('Failed to get upload URL'));
-              }
-            },
-            error: (error) => {
-              reject(error);
-            },
-          });
-        }
-      }, 100);
-
-      // Timeout after 30 seconds
-      this.uploadCheckTimeoutId = window.setTimeout(() => {
-        if (this.uploadProgressIntervalId !== undefined) {
-          clearInterval(this.uploadProgressIntervalId);
-          this.uploadProgressIntervalId = undefined;
-        }
-        if (this.uploadCheckTimeoutId !== undefined) {
-          clearTimeout(this.uploadCheckTimeoutId);
-          this.uploadCheckTimeoutId = undefined;
-        }
+    this.clearUploadTimeout();
+    const timeout = new Promise<never>((_resolve, reject) => {
+      this.uploadTimeoutId = window.setTimeout(() => {
         reject(new Error('Upload timeout'));
       }, AddPortfolioRecordComponent.THIRTY_SECONDS_TIMEOUT);
     });
+
+    try {
+      const result = await Promise.race([
+        this.setDataService.uploadDataUrl(fileStoragePath, this.imageUrl(), (percent) => {
+          this.progressValue.set(percent);
+          this.isUploadCompleted.set(percent === 100);
+        }),
+        timeout,
+      ]);
+      this.imageUrl.set(result);
+      return result;
+    } finally {
+      this.clearUploadTimeout();
+    }
+  }
+
+  /**
+   * Stop a pending upload timeout.
+   */
+  private clearUploadTimeout(): void {
+    if (this.uploadTimeoutId !== undefined) {
+      window.clearTimeout(this.uploadTimeoutId);
+      this.uploadTimeoutId = undefined;
+    }
   }
 
   /**

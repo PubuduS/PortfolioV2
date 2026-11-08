@@ -171,8 +171,8 @@ describe('AdminPublicationsComponent', () => {
 
     expect(grid.querySelectorAll('.publication-card')).toHaveLength(1);
     expect(add?.parentElement).toBe(grid);
-    expect(add?.children[0].tagName).toBe('BUTTON');
-    expect(add?.children[1].textContent?.trim()).toBe('Add');
+    expect(add?.querySelector('button')).not.toBeNull();
+    expect(add?.querySelector('h3')?.textContent?.trim()).toBe('Add');
   });
 
   it('opens the edit dialog filled with that publication', () => {

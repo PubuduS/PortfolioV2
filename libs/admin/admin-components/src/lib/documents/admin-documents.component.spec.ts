@@ -25,6 +25,7 @@ import {
   type DocumentCatalog,
 } from '@portfolio-v2/state/dataModels';
 import { AdminDocumentsComponent } from './admin-documents.component';
+import { DocumentVersionRemover } from './services/document-version-remover';
 import { DocumentWriter } from './services/document-writer.service';
 
 /**
@@ -99,7 +100,10 @@ describe('AdminDocumentsComponent', () => {
     });
     TestBed.overrideComponent(AdminDocumentsComponent, {
       add: {
-        providers: [{ provide: DocumentWriter, useValue: writer }],
+        providers: [
+          { provide: DocumentWriter, useValue: writer },
+          DocumentVersionRemover,
+        ],
       },
     });
     await TestBed.compileComponents();
@@ -167,10 +171,15 @@ describe('AdminDocumentsComponent', () => {
       expect.any(Function),
       expect.objectContaining({
         viewContainerRef,
-        data: {
-          kind: 'resume',
-          version: catalog.versions[1],
-        },
+        data: expect.objectContaining({
+          title: 'Delete version',
+          lines: [catalog.versions[1].uploadedAt],
+          record: {
+            kind: 'resume',
+            version: catalog.versions[1],
+          },
+          writer: DocumentVersionRemover,
+        }),
       }),
     );
     expect(document.body.textContent).toContain('Delete version');

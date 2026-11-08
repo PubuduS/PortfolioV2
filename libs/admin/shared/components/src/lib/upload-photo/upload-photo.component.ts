@@ -2,10 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   Inject,
-  OnDestroy,
   OnInit,
   signal,
-  Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -15,18 +13,13 @@ import {
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
 } from '@angular/material/dialog';
 
 import { fieldHasError } from '@portfolio-v2/shared/forms';
-import {
-  GetDataService,
-  SetDataService,
-} from '@portfolio-v2/shared/services';
+import { SetDataService } from '@portfolio-v2/shared/services';
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 
 /** Dialog that uploads a replacement photo and previews it. */
@@ -44,7 +37,7 @@ import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
   styleUrl: './upload-photo.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadPhotoComponent implements OnInit, OnDestroy {
+export class UploadPhotoComponent implements OnInit {
   /** Chosen file name. Empty until a file is selected. */
   private readonly model = signal({ fileName: '' });
 
@@ -71,29 +64,13 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   /** Current Image URL for display (updated after successful upload) */
   protected readonly currentImageUrl = signal('');
 
-  /** Current Data from State */
-  protected currentData!: Signal<any>;
-
-  /** My Image Subscription */
-  private myImageSubscription!: Subscription;
-
-  /** Image URL Subscription */
-  private imageUrlSubscription!: Subscription;
-
-  /** Upload Progress Interval ID */
-  private uploadProgressIntervalId: number | undefined;
-
   /**
    * constructor
    * @param setDataService set data service
-   * @param getDataService get data service
-   * @param store ngrx store
    * @param config upload photo configuration from MAT_DIALOG_DATA
    */
   constructor(
     private setDataService: SetDataService,
-    private getDataService: GetDataService,
-    private store: Store,
     @Inject(MAT_DIALOG_DATA) protected readonly config: IUploadPhotoConfig,
   ) {}
 
@@ -106,27 +83,6 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
 
     // Initialize current image URL for display
     this.currentImageUrl.set(this.config.currentImageUrl || '');
-
-    // Initialize currentData signal with the provided selector
-    if (this.config.stateSelector) {
-      this.currentData = this.store.selectSignal(this.config.stateSelector);
-    }
-  }
-
-  /**
-   * Drop the image subscriptions and any upload timer still running.
-   * @inheritdoc
-   */
-  public ngOnDestroy(): void {
-    if (this.myImageSubscription) {
-      this.myImageSubscription.unsubscribe();
-    }
-    if (this.imageUrlSubscription) {
-      this.imageUrlSubscription.unsubscribe();
-    }
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
   }
 
   /**
@@ -156,47 +112,30 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   /**
    * Upload data
    */
-  protected uploadData(): void {
+  protected async uploadData(): Promise<void> {
     this.uploadPhotoForm.fileName().markAsTouched();
-    if (this.uploadPhotoForm().valid()) {
-      const databaseFilePath = this.config.fieldPath;
-      if (!databaseFilePath) {
-        return;
-      }
+    if (!this.uploadPhotoForm().valid()) {
+      return;
+    }
+    const databaseFilePath = this.config.fieldPath;
+    if (!databaseFilePath) {
+      return;
+    }
 
-      // Clear any existing interval before starting a new one
-      if (this.uploadProgressIntervalId !== undefined) {
-        clearInterval(this.uploadProgressIntervalId);
-      }
-
-      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl())
-        .catch(() => undefined);
-      this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue.set(this.setDataService.getProgressValue());
-        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
-      }, 100);
-
-      const newImageUrl = this.getDataService.getPhotoURL(databaseFilePath);
-      this.imageUrlSubscription = newImageUrl.subscribe((result) => {
-        if (result) {
-          this.setDataService.modifyImageSrcField(databaseFilePath, result);
-          if (this.currentData && this.config.stateUpdateAction) {
-            this.store.dispatch(this.config.stateUpdateAction({
-              ...this.currentData(),
-              imageSrc: result,
-            }));
-          }
-
-          // Update UI after successful upload
-          this.imagePreview.set(this.defaultImageSrc);
-          this.currentImageUrl.set(result);
-
-          // Call the optional callback with the uploaded image URL
-          if (this.config.onImageUploaded) {
-            this.config.onImageUploaded(result);
-          }
-        }
-      });
+    try {
+      const result = await this.setDataService.uploadDataUrl(
+        databaseFilePath,
+        this.imageUrl(),
+        (percent) => {
+          this.progressValue.set(percent);
+          this.isUploadCompleted.set(percent === 100);
+        },
+      );
+      this.imagePreview.set(this.defaultImageSrc);
+      this.currentImageUrl.set(result);
+      this.config.onImageUploaded?.(result);
+    } catch {
+      // The progress bar stays where the upload stopped.
     }
   }
 }

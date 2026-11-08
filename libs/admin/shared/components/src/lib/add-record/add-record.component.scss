@@ -1,0 +1,20 @@
+:host {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    height: auto;
+    line-height: 0;
+    padding: 8px;
+  }
+
+  img {
+    display: block;
+  }
+
+  h3 {
+    color: var(--admin-add-heading, inherit);
+    margin: 8px 0 0;
+  }
+}

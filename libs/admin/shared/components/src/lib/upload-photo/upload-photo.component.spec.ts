@@ -8,10 +8,7 @@ import {
   MockStore,
 } from '@ngrx/store/testing';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {
-of,
-Subscription
-} from 'rxjs'
+import { of } from 'rxjs';
 
 import {
   GetDataService,
@@ -22,14 +19,10 @@ import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 import { UploadPhotoComponent } from './upload-photo.component';
 
 // Mock selector function that returns a signal
-const mockSelector = jest.fn();
-
 // Mock configuration for the upload photo component
 const mockUploadConfig: IUploadPhotoConfig = {
   title: 'Upload Test Photo',
   fieldPath: 'test/path/image.jpg/',
-  stateSelector: mockSelector,
-  stateUpdateAction: jest.fn(),
   currentImageUrl: 'https://example.com/current-image.jpg',
   onImageUploaded: jest.fn(),
 };
@@ -103,8 +96,7 @@ describe('UploadPhotoComponent', () => {
     it('should validate that services are called during upload setup', () => {
       // This test ensures the upload method can be called without errors
       // and that the service dependencies are properly set up
-      expect(mockSetDataService.pushFileToStorage).toBeDefined();
-      expect(mockGetDataService.getPhotoURL).toBeDefined();
+      expect(mockSetDataService.uploadDataUrl).toBeDefined();
     });
   });
 
@@ -152,8 +144,6 @@ describe('UploadPhotoComponent', () => {
     it('should handle optional configuration properties', () => {
       const configWithDefaults: Partial<IUploadPhotoConfig> = {
         title: 'Test',
-        stateSelector: jest.fn(),
-        stateUpdateAction: jest.fn(),
       };
 
       expect(configWithDefaults.title).toBeDefined();
@@ -162,12 +152,6 @@ describe('UploadPhotoComponent', () => {
   });
 
   describe('Component Behavior', () => {
-    it('should handle component lifecycle properly', () => {
-      const destroySpy = jest.spyOn(component, 'ngOnDestroy');
-      component.ngOnDestroy();
-      expect(destroySpy).toHaveBeenCalled();
-    });
-
     it('should be properly initialized', () => {
       expect(component).toBeInstanceOf(UploadPhotoComponent);
     });
@@ -182,31 +166,25 @@ describe('UploadPhotoComponent', () => {
     });
 
     it('should handle service failures', () => {
-      mockSetDataService.pushFileToStorage.mockImplementation(() => {
-        throw new Error('Service failure');
-      });
+      mockSetDataService.uploadDataUrl.mockRejectedValue(new Error('Service failure'));
 
-      expect(mockSetDataService.pushFileToStorage).toBeDefined();
+      expect(mockSetDataService.uploadDataUrl).toBeDefined();
     });
   });
 
   describe('when a photo is uploaded', () => {
     beforeEach(() => {
-      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
-      mockSetDataService.getProgressValue.mockReturnValue(40);
-      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
-      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
-      mockUploadConfig.stateUpdateAction.mockReturnValue({ type: '[Photo] Updated' });
+      mockSetDataService.uploadDataUrl.mockImplementation(async (_path, _dataUrl, onProgress) => {
+        onProgress?.(100);
+        return 'https://cdn.example/icon.webp';
+      });
       jest.spyOn(store, 'dispatch');
     });
 
     afterEach(() => {
       mockUploadConfig.fieldPath = 'test/path/image.jpg/';
       mockUploadConfig.currentImageUrl = 'https://example.com/current-image.jpg';
-      mockUploadConfig.stateSelector = mockSelector;
       mockUploadConfig.onImageUploaded = jest.fn();
-      mockUploadConfig.stateUpdateAction = jest.fn().mockReturnValue({ type: '[Photo] Updated' });
-      jest.useRealTimers();
     });
 
     it('should preview the chosen file', () => {
@@ -243,7 +221,7 @@ describe('UploadPhotoComponent', () => {
       component['uploadData']();
 
       expect(component['hasError'](component['uploadPhotoForm'].fileName, 'required')).toBe(true);
-      expect(mockSetDataService.pushFileToStorage).not.toHaveBeenCalled();
+      expect(mockSetDataService.uploadDataUrl).not.toHaveBeenCalled();
     });
 
     it('should stop when the dialog has no storage path', () => {
@@ -252,82 +230,44 @@ describe('UploadPhotoComponent', () => {
 
       component['uploadData']();
 
-      expect(mockSetDataService.pushFileToStorage).not.toHaveBeenCalled();
+      expect(mockSetDataService.uploadDataUrl).not.toHaveBeenCalled();
     });
 
-    it('should store the download url and tell the caller', () => {
-      jest.useFakeTimers();
+    it('should store the download url and tell the caller', async () => {
       component.ngOnInit();
       component['uploadPhotoForm'].fileName().value.set('icon.webp');
       component['imageUrl'].set('data:image/webp;base64,abc');
 
-      component['uploadData']();
-      jest.advanceTimersByTime(100);
+      await component['uploadData']();
 
-      expect(component['progressValue']()).toBe(40);
+      expect(component['progressValue']()).toBe(100);
+      expect(component['isUploadCompleted']()).toBe(true);
       expect(component['currentImageUrl']()).toBe('https://cdn.example/icon.webp');
       expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
-      expect(mockSetDataService.modifyImageSrcField).toHaveBeenCalledWith(
-        'test/path/image.jpg/',
-        'https://cdn.example/icon.webp',
-      );
-      expect(store.dispatch).toHaveBeenCalledWith({ type: '[Photo] Updated' });
+      expect(store.dispatch).not.toHaveBeenCalled();
       expect(mockUploadConfig.onImageUploaded).toHaveBeenCalledWith('https://cdn.example/icon.webp');
     });
 
-    it('should skip the store update when the url is empty', () => {
-      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
-      component.ngOnInit();
-      component['uploadPhotoForm'].fileName().value.set('icon.webp');
-
-      component['uploadData']();
-
-      expect(mockSetDataService.modifyImageSrcField).not.toHaveBeenCalled();
-      expect(component['currentImageUrl']()).toBe('https://example.com/current-image.jpg');
-    });
-
-    it('should upload without a selector, an action, or a callback', () => {
-      mockUploadConfig.stateSelector = undefined;
-      mockUploadConfig.stateUpdateAction = undefined;
+    it('should upload without a callback', async () => {
       mockUploadConfig.onImageUploaded = undefined;
       mockUploadConfig.currentImageUrl = '';
       component.ngOnInit();
       component['uploadPhotoForm'].fileName().value.set('icon.webp');
 
-      component['uploadData']();
+      await component['uploadData']();
 
       expect(component['currentImageUrl']()).toBe('https://cdn.example/icon.webp');
       expect(store.dispatch).not.toHaveBeenCalled();
     });
 
-    it('should swallow a storage rejection and replace a running timer', () => {
-      jest.useFakeTimers();
-      const clear = jest.spyOn(window, 'clearInterval');
-      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
-      component['uploadProgressIntervalId'] = 44;
+    it('should keep the current photo when storage rejects the upload', async () => {
+      mockSetDataService.uploadDataUrl.mockRejectedValue(new Error('offline'));
       component.ngOnInit();
       component['uploadPhotoForm'].fileName().value.set('icon.webp');
 
-      component['uploadData']();
+      await component['uploadData']();
 
-      expect(clear).toHaveBeenCalledWith(44);
-    });
-
-    it('should drop the upload listeners on destroy', () => {
-      const unsubscribe = jest.fn();
-      component['myImageSubscription'] = { unsubscribe } as unknown as Subscription;
-      component['imageUrlSubscription'] = { unsubscribe } as unknown as Subscription;
-      component['uploadProgressIntervalId'] = 12;
-      const clear = jest.spyOn(window, 'clearInterval');
-
-      component.ngOnDestroy();
-
-      expect(unsubscribe).toHaveBeenCalledTimes(2);
-      expect(clear).toHaveBeenCalledWith(12);
-    });
-
-    it('should destroy cleanly when nothing is in flight', () => {
-      expect(() => component.ngOnDestroy()).not.toThrow();
+      expect(component['currentImageUrl']()).toBe('https://example.com/current-image.jpg');
     });
   });
 });

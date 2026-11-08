@@ -25,15 +25,7 @@
         </li>
       }
       <li class="add-certificate">
-        <button type="button" mat-button (click)="addCertificate()">
-          <img
-            src="assets/images/portfolio/add.ico"
-            width="120"
-            height="120"
-            alt="Add a certificate"
-          />
-        </button>
-        <h3>Add</h3>
+        <admin-add-record label="Add a certificate" (add)="addCertificate()" />
       </li>
     </ul>
   </div>

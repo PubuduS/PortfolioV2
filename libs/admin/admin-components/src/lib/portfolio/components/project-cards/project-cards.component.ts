@@ -3,7 +3,6 @@ import {
   Component,
   effect,
   Inject,
-  OnDestroy,
   OnInit,
   signal,
   Signal,
@@ -21,26 +20,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import {
   form,
-  FormField,
   required,
 } from '@angular/forms/signals';
 import {
   map,
   Observable,
   of,
-  Subscription,
   take,
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import {
   projectCardSelector,
-  portfolioCardsSelector,
   featuredProjectCardSelector,
 } from '@portfolio-v2/state/selectors';
-import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
-  GetDataService,
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
@@ -50,8 +44,9 @@ import {
 } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import {
-  UploadPhotoComponent,
+  ProjectCardFieldsComponent,
   ProjectCardType,
+  UploadPhotoComponent,
 } from '@portfolio-v2/admin/shared/components';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 
@@ -100,13 +95,13 @@ function emptyCard(): ProjectCardValues {
     MatIconModule,
     MatDialogModule,
     MatDialogClose,
-    FormField,
+    ProjectCardFieldsComponent,
   ],
   templateUrl: './project-cards.component.html',
   styleUrl: './project-cards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProjectCardsComponent implements OnInit, OnDestroy {
+export class ProjectCardsComponent implements OnInit {
   /** Values the editor is changing. */
   private readonly model = signal<ProjectCardValues>(emptyCard());
 
@@ -147,14 +142,8 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   /** True after the editor has been filled from a stored card. */
   private hasAppliedCard = false;
 
-  /** Image URL Subscription */
-  private imageUrlSubscription!: Subscription;
-
   /** Image Upload Progress Value */
   protected readonly progressValue = signal(0);
-
-  /** Upload Progress Interval ID */
-  private uploadProgressIntervalId: number | undefined;
 
   /**
    * constructor
@@ -162,7 +151,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param data.cardId card id
    * @param data.type project card type
    * @param dialog dialog ref
-   * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
@@ -170,7 +158,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { cardId: number, type: ProjectCardType },
     public dialog: MatDialog,
-    private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
@@ -189,28 +176,12 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Drop the image subscription and any upload timer still running.
-   * @inheritdoc
-   */
-  public ngOnDestroy(): void {
-    if (this.imageUrlSubscription) {
-      this.imageUrlSubscription.unsubscribe();
-    }
-    if (this.uploadProgressIntervalId !== undefined) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-  }
-
-  /**
    * Build the card form from the project this dialog was opened with.
    * @inheritdoc
    */
   public ngOnInit(): void {
     this.applyCard(this.projectCard());
   }
-
-  /** Whether a touched or dirty field currently has this error. */
-  protected readonly hasError = fieldHasError;
 
   /**
    * Fill the editor once the stored card arrives.
@@ -264,25 +235,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       fieldPath = `${basePath}/normal/${imageName}/`;
     }
 
-    // Get all project cards and create update action
-    const allProjectCards = this.store.selectSignal(portfolioCardsSelector)();
-    const stateUpdateAction = (updatedData: any): any => {
-      if (allProjectCards && Array.isArray(allProjectCards)) {
-        // Update the specific card with new screenshot URL
-        const updatedCards = allProjectCards.map((card: any) => (
-          card.id === this.cardId ? { ...card, screenshotURL: updatedData.imageSrc } : card
-        ));
-        if (this.data.type === ProjectCardType.featured) {
-          return StateActions.featuredProjectCardsStateUpdated({ projectCards: updatedCards });
-        }
-        return StateActions.projectCardsStateUpdated({ projectCards: updatedCards });
-      }
-      if (this.data.type === ProjectCardType.featured) {
-        return StateActions.featuredProjectCardsStateUpdated({ projectCards: [] });
-      }
-      return StateActions.projectCardsStateUpdated({ projectCards: [] });
-    };
-
     this.dialog.open(
       UploadPhotoComponent,
       {
@@ -292,9 +244,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
           title: 'Upload Project Screenshot',
           fieldPath,
           currentImageUrl: this.projectCard()?.screenshotURL ?? this.defaultImageSrc,
-          stateUpdateAction,
           onImageUploaded: (imageUrl: string) => {
-            // Update the form field with the uploaded image URL
             this.cardEditorForm.screenshot().value.set(imageUrl);
           },
         },
@@ -360,26 +310,12 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param fileStoragePath path to store the file
    */
   private handleFileUpload(fileStoragePath: string): void {
-    // Clear any existing interval before starting a new one
-    if (!this.uploadProgressIntervalId) {
-      clearInterval(this.uploadProgressIntervalId);
-    }
-
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl()).catch(() => undefined);
-    this.uploadProgressIntervalId = window.setInterval(() => {
-      this.progressValue.set(this.setDataService.getProgressValue());
-      this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
-    }, 100);
-
-    // Handle image URL retrieval with proper subscription management
-    const newImageUrl = this.getDataService.getPhotoURL(fileStoragePath);
-    this.imageUrlSubscription = newImageUrl.pipe(
-      take(1),
-    ).subscribe((result) => {
-      if (result) {
-        this.imageUrl.set(result);
-      }
-    });
+    this.setDataService.uploadDataUrl(fileStoragePath, this.imageUrl(), (percent) => {
+      this.progressValue.set(percent);
+      this.isUploadCompleted.set(percent === 100);
+    }).then((result) => {
+      this.imageUrl.set(result);
+    }).catch(() => undefined);
   }
 
   /**

@@ -237,6 +237,44 @@ export class SetDataService {
   }
 
   /**
+   * Upload a data URL and resolve with its download URL.
+   * Progress is reported from the upload task. Callers do not poll.
+   * @param path storage path
+   * @param dataUrl data URL from a file reader
+   * @param onProgress percent from 0 to 100
+   * @returns download URL
+   */
+  public async uploadDataUrl(
+    path: string,
+    dataUrl: string,
+    onProgress?: (percent: number) => void,
+  ): Promise<string> {
+    const storageRef = ref(this.storage, path);
+    const response = await fetch(dataUrl);
+    const imageFile = await response.blob();
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+    await new Promise<void>((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const percent = snapshot.totalBytes === 0
+            ? 0
+            : (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          onProgress?.(percent);
+        },
+        (error) => {
+          reject(error);
+        },
+        () => resolve(),
+      );
+    });
+
+    onProgress?.(100);
+    return getDownloadURL(storageRef);
+  }
+
+  /**
    * Delete file from firebase storage
    * @param filePath file path in storage
    * @returns Observable that returns success status

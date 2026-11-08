@@ -3,23 +3,33 @@ import {
   Component,
   inject,
   OnInit,
-  Type,
   ViewContainerRef,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
-import { UpdateDeleteButtonsComponent } from '@portfolio-v2/admin/shared/components';
+import {
+  AddRecordComponent,
+  AdminDeleteDialogComponent,
+  AdminRecordDialogComponent,
+  openAdminDialog,
+  UpdateDeleteButtonsComponent,
+} from '@portfolio-v2/admin/shared/components';
 import { IUpdateDeleteBtnConfigs } from '@portfolio-v2/admin/shared/types';
 import { StateActions } from '@portfolio-v2/state';
-import { IEducation } from '@portfolio-v2/state/dataModels';
+import {
+  type EducationEditTarget,
+  IEducation,
+} from '@portfolio-v2/state/dataModels';
 import {
   educationSelector,
   nextEducationIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { DegreeDialogComponent } from './components/degree-dialog/degree-dialog.component';
-import { DeleteDegreeDialogComponent } from './components/delete-degree-dialog/delete-degree-dialog.component';
+import { DegreeFormComponent } from './components/degree-form/degree-form.component';
+import {
+  degreeWriteMessage,
+  DegreeWriter,
+} from './services/degree-writer.service';
 
 /**
  * Admin list of degrees.
@@ -28,7 +38,7 @@ import { DeleteDegreeDialogComponent } from './components/delete-degree-dialog/d
   selector: 'admin-degrees',
   standalone: true,
   imports: [
-    MatButtonModule,
+    AddRecordComponent,
     UpdateDeleteButtonsComponent,
   ],
   templateUrl: './admin-degrees.component.html',
@@ -63,7 +73,7 @@ export class AdminDegreesComponent implements OnInit {
    * Open a dialog for the next degree id.
    */
   protected addDegree(): void {
-    this.openDialog(DegreeDialogComponent, { mode: 'new', id: this.nextId() });
+    this.openRecordDialog('New degree', { mode: 'new', id: this.nextId() });
   }
 
   /**
@@ -86,7 +96,13 @@ export class AdminDegreesComponent implements OnInit {
    * @param degree record to remove
    */
   protected deleteDegree(degree: IEducation): void {
-    this.openDialog(DeleteDegreeDialogComponent, degree);
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminDeleteDialogComponent, {
+      title: 'Delete degree',
+      lines: [degree.title, degree.degree],
+      record: degree,
+      writer: DegreeWriter,
+      writeMessage: degreeWriteMessage,
+    }, '800px');
   }
 
   /**
@@ -94,21 +110,21 @@ export class AdminDegreesComponent implements OnInit {
    * @param degree record to edit
    */
   protected editDegree(degree: IEducation): void {
-    this.openDialog(DegreeDialogComponent, { mode: 'edit', education: degree });
+    this.openRecordDialog('Edit degree', { mode: 'edit', education: degree });
   }
 
   /**
-   * Open a dialog in this page's injector so it can see the route writer.
-   * @param component dialog type
-   * @param data record or editor target
+   * Open the shared record dialog for a new or existing degree.
+   * @param heading dialog title
+   * @param target record the form loads
    */
-  private openDialog<T, D>(component: Type<T>, data: D): void {
-    this.dialog.open(component, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      viewContainerRef: this.viewContainerRef,
-      data,
-    });
+  private openRecordDialog(heading: string, target: EducationEditTarget): void {
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminRecordDialogComponent, {
+      heading,
+      target,
+      form: DegreeFormComponent,
+      writer: DegreeWriter,
+      writeMessage: degreeWriteMessage,
+    }, '800px');
   }
 }

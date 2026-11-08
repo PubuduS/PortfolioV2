@@ -1,0 +1,108 @@
+@if (heading(); as heading) {
+  <div class="col-12">
+    <label class="fw-bold my-2"> Heading:</label>
+    <input
+      id="heading"
+      [formField]="heading"
+      class="form-control mb-3"
+      type="text"
+      placeholder="Enter project heading"
+    />
+    @if (hasError(heading, 'required')) {
+      <span class="field-error">A heading is required</span>
+    }
+  </div>
+}
+<div class="col-12">
+  <label for="description" class="form-label mt-2">Description</label>
+  <textarea
+    id="description"
+    class="form-control"
+    [formField]="description()"
+    rows="4"
+    placeholder="Enter project description"
+  ></textarea>
+  @if (hasError(description(), 'required')) {
+    <span class="field-error">A valid description is required</span>
+  }
+</div>
+
+<div class="col-12">
+  <label class="fw-bold my-2"> Technologies:</label>
+  <input
+    id="technologies"
+    [formField]="technologies()"
+    class="form-control mb-3"
+    type="text"
+    placeholder="Technologies used in the project"
+  />
+  @if (hasError(technologies(), 'required')) {
+    <span class="field-error"
+      >A valid comma separated list of technologies are required</span
+    >
+  }
+</div>
+
+<div class="col-6">
+  <label class="fw-bold my-2"> Codebase:</label>
+  <input
+    id="codebase"
+    [formField]="codebase()"
+    class="form-control mb-3"
+    type="text"
+    placeholder="A link to the codebase [Optional]"
+  />
+  @if (hasError(codebase(), 'invalidURL')) {
+    <span class="field-error">A valid URL is required</span>
+  }
+</div>
+<div class="col-6">
+  <label class="fw-bold my-2"> Youtube:</label>
+  <input
+    id="youtube"
+    [formField]="youtube()"
+    class="form-control mb-3"
+    type="text"
+    placeholder="A youtube link for demo [Optional]"
+  />
+  @if (hasError(youtube(), 'invalidURL')) {
+    <span class="field-error">A valid URL is required</span>
+  }
+</div>
+<div class="col-6">
+  <label class="fw-bold my-2"> Screenshot:</label>
+  <div class="d-flex">
+    <input
+      id="screenshot"
+      [formField]="screenshot()"
+      class="form-control mb-3 me-2"
+      type="text"
+      placeholder="A link to the screenshot [Optional]"
+    />
+    <button
+      mat-mini-fab
+      color="primary"
+      class="flex-shrink-0"
+      type="button"
+      (click)="uploadScreenshot.emit()"
+    >
+      <mat-icon>upload</mat-icon>
+    </button>
+  </div>
+  @if (hasError(screenshot(), 'invalidURL')) {
+    <span class="field-error">A valid URL is required</span>
+  }
+</div>
+<div class="col-6">
+  <label class="fw-bold my-2"> Documentation:</label>
+  <input
+    id="documentation"
+    [formField]="documentation()"
+    class="form-control mb-3"
+    type="text"
+    placeholder="A link to project documentation [Optional]"
+  />
+  @if (hasError(documentation(), 'invalidURL')) {
+    <span class="field-error">A valid URL is required</span>
+  }
+</div>
