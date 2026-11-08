@@ -15,7 +15,7 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { User } from 'firebase/auth';
 import { Subject } from 'rxjs';
 
-import { StateActions } from '@portfolio-v2/state';
+import { StateActions } from '@portfolio-v2/state/actions';
 import {
   ADMIN_IDLE_TIMEOUT_MS,
   AUTH_TARGET,

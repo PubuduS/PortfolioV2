@@ -1,7 +1,6 @@
 import {
   Inject,
   Injectable,
-  NgZone,
 } from '@angular/core';
 import {
   Auth,
@@ -15,7 +14,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { StateActions } from '@portfolio-v2/state';
+import { StateActions } from '@portfolio-v2/state/actions';
 import { AdminIdleSession } from './admin-idle-session';
 import {
   AUTH_TARGET,
@@ -55,21 +54,17 @@ export class AuthService {
    * @param auth Firebase Auth instance for this build.
    * @param router Router.
    * @param store NgRx store.
-   * @param zone Angular zone. Activity listeners stay outside it.
    * @param authTarget Backend this build is allowed to trust.
    */
   constructor(
     private auth: Auth,
     private router: Router,
     private store: Store,
-    private zone: NgZone,
     @Inject(AUTH_TARGET) private authTarget: AuthTarget,
   ) {
     this.authState$ = authState(this.auth);
     this.idle = new AdminIdleSession(() => {
-      this.zone.run(() => {
-        this.logout().catch(() => undefined);
-      });
+      this.logout().catch(() => undefined);
     });
     this.authState$.subscribe((user) => {
       this.reconcile(user).catch(() => undefined);
@@ -184,9 +179,7 @@ export class AuthService {
   private grantPrivileges(user: User): void {
     this.verifiedUid = user.uid;
     this.store.dispatch(StateActions.adminStateUpdated({ isAdmin: true }));
-    this.zone.runOutsideAngular(() => {
-      this.idle.start();
-    });
+    this.idle.start();
   }
 
   /**

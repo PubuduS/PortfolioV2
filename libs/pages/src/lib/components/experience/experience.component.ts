@@ -1,23 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
-  Signal,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  filter,
-  map,
-  take,
-} from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { IExperience } from '@portfolio-v2/state/dataModels';
+import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
 import { GetDateTimeService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
+import { IExperience } from '@portfolio-v2/state/dataModels';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
-import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
 
 /**
  * Experience page
@@ -26,7 +20,6 @@ import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
   selector: 'portfolio-v2-experience',
   standalone: true,
   imports: [
-    CommonModule,
     HighlightPipePipe,
   ],
   templateUrl: './experience.component.html',
@@ -34,23 +27,20 @@ import { HighlightPipePipe } from '@portfolio-v2/shared/pipes';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceComponent {
-  /**
-   * Array of IExperience.
-   * Hold the data from the database
-   */
-  protected readonly experienceData = this.store.select(experienceSelector);
+  /** Jobs from the store. */
+  protected readonly experienceData = this.store.selectSignal(experienceSelector);
 
-  /** Selected job */
-  protected selectedJob = '';
+  /** Job on screen. The visitor's choice, or the first job once the list arrives. */
+  protected readonly selected = computed(() => this.chosen() ?? this.experienceData()?.[0]);
+
+  /** Span label for the selected job. */
+  protected readonly yearsOfExperience = computed(() => this.yearsLabel(this.selected()));
+
+  /** Visitor's choice. Unset until a tab is clicked. */
+  private readonly chosen = signal<IExperience | undefined>(undefined);
 
   /** Date time service */
-  private dateTimeService = inject(GetDateTimeService);
-
-  /** Experience */
-  public experience: IExperience | undefined;
-
-  /** Number of years of experience */
-  public yearsOfExperience: Signal<string> = signal<string>('1 Year');
+  private readonly dateTimeService = inject(GetDateTimeService);
 
   /**
    * constructor
@@ -60,38 +50,30 @@ export class ExperienceComponent {
     private store: Store,
   ) {
     this.store.dispatch(StateActions.experienceStateConnect());
-    this.experienceData.pipe(
-      take(1),
-      filter((data) => data !== undefined),
-      map((data) => data[0]),
-    ).subscribe((exp) => this.displaySelected(exp));
   }
 
   /**
-   * Display selected
+   * Show the job the visitor picked.
    * @param exp job details
    */
   public displaySelected(exp: IExperience): void {
     if (exp) {
-      this.experience = exp;
-      this.selectedJob = this.experience.employer;
-      this.totalYearsOfExperience();
+      this.chosen.set(exp);
     }
   }
 
   /**
-   * Calculate the total years of experience by
-   * calculating the difference between the start and end date
+   * Label for how long one job lasted.
+   * @param job Selected job, when one is on screen.
+   * @returns A year count, or one year when the job has no dates.
    */
-  private totalYearsOfExperience(): void {
-    if (!this.experience?.startDate || !this.experience?.endDate) {
-      this.yearsOfExperience = signal('1 Year');
-      return;
+  private yearsLabel(job: IExperience | undefined): string {
+    if (!job?.startDate || !job?.endDate) {
+      return '1 Year';
     }
 
-    const numOfYears = this.dateTimeService
-      .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
+    const numOfYears = this.dateTimeService.getYearsOfExperience(job.startDate, job.endDate);
 
-    this.yearsOfExperience = signal(numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`);
+    return numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`;
   }
 }

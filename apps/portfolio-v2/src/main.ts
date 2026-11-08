@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
   enableProdMode,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 
 import { appConfig } from './app/app.config';
@@ -17,7 +17,7 @@ bootstrapApplication(
   {
     ...appConfig,
     providers: [
-      provideZoneChangeDetection(),
+      provideZonelessChangeDetection(),
       ...appConfig.providers,
     ],
   },

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -34,8 +35,8 @@ import { AuthService } from '@portfolio-v2/shared/services';
 export class LoginComponent implements OnInit {
   /** Login form */
   protected loginForm!: FormGroup;
-  /** True if attept is successfull; false otherise */
-  protected isCredentialsRight = true;
+  /** True until a sign-in attempt is rejected. */
+  protected readonly isCredentialsRight = signal(true);
 
   /** Email validator messages */
   protected readonly emailValidatorMsgs: IEmailValidatorMsgs = {
@@ -74,8 +75,9 @@ export class LoginComponent implements OnInit {
    */
   public async login(): Promise<void> {
     const { email, password } = this.loginForm.value;
-    this.isCredentialsRight = await this.authService.signIn(email, password);
-    if (!this.isCredentialsRight) {
+    const accepted = await this.authService.signIn(email, password);
+    this.isCredentialsRight.set(accepted);
+    if (!accepted) {
       this.loginForm.reset();
     }
   }

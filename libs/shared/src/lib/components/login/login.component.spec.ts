@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import {
   ComponentFixture,
   TestBed,
@@ -17,6 +18,7 @@ describe('LoginComponent', () => {
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: AuthService,
           useValue: mockAuthService,
@@ -52,6 +54,26 @@ describe('LoginComponent', () => {
 
       expect(mockAuthService.signIn).toHaveBeenCalledWith('admin@example.test', 'secret');
       expect(mockAuthService.logout).not.toHaveBeenCalled();
+    });
+
+    it('should show the error when the password is rejected', async () => {
+      mockAuthService.signIn.mockResolvedValue(false);
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const email = nativeElement.querySelector<HTMLInputElement>('input[placeholder="Email"]');
+      const password = nativeElement.querySelector<HTMLInputElement>('input[placeholder="Password"]');
+      if (!email || !password) {
+        throw new Error('login fields missing');
+      }
+      email.value = 'admin@example.test';
+      email.dispatchEvent(new Event('input'));
+      password.value = 'wrong';
+      password.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      await component.login();
+      await fixture.whenStable();
+
+      expect(nativeElement.textContent).toContain('Your email or password is wrong');
     });
   });
 });

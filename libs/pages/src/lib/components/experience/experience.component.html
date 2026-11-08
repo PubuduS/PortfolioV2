@@ -4,7 +4,7 @@
   data-anchor="experience"
 >
   <div class="container">
-    @if (experienceData | async; as experienceData) {
+    @if (experienceData(); as experienceData) {
       <div class="row">
         <div class="col-md-12">
           <div class="text-center mb-5 text-uppercase">
@@ -24,16 +24,16 @@
                   data-toggle="pill"
                   role="tab"
                   (click)="displaySelected(job)"
-                  [ngClass]="{ active: selectedJob === job.employer }"
+                  [class.active]="selected()?.employer === job.employer"
                   [attr.aria-selected]="
-                    selectedJob === job.employer ? 'true' : 'false'
+                    selected()?.employer === job.employer ? 'true' : 'false'
                   "
                   >{{ job.employer }}</a
                 >
               }
             </div>
             <div class="tab-content ps-5" id="v-pills-tabContent">
-              @if (experience) {
+              @if (selected(); as experience) {
                 <div
                   class="tab-pane fade show active"
                   role="tabpanel"

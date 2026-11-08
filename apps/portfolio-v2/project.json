@@ -16,9 +16,7 @@
         "outputPath": "dist/apps/portfolio-v2",
         "index": "apps/portfolio-v2/src/index.html",
         "main": "apps/portfolio-v2/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": [],
         "tsConfig": "apps/portfolio-v2/tsconfig.app.json",
         "assets": [
           "apps/portfolio-v2/src/favicon.ico",
