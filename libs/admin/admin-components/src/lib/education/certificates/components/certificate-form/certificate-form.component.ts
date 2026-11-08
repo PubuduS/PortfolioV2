@@ -2,28 +2,52 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
-  inject,
   input,
+  OnInit,
   output,
   signal,
+  untracked,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  disabled,
+  type FieldTree,
+  form,
+  FormField,
+  required,
+  submit as submitForm,
+} from '@angular/forms/signals';
 
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
-import { urlValidator } from '@portfolio-v2/shared/validators';
+import { webUrl } from '@portfolio-v2/shared/validators';
 import {
-  CertificateDraftFailure,
-  CertificateEditTarget,
-  CertificateStatus,
-  ICertificateCard,
+  type CertificateDraftFailure,
+  type CertificateEditTarget,
+  type CertificateFormValues,
+  type ICertificateCard,
   NO_CREDENTIAL_ID,
   toCertificateDraft,
 } from '@portfolio-v2/state/dataModels';
+
+/** One submission error attached to a field. */
+interface SubmissionError {
+  kind: string;
+  fieldTree?: FieldTree<unknown>;
+}
+
+/**
+ * A blank certificate. A new object each time so a later edit cannot change the reset value.
+ * @returns empty certificate values
+ */
+function emptyCertificate(): CertificateFormValues {
+  return {
+    title: '',
+    organization: '',
+    completedDate: '',
+    credentialID: '',
+    certification: 'Here',
+    certificateURL: '',
+    description: '',
+  };
+}
 
 /**
  * Add and edit use the same form. It emits a certificate record and holds no services.
@@ -31,15 +55,12 @@ import {
 @Component({
   selector: 'admin-certificate-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    DisplayValidatorErrorsComponent,
-  ],
+  imports: [FormField],
   templateUrl: './certificate-form.component.html',
   styleUrl: './certificate-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CertificateFormComponent {
+export class CertificateFormComponent implements OnInit {
   /** Record being created or edited. */
   public readonly target = input.required<CertificateEditTarget>();
 
@@ -49,18 +70,21 @@ export class CertificateFormComponent {
   /** Certificate ready to save. */
   public readonly submitted = output<ICertificateCard>();
 
-  /** Builds the editor form. */
-  private readonly formBuilder = inject(FormBuilder).nonNullable;
+  /** Values the editor is changing. */
+  private readonly model = signal<CertificateFormValues>(emptyCertificate());
 
-  /** Editor fields. */
-  protected readonly form = this.formBuilder.group({
-    title: ['', Validators.required],
-    organization: ['', Validators.required],
-    completedDate: ['', Validators.required],
-    credentialID: [''],
-    certification: this.formBuilder.control<CertificateStatus>('Here', Validators.required),
-    certificateURL: ['', urlValidator()],
-    description: ['', Validators.required],
+  /** Editor fields. An earned certificate needs a link. One in progress may leave it empty. */
+  protected readonly editor = form(this.model, (fields) => {
+    disabled(fields, { when: () => this.disabled() });
+    required(fields.title);
+    required(fields.organization);
+    required(fields.completedDate);
+    required(fields.certification);
+    required(fields.description);
+    required(fields.certificateURL, {
+      when: ({ valueOf }) => valueOf(fields.certification) === 'Here',
+    });
+    webUrl(fields.certificateURL);
   });
 
   /** Shown when the record cannot be built and no single field owns the failure. */
@@ -70,64 +94,54 @@ export class CertificateFormComponent {
   private appliedKey = '';
 
   /**
-   * Reset the fields when the edited record changes, and lock them during a save.
+   * Load the record this dialog was opened with, and later records that replace it.
    */
   constructor() {
     effect(() => {
       const target = this.target();
-      const key = target.mode === 'new'
-        ? `new:${target.id}`
-        : `edit:${target.certificate.id}`;
-
-      if (key === this.appliedKey) {
-        return;
-      }
-
-      this.appliedKey = key;
-      this.applyTarget(target);
+      untracked(() => this.applyTarget(target));
     });
+  }
 
-    effect(() => {
-      if (this.disabled()) {
-        this.form.disable({ emitEvent: false });
-        return;
-      }
+  /**
+   * Fill the fields before the first render.
+   * @inheritdoc
+   */
+  public ngOnInit(): void {
+    this.applyTarget(this.target());
+  }
 
-      this.form.enable({ emitEvent: false });
-    });
-
-    this.form.controls.certification.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.syncUrlValidators());
+  /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
   }
 
   /**
    * Emit a certificate, or show the first rule that failed.
    */
-  public submit(): void {
+  public async submit(): Promise<void> {
     if (this.disabled()) {
       return;
     }
-
-    this.form.markAllAsTouched();
-    this.formError.set(null);
-
-    if (this.form.invalid) {
-      return;
-    }
-
-    const target = this.target();
-    const result = toCertificateDraft(
-      target.mode === 'new' ? target.id : target.certificate.id,
-      this.form.getRawValue(),
-    );
-
-    if (!result.ok) {
-      this.showDraftFailure(result.reason);
-      return;
-    }
-
-    this.submitted.emit(result.certificate);
+    await submitForm(this.editor, async () => {
+      this.formError.set(null);
+      const target = this.target();
+      const result = toCertificateDraft(
+        target.mode === 'new' ? target.id : target.certificate.id,
+        this.editor().value(),
+      );
+      if (!result.ok) {
+        return this.draftError(result.reason);
+      }
+      this.submitted.emit(result.certificate);
+      return undefined;
+    });
   }
 
   /**
@@ -135,16 +149,20 @@ export class CertificateFormComponent {
    * @param target record the editor should show
    */
   private applyTarget(target: CertificateEditTarget): void {
-    this.formError.set(null);
-
-    if (target.mode === 'new') {
-      this.form.reset();
-      this.syncUrlValidators();
+    const key = target.mode === 'new'
+      ? `new:${target.id}`
+      : `edit:${target.certificate.id}`;
+    if (key === this.appliedKey) {
       return;
     }
-
+    this.appliedKey = key;
+    this.formError.set(null);
+    if (target.mode === 'new') {
+      this.editor().reset(emptyCertificate());
+      return;
+    }
     const { certificate } = target;
-    this.form.reset({
+    this.editor().reset({
       title: certificate.title,
       organization: certificate.organization,
       completedDate: certificate.completedDate,
@@ -153,40 +171,21 @@ export class CertificateFormComponent {
       certificateURL: certificate.certificateURL ?? '',
       description: certificate.description,
     });
-    this.syncUrlValidators();
   }
 
   /**
-   * Show the first rule that blocked a save.
+   * Map a draft failure onto the field that owns it.
    * @param reason rule that failed
+   * @returns submission errors, or undefined when the failure has no field
    */
-  private showDraftFailure(reason: CertificateDraftFailure): void {
-    const { certificateURL } = this.form.controls;
-
+  private draftError(reason: CertificateDraftFailure): SubmissionError[] | undefined {
     if (reason === 'missing-url') {
-      certificateURL.setErrors({ required: true });
-      return;
+      return [{ fieldTree: this.editor.certificateURL, kind: 'required' }];
     }
-
     if (reason === 'invalid-url') {
-      certificateURL.setErrors({ invalidURL: true });
-      return;
+      return [{ fieldTree: this.editor.certificateURL, kind: 'invalidURL' }];
     }
-
     this.formError.set('This certificate cannot be saved.');
-  }
-
-  /**
-   * An earned certificate needs a link. One in progress may leave it empty.
-   */
-  private syncUrlValidators(): void {
-    const { certification, certificateURL } = this.form.controls;
-
-    certificateURL.setValidators(
-      certification.value === 'Here'
-        ? [Validators.required, urlValidator()]
-        : [urlValidator()],
-    );
-    certificateURL.updateValueAndValidity({ emitEvent: false });
+    return undefined;
   }
 }
