@@ -2,9 +2,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Inject,
+  inject,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
@@ -17,11 +18,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import {
   map,
   Observable,
@@ -38,14 +39,47 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import {
-  urlValidator,
-  firebaseURLValidator,
+  firebaseUrl,
+  webUrl,
 } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
-import { DisplayValidatorErrorsComponent } from '../validator-errors/display-validator-errors.component';
 import { ProjectCardType } from '../types/project-cards-type.enum';
+
+/** Text and links for a new project card. */
+interface NewCardValues {
+  /** Heading. */
+  heading: string;
+  /** Description. */
+  description: string;
+  /** Technologies. */
+  technologies: string;
+  /** Codebase URL. */
+  codebase: string;
+  /** YouTube URL. */
+  youtube: string;
+  /** Screenshot URL. */
+  screenshot: string;
+  /** Documentation URL. */
+  documentation: string;
+}
+
+/**
+ * A blank new card.
+ * @returns empty card values
+ */
+function emptyCard(): NewCardValues {
+  return {
+    heading: '',
+    description: '',
+    technologies: '',
+    codebase: '',
+    youtube: '',
+    screenshot: '',
+    documentation: '',
+  };
+}
 
 /**
  * Project Cards Component
@@ -60,16 +94,33 @@ import { ProjectCardType } from '../types/project-cards-type.enum';
     MatIconModule,
     MatDialogModule,
     MatDialogClose,
-    ReactiveFormsModule,
-    DisplayValidatorErrorsComponent,
+    FormField,
   ],
   templateUrl: './add-portfolio-record.component.html',
   styleUrl: './add-portfolio-record.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
-  /** Card Editor Form */
-  protected cardAddForm!: FormGroup;
+  /** Dialog arguments. */
+  public readonly data = inject<{
+    currentId: number,
+    heading: string,
+    type: ProjectCardType,
+  }>(MAT_DIALOG_DATA);
+
+  /** Values the editor is changing. */
+  private readonly model = signal<NewCardValues>(emptyCard());
+
+  /** Card Editor Form. A featured card also requires a heading. */
+  protected readonly cardAddForm = form(this.model, (fields) => {
+    required(fields.heading, { when: () => this.data.type === this.typeFeatured });
+    required(fields.description);
+    required(fields.technologies);
+    webUrl(fields.codebase);
+    webUrl(fields.youtube);
+    firebaseUrl(fields.screenshot);
+    webUrl(fields.documentation);
+  });
 
   /** Default Image URL */
   protected readonly defaultImageSrc = 'https://placehold.co/300x200.png';
@@ -107,12 +158,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * constructor
    * @param dialog dialog ref
-   * @param data data
-   * @param data.currentId current id
-   * @param data.heading heading
-   * @param data.type project card type
    * @param cdr change detector ref
-   * @param formBuilder form builder
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -120,13 +166,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    */
   constructor(
     public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      currentId: number,
-      heading: string,
-      type: ProjectCardType,
-    },
     private cdr: ChangeDetectorRef,
-    private formBuilder: FormBuilder,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -154,27 +194,18 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    if (this.data.type === this.typeFeatured) {
-      this.cardAddForm = this.formBuilder.group({
-        heading: ['', [Validators.required]],
-        description: ['', [Validators.required]],
-        technologies: ['', [Validators.required]],
-        codebase: ['', [urlValidator()]],
-        youtube: ['', [urlValidator()]],
-        screenshot: ['', [firebaseURLValidator()]],
-        documentation: ['', [urlValidator()]],
-      });
-      return;
-    }
+    this.cardAddForm().reset(emptyCard());
+  }
 
-    this.cardAddForm = this.formBuilder.group({
-      description: ['', [Validators.required]],
-      technologies: ['', [Validators.required]],
-      codebase: ['', [urlValidator()]],
-      youtube: ['', [urlValidator()]],
-      screenshot: ['', [firebaseURLValidator()]],
-      documentation: ['', [urlValidator()]],
-    });
+  /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
   }
 
   /**
@@ -244,9 +275,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
           stateUpdateAction,
           onImageUploaded: (imageUrl: string) => {
             // Update the form field with the uploaded image URL
-            this.cardAddForm.patchValue({
-              screenshot: imageUrl,
-            });
+            this.cardAddForm.screenshot().value.set(imageUrl);
           },
         },
       },
@@ -257,18 +286,18 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * Add project card data
    */
   protected async addData(): Promise<void> {
-    if (!this.cardAddForm.valid) return;
+    if (!this.cardAddForm().valid()) return;
 
     const {
       description, technologies, codebase, youtube, screenshot, documentation,
-    } = this.cardAddForm.value;
+    } = this.cardAddForm().value();
 
     let { heading } = this.data;
     let fileStoragePath = '';
     let databaseDocPath = '';
 
     if (this.data.type === ProjectCardType.featured) {
-      heading = this.cardAddForm.value.heading ?? 'Default Heading';
+      heading = this.cardAddForm().value().heading || 'Default Heading';
       fileStoragePath = `portfolio/featured-projects/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
       databaseDocPath = `featured-project-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
     } else {

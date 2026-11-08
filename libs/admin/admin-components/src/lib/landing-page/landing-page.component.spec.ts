@@ -3,10 +3,6 @@ import {
   TestBed,
 } from '@angular/core/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import {
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SetDataService } from '@portfolio-v2/shared/services';
@@ -26,7 +22,6 @@ describe('LandingPageComponent', () => {
         BrowserAnimationsModule,
       ],
       providers: [
-        FormBuilder,
         {
           provide: SetDataService,
           useValue: mockSetDataService,
@@ -45,12 +40,14 @@ describe('LandingPageComponent', () => {
 
   describe('Form Initialization', () => {
     it('should initialize form with the winter season', () => {
-      expect(component['landingnForm'].get('seasonsPicker')?.value).toBe('winter');
+      expect(component['landingForm'].seasonsPicker().value()).toBe('winter');
     });
 
     it('should require a season', () => {
-      const seasonsPicker = component['landingnForm'].get('seasonsPicker');
-      expect(seasonsPicker?.hasValidator(Validators.required)).toBeTruthy();
+      const seasonsPicker = component['landingForm'].seasonsPicker();
+      seasonsPicker.value.set('');
+      expect(seasonsPicker.valid()).toBe(false);
+      expect(seasonsPicker.errors().some((error) => error.kind === 'required')).toBe(true);
     });
   });
 
@@ -106,7 +103,7 @@ describe('LandingPageComponent', () => {
       mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
       const file = new File(['still'], 'poster.webp', { type: 'image/webp' });
       component['selectedFiles'].set('poster-mobile.webp', file);
-      component['landingnForm'].patchValue({ seasonsPicker: 'fall' });
+      component['landingForm'].seasonsPicker().value.set('fall');
 
       await component.uploadSelectedFiles();
 

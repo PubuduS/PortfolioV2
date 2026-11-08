@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   inject,
@@ -8,18 +7,19 @@ import {
   signal,
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  email,
+  type FieldTree,
+  form,
+  FormField,
+  required,
+  submit as submitForm,
+} from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { SetDataService } from '@portfolio-v2/shared/services';
-import { urlValidator } from '@portfolio-v2/shared/validators';
+import { webUrl } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import {
   ISocialInfor,
@@ -29,14 +29,26 @@ import {
 } from '@portfolio-v2/state/dataModels';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 
-/** Editable contact links. */
-interface ContactLinkForm {
+/** LinkedIn, GitHub, and email addresses. */
+interface ContactLinkValues {
   /** LinkedIn URL. */
-  linkedin: FormControl<string>;
+  linkedin: string;
   /** GitHub URL. */
-  github: FormControl<string>;
+  github: string;
   /** Email address. */
-  email: FormControl<string>;
+  email: string;
+}
+
+/**
+ * Blank contact links. A new object each time so a later edit cannot change the reset value.
+ * @returns empty contact links
+ */
+function emptyLinks(): ContactLinkValues {
+  return {
+    linkedin: '',
+    github: '',
+    email: '',
+  };
 }
 
 /**
@@ -46,30 +58,26 @@ interface ContactLinkForm {
   selector: 'admin-contact',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatIconModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './admin-contact.component.html',
   styleUrl: './admin-contact.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminContactComponent implements OnInit {
+  /** Values the editor is changing. */
+  private readonly model = signal<ContactLinkValues>(emptyLinks());
+
   /** LinkedIn, GitHub, and email fields. */
-  protected readonly contactForm = new FormGroup<ContactLinkForm>({
-    linkedin: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, urlValidator()],
-    }),
-    github: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, urlValidator()],
-    }),
-    email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.email],
-    }),
+  protected readonly contactForm = form(this.model, (fields) => {
+    required(fields.linkedin);
+    webUrl(fields.linkedin);
+    required(fields.github);
+    webUrl(fields.github);
+    required(fields.email);
+    email(fields.email);
   });
 
   /** True after a save has been written. */
@@ -80,9 +88,6 @@ export class AdminContactComponent implements OnInit {
 
   /** Shown when the write fails. */
   protected readonly saveError = signal<string | null>(null);
-
-  /** Refreshes the form after a late store update. */
-  private readonly changeDetector = inject(ChangeDetectorRef);
 
   /** Firestore writes. */
   private readonly setData = inject(SetDataService);
@@ -115,14 +120,26 @@ export class AdminContactComponent implements OnInit {
   }
 
   /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
+  }
+
+  /**
    * Write the three contact links.
    */
-  protected save(): void {
-    if (this.contactForm.invalid || this.isSaving()) {
-      this.contactForm.markAllAsTouched();
+  protected async save(): Promise<void> {
+    if (this.isSaving()) {
       return;
     }
-    this.persistLinks().catch(() => undefined);
+    await submitForm(this.contactForm, async () => {
+      await this.persistLinks();
+    });
   }
 
   /**
@@ -133,13 +150,12 @@ export class AdminContactComponent implements OnInit {
     if (this.hasAppliedSocial || !social?.length) {
       return;
     }
-    this.contactForm.patchValue({
+    this.contactForm().reset({
       linkedin: this.mediaFor(social, SOCIAL_LINK_IDS.linkedin),
       github: this.mediaFor(social, SOCIAL_LINK_IDS.github),
       email: this.mediaFor(social, SOCIAL_LINK_IDS.email),
     });
     this.hasAppliedSocial = true;
-    this.changeDetector.markForCheck();
   }
 
   /**
@@ -182,11 +198,11 @@ export class AdminContactComponent implements OnInit {
    * @returns LinkedIn, GitHub, and email records.
    */
   private recordsFromForm(): ISocialInfor[] {
-    const { linkedin, github, email } = this.contactForm.getRawValue();
+    const { linkedin, github, email: address } = this.contactForm().value();
     return [
       this.record(SOCIAL_LINK_IDS.linkedin, linkedin, SOCIAL_LINK_ICONS.linkedin),
       this.record(SOCIAL_LINK_IDS.github, github, SOCIAL_LINK_ICONS.github),
-      this.record(SOCIAL_LINK_IDS.email, email, SOCIAL_LINK_ICONS.email),
+      this.record(SOCIAL_LINK_IDS.email, address, SOCIAL_LINK_ICONS.email),
     ];
   }
 

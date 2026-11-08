@@ -54,22 +54,46 @@ export function webUrl<TPathKind extends PathKind = PathKind.Root>(
   });
 }
 
+/** Any http or https URL, including hosts without a dot and query strings. */
+const FIREBASE_URL_PATTERN = /^https?:\/\/.+$/;
+
+/**
+ * Whether the value is any http or https URL.
+ * @param value text to check
+ * @returns true when the text starts with http:// or https://
+ */
+export function isFirebaseUrl(value: unknown): boolean {
+  try {
+    return FIREBASE_URL_PATTERN.test(String(value));
+  } catch (_error) {
+    return false;
+  }
+}
+
 /**
  * Firebase URL validator
  * @returns validator function
  */
 export function firebaseURLValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    // Return null if empty or null
     if (!control.value) return null;
-
-    // URL regex that allows Firebase Storage URLs with query parameters
-    const urlPattern = /^https?:\/\/.+$/;
-    try {
-      return urlPattern.test(control.value.toString()) ? null : { invalidURL: true };
-    } catch (_error) {
-      // Fallback to basic validation if regex fails
-      return { invalidURL: true };
-    }
+    return isFirebaseUrl(control.value) ? null : { invalidURL: true };
   };
+}
+
+/**
+ * Signal-forms rule for any http or https URL.
+ * An empty value is left to `required`.
+ * @param path field that holds the URL
+ */
+export function firebaseUrl<TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
+): void {
+  validate(path, ({ value }) => {
+    const current = value();
+    if (current === '') {
+      return undefined;
+    }
+    return isFirebaseUrl(current) ? undefined : { kind: 'invalidURL' };
+  });
 }

@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   OnInit,
+  signal,
   Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -13,11 +13,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { Store } from '@ngrx/store';
 import {
   MatDialog,
@@ -35,13 +35,38 @@ import {
 } from '@portfolio-v2/shared/services';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
-import {
-  DisplayValidatorErrorsComponent,
-  UploadPhotoComponent,
-} from '@portfolio-v2/admin/shared/components';
-import { urlValidator } from '@portfolio-v2/shared/validators';
+import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
+import { webUrl } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
+
+/** Text the about-me editor saves. */
+interface AboutMeValues {
+  /** Main introduction. */
+  mainIntro: string;
+  /** Sub introduction. */
+  subIntro: string;
+  /** Left points. */
+  leftPoints: string;
+  /** Right points. */
+  rightPoints: string;
+  /** Link field. */
+  linkField: string;
+}
+
+/**
+ * A blank about-me record.
+ * @returns empty about-me values
+ */
+function emptyAbout(): AboutMeValues {
+  return {
+    mainIntro: '',
+    subIntro: '',
+    leftPoints: '',
+    rightPoints: '',
+    linkField: '',
+  };
+}
 
 /**
  * About me admin section
@@ -51,22 +76,31 @@ import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatIconModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
     MatProgressBarModule,
     MatDialogModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './about-me.component.html',
   styleUrl: './about-me.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutMeComponent implements OnInit {
+  /** Values the editor is changing. */
+  private readonly model = signal<AboutMeValues>(emptyAbout());
+
   /** Landing form */
-  protected aboutMeForm!: FormGroup;
+  protected readonly aboutMeForm = form(this.model, (fields) => {
+    required(fields.mainIntro);
+    required(fields.subIntro);
+    required(fields.leftPoints);
+    required(fields.rightPoints);
+    required(fields.linkField);
+    webUrl(fields.linkField);
+  });
 
   /** Returns true if the save is successful */
   protected isSaveSuccess = of(false);
@@ -79,20 +113,16 @@ export class AboutMeComponent implements OnInit {
 
   /**
    * constructor
-   * @param formBuilder form builder
    * @param setDataService Set Data Service
    * @param store ngrx store
    * @param dialog Mat Dialog
    * @param utility utility service
-   * @param changeDetector change detector
    */
   constructor(
-    private formBuilder: FormBuilder,
     private setDataService: SetDataService,
     private store: Store,
     private dialog: MatDialog,
     private utility: UtilityService,
-    private changeDetector: ChangeDetectorRef,
   ) {
     this.store.dispatch(StateActions.aboutMeStateConnect());
     this.aboutMeData = this.store.selectSignal(aboutMeSelector);
@@ -110,6 +140,17 @@ export class AboutMeComponent implements OnInit {
   }
 
   /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
+  }
+
+  /**
    * Build or fill the form from the stored about record.
    * @param aboutObject Stored about record, once the listener has delivered it.
    */
@@ -117,27 +158,15 @@ export class AboutMeComponent implements OnInit {
     if (this.hasAppliedAbout) {
       return;
     }
-    const values = {
+    this.aboutMeForm().reset({
       mainIntro: aboutObject ? this.utility.seperateSentences(aboutObject.intro) : '',
       subIntro: aboutObject?.subHeadingIntro ?? '',
       leftPoints: aboutObject ? this.utility.seperateSentences(aboutObject.leftPoints) : '',
       rightPoints: aboutObject ? this.utility.seperateSentences(aboutObject.rightPoints) : '',
       linkField: aboutObject?.link ?? '',
-    };
-    if (!this.aboutMeForm) {
-      this.aboutMeForm = this.formBuilder.group({
-        mainIntro: [values.mainIntro, [Validators.required]],
-        subIntro: [values.subIntro, [Validators.required]],
-        leftPoints: [values.leftPoints, [Validators.required]],
-        rightPoints: [values.rightPoints, [Validators.required]],
-        linkField: [values.linkField, [Validators.required, urlValidator()]],
-      });
-    } else if (aboutObject) {
-      this.aboutMeForm.patchValue(values);
-    }
+    });
     if (aboutObject) {
       this.hasAppliedAbout = true;
-      this.changeDetector.markForCheck();
     }
   }
 
@@ -169,7 +198,7 @@ export class AboutMeComponent implements OnInit {
   protected updateData(): void {
     const {
       mainIntro, subIntro, leftPoints, rightPoints, linkField,
-    } = this.aboutMeForm.value;
+    } = this.aboutMeForm().value();
 
     const newAboutMeValues: IAboutMe = {
       id: 1,

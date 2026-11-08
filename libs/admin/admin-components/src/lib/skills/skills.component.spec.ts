@@ -7,14 +7,11 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { FormBuilder } from '@angular/forms';
-import { MockComponents } from 'ng-mocks';
 
 import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
@@ -50,14 +47,11 @@ describe('SkillsComponent', () => {
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
     mockUtilityService = createSpyObj(UtilityService);
+    mockUtilityService.seperateSentences.mockReturnValue('');
     await TestBed.configureTestingModule({
-      imports: [
-        SkillsComponent,
-        MockComponents(DisplayValidatorErrorsComponent),
-      ],
+      imports: [SkillsComponent],
       providers: [
         provideMockStore(),
-        FormBuilder,
         {
           provide: SetDataService,
           useValue: mockSetDataService,
@@ -94,13 +88,9 @@ describe('SkillsComponent when the record arrives after the page opens', () => {
     const utility = createSpyObj(UtilityService);
     utility.seperateSentences.mockReturnValue('');
     await TestBed.configureTestingModule({
-      imports: [
-        SkillsComponent,
-        MockComponents(DisplayValidatorErrorsComponent),
-      ],
+      imports: [SkillsComponent],
       providers: [
         provideMockStore(),
-        FormBuilder,
         { provide: SetDataService, useValue: createSpyObj(SetDataService) },
         { provide: UtilityService, useValue: utility },
       ],
@@ -113,7 +103,7 @@ describe('SkillsComponent when the record arrives after the page opens', () => {
   });
 
   it('should fill the form from the first stored record', () => {
-    expect(fixture.componentInstance['skillsForm'].get('skillsIntro')?.value).toBe('');
+    expect(fixture.componentInstance['skillsForm'].skillsIntro().value()).toBe('');
 
     store.overrideSelector(skillsSelector, {
       id: 1,
@@ -130,7 +120,7 @@ describe('SkillsComponent when the record arrives after the page opens', () => {
     fixture.detectChanges();
 
     const form = fixture.componentInstance['skillsForm'];
-    expect(form.get('skillsIntro')?.value).toBe('Some intro');
-    expect(form.get('TypeScript')?.value).toBe(80);
+    expect(form.skillsIntro().value()).toBe('Some intro');
+    expect(fixture.componentInstance['languageLevels']().TypeScript).toBe(80);
   });
 });

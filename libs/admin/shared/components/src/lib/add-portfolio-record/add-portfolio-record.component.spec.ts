@@ -22,7 +22,6 @@ import {
 } from '@portfolio-v2/shared/services';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import {
-  DisplayValidatorErrorsComponent,
   UploadPhotoComponent,
   ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
@@ -53,10 +52,7 @@ describe('AddPortfolioRecordComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AddPortfolioRecordComponent,
-        MockComponents(
-          DisplayValidatorErrorsComponent,
-          UploadPhotoComponent,
-        ),
+        MockComponents(UploadPhotoComponent),
       ],
       providers: [
         provideMockStore({}),
@@ -95,12 +91,12 @@ describe('AddPortfolioRecordComponent', () => {
       component['ngOnInit']();
 
       expect(component['cardAddForm']).toBeDefined();
-      expect(component['cardAddForm']?.get('description')).toBeDefined();
-      expect(component['cardAddForm']?.get('technologies')).toBeDefined();
-      expect(component['cardAddForm']?.get('codebase')).toBeDefined();
-      expect(component['cardAddForm']?.get('youtube')).toBeDefined();
-      expect(component['cardAddForm']?.get('screenshot')).toBeDefined();
-      expect(component['cardAddForm']?.get('documentation')).toBeDefined();
+      expect(component['cardAddForm'].description()).toBeDefined();
+      expect(component['cardAddForm'].technologies()).toBeDefined();
+      expect(component['cardAddForm'].codebase()).toBeDefined();
+      expect(component['cardAddForm'].youtube()).toBeDefined();
+      expect(component['cardAddForm'].screenshot()).toBeDefined();
+      expect(component['cardAddForm'].documentation()).toBeDefined();
     });
 
     it('should initialize form on ngOnInit for featured projects', () => {
@@ -131,8 +127,8 @@ describe('AddPortfolioRecordComponent', () => {
       featuredComponent['ngOnInit']();
 
       expect(featuredComponent['cardAddForm']).toBeDefined();
-      expect(featuredComponent['cardAddForm']?.get('heading')).toBeDefined();
-      expect(featuredComponent['cardAddForm'].get('description')).toBeDefined();
+      expect(featuredComponent['cardAddForm'].heading()).toBeDefined();
+      expect(featuredComponent['cardAddForm'].description()).toBeDefined();
     });
   });
 
@@ -201,7 +197,7 @@ describe('AddPortfolioRecordComponent', () => {
     });
 
     it('should not submit if form is invalid', async () => {
-      component['cardAddForm']?.get('description')?.setValue(''); // Make form invalid
+      component['cardAddForm'].description().value.set('');
 
       await component['addData']?.();
 
@@ -209,14 +205,12 @@ describe('AddPortfolioRecordComponent', () => {
     });
 
     it('should submit form data for standard projects', async () => {
-      component['cardAddForm']?.patchValue({
-        description: 'Test description',
-        technologies: 'Angular, TypeScript',
-        codebase: 'https://github.com/test',
-        youtube: 'https://youtube.com/test',
-        screenshot: 'https://example.com/screenshot.jpg',
-        documentation: 'https://docs.com',
-      });
+      component['cardAddForm'].description().value.set('Test description');
+      component['cardAddForm'].technologies().value.set('Angular, TypeScript');
+      component['cardAddForm'].codebase().value.set('https://github.com/test');
+      component['cardAddForm'].youtube().value.set('https://youtube.com/test');
+      component['cardAddForm'].screenshot().value.set('https://example.com/screenshot.jpg');
+      component['cardAddForm'].documentation().value.set('https://docs.com');
 
       await component['addData']?.();
 
@@ -240,10 +234,8 @@ describe('AddPortfolioRecordComponent', () => {
       // Set imageUrl to simulate file selection
       component['imageUrl'] = 'data:image/webp;base64,testdata';
 
-      component['cardAddForm']?.patchValue({
-        description: 'Test description',
-        technologies: 'Angular, TypeScript',
-      });
+      component['cardAddForm'].description().value.set('Test description');
+      component['cardAddForm'].technologies().value.set('Angular, TypeScript');
 
       await component['addData']?.();
 
@@ -289,11 +281,9 @@ describe('AddPortfolioRecordComponent', () => {
       featuredComponent['uploadFileAndGetUrl'] = mockUploadMethod;
       featuredComponent['imageUrl'] = 'data:image/webp;base64,testdata';
 
-      featuredComponent['cardAddForm']?.patchValue({
-        heading: 'Featured Test',
-        description: 'Featured description',
-        technologies: 'React, Node.js',
-      });
+      featuredComponent['cardAddForm'].heading().value.set('Featured Test');
+      featuredComponent['cardAddForm'].description().value.set('Featured description');
+      featuredComponent['cardAddForm'].technologies().value.set('React, Node.js');
 
       await featuredComponent['addData']?.();
 

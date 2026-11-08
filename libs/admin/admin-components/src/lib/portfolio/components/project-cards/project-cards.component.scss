@@ -1,5 +1,13 @@
 @use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
 
+.field-error {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: $jasper;
+}
+
 .card-model {
   background-color: $dark-cyan-blue;
   border: 2px solid $icy-petal;

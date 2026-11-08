@@ -1,22 +1,20 @@
 <div class="skills-section w-100 h-100" id="section_3" data-anchor="skills">
   <div class="container">
     @if (skillsData(); as skillData) {
-      <form [formGroup]="skillsForm!">
+      <form (submit)="$event.preventDefault()">
         <div class="row">
           <div class="text-center mb-5">
             <h2 class="fw-bolder text-uppercase mt-5">Tecnical Skills</h2>
             <textarea
+              id="skillsIntro"
               class="text-center fw-normal pt-3 col-12"
-              formControlName="skillsIntro"
+              [formField]="skillsForm.skillsIntro"
               [rows]="3"
               [cols]="100"
             ></textarea>
-            <admin-portfolio-display-validator-errors
-              [control]="skillsForm.get('skillsIntro')"
-              errorKey="required"
-              message="A valid introduction is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(skillsForm.skillsIntro, 'required')) {
+              <span class="field-error">A valid introduction is required</span>
+            }
           </div>
 
           <div class="col-lg-5 col-md-12" data-t-show="3">
@@ -28,14 +26,14 @@
                 ) {
                   <div class="mb-5">
                     <h6 class="mb-3">
-                      {{ language.key }}:
-                      {{ skillsForm.get(language.key)?.value }}%
+                      {{ language.key }}: {{ languageLevels()[language.key] }}%
                     </h6>
                     <input
                       type="range"
                       class="form-range"
                       [id]="language.key"
-                      [formControlName]="language.key"
+                      [value]="languageLevels()[language.key]"
+                      (input)="setLanguage(language.key, $event)"
                       min="10"
                       max="100"
                       step="10"
@@ -51,14 +49,14 @@
                 ) {
                   <div class="mb-5">
                     <h6 class="mb-3">
-                      {{ language.key }}:
-                      {{ skillsForm.get(language.key)?.value }}%
+                      {{ language.key }}: {{ languageLevels()[language.key] }}%
                     </h6>
                     <input
                       type="range"
                       class="form-range"
                       [id]="language.key"
-                      [formControlName]="language.key"
+                      [value]="languageLevels()[language.key]"
+                      (input)="setLanguage(language.key, $event)"
                       min="10"
                       max="100"
                       step="10"
@@ -72,14 +70,15 @@
           <div class="col-lg-1"></div>
           <div class="col-lg-6 col-md-12" data-t-show="3">
             <div class="my-5">
-              <input class="fw-bold w-75" formControlName="toolHeading" />
-              <admin-portfolio-display-validator-errors
-                class="text-center"
-                [control]="skillsForm.get('toolHeading')"
-                errorKey="required"
-                message="A valid tool heading is required"
-              >
-              </admin-portfolio-display-validator-errors>
+              <input
+                class="fw-bold w-75"
+                [formField]="skillsForm.toolHeading"
+              />
+              @if (hasError(skillsForm.toolHeading, 'required')) {
+                <span class="field-error text-center"
+                  >A valid tool heading is required</span
+                >
+              }
             </div>
 
             <div class="row">
@@ -87,59 +86,51 @@
                 <div class="mb-4">
                   <input
                     class="fw-bold w-100"
-                    formControlName="leftSubHeading"
+                    [formField]="skillsForm.leftSubHeading"
                   />
-                  <admin-portfolio-display-validator-errors
-                    class="text-center"
-                    [control]="skillsForm.get('leftSubHeading')"
-                    errorKey="required"
-                    message="A valid left subheading is required"
-                  >
-                  </admin-portfolio-display-validator-errors>
+                  @if (hasError(skillsForm.leftSubHeading, 'required')) {
+                    <span class="field-error text-center"
+                      >A valid left subheading is required</span
+                    >
+                  }
                 </div>
 
                 <textarea
                   class="p-3 float-start col-12"
-                  formControlName="leftPoints"
+                  [formField]="skillsForm.leftPoints"
                   rows="6"
                   cols="40"
                 ></textarea>
-                <admin-portfolio-display-validator-errors
-                  class="text-center"
-                  [control]="skillsForm.get('leftPoints')"
-                  errorKey="required"
-                  message="A valid left points are required"
-                >
-                </admin-portfolio-display-validator-errors>
+                @if (hasError(skillsForm.leftPoints, 'required')) {
+                  <span class="field-error text-center"
+                    >A valid left points are required</span
+                  >
+                }
               </div>
               <div class="col-6">
                 <div class="mb-4">
                   <input
                     class="fw-bold w-100"
-                    formControlName="rightSubHeading"
+                    [formField]="skillsForm.rightSubHeading"
                   />
-                  <admin-portfolio-display-validator-errors
-                    class="text-center"
-                    [control]="skillsForm.get('rightSubHeading')"
-                    errorKey="required"
-                    message="A valid right sub heading is required"
-                  >
-                  </admin-portfolio-display-validator-errors>
+                  @if (hasError(skillsForm.rightSubHeading, 'required')) {
+                    <span class="field-error text-center"
+                      >A valid right sub heading is required</span
+                    >
+                  }
                 </div>
 
                 <textarea
                   class="p-3 float-start col-12"
-                  formControlName="rightPoints"
+                  [formField]="skillsForm.rightPoints"
                   rows="6"
                   cols="40"
                 ></textarea>
-                <admin-portfolio-display-validator-errors
-                  class="text-center"
-                  [control]="skillsForm.get('rightPoints')"
-                  errorKey="required"
-                  message="A valid right points are required"
-                >
-                </admin-portfolio-display-validator-errors>
+                @if (hasError(skillsForm.rightPoints, 'required')) {
+                  <span class="field-error text-center"
+                    >A valid right points are required</span
+                  >
+                }
               </div>
             </div>
           </div>

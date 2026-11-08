@@ -17,7 +17,6 @@ import {
 import { StateActions } from '@portfolio-v2/state';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { IExperience } from '@portfolio-v2/state/dataModels';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { AdminExperienceComponent } from './experience.component';
 import { DeleteComformationComponent } from './components/delete-comformation.component';
 
@@ -45,10 +44,7 @@ describe('AdminExperienceComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AdminExperienceComponent,
-        MockComponents(
-          DisplayValidatorErrorsComponent,
-          DeleteComformationComponent,
-        ),
+        MockComponents(DeleteComformationComponent),
         NoopAnimationsModule,
       ],
       providers: [
@@ -91,7 +87,7 @@ describe('AdminExperienceComponent when the record arrives after the page opens'
     await TestBed.configureTestingModule({
       imports: [
         AdminExperienceComponent,
-        MockComponents(DisplayValidatorErrorsComponent, DeleteComformationComponent),
+        MockComponents(DeleteComformationComponent),
         NoopAnimationsModule,
       ],
       providers: [
@@ -108,7 +104,7 @@ describe('AdminExperienceComponent when the record arrives after the page opens'
   });
 
   it('should fill the form from the first stored job', () => {
-    expect(fixture.componentInstance['experienceForm'].get('employer')?.value).toBe('');
+    expect(fixture.componentInstance['experienceForm'].employer().value()).toBe('');
 
     store.overrideSelector(experienceSelector, [{
       id: 1,
@@ -125,7 +121,7 @@ describe('AdminExperienceComponent when the record arrives after the page opens'
     fixture.detectChanges();
 
     const form = fixture.componentInstance['experienceForm'];
-    expect(form.get('employer')?.value).toBe('some employer');
-    expect(form.get('position')?.value).toBe('some position');
+    expect(form.employer().value()).toBe('some employer');
+    expect(form.position().value()).toBe('some position');
   });
 });

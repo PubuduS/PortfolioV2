@@ -7,14 +7,11 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { FormBuilder } from '@angular/forms';
-import { MockComponent } from 'ng-mocks';
 
 import { SetDataService } from '@portfolio-v2/shared/services';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { AboutMeComponent } from './about-me.component';
 
 describe('AboutMeComponent', () => {
@@ -35,13 +32,9 @@ describe('AboutMeComponent', () => {
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
     await TestBed.configureTestingModule({
-      imports: [
-        AboutMeComponent,
-        MockComponent(DisplayValidatorErrorsComponent),
-      ],
+      imports: [AboutMeComponent],
       providers: [
         provideMockStore(),
-        FormBuilder,
         {
           provide: SetDataService,
           useValue: mockSetDataService,
@@ -66,7 +59,7 @@ describe('AboutMeComponent', () => {
   });
 
   it('should keep an edited form when a later store update arrives', () => {
-    component['aboutMeForm'].patchValue({ mainIntro: 'edited intro' });
+    component['aboutMeForm'].mainIntro().value.set('edited intro');
     store.overrideSelector(aboutMeSelector, {
       ...mockData,
       intro: ['a replacement intro'],
@@ -74,7 +67,7 @@ describe('AboutMeComponent', () => {
     store.refreshState();
     fixture.detectChanges();
 
-    expect(component['aboutMeForm'].get('mainIntro')?.value).toBe('edited intro');
+    expect(component['aboutMeForm'].mainIntro().value()).toBe('edited intro');
   });
 });
 
@@ -84,13 +77,9 @@ describe('AboutMeComponent when the record arrives after the page opens', () => 
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        AboutMeComponent,
-        MockComponent(DisplayValidatorErrorsComponent),
-      ],
+      imports: [AboutMeComponent],
       providers: [
         provideMockStore(),
-        FormBuilder,
         { provide: SetDataService, useValue: createSpyObj(SetDataService) },
       ],
     }).compileComponents();
@@ -102,7 +91,7 @@ describe('AboutMeComponent when the record arrives after the page opens', () => 
   });
 
   it('should fill the form from the first stored record', () => {
-    expect(fixture.componentInstance['aboutMeForm'].get('mainIntro')?.value).toBe('');
+    expect(fixture.componentInstance['aboutMeForm'].mainIntro().value()).toBe('');
 
     store.overrideSelector(aboutMeSelector, {
       id: 1,
@@ -116,9 +105,9 @@ describe('AboutMeComponent when the record arrives after the page opens', () => 
     store.refreshState();
     fixture.detectChanges();
 
-    expect(fixture.componentInstance['aboutMeForm'].get('mainIntro')?.value).toBe(
+    expect(fixture.componentInstance['aboutMeForm'].mainIntro().value()).toBe(
       'some intro1\n\nanother intro',
     );
-    expect(fixture.componentInstance['aboutMeForm'].get('linkField')?.value).toBe('some link');
+    expect(fixture.componentInstance['aboutMeForm'].linkField().value()).toBe('some link');
   });
 });

@@ -8,17 +8,20 @@
       </div>
 
       <div class="row d-flex justify-content-center mt-5 col-12">
-        <form [formGroup]="aboutMeForm!">
+        <form (submit)="$event.preventDefault()">
           <div class="admin-form col-12 px-5 text-center">
             <!-- Intro Text Area -->
             <div class="row mb-3">
               <div>
-                <label class="float-start">Main Introduction</label>
+                <label class="float-start" for="mainIntro"
+                  >Main Introduction</label
+                >
               </div>
               <div class="col-12">
                 <textarea
+                  id="mainIntro"
                   class="p-2 float-start"
-                  formControlName="mainIntro"
+                  [formField]="aboutMeForm.mainIntro"
                   rows="6"
                   cols="200"
                 >
@@ -28,23 +31,25 @@
 
             <!-- Intro Text Validator Message -->
             <div class="row">
-              <admin-portfolio-display-validator-errors
-                [control]="aboutMeForm.get('mainIntro')"
-                errorKey="required"
-                message="A valid introduction is required"
-              >
-              </admin-portfolio-display-validator-errors>
+              @if (hasError(aboutMeForm.mainIntro, 'required')) {
+                <span class="field-error"
+                  >A valid introduction is required</span
+                >
+              }
             </div>
 
             <!-- Sub Intro Text Area -->
             <div class="row mb-3">
               <div>
-                <label class="float-start">Sub Introduction</label>
+                <label class="float-start" for="subIntro"
+                  >Sub Introduction</label
+                >
               </div>
               <div class="col-12">
                 <textarea
+                  id="subIntro"
                   class="p-2 float-start"
-                  formControlName="subIntro"
+                  [formField]="aboutMeForm.subIntro"
                   rows="1"
                   cols="200"
                 >
@@ -54,12 +59,11 @@
 
             <!--  Sub Intro Text Validator Message -->
             <div class="row">
-              <admin-portfolio-display-validator-errors
-                [control]="aboutMeForm.get('subIntro')"
-                errorKey="required"
-                message="A valid sub introduction is required"
-              >
-              </admin-portfolio-display-validator-errors>
+              @if (hasError(aboutMeForm.subIntro, 'required')) {
+                <span class="field-error"
+                  >A valid sub introduction is required</span
+                >
+              }
             </div>
 
             <!-- Points Text Area -->
@@ -70,7 +74,7 @@
               <div class="col-6">
                 <textarea
                   class="p-2 float-start"
-                  formControlName="leftPoints"
+                  [formField]="aboutMeForm.leftPoints"
                   rows="6"
                   cols="100"
                 >
@@ -80,7 +84,7 @@
               <div class="col-6">
                 <textarea
                   class="p-2"
-                  formControlName="rightPoints"
+                  [formField]="aboutMeForm.rightPoints"
                   rows="6"
                   cols="100"
                 >
@@ -91,20 +95,18 @@
             <!-- Points Validator Message  -->
             <div class="row">
               <div class="col-6">
-                <admin-portfolio-display-validator-errors
-                  [control]="aboutMeForm.get('leftPoints')"
-                  errorKey="required"
-                  message="A valid left points are required"
-                >
-                </admin-portfolio-display-validator-errors>
+                @if (hasError(aboutMeForm.leftPoints, 'required')) {
+                  <span class="field-error"
+                    >A valid left points are required</span
+                  >
+                }
               </div>
               <div class="col-6">
-                <admin-portfolio-display-validator-errors
-                  [control]="aboutMeForm.get('rightPoints')"
-                  errorKey="required"
-                  message="A valid right points are required"
-                >
-                </admin-portfolio-display-validator-errors>
+                @if (hasError(aboutMeForm.rightPoints, 'required')) {
+                  <span class="field-error"
+                    >A valid right points are required</span
+                  >
+                }
               </div>
             </div>
 
@@ -116,7 +118,7 @@
               <div class="col-6">
                 <input
                   class="p-2 w-50 float-start"
-                  formControlName="linkField"
+                  [formField]="aboutMeForm.linkField"
                 />
               </div>
               <div class="col-1">
@@ -155,20 +157,12 @@
 
             <!-- Link Validators Message -->
             <div class="row">
-              <admin-portfolio-display-validator-errors
-                class="col-4"
-                [control]="aboutMeForm.get('linkField')"
-                errorKey="required"
-                message="A valid link is required"
-              >
-              </admin-portfolio-display-validator-errors>
-              <admin-portfolio-display-validator-errors
-                class="col-4"
-                [control]="aboutMeForm.get('linkField')"
-                errorKey="invalidURL"
-                message="The URL is not valid"
-              >
-              </admin-portfolio-display-validator-errors>
+              @if (hasError(aboutMeForm.linkField, 'required')) {
+                <span class="field-error col-4">A valid link is required</span>
+              }
+              @if (hasError(aboutMeForm.linkField, 'invalidURL')) {
+                <span class="field-error col-4">The URL is not valid</span>
+              }
             </div>
           </div>
         </form>

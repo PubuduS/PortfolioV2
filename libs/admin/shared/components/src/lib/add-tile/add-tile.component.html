@@ -1,6 +1,6 @@
 <div class="card-model">
   <h1 mat-dialog-title>Tile Editor</h1>
-  <form [formGroup]="tileEditorForm!">
+  <form (submit)="$event.preventDefault()">
     <mat-dialog-content class="mat-typography">
       <!-- Image Preview Section -->
       <div class="row d-flex justify-content-center g-3">
@@ -43,7 +43,7 @@
           <label for="title" class="form-label">Title</label>
           <input
             id="title"
-            formControlName="title"
+            [formField]="tileEditorForm.title"
             class="form-control"
             type="text"
             placeholder="Enter project title"
@@ -57,7 +57,7 @@
           <textarea
             id="description"
             class="form-control"
-            formControlName="description"
+            [formField]="tileEditorForm.description"
             rows="4"
             placeholder="Enter project description"
           ></textarea>

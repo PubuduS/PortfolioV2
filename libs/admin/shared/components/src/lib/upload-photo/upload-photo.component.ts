@@ -5,15 +5,15 @@ import {
   Inject,
   OnDestroy,
   OnInit,
+  signal,
   Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  required,
+} from '@angular/forms/signals';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,7 +29,6 @@ import {
   SetDataService,
 } from '@portfolio-v2/shared/services';
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
-import { DisplayValidatorErrorsComponent } from '../validator-errors/display-validator-errors.component';
 
 /** Dialog that uploads a replacement photo and previews it. */
 @Component({
@@ -37,20 +36,23 @@ import { DisplayValidatorErrorsComponent } from '../validator-errors/display-val
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatProgressBarModule,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './upload-photo.component.html',
   styleUrl: './upload-photo.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadPhotoComponent implements OnInit, OnDestroy {
+  /** Chosen file name. Empty until a file is selected. */
+  private readonly model = signal({ fileName: '' });
+
   /** Upload Photo Form */
-  protected uploadPhotoForm!: FormGroup;
+  protected readonly uploadPhotoForm = form(this.model, (fields) => {
+    required(fields.fileName);
+  });
 
   /** Default Image URL */
   private readonly defaultImageSrc = 'https://placehold.co/600x400.png';
@@ -84,7 +86,6 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
 
   /**
    * constructor
-   * @param formBuilder form builder
    * @param cdr change detector ref
    * @param setDataService set data service
    * @param getDataService get data service
@@ -92,7 +93,6 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
    * @param config upload photo configuration from MAT_DIALOG_DATA
    */
   constructor(
-    private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
     private setDataService: SetDataService,
     private getDataService: GetDataService,
@@ -105,9 +105,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    this.uploadPhotoForm = this.formBuilder.group({
-      filePicker: ['', [Validators.required]],
-    });
+    this.uploadPhotoForm().reset({ fileName: '' });
 
     // Initialize current image URL for display
     this.currentImageUrl = this.config.currentImageUrl || '';
@@ -144,6 +142,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
     if (event.target instanceof HTMLInputElement) {
       const file = event.target.files?.[0];
       if (file) {
+        this.uploadPhotoForm.fileName().value.set(file.name);
         const reader = new FileReader();
         reader.onload = () => {
           this.imageUrl = reader.result as string;
@@ -156,11 +155,22 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
+  }
+
+  /**
    * Upload data
    */
   protected uploadData(): void {
-    const { filePicker } = this.uploadPhotoForm.value;
-    if (filePicker) {
+    this.uploadPhotoForm.fileName().markAsTouched();
+    if (this.uploadPhotoForm().valid()) {
       const databaseFilePath = this.config.fieldPath;
       if (!databaseFilePath) {
         return;

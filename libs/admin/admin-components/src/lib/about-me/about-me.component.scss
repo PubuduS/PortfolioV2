@@ -28,5 +28,13 @@
       color: $electric-teal;
       font-size: 4rem;
     }
+
+    .field-error {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: $jasper;
+    }
   }
 }

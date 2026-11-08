@@ -1,20 +1,19 @@
-import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   OnInit,
+  signal,
   Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -33,9 +32,39 @@ import {
 } from '@portfolio-v2/shared/services';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { ISkills } from '@portfolio-v2/state/dataModels';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { StateActions } from '@portfolio-v2/state';
 import { ChangeLanguageComponent } from './components/change-language/change-language.component';
+
+/** Text the skills editor saves. Language levels sit beside the form. */
+interface SkillsValues {
+  /** Skills introduction. */
+  skillsIntro: string;
+  /** Tool heading. */
+  toolHeading: string;
+  /** Left sub heading. */
+  leftSubHeading: string;
+  /** Right sub heading. */
+  rightSubHeading: string;
+  /** Left points. */
+  leftPoints: string;
+  /** Right points. */
+  rightPoints: string;
+}
+
+/**
+ * A blank skills record.
+ * @returns empty skills values
+ */
+function emptySkills(): SkillsValues {
+  return {
+    skillsIntro: '',
+    toolHeading: '',
+    leftSubHeading: '',
+    rightSubHeading: '',
+    leftPoints: '',
+    rightPoints: '',
+  };
+}
 
 /**
  * Skills admin functions
@@ -45,19 +74,32 @@ import { ChangeLanguageComponent } from './components/change-language/change-lan
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './skills.component.html',
   styleUrl: './skills.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsComponent implements OnInit {
+  /** Values the editor is changing. */
+  private readonly model = signal<SkillsValues>(emptySkills());
+
   /** Skills form */
-  protected skillsForm!: FormGroup;
+  protected readonly skillsForm = form(this.model, (fields) => {
+    required(fields.skillsIntro);
+    required(fields.toolHeading);
+    required(fields.leftSubHeading);
+    required(fields.rightSubHeading);
+    required(fields.leftPoints);
+    required(fields.rightPoints);
+  });
+
+  /** Percentage for each language key. */
+  protected readonly languageLevels = signal<Record<string, number>>({});
+
   /** Signal containing Skills section data */
   public readonly skillsData: Signal<ISkills | undefined>;
   /** Returns true if the save is successful */
@@ -68,20 +110,16 @@ export class SkillsComponent implements OnInit {
 
   /**
    * constructor
-   * @param formBuilder form builder
    * @param store ngrx store
    * @param utility utility service
    * @param setDataService set data service
    * @param dialog mat dialog
-   * @param changeDetector change detector
    */
   constructor(
-    private formBuilder: FormBuilder,
     private store: Store,
     private utility: UtilityService,
     private setDataService: SetDataService,
     private dialog: MatDialog,
-    private changeDetector: ChangeDetectorRef,
   ) {
     this.store.dispatch(StateActions.skillsStateConnect());
     this.skillsData = this.store.selectSignal(skillsSelector);
@@ -99,6 +137,30 @@ export class SkillsComponent implements OnInit {
   }
 
   /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
+  }
+
+  /**
+   * Store one language percentage.
+   * @param key language name
+   * @param event range input event
+   */
+  protected setLanguage(key: string, event: Event): void {
+    if (!(event.target instanceof HTMLInputElement)) {
+      return;
+    }
+    const level = Number(event.target.value);
+    this.languageLevels.update((current) => ({ ...current, [key]: level }));
+  }
+
+  /**
    * Build the skills form from the stored record.
    * @param data Stored skills record, once the listener has delivered it.
    */
@@ -106,25 +168,20 @@ export class SkillsComponent implements OnInit {
     if (this.hasAppliedSkills) {
       return;
     }
-    const introControl = {
-      skillsIntro: [data?.intro ?? '', [Validators.required]],
-      toolHeading: [data?.toolHeading ?? '', [Validators.required]],
-      leftSubHeading: [data?.leftSubHeading ?? '', [Validators.required]],
-      rightSubHeading: [data?.rightSubHeading ?? '', [Validators.required]],
-      leftPoints: [this.utility.seperateSentences(data?.framework), [Validators.required]],
-      rightPoints: [this.utility.seperateSentences(data?.software), [Validators.required]],
-    };
-    const languageControls = _.mapValues(
-      _.merge({}, data?.languagesCol1, data?.languagesCol2),
-      (value) => [value],
-    );
-    this.skillsForm = this.formBuilder.group({
-      ...introControl,
-      ...languageControls,
+    this.skillsForm().reset({
+      skillsIntro: data?.intro ?? '',
+      toolHeading: data?.toolHeading ?? '',
+      leftSubHeading: data?.leftSubHeading ?? '',
+      rightSubHeading: data?.rightSubHeading ?? '',
+      leftPoints: this.utility.seperateSentences(data?.framework),
+      rightPoints: this.utility.seperateSentences(data?.software),
+    });
+    this.languageLevels.set({
+      ...(data?.languagesCol1 ?? {}),
+      ...(data?.languagesCol2 ?? {}),
     });
     if (data) {
       this.hasAppliedSkills = true;
-      this.changeDetector.markForCheck();
     }
   }
 
@@ -142,7 +199,7 @@ export class SkillsComponent implements OnInit {
     const {
       skillsIntro, toolHeading, leftSubHeading,
       rightSubHeading, leftPoints, rightPoints,
-    } = this.skillsForm.value;
+    } = this.skillsForm().value();
 
     const newSkillsValues: ISkills = {
       id: 1,
@@ -178,8 +235,7 @@ export class SkillsComponent implements OnInit {
 
     if (oldMap) {
       Object.keys(oldMap).forEach((key) => {
-        const value = parseInt(this.skillsForm.controls[key]?.value, 10) ?? 10;
-        newObject[key] = value;
+        newObject[key] = this.languageLevels()[key] ?? 10;
       });
     }
 

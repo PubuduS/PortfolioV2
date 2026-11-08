@@ -2,18 +2,17 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
+  signal,
 } from '@angular/core';
 import {
   CommonModule,
   TitleCasePipe,
 } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -40,7 +39,7 @@ interface BannerAsset {
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatIconModule,
     MatButtonModule,
     MatInputModule,
@@ -52,7 +51,7 @@ interface BannerAsset {
   styleUrl: './landing-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent {
   /** Files the public banner requests for the selected season. */
   protected readonly bannerAssets: BannerAsset[] = [
     { suffix: 'poster-mobile.webp', label: 'Phone still (WebP)', accept: 'image/webp' },
@@ -63,8 +62,13 @@ export class LandingPageComponent implements OnInit {
     { suffix: 'desktop.mp4', label: 'Desktop clip (MP4)', accept: 'video/mp4' },
   ];
 
+  /** Selected season. */
+  private readonly seasonModel = signal({ seasonsPicker: 'winter' });
+
   /** Landing form */
-  protected landingnForm!: FormGroup;
+  protected readonly landingForm = form(this.seasonModel, (fields) => {
+    required(fields.seasonsPicker);
+  });
 
   /** Default Image URL */
   private readonly defaultImageSrc = 'https://placehold.co/600x400.png';
@@ -89,27 +93,15 @@ export class LandingPageComponent implements OnInit {
 
   /**
    * constructor
-   * @param formBuilder form builder
    * @param cdr change detenction reference
    * @param titleCasePipe title case pipe
    * @param setDataService Set Data Service
    */
   constructor(
-    private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef,
     private titleCasePipe: TitleCasePipe,
     private setDataService: SetDataService,
   ) {}
-
-  /**
-   * Build the banner form with the winter season selected.
-   * @inheritdoc
-   */
-  public ngOnInit(): void {
-    this.landingnForm = this.formBuilder.group({
-      seasonsPicker: ['winter', [Validators.required]],
-    });
-  }
 
   /**
    * Keep the chosen file and preview a still when the file is an image.
@@ -152,7 +144,7 @@ export class LandingPageComponent implements OnInit {
    * @returns Resolves when every chosen file has finished uploading.
    */
   public async uploadSelectedFiles(): Promise<void> {
-    const season = String(this.landingnForm.value.seasonsPicker ?? '');
+    const season = this.landingForm().value().seasonsPicker;
     const uploads = this.bannerAssets.flatMap((asset) => {
       const file = this.selectedFiles.get(asset.suffix);
       return file ? [{ file, suffix: asset.suffix }] : [];
