@@ -12,9 +12,11 @@ import { MockComponents } from 'ng-mocks';
 import {
   of,
   Subscription,
+  throwError,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { StateActions } from '@portfolio-v2/state';
 import {
   IProjectView,
   IProjectCard,
@@ -268,6 +270,171 @@ describe('AddTileComponent', () => {
 
       clearIntervalSpy.mockRestore();
       clearTimeoutSpy.mockRestore();
+    });
+
+    it('should destroy cleanly when nothing is in flight', () => {
+      expect(() => component.ngOnDestroy()).not.toThrow();
+    });
+  });
+
+  describe('when the tile is stored', () => {
+    beforeEach(() => {
+      mockUtilityService.getPaddedDigits.mockReturnValue('03');
+      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
+      mockSetDataService.getProgressValue.mockReturnValue(80);
+      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
+      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
+      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
+      component['tileEditorForm'].title().value.set('Test Title');
+      component['tileEditorForm'].description().value.set('Test Description');
+      jest.spyOn(store, 'dispatch');
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should save the placeholder when no file was picked', async () => {
+      await component['saveChanges']();
+      let saved = false;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(true);
+      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
+        'project-icon-section/project-03/',
+        expect.objectContaining({
+          id: 3,
+          viewHeading: 'Test Title',
+          imageURL: component['defaultImageSrc'],
+        }),
+      );
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+      expect(component['newUpdatedImage']()).toBe(component['defaultImageSrc']);
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
+    });
+
+    it('should save the download url after the file uploads', async () => {
+      jest.useFakeTimers();
+      component['selectedFile'] = new File(['icon'], 'icon.webp', { type: 'image/webp' });
+      component['imageUrl'].set('data:image/webp;base64,abc');
+      const pending = component['saveChanges']();
+      await jest.advanceTimersByTimeAsync(100);
+      await pending;
+
+      expect(mockSetDataService.pushFileToStorage).toHaveBeenCalledWith(
+        'portfolio/portfolio-tiles/ID-03-Icon.webp',
+        'data:image/webp;base64,abc',
+      );
+      expect(component['progressValue']()).toBe(80);
+      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
+        'project-icon-section/project-03/',
+        expect.objectContaining({ imageURL: 'https://cdn.example/icon.webp' }),
+      );
+      expect(component['newUpdatedImage']()).toBe('https://cdn.example/icon.webp');
+    });
+
+    it('should keep the placeholder when the upload does not return a url', async () => {
+      jest.useFakeTimers();
+      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
+      component['selectedFile'] = new File(['icon'], 'icon.webp', { type: 'image/webp' });
+      const pending = component['saveChanges']();
+      const saved = pending.then(() => mockSetDataService.setRecord.mock.calls[0]?.[1]);
+      await jest.advanceTimersByTimeAsync(100);
+      await expect(saved).resolves.toEqual(expect.objectContaining({
+        imageURL: component['defaultImageSrc'],
+      }));
+    });
+
+    it('should mark the save failed when the record errors', async () => {
+      mockSetDataService.setRecord.mockReturnValue(throwError(() => new Error('offline')));
+      const next = jest.spyOn(component['editSuccessSubject'], 'next');
+
+      await component['saveChanges']();
+
+      expect(next).toHaveBeenCalledWith(false);
+    });
+
+    it('should mark the save failed when the record is not stored', async () => {
+      mockSetDataService.setRecord.mockReturnValue(of('failed'));
+      component['imagePreview'].set('data:image/webp;base64,abc');
+
+      await component['saveChanges']();
+      let saved = true;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(false);
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+    });
+
+    it('should stop when the tile list has not loaded', async () => {
+      store.overrideSelector(portfolioCardsSelector, undefined);
+      store.refreshState();
+
+      await component['saveChanges']();
+
+      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+    });
+
+    it('should give up when storage does not finish', async () => {
+      jest.useFakeTimers();
+      mockSetDataService.getUploadCompleteState.mockReturnValue(false);
+      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
+      component['uploadProgressIntervalId'] = 19;
+      const pending = component['uploadFileAndGetUrl']('portfolio/portfolio-tiles/ID-03-Icon.webp');
+      const failed = expect(pending).rejects.toThrow('Upload timeout');
+
+      await jest.advanceTimersByTimeAsync(30000);
+
+      await failed;
+    });
+
+    it('should reject when the download lookup fails', async () => {
+      jest.useFakeTimers();
+      mockGetDataService.getPhotoURL.mockReturnValue(throwError(() => new Error('storage down')));
+      const pending = component['uploadFileAndGetUrl']('portfolio/portfolio-tiles/ID-03-Icon.webp');
+      const failed = expect(pending).rejects.toThrow('storage down');
+
+      await jest.advanceTimersByTimeAsync(100);
+
+      await failed;
+    });
+  });
+
+  describe('when the tile is deleted', () => {
+    beforeEach(() => {
+      mockUtilityService.getPaddedDigits.mockReturnValue('03');
+    });
+
+    it('should close after the record and the icon are removed', async () => {
+      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
+      mockSetDataService.deleteFileFromStorage.mockReturnValue(of('removed'));
+      jest.spyOn(store, 'dispatch');
+
+      await component['deleteTile']();
+
+      expect(component['dialogRef'].close).toHaveBeenCalled();
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
+    });
+
+    it('should stay open when the record is not removed', async () => {
+      mockSetDataService.deleteRecord.mockReturnValue(of('failed'));
+      mockSetDataService.deleteFileFromStorage.mockReturnValue(of('removed'));
+
+      await component['deleteTile']();
+
+      expect(component['dialogRef'].close).not.toHaveBeenCalled();
+    });
+
+    it('should stay open when the record delete errors', async () => {
+      mockSetDataService.deleteRecord.mockReturnValue(throwError(() => new Error('offline')));
+
+      await component['deleteTile']();
+
+      expect(component['dialogRef'].close).not.toHaveBeenCalled();
     });
   });
 });
