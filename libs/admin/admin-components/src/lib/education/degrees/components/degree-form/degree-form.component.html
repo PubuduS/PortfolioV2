@@ -1,4 +1,4 @@
-<form class="degree-form" [formGroup]="form" (ngSubmit)="submit()">
+<form class="degree-form" (submit)="submit(); $event.preventDefault()">
   @if (isFeaturedRecord()) {
     <p class="form-hint">
       The public page shows this record as the full-width tile. There, Awarded
@@ -7,100 +7,81 @@
   }
 
   <label for="degree-title">Institute</label>
-  <input id="degree-title" class="form-control" formControlName="title" />
+  <input id="degree-title" class="form-control" [formField]="editor.title" />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.title"
-    errorKey="required"
-    message="An institute name is required"
-  />
+  @if (hasError(editor.title, 'required')) {
+    <span class="field-error">An institute name is required</span>
+  }
 
   <label for="degree-name">Degree</label>
-  <input id="degree-name" class="form-control" formControlName="degree" />
+  <input id="degree-name" class="form-control" [formField]="editor.degree" />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.degree"
-    errorKey="required"
-    message="A degree name is required"
-  />
+  @if (hasError(editor.degree, 'required')) {
+    <span class="field-error">A degree name is required</span>
+  }
 
   <label for="degree-period">Period</label>
-
   <input
     id="degree-period"
     class="form-control"
     placeholder="2016 - 2019"
-    formControlName="period"
+    [formField]="editor.period"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.period"
-    errorKey="required"
-    message="A period is required"
-  />
+  @if (hasError(editor.period, 'required')) {
+    <span class="field-error">A period is required</span>
+  }
 
   <label for="degree-gpa">GPA</label>
-  <input id="degree-gpa" class="form-control" formControlName="gpa" />
+  <input id="degree-gpa" class="form-control" [formField]="editor.gpa" />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.gpa"
-    errorKey="required"
-    message="A GPA is required"
-  />
+  @if (hasError(editor.gpa, 'required')) {
+    <span class="field-error">A GPA is required</span>
+  }
 
   <label for="degree-awards">Awarded</label>
-
   <input
     id="degree-awards"
     class="form-control"
     placeholder="Spring 2019"
-    formControlName="awards"
+    [formField]="editor.awards"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.awards"
-    errorKey="required"
-    message="An award is required"
-  />
+  @if (hasError(editor.awards, 'required')) {
+    <span class="field-error">An award is required</span>
+  }
 
   <label for="degree-extra">Honors</label>
-
   <input
     id="degree-extra"
     class="form-control"
     placeholder="Optional"
-    formControlName="extra"
+    [formField]="editor.extra"
   />
 
   <label for="degree-credits">Credits</label>
-
   <input
     id="degree-credits"
     class="form-control"
     placeholder="149/120"
-    formControlName="credits"
+    [formField]="editor.credits"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.credits"
-    errorKey="required"
-    message="Credits are required"
-  />
+  @if (hasError(editor.credits, 'required')) {
+    <span class="field-error">Credits are required</span>
+  }
 
   <label for="degree-graduated">Graduated</label>
-
   <input
     id="degree-graduated"
     class="form-control"
     placeholder="04th of May 2019"
-    formControlName="graduated"
+    [formField]="editor.graduated"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.graduated"
-    errorKey="required"
-    message="A graduation date is required"
-  />
+  @if (hasError(editor.graduated, 'required')) {
+    <span class="field-error">A graduation date is required</span>
+  }
 
   @if (formError(); as formError) {
     <p class="form-error" role="alert">{{ formError }}</p>

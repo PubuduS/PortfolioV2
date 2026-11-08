@@ -1,105 +1,86 @@
-<form class="publication-form" [formGroup]="form" (ngSubmit)="submit()">
+<form class="publication-form" (submit)="submit(); $event.preventDefault()">
   <label for="publication-title">Card title</label>
-  <input id="publication-title" class="form-control" formControlName="title" />
-
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.title"
-    errorKey="required"
-    message="A card title is required"
+  <input
+    id="publication-title"
+    class="form-control"
+    [formField]="editor.title"
   />
 
-  <label for="publication-detail-title">Detail title</label>
+  @if (hasError(editor.title, 'required')) {
+    <span class="field-error">A card title is required</span>
+  }
 
+  <label for="publication-detail-title">Detail title</label>
   <input
     id="publication-detail-title"
     class="form-control"
-    formControlName="detailTitle"
+    [formField]="editor.detailTitle"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.detailTitle"
-    errorKey="required"
-    message="A detail title is required"
-  />
+  @if (hasError(editor.detailTitle, 'required')) {
+    <span class="field-error">A detail title is required</span>
+  }
 
   <label for="publication-keywords">Keywords</label>
-
   <input
     id="publication-keywords"
     class="form-control"
-    formControlName="keywords"
+    [formField]="editor.keywords"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.keywords"
-    errorKey="required"
-    message="Keywords are required"
-  />
+  @if (hasError(editor.keywords, 'required')) {
+    <span class="field-error">Keywords are required</span>
+  }
 
   <label for="publication-summary">Summary</label>
-
   <textarea
     id="publication-summary"
     class="form-control"
     rows="3"
-    formControlName="summary"
+    [formField]="editor.summary"
   ></textarea>
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.summary"
-    errorKey="required"
-    message="A summary is required"
-  />
+  @if (hasError(editor.summary, 'required')) {
+    <span class="field-error">A summary is required</span>
+  }
 
   <label for="publication-authors">Authors</label>
-
   <input
     id="publication-authors"
     class="form-control"
-    formControlName="authors"
+    [formField]="editor.authors"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.authors"
-    errorKey="required"
-    message="Authors are required"
-  />
+  @if (hasError(editor.authors, 'required')) {
+    <span class="field-error">Authors are required</span>
+  }
 
   <label for="publication-abstract">Abstract</label>
-
   <textarea
     id="publication-abstract"
     class="form-control"
     rows="8"
-    formControlName="abstractText"
+    [formField]="editor.abstractText"
   ></textarea>
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.abstractText"
-    errorKey="required"
-    message="An abstract is required"
-  />
-
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.abstractText"
-    errorKey="empty-abstract"
-    message="The abstract needs at least one paragraph"
-  />
+  @if (hasError(editor.abstractText, 'required')) {
+    <span class="field-error">An abstract is required</span>
+  }
+  @if (hasError(editor.abstractText, 'empty-abstract')) {
+    <span class="field-error">The abstract needs at least one paragraph</span>
+  }
 
   <label for="publication-citation">Citation</label>
-
   <textarea
     id="publication-citation"
     class="form-control"
     rows="3"
-    formControlName="citation"
+    [formField]="editor.citation"
   ></textarea>
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.citation"
-    errorKey="required"
-    message="A citation is required"
-  />
+  @if (hasError(editor.citation, 'required')) {
+    <span class="field-error">A citation is required</span>
+  }
 
   <label for="publication-cover">Cover image</label>
 
@@ -114,26 +95,17 @@
     (change)="onCoverSelected($event)"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.cover"
-    errorKey="required"
-    message="A cover image is required"
-  />
-
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.cover"
-    errorKey="missing-cover"
-    message="A cover image is required"
-  />
-
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.cover"
-    errorKey="unsupported-cover"
-    message="The cover must be an image"
-  />
+  @if (
+    hasError(editor.cover, 'required') ||
+    hasError(editor.cover, 'missing-cover')
+  ) {
+    <span class="field-error">A cover image is required</span>
+  }
+  @if (hasError(editor.cover, 'unsupported-cover')) {
+    <span class="field-error">The cover must be an image</span>
+  }
 
   <label for="publication-paper">Paper PDF</label>
-
   <input
     id="publication-paper"
     type="file"
@@ -141,32 +113,24 @@
     (change)="onPaperSelected($event)"
   />
 
-  <admin-portfolio-display-validator-errors
-    [control]="form.controls.paper"
-    errorKey="unsupported-paper"
-    message="The paper must be a PDF"
-  />
+  @if (hasError(editor.paper, 'unsupported-paper')) {
+    <span class="field-error">The paper must be a PDF</span>
+  }
 
-  @if (form.controls.paper.value) {
+  @if (editor.paper().value()) {
     <label for="publication-file-name">Download file name</label>
-
     <input
       id="publication-file-name"
       class="form-control"
-      formControlName="fileName"
+      [formField]="editor.fileName"
     />
 
-    <admin-portfolio-display-validator-errors
-      [control]="form.controls.fileName"
-      errorKey="required"
-      message="A file name is required for the paper"
-    />
-
-    <admin-portfolio-display-validator-errors
-      [control]="form.controls.fileName"
-      errorKey="missing-file-name"
-      message="A file name is required for the paper"
-    />
+    @if (
+      hasError(editor.fileName, 'required') ||
+      hasError(editor.fileName, 'missing-file-name')
+    ) {
+      <span class="field-error">A file name is required for the paper</span>
+    }
 
     <button type="button" mat-button (click)="removePaper()">
       Remove paper

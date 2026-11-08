@@ -55,7 +55,8 @@ function setField(
 ): void {
   const element = field(fixture, id);
   element.value = value;
-  element.dispatchEvent(new Event(element instanceof HTMLSelectElement ? 'change' : 'input'));
+  element.dispatchEvent(new Event('input'));
+  element.dispatchEvent(new Event('change'));
 }
 
 /**

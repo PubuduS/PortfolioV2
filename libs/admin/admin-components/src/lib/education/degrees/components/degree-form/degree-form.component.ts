@@ -3,21 +3,25 @@ import {
   Component,
   computed,
   effect,
-  inject,
   input,
+  OnInit,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  disabled,
+  type FieldTree,
+  form,
+  FormField,
+  required,
+  submit as submitForm,
+} from '@angular/forms/signals';
 
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import {
-  EducationEditTarget,
-  IEducation,
+  type EducationEditTarget,
+  type EducationFormValues,
+  type IEducation,
   toEducationDraft,
 } from '@portfolio-v2/state/dataModels';
 
@@ -25,20 +29,34 @@ import {
 const FEATURED_RECORD_ID = 1;
 
 /**
+ * A blank degree. A new object each time so a later edit cannot change the reset value.
+ * @returns empty degree values
+ */
+function emptyDegree(): EducationFormValues {
+  return {
+    title: '',
+    period: '',
+    degree: '',
+    gpa: '',
+    awards: '',
+    credits: '',
+    graduated: '',
+    extra: '',
+  };
+}
+
+/**
  * Add and edit use the same form. It emits an education record and holds no services.
  */
 @Component({
   selector: 'admin-degree-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    DisplayValidatorErrorsComponent,
-  ],
+  imports: [FormField],
   templateUrl: './degree-form.component.html',
   styleUrl: './degree-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DegreeFormComponent {
+export class DegreeFormComponent implements OnInit {
   /** Record being created or edited. */
   public readonly target = input.required<EducationEditTarget>();
 
@@ -48,19 +66,19 @@ export class DegreeFormComponent {
   /** Record ready to save. */
   public readonly submitted = output<IEducation>();
 
-  /** Builds the editor form. */
-  private readonly formBuilder = inject(FormBuilder).nonNullable;
+  /** Values the editor is changing. */
+  private readonly model = signal<EducationFormValues>(emptyDegree());
 
   /** Editor fields. */
-  protected readonly form = this.formBuilder.group({
-    title: ['', Validators.required],
-    period: ['', Validators.required],
-    degree: ['', Validators.required],
-    gpa: ['', Validators.required],
-    awards: ['', Validators.required],
-    credits: ['', Validators.required],
-    graduated: ['', Validators.required],
-    extra: [''],
+  protected readonly editor = form(this.model, (fields) => {
+    disabled(fields, { when: () => this.disabled() });
+    required(fields.title);
+    required(fields.period);
+    required(fields.degree);
+    required(fields.gpa);
+    required(fields.awards);
+    required(fields.credits);
+    required(fields.graduated);
   });
 
   /** Shown when the record cannot be built and no single field owns the failure. */
@@ -77,60 +95,55 @@ export class DegreeFormComponent {
   private appliedKey = '';
 
   /**
-   * Reset the fields when the edited record changes, and lock them during a save.
+   * Load the record this dialog was opened with, and later records that replace it.
    */
   constructor() {
     effect(() => {
       const target = this.target();
-      const key = target.mode === 'new'
-        ? `new:${target.id}`
-        : `edit:${target.education.id}`;
-
-      if (key === this.appliedKey) {
-        return;
-      }
-
-      this.appliedKey = key;
-      this.applyTarget(target);
+      untracked(() => this.applyTarget(target));
     });
+  }
 
-    effect(() => {
-      if (this.disabled()) {
-        this.form.disable({ emitEvent: false });
-        return;
-      }
+  /**
+   * Fill the fields before the first render.
+   * @inheritdoc
+   */
+  public ngOnInit(): void {
+    this.applyTarget(this.target());
+  }
 
-      this.form.enable({ emitEvent: false });
-    });
+  /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
   }
 
   /**
    * Emit a record, or show the first rule that failed.
    */
-  public submit(): void {
+  public async submit(): Promise<void> {
     if (this.disabled()) {
       return;
     }
-
-    this.form.markAllAsTouched();
-    this.formError.set(null);
-
-    if (this.form.invalid) {
-      return;
-    }
-
-    const target = this.target();
-    const result = toEducationDraft(
-      target.mode === 'new' ? target.id : target.education.id,
-      this.form.getRawValue(),
-    );
-
-    if (!result.ok) {
-      this.formError.set('This degree cannot be saved.');
-      return;
-    }
-
-    this.submitted.emit(result.education);
+    await submitForm(this.editor, async () => {
+      this.formError.set(null);
+      const target = this.target();
+      const result = toEducationDraft(
+        target.mode === 'new' ? target.id : target.education.id,
+        this.editor().value(),
+      );
+      if (!result.ok) {
+        this.formError.set('This degree cannot be saved.');
+        return undefined;
+      }
+      this.submitted.emit(result.education);
+      return undefined;
+    });
   }
 
   /**
@@ -138,15 +151,20 @@ export class DegreeFormComponent {
    * @param target record the editor should show
    */
   private applyTarget(target: EducationEditTarget): void {
-    this.formError.set(null);
-
-    if (target.mode === 'new') {
-      this.form.reset();
+    const key = target.mode === 'new'
+      ? `new:${target.id}`
+      : `edit:${target.education.id}`;
+    if (key === this.appliedKey) {
       return;
     }
-
+    this.appliedKey = key;
+    this.formError.set(null);
+    if (target.mode === 'new') {
+      this.editor().reset(emptyDegree());
+      return;
+    }
     const { education } = target;
-    this.form.reset({
+    this.editor().reset({
       title: education.title,
       period: education.period,
       degree: education.degree,

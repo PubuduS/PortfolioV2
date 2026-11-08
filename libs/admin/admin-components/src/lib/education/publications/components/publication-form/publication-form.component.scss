@@ -13,8 +13,16 @@
     max-width: 240px;
   }
 
+  .field-error,
   .form-error {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
     color: $jasper;
+  }
+
+  .form-error {
     margin-top: 12px;
   }
 }
