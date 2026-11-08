@@ -22,7 +22,11 @@
 
     .success {
       color: $electric-teal;
+      width: 2.5rem;
+      height: 2.5rem;
       font-size: 2.5rem;
+      line-height: 2.5rem;
+      overflow: visible;
     }
 
     .save-error {

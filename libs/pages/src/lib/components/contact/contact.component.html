@@ -47,29 +47,28 @@
       </div>
       <div class="col-md-7 fadeRight bottom" data-t-show="3">
         <div class="contact-form">
-          <form (ngSubmit)="sendEmail()" [formGroup]="contactForm">
+          <form (submit)="sendEmail(); $event.preventDefault()">
             <ul>
               <li>
                 <input
                   class="form-control"
                   type="email"
                   placeholder="Your Email Address"
-                  formControlName="email"
-                  [ngClass]="{
-                    'is-invalid':
-                      (contactForm.get('email')?.touched ||
-                        contactForm.get('email')?.dirty) &&
-                      !contactForm.get('email')?.valid,
-                  }"
+                  [formField]="contactForm.email"
+                  [class.is-invalid]="
+                    (contactForm.email().touched() ||
+                      contactForm.email().dirty()) &&
+                    contactForm.email().invalid()
+                  "
                 />
 
                 <span class="invalid-feedback">
-                  @if (contactForm.get('email')?.errors?.['required']) {
+                  @if (contactForm.email().getError('required')) {
                     <span>
                       {{ emailValidatorMsgs.emailReqError }}
                     </span>
                   }
-                  @if (contactForm.get('email')?.errors?.['email']) {
+                  @if (contactForm.email().getError('email')) {
                     <span>
                       {{ emailValidatorMsgs.emailPttrnError }}
                     </span>
@@ -82,32 +81,31 @@
                   class="form-control"
                   type="text"
                   placeholder="Your Name"
-                  formControlName="name"
-                  [ngClass]="{
-                    'is-invalid':
-                      (contactForm.get('name')?.touched ||
-                        contactForm.get('name')?.dirty) &&
-                      !contactForm.get('name')?.valid,
-                  }"
+                  [formField]="contactForm.name"
+                  [class.is-invalid]="
+                    (contactForm.name().touched() ||
+                      contactForm.name().dirty()) &&
+                    contactForm.name().invalid()
+                  "
                 />
 
                 <span class="invalid-feedback">
-                  @if (contactForm.get('name')?.errors?.['required']) {
+                  @if (contactForm.name().getError('required')) {
                     <span>
                       {{ senderValidatorMsgs.senderReqError }}
                     </span>
                   }
-                  @if (contactForm.get('name')?.errors?.['minlength']) {
+                  @if (contactForm.name().getError('minLength')) {
                     <span>
                       {{ senderValidatorMsgs.senderMinLenError }}
                     </span>
                   }
-                  @if (contactForm.get('name')?.errors?.['maxlength']) {
+                  @if (contactForm.name().getError('maxLength')) {
                     <span>
                       {{ senderValidatorMsgs.senderMaxLenError }}
                     </span>
                   }
-                  @if (contactForm.get('name')?.errors?.['pattern']) {
+                  @if (contactForm.name().getError('pattern')) {
                     <span>
                       {{ senderValidatorMsgs.senderPttrnError }}
                     </span>
@@ -119,28 +117,27 @@
                 <textarea
                   class="form-control"
                   placeholder="Your Message"
-                  formControlName="message"
-                  [ngClass]="{
-                    'is-invalid':
-                      (contactForm.get('message')?.touched ||
-                        contactForm.get('message')?.dirty) &&
-                      !contactForm.get('message')?.valid,
-                  }"
+                  [formField]="contactForm.message"
+                  [class.is-invalid]="
+                    (contactForm.message().touched() ||
+                      contactForm.message().dirty()) &&
+                    contactForm.message().invalid()
+                  "
                 >
                 </textarea>
 
                 <span class="invalid-feedback">
-                  @if (contactForm.get('message')?.errors?.['required']) {
+                  @if (contactForm.message().getError('required')) {
                     <span>
                       {{ msgValidatorMsgs.msgReqError }}
                     </span>
                   }
-                  @if (contactForm.get('message')?.errors?.['minlength']) {
+                  @if (contactForm.message().getError('minLength')) {
                     <span>
                       {{ msgValidatorMsgs.msgMinLenError }}
                     </span>
                   }
-                  @if (contactForm.get('message')?.errors?.['maxlength']) {
+                  @if (contactForm.message().getError('maxLength')) {
                     <span>
                       {{ msgValidatorMsgs.msgMaxLenError }}
                     </span>
@@ -156,7 +153,7 @@
                   type="text"
                   tabindex="-1"
                   autocomplete="off"
-                  formControlName="faxNumber"
+                  [formField]="contactForm.faxNumber"
                 />
               </li>
 
@@ -174,7 +171,7 @@
                 <button
                   type="submit"
                   class="submit-btn"
-                  [disabled]="contactForm.invalid || isSending()"
+                  [disabled]="contactForm().invalid() || isSending()"
                   [attr.aria-busy]="isSending()"
                 >
                   {{ isSending() ? 'Sending' : 'Send' }}

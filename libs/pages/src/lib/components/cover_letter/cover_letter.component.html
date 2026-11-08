@@ -36,29 +36,23 @@
       </div>
       <div class="col-md-7 fadeRight bottom" data-t-show="3">
         <div class="cover-form">
-          <form (ngSubmit)="onSubmit()" [formGroup]="coverLetterForm">
+          <form (submit)="onSubmit(); $event.preventDefault()">
             <ul>
               <li>
                 <input
                   class="form-control"
                   type="text"
                   placeholder="Manager Name (If unknown leave it empty)"
-                  formControlName="managerName"
-                  [ngClass]="{
-                    'is-invalid': !coverLetterForm.get('managerName')?.valid,
-                  }"
+                  [formField]="coverLetterForm.managerName"
+                  [class.is-invalid]="coverLetterForm.managerName().invalid()"
                 />
                 <span class="invalid-feedback">
-                  @if (
-                    coverLetterForm.get('managerName')?.errors?.['pattern']
-                  ) {
+                  @if (coverLetterForm.managerName().getError('pattern')) {
                     <span>
                       {{ mngValidatorMessages.mngPatternError }}
                     </span>
                   }
-                  @if (
-                    coverLetterForm.get('managerName')?.errors?.['maxlength']
-                  ) {
+                  @if (coverLetterForm.managerName().getError('maxLength')) {
                     <span>
                       {{ mngValidatorMessages.mngNameMaxLen }}
                     </span>
@@ -71,10 +65,10 @@
                   class="form-control"
                   aria-label="Default select example"
                   id="position-name"
-                  formControlName="position"
+                  [formField]="coverLetterForm.position"
                 >
                   @for (position of positions; track position) {
-                    <option>
+                    <option [value]="position">
                       {{ position }}
                     </option>
                   }
@@ -86,21 +80,20 @@
                   class="form-control"
                   type="text"
                   placeholder="Company Name"
-                  formControlName="company"
-                  [ngClass]="{
-                    'is-invalid':
-                      (coverLetterForm.get('company')?.touched ||
-                        coverLetterForm.get('company')?.dirty) &&
-                      !coverLetterForm.get('company')?.valid,
-                  }"
+                  [formField]="coverLetterForm.company"
+                  [class.is-invalid]="
+                    (coverLetterForm.company().touched() ||
+                      coverLetterForm.company().dirty()) &&
+                    coverLetterForm.company().invalid()
+                  "
                 />
                 <span class="invalid-feedback">
-                  @if (coverLetterForm.get('company')?.errors?.['required']) {
+                  @if (coverLetterForm.company().getError('required')) {
                     <span>
                       {{ cmpValidatorMessages.cmpNameReqError }}
                     </span>
                   }
-                  @if (coverLetterForm.get('company')?.errors?.['maxlength']) {
+                  @if (coverLetterForm.company().getError('maxLength')) {
                     <span>
                       {{ cmpValidatorMessages.cmpNameMaxLen }}
                     </span>
@@ -110,7 +103,7 @@
               <button
                 type="submit"
                 class="submit-btn"
-                [disabled]="!coverLetterForm.valid || isTemplateLoading()"
+                [disabled]="!coverLetterForm().valid() || isTemplateLoading()"
               >
                 Generate
               </button>
