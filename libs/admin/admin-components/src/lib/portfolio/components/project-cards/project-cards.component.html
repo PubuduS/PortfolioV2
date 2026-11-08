@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-6">
             <label class="fw-bold mb-2">New Photo (Click)</label>
-            <img src="{{ imagePreview }}" (click)="cardInput.click()" />
+            <img [src]="imagePreview()" (click)="cardInput.click()" />
             <input
               type="file"
               #cardInput
@@ -127,9 +127,9 @@
               class="d-flex align-items-center justify-content-between flex-wrap"
             >
               <span class="progress-label">
-                File Upload Progress: {{ progressValue | number: '2.2-2' }}%
+                File Upload Progress: {{ progressValue() | number: '2.2-2' }}%
               </span>
-              @if (isUploadCompleted) {
+              @if (isUploadCompleted()) {
                 <mat-icon class="check" title="Upload complete"
                   >check_circle</mat-icon
                 >

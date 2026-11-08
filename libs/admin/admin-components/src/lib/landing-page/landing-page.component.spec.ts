@@ -147,7 +147,7 @@ describe('LandingPageComponent', () => {
         'portfolio/landing-page/banners/winter/Winter_Banner-desktop.webm',
         'blob:poster',
       );
-      expect(component['isUploadCompleted']).toBe(true);
+      expect(component['isUploadCompleted']()).toBe(true);
     });
   });
 });

@@ -82,7 +82,7 @@ export class DeletePortfolioTileComponent {
     // Select the appropriate card based on type
     if (this.data.type === ProjectCardType.featured) {
       this.projectCard = this.store.selectSignal(featuredProjectCardSelector(this.data.recordId));
-      this.portfolioCard = undefined as any; // Not used for featured projects
+      this.portfolioCard = undefined;
     } else {
       this.projectCard = this.store.selectSignal(projectCardSelector(this.data.recordId));
       this.portfolioCard = this.store.selectSignal(portfolioCardSelector(this.data.recordId));

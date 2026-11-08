@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   effect,
   Inject,
@@ -128,16 +127,16 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   protected isEditSuccess = of(false);
 
   /** Preview Image URL */
-  protected imagePreview = this.defaultImageSrc;
+  protected readonly imagePreview = signal(this.defaultImageSrc);
 
   /** Selected Image URL */
-  protected imageUrl = '';
+  protected readonly imageUrl = signal('');
 
   /** Selected file for upload */
   protected selectedFile: File | null = null;
 
   /** Upload Complete Flag */
-  protected isUploadCompleted = false;
+  protected readonly isUploadCompleted = signal(false);
 
   /** Selected card ID */
   private cardId = 1;
@@ -152,7 +151,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   private imageUrlSubscription!: Subscription;
 
   /** Image Upload Progress Value */
-  protected progressValue = 0;
+  protected readonly progressValue = signal(0);
 
   /** Upload Progress Interval ID */
   private uploadProgressIntervalId: number | undefined;
@@ -163,7 +162,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param data.cardId card id
    * @param data.type project card type
    * @param dialog dialog ref
-   * @param cdr change detector ref
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -172,7 +170,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { cardId: number, type: ProjectCardType },
     public dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -254,9 +251,8 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
         this.selectedFile = file; // Store the selected file
         const reader = new FileReader();
         reader.onload = () => {
-          this.imageUrl = reader.result as string;
-          this.imagePreview = this.imageUrl;
-          this.cdr.detectChanges();
+          this.imageUrl.set(reader.result as string);
+          this.imagePreview.set(this.imageUrl());
         };
         reader.readAsDataURL(file);
       }
@@ -335,14 +331,15 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
     }
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
-    const hasNewFile = this.imageUrl && this.imageUrl !== '' && this.imageUrl !== this.defaultImageSrc;
+    const chosenImage = this.imageUrl();
+    const hasNewFile = chosenImage !== '' && chosenImage !== this.defaultImageSrc;
     if (hasNewFile) {
       this.handleFileUpload(fileStoragePath);
     }
 
     // Only update imageURL if a new photo was provided, otherwise keep existing
     const imageURL = hasNewFile
-      ? this.imageUrl
+      ? chosenImage
       : this.projectCard()?.imageURL ?? this.defaultImageSrc;
 
     const updatedCard: IProjectCard = {
@@ -376,11 +373,10 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       clearInterval(this.uploadProgressIntervalId);
     }
 
-    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
+    this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl()).catch(() => undefined);
     this.uploadProgressIntervalId = window.setInterval(() => {
-      this.progressValue = this.setDataService.getProgressValue();
-      this.isUploadCompleted = this.setDataService.getUploadCompleteState();
-      this.cdr.detectChanges();
+      this.progressValue.set(this.setDataService.getProgressValue());
+      this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
     }, 100);
 
     // Handle image URL retrieval with proper subscription management
@@ -389,7 +385,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       take(1),
     ).subscribe((result) => {
       if (result) {
-        this.imageUrl = result;
+        this.imageUrl.set(result);
       }
     });
   }
@@ -410,8 +406,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       map((result) => {
         if (result === 'successfull') {
           // Reset the preview to placeholder
-          this.imagePreview = this.defaultImageSrc;
-          this.cdr.detectChanges();
+          this.imagePreview.set(this.defaultImageSrc);
         }
         if (this.data.type === ProjectCardType.featured) {
           this.store.dispatch(StateActions.featuredProjectCardsStateConnect());

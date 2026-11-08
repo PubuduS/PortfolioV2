@@ -9,7 +9,10 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
-import { of } from 'rxjs';
+import {
+  of,
+  Subscription,
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import {
@@ -119,8 +122,8 @@ describe('AddTileComponent', () => {
     });
 
     it('should initialize with default image sources', () => {
-      expect(component['imagePreview']).toBe(component['defaultImageSrc']);
-      expect(component['newUpdatedImage']).toBe(component['defaultImageSrc']);
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+      expect(component['newUpdatedImage']()).toBe(component['defaultImageSrc']);
     });
   });
 
@@ -153,7 +156,7 @@ describe('AddTileComponent', () => {
 
       const mockEvent = {
         target: mockInput,
-      } as Event;
+      } as unknown as Event;
 
       // Mock FileReader
       const mockFileReader = {
@@ -163,17 +166,19 @@ describe('AddTileComponent', () => {
       };
 
       // Spy on FileReader constructor
-      const fileReaderSpy = jest.spyOn(global, 'FileReader').mockImplementation(() => mockFileReader as any);
+      const fileReaderSpy = jest.spyOn(global, 'FileReader').mockImplementation(
+        () => mockFileReader as unknown as FileReader,
+      );
 
       component['onFileSelected'](mockEvent);
 
       // Simulate the onload callback
-      mockFileReader.onload({ target: { result: 'data:image/webp;base64,test' } } as any);
+      mockFileReader.onload?.(new ProgressEvent('load'));
 
       expect(component['selectedFile']).toBe(mockFile);
       expect(mockFileReader.readAsDataURL).toHaveBeenCalledWith(mockFile);
-      expect(component['imageUrl']).toBe('data:image/webp;base64,test');
-      expect(component['imagePreview']).toBe('data:image/webp;base64,test');
+      expect(component['imageUrl']()).toBe('data:image/webp;base64,test');
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,test');
 
       fileReaderSpy.mockRestore();
     });
@@ -181,7 +186,7 @@ describe('AddTileComponent', () => {
     it('should handle invalid file selection gracefully', () => {
       const mockEvent = {
         target: { files: [] },
-      } as any;
+      } as unknown as Event;
 
       expect(() => {
         component['onFileSelected'](mockEvent);
@@ -250,7 +255,7 @@ describe('AddTileComponent', () => {
     it('should clear intervals and timeouts on destroy', () => {
       component['uploadProgressIntervalId'] = 123;
       component['uploadTimeoutId'] = 456;
-      component['imageUrlSubscription'] = { unsubscribe: jest.fn() } as any;
+      component['imageUrlSubscription'] = { unsubscribe: jest.fn() } as unknown as Subscription;
 
       const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
       const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');

@@ -53,8 +53,8 @@ describe('DeleteComformationComponent', () => {
 
   it('should initialize with record data', () => {
     // Access protected properties through component instance
-    expect((component as any).points).toEqual(['Point 1', 'Point 2']);
-    expect((component as any).records.length).toBeGreaterThan(0);
+    expect(component['points']).toEqual(['Point 1', 'Point 2']);
+    expect(component['records'].length).toBeGreaterThan(0);
   });
 
   it('should handle undefined record gracefully', () => {
@@ -72,7 +72,7 @@ describe('DeleteComformationComponent', () => {
     const testComponent = testFixture.componentInstance;
     testFixture.detectChanges();
 
-    expect((testComponent as any).points).toEqual([]);
-    expect((testComponent as any).records).toEqual([]);
+    expect(testComponent['points']).toEqual([]);
+    expect(testComponent['records']).toEqual([]);
   });
 });

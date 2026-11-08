@@ -1,43 +1,51 @@
 /**
- * Test utilities for admin library
+ * Reach a protected or private member from a unit test without casting the
+ * component to `any`. The member keeps the type the caller names.
  *
- * Usage in test files:
- * ```typescript
- * import { getComponentProperty, callComponentMethod } from '@portfolio-v2/shared/test-helpers';
- *
- * // Access protected/private properties
- * const value = getComponentProperty(component, 'myProperty');
- *
- * // Call protected/private methods
- * const result = callComponentMethod(component, 'myMethod', arg1, arg2);
- *
- * // Setup spies manually (use jest.spyOn directly in test files)
- * jest.spyOn(component['dialog'], 'open');
- * jest.spyOn(component['router'], 'navigate');
- * ```
+ * Prefer `component['member']` when that access type-checks. Use these helpers
+ * only when the member is hidden from the test file.
  */
 
 /**
- * Helper function to access protected/private properties in tests
- * @param component - The component instance
- * @param property - The property name to access
- * @returns The property value
+ * Read a protected or private field.
+ * @param component component under test
+ * @param property field name
+ * @returns the field value
  */
-export function getComponentProperty<T>(component: any, property: string): T {
-  return component[property];
+export function getComponentProperty<R>(
+  component: object,
+  property: string,
+): R {
+  const host = component as Record<string, R>;
+  return host[property];
 }
 
 /**
- * Helper function to call protected/private methods in tests
- * @param component - The component instance
- * @param method - The method name to call
- * @param args - Arguments to pass to the method
- * @returns The method result
+ * Call a protected or private method.
+ * @param component component under test
+ * @param method method name
+ * @param args arguments
+ * @returns the method result
  */
-export function callComponentMethod<T>(
-  component: any,
+export function callComponentMethod<R>(
+  component: object,
   method: string,
-  ...args: any[]
-): T {
-  return component[method](...args);
+  ...args: readonly unknown[]
+): R {
+  const host = component as Record<string, (...params: readonly unknown[]) => R>;
+  return host[method](...args);
+}
+
+/**
+ * Spy on a protected or private method.
+ * @param component component under test
+ * @param method method name
+ * @returns the Jest spy
+ */
+export function spyOnMethod(
+  component: object,
+  method: string,
+): jest.SpyInstance {
+  const host = component as Record<string, (...params: unknown[]) => unknown>;
+  return jest.spyOn(host, method);
 }
