@@ -46,16 +46,16 @@ export const ADMIN_PAGE_ROUTES: Routes = [
   },
   {
     path: 'resume',
-    loadComponent: () => import('./documents/admin-documents.component').then(
-      (mod) => mod.AdminDocumentsComponent,
+    loadComponent: () => import('./documents/admin-resume-documents.component').then(
+      (mod) => mod.AdminResumeDocumentsComponent,
     ),
     providers: [DocumentWriter],
     data: { kind: 'resume' },
   },
   {
     path: 'coverletter',
-    loadComponent: () => import('./documents/admin-documents.component').then(
-      (mod) => mod.AdminDocumentsComponent,
+    loadComponent: () => import('./documents/admin-cover-letter-documents.component').then(
+      (mod) => mod.AdminCoverLetterDocumentsComponent,
     ),
     providers: [DocumentWriter],
     data: { kind: 'cover-letter' },
