@@ -80,7 +80,7 @@ describe('PortfolioComponent', () => {
 
   describe('Component Properties', () => {
     it('should have correct tooltip text', () => {
-      expect((component as any).toolTip).toBe('Click here to see more');
+      expect(component['toolTip']).toBe('Click here to see more');
     });
 
     it('should open the portfolio listener when the page opens', () => {
@@ -88,9 +88,7 @@ describe('PortfolioComponent', () => {
     });
 
     it('should initialize projectView signal with store selector', () => {
-      const projectView = (component as any).projectView as () => IProjectView[];
-      expect(projectView).toBeDefined();
-      expect(projectView()).toEqual(mockData);
+      expect(component['projectView']()).toEqual(mockData);
     });
   });
 
@@ -249,7 +247,7 @@ describe('PortfolioComponent', () => {
 
       expect(images.length).toBe(mockData.length + 1); // +1 for the "Add" button
       expect(images[0].getAttribute('alt')).toBe('project');
-      expect(images[0].title).toBe((component as any).toolTip);
+      expect(images[0].title).toBe(component['toolTip']);
     });
 
     it('should render project images with correct attributes', () => {
@@ -264,7 +262,7 @@ describe('PortfolioComponent', () => {
           const imageElement = img as HTMLImageElement;
           expect(imageElement.src).toContain(mockData[index].imageURL);
           expect(imageElement.alt).toBe('project');
-          expect(imageElement.title).toBe((component as any).toolTip);
+          expect(imageElement.title).toBe(component['toolTip']);
         });
     });
   });
@@ -293,7 +291,7 @@ describe('PortfolioComponent', () => {
       store.overrideSelector(portfolioCardsSelector, newData);
       store.refreshState();
 
-      expect(((component as any).projectView as () => IProjectView[])()).toEqual(newData);
+      expect(component['projectView']()).toEqual(newData);
     });
   });
 });

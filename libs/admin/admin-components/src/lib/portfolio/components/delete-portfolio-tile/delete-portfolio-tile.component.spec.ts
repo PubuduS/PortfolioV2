@@ -87,9 +87,7 @@ describe('DeletePortfolioTileComponent', () => {
 
   describe('Delete Tile Functionality', () => {
     it('should not delete if project ID is not available', () => {
-      const invalidProjectData = {
-        project: { ...mockProject, id: undefined as any },
-      };
+      const invalidProjectData: { recordId?: number } = {};
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({

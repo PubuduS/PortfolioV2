@@ -9,7 +9,7 @@
         >
           <label class="fw-bold mb-2">New Icon (Click)</label>
           <img
-            src="{{ imagePreview }}"
+            src="{{ imagePreview() }}"
             (click)="fileInput.click()"
             class="img-fluid rounded cursor-pointer"
             style="max-width: 120px; object-fit: contain"
@@ -29,7 +29,7 @@
         >
           <label class="fw-bold mb-2">Current Icon</label>
           <img
-            src="{{ newUpdatedImage }}"
+            src="{{ newUpdatedImage() }}"
             class="img-fluid rounded"
             style="max-width: 120px; object-fit: contain"
             alt="Current Icon"
@@ -70,7 +70,7 @@
           <mat-progress-bar
             class="w-100 bar"
             mode="determinate"
-            [value]="progressValue"
+            [value]="progressValue()"
           ></mat-progress-bar>
         </div>
       </div>
@@ -82,9 +82,9 @@
             class="d-flex align-items-center justify-content-between flex-wrap"
           >
             <span class="progress-label">
-              File Upload Progress: {{ progressValue | number: '2.2-2' }}%
+              File Upload Progress: {{ progressValue() | number: '2.2-2' }}%
             </span>
-            @if (isUploadCompleted) {
+            @if (isUploadCompleted()) {
               <mat-icon class="check" title="Upload complete"
                 >check_circle</mat-icon
               >

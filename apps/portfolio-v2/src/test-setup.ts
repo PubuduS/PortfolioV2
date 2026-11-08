@@ -5,11 +5,11 @@ import {
 } from 'util';
 import { ReadableStream } from 'node:stream/web';
 
-(global as any).ReadableStream = ReadableStream;
-
-(global as any).TextEncoder = TextEncoder;
-
-(global as any).TextDecoder = TextDecoder;
+Object.assign(globalThis, {
+  ReadableStream,
+  TextEncoder,
+  TextDecoder,
+});
 
 setupZoneTestEnv();
 // @ts-expect-error https://thymikee.github.io/jest-preset-angular/docs/getting-started/test-environment

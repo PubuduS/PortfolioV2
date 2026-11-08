@@ -14,6 +14,7 @@ import {
   featuredProjectCardsSelector,
   newFeaturedProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
+import { spyOnMethod } from '@portfolio-v2/shared/test-helpers';
 import {
   AddPortfolioRecordComponent,
   ProjectCardType,
@@ -179,7 +180,7 @@ describe('FeaturedProjectsComponent', () => {
     });
 
     it('should call onDeleteButtonClick when delete button is clicked', () => {
-      const onDeleteSpy = jest.spyOn(component as any, 'onDeleteButtonClick');
+      const onDeleteSpy = spyOnMethod(component, 'onDeleteButtonClick');
 
       // Since the button click is handled by the child
       // component, we need to test the method directly
@@ -189,7 +190,7 @@ describe('FeaturedProjectsComponent', () => {
     });
 
     it('should call onEditButtonClick when edit button is clicked', () => {
-      const onEditSpy = jest.spyOn(component as any, 'onEditButtonClick');
+      const onEditSpy = spyOnMethod(component, 'onEditButtonClick');
 
       // Since the button click is handled by
       // the child component, we need to test the method directly
@@ -207,7 +208,7 @@ describe('FeaturedProjectsComponent', () => {
 
     it('should call addNewRecord when add button is clicked', () => {
       const addButton = fixture.nativeElement.querySelector('button[mat-button]');
-      const addRecordSpy = jest.spyOn(component as any, 'addNewRecord');
+      const addRecordSpy = spyOnMethod(component, 'addNewRecord');
 
       addButton.click();
 
@@ -281,7 +282,7 @@ describe('FeaturedProjectsComponent', () => {
 
   describe('Event Handlers', () => {
     it('should handle delete button click correctly', () => {
-      const openDeleteSpy = jest.spyOn(component as any, 'openDeleteDialog');
+      const openDeleteSpy = spyOnMethod(component, 'openDeleteDialog');
 
       component['onDeleteButtonClick'](mockData[0]);
 
@@ -289,7 +290,7 @@ describe('FeaturedProjectsComponent', () => {
     });
 
     it('should handle edit button click correctly', () => {
-      const openEditSpy = jest.spyOn(component as any, 'openProjectCardEditDialog');
+      const openEditSpy = spyOnMethod(component, 'openProjectCardEditDialog');
 
       component['onEditButtonClick'](mockData[0].id);
 

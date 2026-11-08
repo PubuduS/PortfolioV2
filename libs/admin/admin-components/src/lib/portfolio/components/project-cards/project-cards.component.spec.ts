@@ -17,6 +17,7 @@ import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
+import { spyOnMethod } from '@portfolio-v2/shared/test-helpers';
 import {
   ProjectCardType,
   UploadPhotoComponent,
@@ -88,7 +89,7 @@ describe('ProjectCardsComponent', () => {
     it('should initialize form with project card data', () => {
       component.ngOnInit();
 
-      const form = (component as any).cardEditorForm;
+      const form = component['cardEditorForm'];
       expect(form).toBeDefined();
       expect(form.description().value()).toBe(mockProjectCard.description);
       expect(form.technologies().value()).toBe(mockProjectCard.tools);
@@ -105,7 +106,7 @@ describe('ProjectCardsComponent', () => {
     it('should set up form validators correctly', () => {
       component.ngOnInit();
 
-      const form = (component as any).cardEditorForm;
+      const form = component['cardEditorForm'];
       const descriptionControl = form.description();
       const codebaseControl = form.codebase();
       const screenshotControl = form.screenshot();
@@ -131,7 +132,7 @@ describe('ProjectCardsComponent', () => {
   });
 
   describe('File Selection', () => {
-    let originalFileReader: any;
+    let originalFileReader: typeof FileReader;
 
     beforeEach(() => {
       originalFileReader = global.FileReader;
@@ -146,21 +147,21 @@ describe('ProjectCardsComponent', () => {
       const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
       const mockEvent = {
         target: { files: [mockFile] },
-      } as any;
+      } as unknown as Event;
 
       // Just test that the method doesn't throw errors
       expect(() => {
-        (component as any).onFileSelected(mockEvent);
+        component['onFileSelected'](mockEvent);
       }).not.toThrow();
     });
 
     it('should handle empty file selection', () => {
       const mockEvent = {
         target: { files: [] },
-      } as any;
+      } as unknown as Event;
 
       expect(() => {
-        (component as any).onFileSelected(mockEvent);
+        component['onFileSelected'](mockEvent);
       }).not.toThrow();
     });
   });
@@ -168,9 +169,9 @@ describe('ProjectCardsComponent', () => {
   describe('Photo Upload Dialog', () => {
     it('should open upload photo dialog with correct configuration', () => {
       jest.spyOn(utilityService, 'getPaddedDigits').mockReturnValue('01');
-      const dialogSpy = jest.spyOn((component as any).dialog, 'open');
+      const dialogSpy = jest.spyOn(component['dialog'], 'open');
 
-      (component as any).openUploadPhotoPanel();
+      component['openUploadPhotoPanel']();
 
       expect(dialogSpy).toHaveBeenCalledWith(
         UploadPhotoComponent,
@@ -191,18 +192,20 @@ describe('ProjectCardsComponent', () => {
     it('should call utility service for ID padding', () => {
       jest.spyOn(utilityService, 'getPaddedDigits').mockReturnValue('01');
 
-      (component as any).openUploadPhotoPanel();
+      component['openUploadPhotoPanel']();
 
       expect(utilityService.getPaddedDigits).toHaveBeenCalledWith(1, 2);
     });
 
     it('should configure onImageUploaded callback', () => {
       component.ngOnInit(); // Ensure form is initialized
-      const dialogSpy = jest.spyOn((component as any).dialog, 'open');
+      const dialogSpy = jest.spyOn(component['dialog'], 'open');
 
-      (component as any).openUploadPhotoPanel();
+      component['openUploadPhotoPanel']();
 
-      const callArgs = dialogSpy.mock.calls[0][1] as any;
+      const callArgs = dialogSpy.mock.calls[0][1] as {
+        data: { onImageUploaded: (url: string) => void };
+      };
       const { onImageUploaded } = callArgs.data;
 
       expect(typeof onImageUploaded).toBe('function');
@@ -223,16 +226,16 @@ describe('ProjectCardsComponent', () => {
     });
 
     it('should not update data when form is invalid', () => {
-      const form = (component as any).cardEditorForm;
+      const form = component['cardEditorForm'];
       form.description().value.set('');
 
-      (component as any).updateData();
+      component['updateData']();
 
       expect(setDataService.setRecord).not.toHaveBeenCalled();
     });
 
     it('should update project card data when form is valid', () => {
-      (component as any).updateData();
+      component['updateData']();
 
       expect(setDataService.setRecord).toHaveBeenCalledWith(
         expect.stringContaining('project-data-section'),
@@ -250,11 +253,11 @@ describe('ProjectCardsComponent', () => {
 
     it('should handle file upload when new image is selected', () => {
       // Simulate that a file was selected and processed
-      (component as any).imageUrl = 'data:image/jpeg;base64,newimage';
+      component['imageUrl'].set('data:image/jpeg;base64,newimage');
 
-      const handleFileUploadSpy = jest.spyOn(component as any, 'handleFileUpload');
+      const handleFileUploadSpy = spyOnMethod(component, 'handleFileUpload');
 
-      (component as any).updateData();
+      component['updateData']();
 
       // The method should detect the new image and call handleFileUpload
       expect(handleFileUploadSpy).toHaveBeenCalled();
@@ -262,13 +265,13 @@ describe('ProjectCardsComponent', () => {
     });
 
     it('should set correct disable flags based on URL presence', () => {
-      const form = (component as any).cardEditorForm;
+      const form = component['cardEditorForm'];
       form.codebase().value.set('https://github.com/user/repo');
       form.youtube().value.set('');
       form.screenshot().value.set('https://firebase.com/image.jpg');
       form.documentation().value.set('');
 
-      (component as any).updateData();
+      component['updateData']();
 
       expect(setDataService.setRecord).toHaveBeenCalledWith(
         expect.any(String),
@@ -282,7 +285,7 @@ describe('ProjectCardsComponent', () => {
     });
 
     it('should call setRecord with updated project card data', () => {
-      (component as any).updateData();
+      component['updateData']();
 
       expect(setDataService.setRecord).toHaveBeenCalledWith(
         expect.stringContaining('project-data-section'),
@@ -298,7 +301,7 @@ describe('ProjectCardsComponent', () => {
   describe('Component Lifecycle', () => {
     it('should unsubscribe from subscriptions on destroy', () => {
       const unsubscribeSpy = jest.fn();
-      (component as any).imageUrlSubscription = { unsubscribe: unsubscribeSpy };
+      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy };
 
       component.ngOnDestroy();
 
@@ -307,7 +310,7 @@ describe('ProjectCardsComponent', () => {
 
     it('should clear upload interval on destroy', () => {
       const clearIntervalSpy = jest.spyOn(window, 'clearInterval').mockImplementation(() => {});
-      (component as any).uploadProgressIntervalId = 123;
+      component['uploadProgressIntervalId'] = 123;
 
       component.ngOnDestroy();
 
@@ -336,7 +339,7 @@ describe('ProjectCardsComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      const form = (component as any).cardEditorForm;
+      const form = component['cardEditorForm'];
       form.description().value.set('');
       form.description().markAsTouched();
       fixture.detectChanges();
@@ -348,14 +351,14 @@ describe('ProjectCardsComponent', () => {
 
   describe('Service Integration', () => {
     it('should handle successful file upload to storage', () => {
-      (component as any).imageUrl = 'test-image-data';
+      component['imageUrl'].set('test-image-data');
 
       jest.spyOn(setDataService, 'pushFileToStorage').mockResolvedValue(undefined);
       jest.spyOn(setDataService, 'getProgressValue').mockReturnValue(100);
       jest.spyOn(setDataService, 'getUploadCompleteState').mockReturnValue(true);
       jest.spyOn(getDataService, 'getPhotoURL').mockReturnValue(of('firebase-url'));
 
-      (component as any).handleFileUpload('test/path');
+      component['handleFileUpload']('test/path');
 
       expect(setDataService.pushFileToStorage).toHaveBeenCalledWith('test/path', 'test-image-data');
       expect(getDataService.getPhotoURL).toHaveBeenCalledWith('test/path');
@@ -365,7 +368,7 @@ describe('ProjectCardsComponent', () => {
       const testCard: IProjectCard = { ...mockProjectCard };
       jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('successfull'));
 
-      (component as any).saveDataRecord('test/path', testCard);
+      component['saveDataRecord']('test/path', testCard);
 
       expect(setDataService.setRecord).toHaveBeenCalledWith('test/path', testCard);
     });
@@ -379,18 +382,18 @@ describe('ProjectCardsComponent', () => {
     it('should handle file selection with no files', () => {
       const mockEvent = {
         target: { files: [] },
-      } as any;
+      } as unknown as Event;
 
       expect(() => {
-        (component as any).onFileSelected(mockEvent);
+        component['onFileSelected'](mockEvent);
       }).not.toThrow();
     });
 
     it('should handle invalid event target', () => {
-      const mockEvent = { target: null } as any;
+      const mockEvent = { target: null } as unknown as Event;
 
       expect(() => {
-        (component as any).onFileSelected(mockEvent);
+        component['onFileSelected'](mockEvent);
       }).not.toThrow();
     });
 
@@ -398,7 +401,7 @@ describe('ProjectCardsComponent', () => {
       jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('error occurred'));
 
       expect(() => {
-        (component as any).updateData();
+        component['updateData']();
       }).not.toThrow();
 
       // Should still complete without throwing

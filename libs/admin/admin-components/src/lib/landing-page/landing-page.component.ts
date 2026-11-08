@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   signal,
 } from '@angular/core';
@@ -74,16 +73,16 @@ export class LandingPageComponent {
   private readonly defaultImageSrc = 'https://placehold.co/600x400.png';
 
   /** Preview Image URL */
-  protected imagePreview = this.defaultImageSrc;
+  protected readonly imagePreview = signal(this.defaultImageSrc);
 
   /** Image Upload Progress Value */
-  protected progressValue = 0;
+  protected readonly progressValue = signal(0);
 
   /** Upload Complete Flag */
-  protected isUploadCompleted = false;
+  protected readonly isUploadCompleted = signal(false);
 
   /** True once at least one banner file is chosen. */
-  protected hasSelectedFile = false;
+  protected readonly hasSelectedFile = signal(false);
 
   /** Base Path */
   private readonly basePath = 'portfolio/landing-page/banners';
@@ -93,12 +92,10 @@ export class LandingPageComponent {
 
   /**
    * constructor
-   * @param cdr change detenction reference
    * @param titleCasePipe title case pipe
    * @param setDataService Set Data Service
    */
   constructor(
-    private cdr: ChangeDetectorRef,
     private titleCasePipe: TitleCasePipe,
     private setDataService: SetDataService,
   ) {}
@@ -115,21 +112,18 @@ export class LandingPageComponent {
     const file = event.target.files?.[0];
     if (!file) {
       this.selectedFiles.delete(suffix);
-      this.hasSelectedFile = this.selectedFiles.size > 0;
-      this.cdr.detectChanges();
+      this.hasSelectedFile.set(this.selectedFiles.size > 0);
       return;
     }
     this.selectedFiles.set(suffix, file);
-    this.hasSelectedFile = true;
+    this.hasSelectedFile.set(true);
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.imagePreview = String(reader.result);
-        this.cdr.detectChanges();
+        this.imagePreview.set(String(reader.result));
       };
       reader.readAsDataURL(file);
     }
-    this.cdr.detectChanges();
   }
 
   /**
@@ -152,13 +146,12 @@ export class LandingPageComponent {
     if (!season || uploads.length === 0) {
       return;
     }
-    this.isUploadCompleted = false;
+    this.isUploadCompleted.set(false);
     await uploads.reduce(
       (chain, upload) => chain.then(() => this.uploadOne(season, upload.file, upload.suffix)),
       Promise.resolve(),
     );
-    this.isUploadCompleted = true;
-    this.cdr.detectChanges();
+    this.isUploadCompleted.set(true);
   }
 
   /**
@@ -173,8 +166,7 @@ export class LandingPageComponent {
     const path = this.bannerStoragePath(season, suffix);
     const pending = this.setDataService.pushFileToStorage(path, url);
     const timer = setInterval(() => {
-      this.progressValue = this.setDataService.getProgressValue();
-      this.cdr.detectChanges();
+      this.progressValue.set(this.setDataService.getProgressValue());
     }, 100);
     try {
       await pending;
@@ -182,8 +174,7 @@ export class LandingPageComponent {
       clearInterval(timer);
       URL.revokeObjectURL(url);
     }
-    this.progressValue = this.setDataService.getProgressValue();
-    this.cdr.detectChanges();
+    this.progressValue.set(this.setDataService.getProgressValue());
   }
 
   /**

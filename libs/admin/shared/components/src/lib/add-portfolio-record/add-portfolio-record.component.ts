@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   OnDestroy,
@@ -129,16 +128,16 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   protected isEditSuccess = of(false);
 
   /** Preview Image URL */
-  protected imagePreview = this.defaultImageSrc;
+  protected readonly imagePreview = signal(this.defaultImageSrc);
 
   /** Selected Image URL */
-  protected imageUrl = '';
+  protected readonly imageUrl = signal('');
 
   /** Upload Complete Flag */
-  protected isUploadCompleted = false;
+  protected readonly isUploadCompleted = signal(false);
 
   /** Image Upload Progress Value */
-  protected progressValue = 0;
+  protected readonly progressValue = signal(0);
 
   /** Project card type */
   protected readonly typeFeatured = ProjectCardType.featured;
@@ -158,7 +157,6 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * constructor
    * @param dialog dialog ref
-   * @param cdr change detector ref
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -166,7 +164,6 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    */
   constructor(
     public dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -219,9 +216,8 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       if (file) {
         const reader = new FileReader();
         reader.onload = () => {
-          this.imageUrl = reader.result as string;
-          this.imagePreview = this.imageUrl;
-          this.cdr.detectChanges();
+          this.imageUrl.set(reader.result as string);
+          this.imagePreview.set(this.imageUrl());
         };
         reader.readAsDataURL(file);
       }
@@ -306,7 +302,8 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
     }
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
-    const hasNewFile = this.imageUrl && this.imageUrl !== '' && this.imageUrl !== this.defaultImageSrc;
+    const chosenImage = this.imageUrl();
+    const hasNewFile = chosenImage !== '' && chosenImage !== this.defaultImageSrc;
 
     let imageURL = this.defaultImageSrc;
 
@@ -358,16 +355,16 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       }
 
       // Start the upload
-      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
+      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl())
+        .catch(() => undefined);
 
       // Set up progress tracking and wait for completion
       this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue = this.setDataService.getProgressValue();
-        this.isUploadCompleted = this.setDataService.getUploadCompleteState();
-        this.cdr.detectChanges();
+        this.progressValue.set(this.setDataService.getProgressValue());
+        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
 
         // Check if upload is complete
-        if (this.isUploadCompleted) {
+        if (this.isUploadCompleted()) {
           // Clear the interval
           clearInterval(this.uploadProgressIntervalId);
           this.uploadProgressIntervalId = undefined;
@@ -383,7 +380,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
           this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
             next: (result) => {
               if (result) {
-                this.imageUrl = result; // Update local imageUrl for consistency
+                this.imageUrl.set(result); // Update local imageUrl for consistency
                 resolve(result); // Return the Firebase Storage URL
               } else {
                 reject(new Error('Failed to get upload URL'));
@@ -427,8 +424,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       map((result) => {
         if (result === 'successfull') {
           // Reset the preview to placeholder
-          this.imagePreview = this.defaultImageSrc;
-          this.cdr.detectChanges();
+          this.imagePreview.set(this.defaultImageSrc);
         }
         if (this.data.type === ProjectCardType.featured) {
           this.store.dispatch(StateActions.featuredProjectCardsStateConnect());

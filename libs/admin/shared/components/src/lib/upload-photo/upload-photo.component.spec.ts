@@ -14,10 +14,7 @@ import {
   GetDataService,
   SetDataService,
 } from '@portfolio-v2/shared/services';
-import {
-  getComponentProperty,
-  callComponentMethod,
-} from '@portfolio-v2/shared/test-helpers';
+import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
 import { UploadPhotoComponent } from './upload-photo.component';
 
@@ -83,7 +80,7 @@ describe('UploadPhotoComponent', () => {
     it('should handle file selection method calls', () => {
       const mockEvent = {
         target: { files: [] },
-      } as any;
+      } as unknown as Event;
 
       expect(() => {
         callComponentMethod(component, 'onFileChange', mockEvent);
@@ -91,7 +88,7 @@ describe('UploadPhotoComponent', () => {
     });
 
     it('should handle invalid event target', () => {
-      const mockEvent = { target: null } as any;
+      const mockEvent = { target: null } as unknown as Event;
 
       expect(() => {
         callComponentMethod(component, 'onFileChange', mockEvent);
@@ -111,13 +108,9 @@ describe('UploadPhotoComponent', () => {
   describe('Component State Management', () => {
     it('should have access to component properties using test helpers', () => {
       // Verify we can access protected properties using test helpers
-      const imagePreview = getComponentProperty<string>(component, 'imagePreview');
-      const progressValue = getComponentProperty<number>(component, 'progressValue');
-      const isUploadCompleted = getComponentProperty<boolean>(component, 'isUploadCompleted');
-
-      expect(typeof imagePreview).toBe('string');
-      expect(typeof progressValue).toBe('number');
-      expect(typeof isUploadCompleted).toBe('boolean');
+      expect(typeof component['imagePreview']()).toBe('string');
+      expect(typeof component['progressValue']()).toBe('number');
+      expect(typeof component['isUploadCompleted']()).toBe('boolean');
     });
   });
 

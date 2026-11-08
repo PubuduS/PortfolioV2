@@ -11,6 +11,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
+import { Subscription } from 'rxjs';
 
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
@@ -19,10 +20,7 @@ import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import {
-  getComponentProperty,
-  callComponentMethod,
-} from '@portfolio-v2/shared/test-helpers';
+import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
 import { DescriptionCardComponent } from './description-card.component';
 
 describe('DescriptionCardComponent', () => {
@@ -89,24 +87,24 @@ describe('DescriptionCardComponent', () => {
     it('should initialize form on ngOnInit', () => {
       callComponentMethod(component, 'ngOnInit');
 
-      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const form = component['tileEditorForm'];
       expect(form).toBeDefined();
       expect(form.title().value()).toBe(mockProject.viewHeading);
       expect(form.description().value()).toBe(mockProject.viewDescription);
     });
 
     it('should initialize with correct default values', () => {
-      expect(getComponentProperty(component, 'defaultImageSrc')).toBe('https://placehold.co/120x120.png');
-      expect(getComponentProperty(component, 'imagePreview')).toBe('https://placehold.co/120x120.png');
-      expect(getComponentProperty(component, 'imageUrl')).toBe('');
-      expect(getComponentProperty(component, 'isUploadCompleted')).toBe(false);
-      expect(getComponentProperty(component, 'progressValue')).toBe(0);
+      expect(component['defaultImageSrc']).toBe('https://placehold.co/120x120.png');
+      expect(component['imagePreview']()).toBe('https://placehold.co/120x120.png');
+      expect(component['imageUrl']()).toBe('');
+      expect(component['isUploadCompleted']()).toBe(false);
+      expect(component['progressValue']()).toBe(0);
     });
 
     it('should create form with required validators', () => {
       callComponentMethod(component, 'ngOnInit');
 
-      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const form = component['tileEditorForm'];
       form.title().value.set('');
       form.description().value.set('');
       expect(form.title().valid()).toBe(false);
@@ -122,11 +120,9 @@ describe('DescriptionCardComponent', () => {
         },
       } as unknown as Event;
 
-      const cdrSpy = jest.spyOn(component['cdr'], 'detectChanges');
-
       callComponentMethod(component, 'onFileSelected', mockEvent);
 
-      expect(cdrSpy).not.toHaveBeenCalled();
+      expect(component['imageUrl']()).toBe('');
     });
   });
 
@@ -181,7 +177,7 @@ describe('DescriptionCardComponent', () => {
   describe('Component Cleanup', () => {
     it('should unsubscribe from subscriptions on destroy', () => {
       const unsubscribeSpy = jest.fn();
-      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy } as any;
+      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy } as Subscription;
 
       callComponentMethod(component, 'ngOnDestroy');
       expect(unsubscribeSpy).toHaveBeenCalled();
@@ -209,7 +205,7 @@ describe('DescriptionCardComponent', () => {
     });
 
     it('should mark title field as required', () => {
-      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const form = component['tileEditorForm'];
       const titleControl = form.title();
 
       titleControl.value.set('');
@@ -220,7 +216,7 @@ describe('DescriptionCardComponent', () => {
     });
 
     it('should mark description field as required', () => {
-      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const form = component['tileEditorForm'];
       const descriptionControl = form.description();
 
       descriptionControl.value.set('');
@@ -234,10 +230,7 @@ describe('DescriptionCardComponent', () => {
   describe('Store Integration', () => {
     it('should select portfolio cards from store', () => {
       // The projectView signal should be initialized with the mock data
-      const projectView = getComponentProperty(component, 'projectView') as any;
-
-      expect(projectView).toBeDefined();
-      expect(projectView()).toEqual([mockProject]);
+      expect(component['projectView']()).toEqual([mockProject]);
     });
 
     it('should update when store data changes', () => {
@@ -248,8 +241,7 @@ describe('DescriptionCardComponent', () => {
       store.overrideSelector(portfolioCardsSelector, newData);
       store.refreshState();
 
-      const projectView = getComponentProperty(component, 'projectView') as any;
-      expect(projectView()).toEqual(newData);
+      expect(component['projectView']()).toEqual(newData);
     });
   });
 });

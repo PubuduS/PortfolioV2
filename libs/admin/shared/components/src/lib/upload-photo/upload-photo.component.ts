@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   Inject,
   OnDestroy,
@@ -58,19 +57,19 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
   private readonly defaultImageSrc = 'https://placehold.co/600x400.png';
 
   /** Preview Image URL */
-  protected imagePreview = this.defaultImageSrc;
+  protected readonly imagePreview = signal(this.defaultImageSrc);
 
   /** Selected Image URL */
-  protected imageUrl = '';
+  protected readonly imageUrl = signal('');
 
   /** Image Upload Progress Value */
-  protected progressValue = 0;
+  protected readonly progressValue = signal(0);
 
   /** Upload Complete Flag */
-  protected isUploadCompleted = false;
+  protected readonly isUploadCompleted = signal(false);
 
   /** Current Image URL for display (updated after successful upload) */
-  protected currentImageUrl!: string;
+  protected readonly currentImageUrl = signal('');
 
   /** Current Data from State */
   protected currentData!: Signal<any>;
@@ -86,14 +85,12 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
 
   /**
    * constructor
-   * @param cdr change detector ref
    * @param setDataService set data service
    * @param getDataService get data service
    * @param store ngrx store
    * @param config upload photo configuration from MAT_DIALOG_DATA
    */
   constructor(
-    private cdr: ChangeDetectorRef,
     private setDataService: SetDataService,
     private getDataService: GetDataService,
     private store: Store,
@@ -108,7 +105,7 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
     this.uploadPhotoForm().reset({ fileName: '' });
 
     // Initialize current image URL for display
-    this.currentImageUrl = this.config.currentImageUrl || '';
+    this.currentImageUrl.set(this.config.currentImageUrl || '');
 
     // Initialize currentData signal with the provided selector
     if (this.config.stateSelector) {
@@ -145,9 +142,8 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
         this.uploadPhotoForm.fileName().value.set(file.name);
         const reader = new FileReader();
         reader.onload = () => {
-          this.imageUrl = reader.result as string;
-          this.imagePreview = this.imageUrl;
-          this.cdr.detectChanges();
+          this.imageUrl.set(reader.result as string);
+          this.imagePreview.set(this.imageUrl());
         };
         reader.readAsDataURL(file);
       }
@@ -181,11 +177,11 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
         clearInterval(this.uploadProgressIntervalId);
       }
 
-      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl).catch(() => undefined);
+      this.setDataService.pushFileToStorage(databaseFilePath, this.imageUrl())
+        .catch(() => undefined);
       this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue = this.setDataService.getProgressValue();
-        this.isUploadCompleted = this.setDataService.getUploadCompleteState();
-        this.cdr.detectChanges();
+        this.progressValue.set(this.setDataService.getProgressValue());
+        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
       }, 100);
 
       const newImageUrl = this.getDataService.getPhotoURL(databaseFilePath);
@@ -200,15 +196,13 @@ export class UploadPhotoComponent implements OnInit, OnDestroy {
           }
 
           // Update UI after successful upload
-          this.imagePreview = this.defaultImageSrc; // Reset new photo to default
-          this.currentImageUrl = result; // Show uploaded image as current photo
+          this.imagePreview.set(this.defaultImageSrc);
+          this.currentImageUrl.set(result);
 
           // Call the optional callback with the uploaded image URL
           if (this.config.onImageUploaded) {
             this.config.onImageUploaded(result);
           }
-
-          this.cdr.detectChanges();
         }
       });
     }

@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -86,10 +85,10 @@ export class AddTileComponent implements OnInit, OnDestroy {
   protected readonly defaultImageSrc = 'https://placehold.co/120x120.png';
 
   /** Preview Image URL */
-  protected imagePreview = this.defaultImageSrc;
+  protected readonly imagePreview = signal(this.defaultImageSrc);
 
   /** Selected Image URL */
-  protected imageUrl = '';
+  protected readonly imageUrl = signal('');
 
   /** Selected file for upload */
   protected selectedFile: File | null = null;
@@ -101,13 +100,13 @@ export class AddTileComponent implements OnInit, OnDestroy {
   protected isEditSuccess = this.editSuccessSubject.asObservable();
 
   /** Upload Complete Flag */
-  protected isUploadCompleted = false;
+  protected readonly isUploadCompleted = signal(false);
 
   /** Image Upload Progress Value */
-  protected progressValue = 0;
+  protected readonly progressValue = signal(0);
 
   /** New updated image */
-  protected newUpdatedImage = this.defaultImageSrc;
+  protected readonly newUpdatedImage = signal(this.defaultImageSrc);
 
   /** Updated image */
   protected readonly updatedImage = this.store.selectSignal(projectCardSelector(this.nextCardId()));
@@ -138,7 +137,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
 
   /**
    * constructor
-   * @param cdr change detector ref
    * @param dialog dialog
    * @param dialogRef dialog reference
    * @param getDataService get data service
@@ -147,7 +145,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
    * @param utility utility service
    */
   constructor(
-    private cdr: ChangeDetectorRef,
     public dialog: MatDialog,
     private dialogRef: MatDialogRef<AddTileComponent>,
     private getDataService: GetDataService,
@@ -242,9 +239,8 @@ export class AddTileComponent implements OnInit, OnDestroy {
         this.selectedFile = file; // Store the selected file
         const reader = new FileReader();
         reader.onload = () => {
-          this.imageUrl = reader.result as string;
-          this.imagePreview = this.imageUrl;
-          this.cdr.detectChanges();
+          this.imageUrl.set(reader.result as string);
+          this.imagePreview.set(this.imageUrl());
         };
         reader.readAsDataURL(file);
       }
@@ -293,7 +289,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (success) => {
         this.editSuccessSubject.next(success);
-        this.newUpdatedImage = imageURL;
+        this.newUpdatedImage.set(imageURL);
       },
       error: (_error) => {
         this.editSuccessSubject.next(false);
@@ -334,16 +330,16 @@ export class AddTileComponent implements OnInit, OnDestroy {
       }
 
       // Start the upload
-      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl).catch(() => undefined);
+      this.setDataService.pushFileToStorage(fileStoragePath, this.imageUrl())
+        .catch(() => undefined);
 
       // Set up progress tracking and wait for completion
       this.uploadProgressIntervalId = window.setInterval(() => {
-        this.progressValue = this.setDataService.getProgressValue();
-        this.isUploadCompleted = this.setDataService.getUploadCompleteState();
-        this.cdr.detectChanges();
+        this.progressValue.set(this.setDataService.getProgressValue());
+        this.isUploadCompleted.set(this.setDataService.getUploadCompleteState());
 
         // Check if upload is complete
-        if (this.isUploadCompleted) {
+        if (this.isUploadCompleted()) {
           // Clear the interval
           clearInterval(this.uploadProgressIntervalId);
           this.uploadProgressIntervalId = undefined;
@@ -359,7 +355,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
           this.imageUrlSubscription = newImageUrl.pipe(take(1)).subscribe({
             next: (result) => {
               if (result) {
-                this.imageUrl = result; // Update local imageUrl for consistency
+                this.imageUrl.set(result); // Update local imageUrl for consistency
                 resolve(result); // Return the Firebase Storage URL
               } else {
                 reject(new Error('Failed to get upload URL'));
@@ -403,8 +399,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
       map((result) => {
         if (result === 'successfull') {
           // Reset the preview to placeholder
-          this.imagePreview = this.defaultImageSrc;
-          this.cdr.detectChanges();
+          this.imagePreview.set(this.defaultImageSrc);
         }
         this.store.dispatch(StateActions.portfolioCardsStateConnect());
         return result === 'successfull';

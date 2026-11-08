@@ -232,7 +232,7 @@ describe('AddPortfolioRecordComponent', () => {
       component['uploadFileAndGetUrl'] = mockUploadMethod;
 
       // Set imageUrl to simulate file selection
-      component['imageUrl'] = 'data:image/webp;base64,testdata';
+      component['imageUrl'].set('data:image/webp;base64,testdata');
 
       component['cardAddForm'].description().value.set('Test description');
       component['cardAddForm'].technologies().value.set('Angular, TypeScript');
@@ -279,7 +279,7 @@ describe('AddPortfolioRecordComponent', () => {
       // Mock successful file upload
       const mockUploadMethod = jest.fn().mockResolvedValue('https://firebase.com/featured-image.jpg');
       featuredComponent['uploadFileAndGetUrl'] = mockUploadMethod;
-      featuredComponent['imageUrl'] = 'data:image/webp;base64,testdata';
+      featuredComponent['imageUrl'].set('data:image/webp;base64,testdata');
 
       featuredComponent['cardAddForm'].heading().value.set('Featured Test');
       featuredComponent['cardAddForm'].description().value.set('Featured description');
