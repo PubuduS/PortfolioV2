@@ -6,6 +6,7 @@ import { AnalyticsDashboardComponent } from './analytics/analytics-dashboard.com
 import { AdminContactComponent } from './contact/admin-contact.component';
 import { AdminCoverLetterDocumentsComponent } from './documents/admin-cover-letter-documents.component';
 import { AdminResumeDocumentsComponent } from './documents/admin-resume-documents.component';
+import { DocumentVersionRemover } from './documents/services/document-version-remover';
 import { DocumentWriter } from './documents/services/document-writer.service';
 import { EDUCATION_ADMIN_ROUTES } from './education/education.routes';
 import { AdminExperienceComponent } from './experience/experience.component';
@@ -61,7 +62,7 @@ describe('ADMIN_PAGE_ROUTES', () => {
       const route = routeAt(ADMIN_PAGE_ROUTES, 'resume');
 
       await expect(route.loadComponent?.()).resolves.toBe(AdminResumeDocumentsComponent);
-      expect(route.providers).toEqual([DocumentWriter]);
+      expect(route.providers).toEqual([DocumentWriter, DocumentVersionRemover]);
       expect(route.data).toEqual({ kind: 'resume' });
     });
 
@@ -69,7 +70,7 @@ describe('ADMIN_PAGE_ROUTES', () => {
       const route = routeAt(ADMIN_PAGE_ROUTES, 'coverletter');
 
       await expect(route.loadComponent?.()).resolves.toBe(AdminCoverLetterDocumentsComponent);
-      expect(route.providers).toEqual([DocumentWriter]);
+      expect(route.providers).toEqual([DocumentWriter, DocumentVersionRemover]);
       expect(route.data).toEqual({ kind: 'cover-letter' });
     });
   });

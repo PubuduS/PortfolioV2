@@ -1,14 +1,12 @@
-<h2 mat-dialog-title>{{ heading }}</h2>
+<h2 mat-dialog-title>{{ data.heading }}</h2>
 
 <mat-dialog-content>
-  <admin-degree-form
-    [target]="target"
-    [disabled]="status().kind === 'saving'"
-    (submitted)="onSubmitted($event)"
-  />
+  <ng-container #formHost />
 
-  @if (errorMessage(); as message) {
-    <p class="save-error" role="alert">{{ message }}</p>
+  @if (status(); as current) {
+    @if (current.kind === 'error') {
+      <p class="save-error" role="alert">{{ current.message }}</p>
+    }
   }
 </mat-dialog-content>
 

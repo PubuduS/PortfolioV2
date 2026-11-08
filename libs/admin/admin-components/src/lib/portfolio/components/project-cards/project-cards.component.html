@@ -27,98 +27,15 @@
           </div>
         </div>
         <div class="row my-2 description">
-          <div class="col-12">
-            <label for="description" class="form-label mt-2">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              [formField]="cardEditorForm.description"
-              rows="4"
-              placeholder="Enter project description"
-            ></textarea>
-            @if (hasError(cardEditorForm.description, 'required')) {
-              <span class="field-error">A valid description is required</span>
-            }
-          </div>
-
-          <div class="col-12">
-            <label class="fw-bold my-2"> Technologies:</label>
-            <input
-              id="technologies"
-              [formField]="cardEditorForm.technologies"
-              class="form-control mb-3"
-              type="text"
-              placeholder="Technologies used in the project"
-            />
-            @if (hasError(cardEditorForm.technologies, 'required')) {
-              <span class="field-error"
-                >A valid comma separated list of technologies are required</span
-              >
-            }
-          </div>
-
-          <div class="col-6">
-            <label class="fw-bold my-2"> Codebase:</label>
-            <input
-              id="codebase"
-              [formField]="cardEditorForm.codebase"
-              class="form-control mb-3"
-              type="text"
-              placeholder="A link to the codebase [Optional]"
-            />
-            @if (hasError(cardEditorForm.codebase, 'invalidURL')) {
-              <span class="field-error">A valid URL is required</span>
-            }
-          </div>
-          <div class="col-6">
-            <label class="fw-bold my-2"> Youtube:</label>
-            <input
-              id="youtube"
-              [formField]="cardEditorForm.youtube"
-              class="form-control mb-3"
-              type="text"
-              placeholder="A youtube link for demo [Optional]"
-            />
-            @if (hasError(cardEditorForm.youtube, 'invalidURL')) {
-              <span class="field-error">A valid URL is required</span>
-            }
-          </div>
-          <div class="col-6">
-            <label class="fw-bold my-2"> Screenshot:</label>
-            <div class="d-flex">
-              <input
-                id="screenshot"
-                [formField]="cardEditorForm.screenshot"
-                class="form-control mb-3 me-2"
-                type="text"
-                placeholder="A link to the screenshot [Optional]"
-              />
-              <button
-                mat-mini-fab
-                color="primary"
-                class="flex-shrink-0"
-                (click)="openUploadPhotoPanel()"
-              >
-                <mat-icon>upload</mat-icon>
-              </button>
-            </div>
-            @if (hasError(cardEditorForm.screenshot, 'invalidURL')) {
-              <span class="field-error">A valid URL is required</span>
-            }
-          </div>
-          <div class="col-6">
-            <label class="fw-bold my-2"> Documentation:</label>
-            <input
-              id="documentation"
-              [formField]="cardEditorForm.documentation"
-              class="form-control mb-3"
-              type="text"
-              placeholder="A link to project documentation [Optional]"
-            />
-            @if (hasError(cardEditorForm.documentation, 'invalidURL')) {
-              <span class="field-error">A valid URL is required</span>
-            }
-          </div>
+          <admin-project-card-fields
+            [description]="cardEditorForm.description"
+            [technologies]="cardEditorForm.technologies"
+            [codebase]="cardEditorForm.codebase"
+            [youtube]="cardEditorForm.youtube"
+            [screenshot]="cardEditorForm.screenshot"
+            [documentation]="cardEditorForm.documentation"
+            (uploadScreenshot)="openUploadPhotoPanel()"
+          />
         </div>
         <!-- Progress Status Section -->
         <div class="row mb-3 d-flex justify-content-center">

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { DocumentVersionRemover } from './documents/services/document-version-remover';
 import { DocumentWriter } from './documents/services/document-writer.service';
 
 /**
@@ -49,7 +50,7 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     loadComponent: () => import('./documents/admin-resume-documents.component').then(
       (mod) => mod.AdminResumeDocumentsComponent,
     ),
-    providers: [DocumentWriter],
+    providers: [DocumentWriter, DocumentVersionRemover],
     data: { kind: 'resume' },
   },
   {
@@ -57,7 +58,7 @@ export const ADMIN_PAGE_ROUTES: Routes = [
     loadComponent: () => import('./documents/admin-cover-letter-documents.component').then(
       (mod) => mod.AdminCoverLetterDocumentsComponent,
     ),
-    providers: [DocumentWriter],
+    providers: [DocumentWriter, DocumentVersionRemover],
     data: { kind: 'cover-letter' },
   },
   {

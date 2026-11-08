@@ -11,10 +11,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import {
-of,
-Subscription
-} from 'rxjs'
+import { of } from 'rxjs';
 
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
@@ -60,9 +57,7 @@ describe('DescriptionCardComponent', () => {
         {
           provide: SetDataService,
           useValue: createSpyObj(SetDataService.name, [
-            'pushFileToStorage',
-            'getProgressValue',
-            'getUploadCompleteState',
+            'uploadDataUrl',
             'setRecord',
             'modifyAField',
           ]),
@@ -178,31 +173,6 @@ describe('DescriptionCardComponent', () => {
     });
   });
 
-  describe('Component Cleanup', () => {
-    it('should unsubscribe from subscriptions on destroy', () => {
-      const unsubscribeSpy = jest.fn();
-      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy } as Subscription;
-
-      callComponentMethod(component, 'ngOnDestroy');
-      expect(unsubscribeSpy).toHaveBeenCalled();
-    });
-
-    it('should clear upload progress interval on destroy', () => {
-      const clearIntervalSpy = jest.spyOn(window, 'clearInterval');
-      component['uploadProgressIntervalId'] = 456;
-
-      callComponentMethod(component, 'ngOnDestroy');
-
-      expect(clearIntervalSpy).toHaveBeenCalledWith(456);
-    });
-
-    it('should handle missing subscriptions gracefully', () => {
-      expect(() => {
-        callComponentMethod(component, 'ngOnDestroy');
-      }).not.toThrow();
-    });
-  });
-
   describe('Form Validation', () => {
     beforeEach(() => {
       callComponentMethod(component, 'ngOnInit');
@@ -251,20 +221,18 @@ describe('DescriptionCardComponent', () => {
 
   describe('when the tile is saved', () => {
     let setData: jest.Mocked<SetDataService>;
-    let getData: jest.Mocked<GetDataService>;
     let utility: jest.Mocked<UtilityService>;
 
     beforeEach(() => {
       setData = TestBed.inject(SetDataService) as jest.Mocked<SetDataService>;
-      getData = TestBed.inject(GetDataService) as jest.Mocked<GetDataService>;
       utility = TestBed.inject(UtilityService) as jest.Mocked<UtilityService>;
       utility.getPaddedDigits.mockReturnValue('02');
       setData.setRecord.mockReturnValue(of('successfull'));
       setData.modifyAField.mockReturnValue(of('successfull'));
-      setData.pushFileToStorage.mockResolvedValue(undefined);
-      setData.getProgressValue.mockReturnValue(40);
-      setData.getUploadCompleteState.mockReturnValue(true);
-      getData.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
+      setData.uploadDataUrl.mockImplementation(async (_path, _dataUrl, onProgress) => {
+        onProgress?.(100);
+        return 'https://cdn.example/icon.webp';
+      });
       jest.spyOn(store, 'dispatch');
       component.ngOnInit();
     });
@@ -335,24 +303,24 @@ describe('DescriptionCardComponent', () => {
       expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
     });
 
-    it('should upload a new icon and store its download url', () => {
-      jest.useFakeTimers();
+    it('should upload a new icon and store the preview until the download url arrives', async () => {
       component['imageUrl'].set('data:image/webp;base64,abc');
 
       component['saveChanges']();
-      jest.advanceTimersByTime(100);
-      component['isEditSuccess'].subscribe();
+      await Promise.resolve();
 
-      expect(setData.pushFileToStorage).toHaveBeenCalledWith(
+      expect(setData.uploadDataUrl).toHaveBeenCalledWith(
         'portfolio/portfolio-tiles/ID-02-Icon.webp',
         'data:image/webp;base64,abc',
+        expect.any(Function),
       );
-      expect(component['progressValue']()).toBe(40);
+      expect(component['progressValue']()).toBe(100);
       expect(component['isUploadCompleted']()).toBe(true);
       expect(setData.setRecord).toHaveBeenCalledWith(
         'project-icon-section/project-02/',
-        expect.objectContaining({ imageURL: 'https://cdn.example/icon.webp' }),
+        expect.objectContaining({ imageURL: 'data:image/webp;base64,abc' }),
       );
+      expect(component['imageUrl']()).toBe('https://cdn.example/icon.webp');
     });
 
     it('should leave the preview when the record does not save', () => {
@@ -398,12 +366,12 @@ describe('DescriptionCardComponent', () => {
       expect(setData.modifyAField).not.toHaveBeenCalled();
     });
 
-    it('should ignore an empty download url', () => {
-      getData.getPhotoURL.mockReturnValue(of(''));
+    it('should keep the preview when storage rejects the upload', async () => {
+      setData.uploadDataUrl.mockRejectedValue(new Error('offline'));
       component['imageUrl'].set('data:image/webp;base64,abc');
-      setData.pushFileToStorage.mockRejectedValue(new Error('offline'));
 
       component['saveChanges']();
+      await Promise.resolve();
 
       expect(component['imageUrl']()).toBe('data:image/webp;base64,abc');
     });
@@ -419,17 +387,6 @@ describe('DescriptionCardComponent', () => {
 
       expect(component['tileEditorForm'].title().value()).toBe('title');
       expect(component['tileEditorForm'].description().value()).toBe('description');
-    });
-
-    it('should replace a progress timer that is already running', () => {
-      jest.useFakeTimers();
-      const clear = jest.spyOn(window, 'clearInterval');
-      component['uploadProgressIntervalId'] = 44;
-      component['imageUrl'].set('data:image/webp;base64,abc');
-
-      component['handleFileUpload']('portfolio/portfolio-tiles/ID-02-Icon.webp');
-
-      expect(clear).toHaveBeenCalledWith(44);
     });
   });
 });

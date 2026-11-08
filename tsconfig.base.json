@@ -43,6 +43,7 @@
       "@portfolio-v2/shared/test-helpers": [
         "libs/shared/src/lib/test-helpers/index.ts"
       ],
+      "@portfolio-v2/shared/types": ["libs/shared/src/lib/types/index.ts"],
       "@portfolio-v2/state": ["libs/state/src/index.ts"],
       "@portfolio-v2/state/actions": ["libs/state/src/lib/state.actions.ts"],
       "@portfolio-v2/state/dataModels": [

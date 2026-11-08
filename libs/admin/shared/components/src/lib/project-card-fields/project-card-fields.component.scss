@@ -1,0 +1,22 @@
+@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+
+:host {
+  display: contents;
+}
+
+// The host generates no box, so Bootstrap's `.row > *` gutter never reaches these columns.
+.col-12,
+.col-6 {
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-right: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+  padding-left: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+}
+
+.field-error {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: $jasper;
+}

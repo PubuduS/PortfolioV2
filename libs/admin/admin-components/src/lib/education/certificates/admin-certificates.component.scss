@@ -33,26 +33,8 @@
   }
 
   .add-certificate {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
     margin-block-start: 35px;
-
-    // Material buttons have a fixed height, which made the 120px icon spill over the label.
-    button {
-      height: auto;
-      line-height: 0;
-      padding: 8px;
-    }
-
-    img {
-      display: block;
-    }
-
-    h3 {
-      color: $white;
-      margin: 8px 0 0;
-    }
+    --admin-add-heading: #{$white};
   }
 
   .certificate-card admin-update-delete-buttons {

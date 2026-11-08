@@ -16,6 +16,10 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 
+import {
+  AdminDeleteDialogComponent,
+  openAdminDialog,
+} from '@portfolio-v2/admin/shared/components';
 import { DocumentCatalogReader } from '@portfolio-v2/shared/services';
 import {
   canDelete,
@@ -28,8 +32,8 @@ import {
   type DocumentVersion,
   type VersionId,
 } from '@portfolio-v2/state/dataModels';
+import { DocumentVersionRemover } from './services/document-version-remover';
 import { DocumentWriter } from './services/document-writer.service';
-import { DeleteDocumentDialogComponent } from './components/delete-document-dialog/delete-document-dialog.component';
 
 /** Labels shown for each document kind. */
 const KIND_LABELS: Record<DocumentKind, string> = {
@@ -299,11 +303,12 @@ export class AdminDocumentsComponent {
     if (kind === null || !this.canDeleteVersion(version)) {
       return;
     }
-    this.dialog.open(DeleteDocumentDialogComponent, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      viewContainerRef: this.viewContainerRef,
-      data: { kind, version },
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminDeleteDialogComponent, {
+      title: 'Delete version',
+      lines: [version.uploadedAt],
+      record: { kind, version },
+      writer: DocumentVersionRemover,
+      writeMessage: documentWriteMessage,
     });
   }
 }

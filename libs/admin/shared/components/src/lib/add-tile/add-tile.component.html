@@ -3,39 +3,11 @@
   <form (submit)="$event.preventDefault()">
     <mat-dialog-content class="mat-typography">
       <!-- Image Preview Section -->
-      <div class="row d-flex justify-content-center g-3">
-        <div
-          class="col-12 col-sm-6 col-md-4 d-flex flex-column align-items-center"
-        >
-          <label class="fw-bold mb-2">New Icon (Click)</label>
-          <img
-            src="{{ imagePreview() }}"
-            (click)="fileInput.click()"
-            class="img-fluid rounded cursor-pointer"
-            style="max-width: 120px; object-fit: contain"
-            alt="New Icon Preview"
-          />
-          <input
-            type="file"
-            #fileInput
-            hidden
-            class="form-control"
-            accept="image/webp"
-            (change)="onFileSelected($event)"
-          />
-        </div>
-        <div
-          class="col-12 col-sm-6 col-md-4 d-flex flex-column align-items-center"
-        >
-          <label class="fw-bold mb-2">Current Icon</label>
-          <img
-            src="{{ newUpdatedImage() }}"
-            class="img-fluid rounded"
-            style="max-width: 120px; object-fit: contain"
-            alt="Current Icon"
-          />
-        </div>
-      </div>
+      <admin-tile-preview
+        [previewSrc]="imagePreview()"
+        [currentSrc]="newUpdatedImage()"
+        (fileSelected)="onFileSelected($event)"
+      />
 
       <!-- Form Fields Section -->
       <div class="row d-flex justify-content-center g-3 mt-2">

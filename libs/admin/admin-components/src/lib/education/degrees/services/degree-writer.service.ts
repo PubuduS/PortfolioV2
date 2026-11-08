@@ -8,6 +8,7 @@ import {
   AuthService,
   SetDataService,
 } from '@portfolio-v2/shared/services';
+import { SingleDocWriter } from '../../single-doc-writer';
 
 /** Why a degree write stopped before the document changed, or failed. */
 export type DegreeWriteFailure = 'unauthenticated' | 'commit-failed';
@@ -39,61 +40,17 @@ export class DegreeWriteError extends Error {
  * Provided on the admin degrees route, not at the application root.
  */
 @Injectable()
-export class DegreeWriter {
+export class DegreeWriter extends SingleDocWriter<IEducation> {
   /**
    * Build the writer with Firestore and the signed-in check.
    * @param setData Firestore access
    * @param auth signed-in check
    */
-  constructor(
-    private setData: SetDataService,
-    private auth: AuthService,
-  ) {}
-
-  /**
-   * Create or replace one education document.
-   * A second call with the same id overwrites the same document.
-   * @param degree record to store
-   * @returns the record that was committed
-   */
-  public async save(degree: IEducation): Promise<IEducation> {
-    this.assertSignedIn();
-
-    try {
-      await this.setData.commit([
-        { kind: 'set', path: educationDocPath(degree.id), value: degree },
-      ]);
-    } catch (error) {
-      throw new DegreeWriteError('commit-failed', error);
-    }
-
-    return degree;
-  }
-
-  /**
-   * Delete one education document.
-   * @param degree record to remove
-   */
-  public async remove(degree: IEducation): Promise<void> {
-    this.assertSignedIn();
-
-    try {
-      await this.setData.commit([
-        { kind: 'delete', path: educationDocPath(degree.id) },
-      ]);
-    } catch (error) {
-      throw new DegreeWriteError('commit-failed', error);
-    }
-  }
-
-  /**
-   * Refuse the write when nobody is signed in.
-   * @throws DegreeWriteError when nobody is signed in
-   */
-  private assertSignedIn(): void {
-    if (!this.auth.isUserLoggedIn()) {
-      throw new DegreeWriteError('unauthenticated');
-    }
+  constructor(setData: SetDataService, auth: AuthService) {
+    super(setData, auth, {
+      path: educationDocPath,
+      createError: (reason, cause) => new DegreeWriteError(reason, cause),
+    });
   }
 }
 

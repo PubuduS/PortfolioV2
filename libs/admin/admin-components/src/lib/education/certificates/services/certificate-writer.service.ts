@@ -8,6 +8,7 @@ import {
   AuthService,
   SetDataService,
 } from '@portfolio-v2/shared/services';
+import { SingleDocWriter } from '../../single-doc-writer';
 
 /** Why a certificate write stopped before the document changed, or failed. */
 export type CertificateWriteFailure = 'unauthenticated' | 'commit-failed';
@@ -39,61 +40,17 @@ export class CertificateWriteError extends Error {
  * Provided on the admin certificates route, not at the application root.
  */
 @Injectable()
-export class CertificateWriter {
+export class CertificateWriter extends SingleDocWriter<ICertificateCard> {
   /**
    * Build the writer with Firestore and the signed-in check.
    * @param setData Firestore access
    * @param auth signed-in check
    */
-  constructor(
-    private setData: SetDataService,
-    private auth: AuthService,
-  ) {}
-
-  /**
-   * Create or replace one certificate document.
-   * A second call with the same id overwrites the same document.
-   * @param certificate record to store
-   * @returns the certificate that was committed
-   */
-  public async save(certificate: ICertificateCard): Promise<ICertificateCard> {
-    this.assertSignedIn();
-
-    try {
-      await this.setData.commit([
-        { kind: 'set', path: certificateDocPath(certificate.id), value: certificate },
-      ]);
-    } catch (error) {
-      throw new CertificateWriteError('commit-failed', error);
-    }
-
-    return certificate;
-  }
-
-  /**
-   * Delete one certificate document.
-   * @param certificate record to remove
-   */
-  public async remove(certificate: ICertificateCard): Promise<void> {
-    this.assertSignedIn();
-
-    try {
-      await this.setData.commit([
-        { kind: 'delete', path: certificateDocPath(certificate.id) },
-      ]);
-    } catch (error) {
-      throw new CertificateWriteError('commit-failed', error);
-    }
-  }
-
-  /**
-   * Refuse the write when nobody is signed in.
-   * @throws CertificateWriteError when nobody is signed in
-   */
-  private assertSignedIn(): void {
-    if (!this.auth.isUserLoggedIn()) {
-      throw new CertificateWriteError('unauthenticated');
-    }
+  constructor(setData: SetDataService, auth: AuthService) {
+    super(setData, auth, {
+      path: certificateDocPath,
+      createError: (reason, cause) => new CertificateWriteError(reason, cause),
+    });
   }
 }
 

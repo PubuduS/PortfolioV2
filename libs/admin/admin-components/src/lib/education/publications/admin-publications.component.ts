@@ -3,24 +3,34 @@ import {
   Component,
   inject,
   OnInit,
-  Type,
   ViewContainerRef,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
-import { UpdateDeleteButtonsComponent } from '@portfolio-v2/admin/shared/components';
+import {
+  AddRecordComponent,
+  AdminDeleteDialogComponent,
+  AdminRecordDialogComponent,
+  openAdminDialog,
+  UpdateDeleteButtonsComponent,
+} from '@portfolio-v2/admin/shared/components';
 import { IUpdateDeleteBtnConfigs } from '@portfolio-v2/admin/shared/types';
-import { Publication } from '@portfolio-v2/state/dataModels';
+import {
+  type EditTarget,
+  Publication,
+} from '@portfolio-v2/state/dataModels';
 import {
   nextPublicationRecordIdSelector,
   publicationRecordsSelector,
 } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
-import { DeletePublicationDialogComponent } from './components/delete-publication-dialog/delete-publication-dialog.component';
-import { PublicationDialogComponent } from './components/publication-dialog/publication-dialog.component';
+import { PublicationFormComponent } from './components/publication-form/publication-form.component';
+import {
+  publicationWriteMessage,
+  PublicationWriter,
+} from './services/publication-writer.service';
 
 /**
  * Admin list of publications.
@@ -29,7 +39,7 @@ import { PublicationDialogComponent } from './components/publication-dialog/publ
   selector: 'admin-publications',
   standalone: true,
   imports: [
-    MatButtonModule,
+    AddRecordComponent,
     MatCardModule,
     UpdateDeleteButtonsComponent,
   ],
@@ -81,7 +91,7 @@ export class AdminPublicationsComponent implements OnInit {
    * Open a dialog for the next publication id.
    */
   protected addPublication(): void {
-    this.openDialog(PublicationDialogComponent, { mode: 'new', id: this.nextId() });
+    this.openRecordDialog('New publication', { mode: 'new', id: this.nextId() });
   }
 
   /**
@@ -89,7 +99,7 @@ export class AdminPublicationsComponent implements OnInit {
    * @param publication record to edit
    */
   protected editPublication(publication: Publication): void {
-    this.openDialog(PublicationDialogComponent, { mode: 'edit', publication });
+    this.openRecordDialog('Edit publication', { mode: 'edit', publication });
   }
 
   /**
@@ -97,21 +107,27 @@ export class AdminPublicationsComponent implements OnInit {
    * @param publication record to remove
    */
   protected deletePublication(publication: Publication): void {
-    this.openDialog(DeletePublicationDialogComponent, publication);
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminDeleteDialogComponent, {
+      title: 'Delete publication',
+      lines: [publication.title],
+      record: publication,
+      writer: PublicationWriter,
+      writeMessage: publicationWriteMessage,
+    }, '800px');
   }
 
   /**
-   * Open a dialog in this page's injector so it can see the route writer.
-   * @param component dialog type
-   * @param data record or editor target
+   * Open the shared record dialog for a new or existing publication.
+   * @param heading dialog title
+   * @param target record the form loads
    */
-  private openDialog<T, D>(component: Type<T>, data: D): void {
-    this.dialog.open(component, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      viewContainerRef: this.viewContainerRef,
-      data,
-    });
+  private openRecordDialog(heading: string, target: EditTarget): void {
+    openAdminDialog(this.dialog, this.viewContainerRef, AdminRecordDialogComponent, {
+      heading,
+      target,
+      form: PublicationFormComponent,
+      writer: PublicationWriter,
+      writeMessage: publicationWriteMessage,
+    }, '800px');
   }
 }

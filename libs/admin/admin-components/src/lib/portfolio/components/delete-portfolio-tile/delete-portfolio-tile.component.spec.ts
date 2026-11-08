@@ -160,6 +160,24 @@ describe('DeletePortfolioTileComponent', () => {
       expect(utility['getPaddedDigits']).toHaveBeenCalledWith(mockProject.id, 2);
     });
 
+    it('should close when the files are already gone and the records are removed', () => {
+      setDataService['deleteFileFromStorage'].mockReturnValue(
+        of('error FirebaseError: storage/object-not-found'),
+      );
+
+      callComponentMethod(component, 'deleteTile');
+
+      expect(component.dialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should stay open when a database delete fails', () => {
+      setDataService['deleteRecord'].mockReturnValue(of('error permission'));
+
+      callComponentMethod(component, 'deleteTile');
+
+      expect(component.dialogRef.close).not.toHaveBeenCalled();
+    });
+
     // Note: Store dispatch behavior is tested in integration tests
     // since forkJoin async behavior is complex to test with mocked services
     // The unit tests focus on verifying correct service method calls

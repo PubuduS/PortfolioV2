@@ -174,12 +174,17 @@ export class AboutMeComponent implements OnInit {
         data: {
           title: 'Upload Profile Photo',
           fieldPath: 'portfolio/about-me-section/profile/MyPhoto.webp/',
-          stateSelector: aboutMeSelector,
-          stateUpdateAction: (updatedData: any) => StateActions.aboutMeStateUpdated({
-            aboutMe: { ...this.aboutMeData(), ...updatedData },
-          }),
           currentImageUrl: this.aboutMeData()?.imageSrc,
-        } as IUploadPhotoConfig,
+          onImageUploaded: (imageUrl: string) => {
+            const current = this.aboutMeData();
+            if (!current) {
+              return;
+            }
+            this.store.dispatch(StateActions.aboutMeStateUpdated({
+              aboutMe: { ...current, imageSrc: imageUrl },
+            }));
+          },
+        } satisfies IUploadPhotoConfig,
       },
     );
   }

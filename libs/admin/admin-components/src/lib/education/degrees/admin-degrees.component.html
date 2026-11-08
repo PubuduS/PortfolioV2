@@ -37,15 +37,7 @@
         </li>
       }
       <li class="add-degree">
-        <button type="button" mat-button (click)="addDegree()">
-          <img
-            src="assets/images/portfolio/add.ico"
-            width="120"
-            height="120"
-            alt="Add a degree"
-          />
-        </button>
-        <h3>Add</h3>
+        <admin-add-record label="Add a degree" (add)="addDegree()" />
       </li>
     </ul>
   </div>

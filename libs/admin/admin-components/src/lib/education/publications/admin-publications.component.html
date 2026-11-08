@@ -25,15 +25,7 @@
         </div>
       }
       <div class="add-publication">
-        <button type="button" mat-button (click)="addPublication()">
-          <img
-            src="assets/images/portfolio/add.ico"
-            width="120"
-            height="120"
-            alt="Add a publication"
-          />
-        </button>
-        <h3>Add</h3>
+        <admin-add-record label="Add a publication" (add)="addPublication()" />
       </div>
     </div>
   </div>

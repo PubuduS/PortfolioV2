@@ -182,7 +182,6 @@ describe('ProjectCardsComponent', () => {
             title: 'Upload Project Screenshot',
             fieldPath: expect.stringContaining('01'),
             currentImageUrl: mockProjectCard.screenshotURL,
-            stateUpdateAction: expect.any(Function),
             onImageUploaded: expect.any(Function),
           }),
         }),
@@ -219,10 +218,10 @@ describe('ProjectCardsComponent', () => {
     beforeEach(() => {
       component.ngOnInit();
       jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('successfull'));
-      jest.spyOn(setDataService, 'pushFileToStorage').mockResolvedValue(undefined);
-      jest.spyOn(setDataService, 'getProgressValue').mockReturnValue(100);
-      jest.spyOn(setDataService, 'getUploadCompleteState').mockReturnValue(true);
-      jest.spyOn(getDataService, 'getPhotoURL').mockReturnValue(of('uploaded-url'));
+      jest.spyOn(setDataService, 'uploadDataUrl').mockImplementation(async (_path, _dataUrl, onProgress) => {
+        onProgress?.(100);
+        return 'uploaded-url';
+      });
     });
 
     it('should not update data when form is invalid', () => {
@@ -261,7 +260,7 @@ describe('ProjectCardsComponent', () => {
 
       // The method should detect the new image and call handleFileUpload
       expect(handleFileUploadSpy).toHaveBeenCalled();
-      expect(setDataService.pushFileToStorage).toHaveBeenCalled();
+      expect(setDataService.uploadDataUrl).toHaveBeenCalled();
     });
 
     it('should set correct disable flags based on URL presence', () => {
@@ -298,27 +297,6 @@ describe('ProjectCardsComponent', () => {
     });
   });
 
-  describe('Component Lifecycle', () => {
-    it('should unsubscribe from subscriptions on destroy', () => {
-      const unsubscribeSpy = jest.fn();
-      component['imageUrlSubscription'] = { unsubscribe: unsubscribeSpy };
-
-      component.ngOnDestroy();
-
-      expect(unsubscribeSpy).toHaveBeenCalled();
-    });
-
-    it('should clear upload interval on destroy', () => {
-      const clearIntervalSpy = jest.spyOn(window, 'clearInterval').mockImplementation(() => {});
-      component['uploadProgressIntervalId'] = 123;
-
-      component.ngOnDestroy();
-
-      expect(clearIntervalSpy).toHaveBeenCalledWith(123);
-      clearIntervalSpy.mockRestore();
-    });
-  });
-
   describe('Template Integration', () => {
     it('should render project card data in template', () => {
       fixture.detectChanges();
@@ -350,18 +328,20 @@ describe('ProjectCardsComponent', () => {
   });
 
   describe('Service Integration', () => {
-    it('should handle successful file upload to storage', () => {
+    it('should handle successful file upload to storage', async () => {
       component['imageUrl'].set('test-image-data');
 
-      jest.spyOn(setDataService, 'pushFileToStorage').mockResolvedValue(undefined);
-      jest.spyOn(setDataService, 'getProgressValue').mockReturnValue(100);
-      jest.spyOn(setDataService, 'getUploadCompleteState').mockReturnValue(true);
-      jest.spyOn(getDataService, 'getPhotoURL').mockReturnValue(of('firebase-url'));
+      jest.spyOn(setDataService, 'uploadDataUrl').mockResolvedValue('firebase-url');
 
       component['handleFileUpload']('test/path');
+      await Promise.resolve();
 
-      expect(setDataService.pushFileToStorage).toHaveBeenCalledWith('test/path', 'test-image-data');
-      expect(getDataService.getPhotoURL).toHaveBeenCalledWith('test/path');
+      expect(setDataService.uploadDataUrl).toHaveBeenCalledWith(
+        'test/path',
+        'test-image-data',
+        expect.any(Function),
+      );
+      expect(component['imageUrl']()).toBe('firebase-url');
     });
 
     it('should handle SetDataService record saving', () => {
