@@ -8,7 +8,6 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { MockComponents } from 'ng-mocks';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { StateActions } from '@portfolio-v2/state';
@@ -19,7 +18,6 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import {
-  DisplayValidatorErrorsComponent,
   ProjectCardType,
   UploadPhotoComponent,
 } from '@portfolio-v2/admin/shared/components';
@@ -61,12 +59,7 @@ describe('ProjectCardsComponent', () => {
     utilityService = createSpyObj(UtilityService);
 
     await TestBed.configureTestingModule({
-      imports: [
-        ProjectCardsComponent,
-        MockComponents(
-          DisplayValidatorErrorsComponent,
-        ),
-      ],
+      imports: [ProjectCardsComponent],
       providers: [
         provideMockStore({
           initialState: {
@@ -97,12 +90,12 @@ describe('ProjectCardsComponent', () => {
 
       const form = (component as any).cardEditorForm;
       expect(form).toBeDefined();
-      expect(form.get('description')?.value).toBe(mockProjectCard.description);
-      expect(form.get('technologies')?.value).toBe(mockProjectCard.tools);
-      expect(form.get('codebase')?.value).toBe(mockProjectCard.githubURL);
-      expect(form.get('youtube')?.value).toBe(mockProjectCard.demoURL);
-      expect(form.get('screenshot')?.value).toBe(mockProjectCard.screenshotURL);
-      expect(form.get('documentation')?.value).toBe(mockProjectCard.documentationURL);
+      expect(form.description().value()).toBe(mockProjectCard.description);
+      expect(form.technologies().value()).toBe(mockProjectCard.tools);
+      expect(form.codebase().value()).toBe(mockProjectCard.githubURL);
+      expect(form.youtube().value()).toBe(mockProjectCard.demoURL);
+      expect(form.screenshot().value()).toBe(mockProjectCard.screenshotURL);
+      expect(form.documentation().value()).toBe(mockProjectCard.documentationURL);
     });
 
     it('should open the project-card listener when the dialog opens', () => {
@@ -113,30 +106,27 @@ describe('ProjectCardsComponent', () => {
       component.ngOnInit();
 
       const form = (component as any).cardEditorForm;
-      const descriptionControl = form.get('description');
-      const codebaseControl = form.get('codebase');
-      const screenshotControl = form.get('screenshot');
+      const descriptionControl = form.description();
+      const codebaseControl = form.codebase();
+      const screenshotControl = form.screenshot();
 
-      // Required validator on description and technologies
-      descriptionControl?.setValue('');
-      expect(descriptionControl?.valid).toBeFalsy();
+      descriptionControl.value.set('');
+      expect(descriptionControl.valid()).toBeFalsy();
 
-      descriptionControl?.setValue('Valid description');
-      expect(descriptionControl?.valid).toBeTruthy();
+      descriptionControl.value.set('Valid description');
+      expect(descriptionControl.valid()).toBeTruthy();
 
-      // URL validators allow empty values
-      codebaseControl?.setValue('');
-      expect(codebaseControl?.valid).toBeTruthy();
+      codebaseControl.value.set('');
+      expect(codebaseControl.valid()).toBeTruthy();
 
-      screenshotControl?.setValue('');
-      expect(screenshotControl?.valid).toBeTruthy();
+      screenshotControl.value.set('');
+      expect(screenshotControl.valid()).toBeTruthy();
 
-      // Valid URLs should pass
-      codebaseControl?.setValue('https://github.com/user/repo');
-      expect(codebaseControl?.valid).toBeTruthy();
+      codebaseControl.value.set('https://github.com/user/repo');
+      expect(codebaseControl.valid()).toBeTruthy();
 
-      screenshotControl?.setValue('https://firebase.com/image.jpg');
-      expect(screenshotControl?.valid).toBeTruthy();
+      screenshotControl.value.set('https://firebase.com/image.jpg');
+      expect(screenshotControl.valid()).toBeTruthy();
     });
   });
 
@@ -234,7 +224,7 @@ describe('ProjectCardsComponent', () => {
 
     it('should not update data when form is invalid', () => {
       const form = (component as any).cardEditorForm;
-      form.get('description')?.setValue(''); // Make form invalid
+      form.description().value.set('');
 
       (component as any).updateData();
 
@@ -273,12 +263,10 @@ describe('ProjectCardsComponent', () => {
 
     it('should set correct disable flags based on URL presence', () => {
       const form = (component as any).cardEditorForm;
-      form.patchValue({
-        codebase: 'https://github.com/user/repo',
-        youtube: '',
-        screenshot: 'https://firebase.com/image.jpg',
-        documentation: '',
-      });
+      form.codebase().value.set('https://github.com/user/repo');
+      form.youtube().value.set('');
+      form.screenshot().value.set('https://firebase.com/image.jpg');
+      form.documentation().value.set('');
 
       (component as any).updateData();
 
@@ -349,12 +337,11 @@ describe('ProjectCardsComponent', () => {
       fixture.detectChanges();
 
       const form = (component as any).cardEditorForm;
-      form.get('description')?.setValue('');
-      form.get('description')?.markAsTouched();
+      form.description().value.set('');
+      form.description().markAsTouched();
       fixture.detectChanges();
 
-      // Check if validation error components are present
-      const errorElements = fixture.nativeElement.querySelectorAll('admin-portfolio-display-validator-errors');
+      const errorElements = fixture.nativeElement.querySelectorAll('.field-error');
       expect(errorElements.length).toBeGreaterThan(0);
     });
   });
@@ -432,12 +419,7 @@ describe('ProjectCardsComponent', () => {
     beforeEach(async () => {
       TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [
-          ProjectCardsComponent,
-          MockComponents(
-            DisplayValidatorErrorsComponent,
-          ),
-        ],
+        imports: [ProjectCardsComponent],
         providers: [
           provideMockStore({
             initialState: {
@@ -482,8 +464,8 @@ describe('ProjectCardsComponent', () => {
       featuredComponent.ngOnInit();
 
       expect(featuredComponent['cardEditorForm']).toBeDefined();
-      expect(featuredComponent['cardEditorForm']?.get('description')?.value).toBe(mockProjectCard.description);
-      expect(featuredComponent['cardEditorForm']?.get('technologies')?.value).toBe(mockProjectCard.tools);
+      expect(featuredComponent['cardEditorForm'].description().value()).toBe(mockProjectCard.description);
+      expect(featuredComponent['cardEditorForm'].technologies().value()).toBe(mockProjectCard.tools);
     });
   });
 });
@@ -494,10 +476,7 @@ describe('ProjectCardsComponent when the card arrives after the dialog opens', (
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        ProjectCardsComponent,
-        MockComponents(DisplayValidatorErrorsComponent),
-      ],
+      imports: [ProjectCardsComponent],
       providers: [
         provideMockStore({
           initialState: {
@@ -524,7 +503,7 @@ describe('ProjectCardsComponent when the card arrives after the dialog opens', (
   });
 
   it('should fill the editor from the first stored card', () => {
-    expect(fixture.componentInstance['cardEditorForm'].get('description')?.value).toBe('');
+    expect(fixture.componentInstance['cardEditorForm'].description().value()).toBe('');
 
     store.setState({
       stateBanks: {
@@ -535,10 +514,10 @@ describe('ProjectCardsComponent when the card arrives after the dialog opens', (
     });
     fixture.detectChanges();
 
-    expect(fixture.componentInstance['cardEditorForm'].get('description')?.value).toBe(
+    expect(fixture.componentInstance['cardEditorForm'].description().value()).toBe(
       mockProjectCard.description,
     );
-    expect(fixture.componentInstance['cardEditorForm'].get('codebase')?.value).toBe(
+    expect(fixture.componentInstance['cardEditorForm'].codebase().value()).toBe(
       mockProjectCard.githubURL,
     );
   });

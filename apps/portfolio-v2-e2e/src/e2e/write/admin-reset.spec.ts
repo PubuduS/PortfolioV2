@@ -36,7 +36,7 @@ test.describe('admin write and reset', () => {
     await expect(page).toHaveURL(/\/admin\/home/);
 
     await page.goto('/admin/aboutme');
-    const subIntro = page.locator('textarea[formcontrolname="subIntro"]');
+    const subIntro = page.getByLabel('Sub Introduction');
     await expect(subIntro).toHaveValue(BASELINE_SUB_INTRO);
     await subIntro.fill(EDITED_SUB_INTRO);
     await page.getByRole('button', { name: 'Save' }).click();

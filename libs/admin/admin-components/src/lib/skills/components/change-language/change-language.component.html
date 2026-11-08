@@ -4,19 +4,17 @@
       <div class="text-center mb-4">
         <h2>Change Languages</h2>
       </div>
-      <form [formGroup]="languageForm!">
+      <form (submit)="$event.preventDefault()">
         <textarea
           class="form-control"
           rows="6"
-          formControlName="languages"
+          [formField]="languageForm.languages"
         ></textarea>
-        <admin-portfolio-display-validator-errors
-          class="text-center"
-          [control]="languageForm.get('languages')"
-          errorKey="required"
-          message="A valid languages are required"
-        >
-        </admin-portfolio-display-validator-errors>
+        @if (hasError(languageForm.languages, 'required')) {
+          <span class="field-error text-center"
+            >A valid languages are required</span
+          >
+        }
       </form>
       <div class="row">
         <div class="col-6">

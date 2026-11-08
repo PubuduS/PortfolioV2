@@ -7,14 +7,11 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { FormBuilder } from '@angular/forms';
-import { MockComponents } from 'ng-mocks';
 
 import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { ChangeLanguageComponent } from './change-language.component';
@@ -49,14 +46,11 @@ describe('ChangeLanguageComponent', () => {
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
     mockUtilityService = createSpyObj(UtilityService);
+    mockUtilityService.seperateSentences.mockReturnValue('');
     await TestBed.configureTestingModule({
-      imports: [
-        ChangeLanguageComponent,
-        MockComponents(DisplayValidatorErrorsComponent),
-      ],
+      imports: [ChangeLanguageComponent],
       providers: [
         provideMockStore(),
-        FormBuilder,
         {
           provide: SetDataService,
           useValue: mockSetDataService,

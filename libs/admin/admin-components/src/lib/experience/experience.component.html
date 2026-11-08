@@ -5,7 +5,7 @@
 >
   <div class="container">
     @if (experienceData(); as experienceData) {
-      <form [formGroup]="experienceForm!">
+      <form (submit)="$event.preventDefault()">
         <div class="row">
           <div class="col-md-12">
             <div class="text-center mb-5 text-uppercase">
@@ -44,7 +44,7 @@
                       <div class="col-10">
                         <input
                           class="mb-2 fs-5 px-2 w-100"
-                          formControlName="position"
+                          [formField]="experienceForm.position"
                           placeholder="Enter job position"
                         />
                       </div>
@@ -64,25 +64,23 @@
                     </div>
 
                     <div class="col-12">
-                      <admin-portfolio-display-validator-errors
-                        [control]="experienceForm.get('position')"
-                        errorKey="required"
-                        message="A valid position is required"
-                      >
-                      </admin-portfolio-display-validator-errors>
+                      @if (hasError(experienceForm.position, 'required')) {
+                        <span class="field-error"
+                          >A valid position is required</span
+                        >
+                      }
                     </div>
                     <input
                       class="my-2 fs-6 px-2 w-100"
-                      formControlName="employer"
+                      [formField]="experienceForm.employer"
                       placeholder="Enter employer name"
                     />
                     <div class="col-12">
-                      <admin-portfolio-display-validator-errors
-                        [control]="experienceForm.get('employer')"
-                        errorKey="required"
-                        message="A valid employer is required"
-                      >
-                      </admin-portfolio-display-validator-errors>
+                      @if (hasError(experienceForm.employer, 'required')) {
+                        <span class="field-error"
+                          >A valid employer is required</span
+                        >
+                      }
                     </div>
                     <div class="row">
                       <div class="col-4">
@@ -91,7 +89,7 @@
                           <input
                             matInput
                             [matDatepicker]="startPicker"
-                            formControlName="startDate"
+                            (dateChange)="setStart($event.value)"
                           />
                           <mat-hint>MM/DD/YYYY</mat-hint>
                           <mat-datepicker-toggle
@@ -107,7 +105,7 @@
                           <input
                             matInput
                             [matDatepicker]="endPicker"
-                            formControlName="endDate"
+                            (dateChange)="setEnd($event.value)"
                           />
                           <mat-hint>MM/DD/YYYY</mat-hint>
                           <mat-datepicker-toggle
@@ -118,7 +116,10 @@
                         </mat-form-field>
                       </div>
                       <div class="col-4">
-                        <mat-checkbox class="my-2" formControlName="isCurrent"
+                        <mat-checkbox
+                          class="my-2"
+                          [checked]="experienceForm.isCurrent().value()"
+                          (change)="setCurrent($event.checked)"
                           >Is Current?</mat-checkbox
                         >
                       </div>
@@ -126,40 +127,39 @@
 
                     <input
                       class="my-2 fs-6 px-2 w-100"
-                      formControlName="timePeriod"
+                      [formField]="experienceForm.timePeriod"
                       placeholder="e.g., 2023 - Present"
                     />
                     <textarea
                       class="my-2 p-2 w-100"
-                      formControlName="shortDescription"
+                      [formField]="experienceForm.shortDescription"
                       rows="6"
                       cols="100"
                       placeholder="Enter a short description of your role and responsibilities"
                     ></textarea>
                     <div class="col-12">
-                      <admin-portfolio-display-validator-errors
-                        portfolio-display-validator-errors
-                        [control]="experienceForm.get('shortDescription')"
-                        errorKey="required"
-                        message="A valid description is required"
-                      >
-                      </admin-portfolio-display-validator-errors>
+                      @if (
+                        hasError(experienceForm.shortDescription, 'required')
+                      ) {
+                        <span class="field-error"
+                          >A valid description is required</span
+                        >
+                      }
                     </div>
 
                     <textarea
                       class="my-2 p-2 w-100"
-                      formControlName="points"
+                      [formField]="experienceForm.points"
                       rows="6"
                       cols="100"
                       placeholder="Enter job responsibilities and achievements (one per line)"
                     ></textarea>
                     <div class="col-12">
-                      <admin-portfolio-display-validator-errors
-                        [control]="experienceForm.get('points')"
-                        errorKey="required"
-                        message="A valid points are required"
-                      >
-                      </admin-portfolio-display-validator-errors>
+                      @if (hasError(experienceForm.points, 'required')) {
+                        <span class="field-error"
+                          >A valid points are required</span
+                        >
+                      }
                     </div>
                   </div>
                 }
@@ -179,7 +179,7 @@
                   class="float-end"
                   id="save"
                   (click)="addExperience()"
-                  [disabled]="!experienceForm.valid"
+                  [disabled]="experienceForm().invalid()"
                 >
                   <mat-icon>add</mat-icon>
                   Add
@@ -200,7 +200,7 @@
                   class="float-end"
                   id="save"
                   (click)="editExperience()"
-                  [disabled]="!experienceForm.valid"
+                  [disabled]="experienceForm().invalid()"
                 >
                   <mat-icon>edit</mat-icon>
                   Edit
@@ -221,7 +221,7 @@
                   class="float-end"
                   id="delete"
                   (click)="openDeleteConfirmation()"
-                  [disabled]="!experienceForm.valid"
+                  [disabled]="experienceForm().invalid()"
                 >
                   <mat-icon>delete</mat-icon>
                   Delete

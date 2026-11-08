@@ -5,6 +5,7 @@ import {
   Inject,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core';
 import {
   MatDialogActions,
@@ -16,11 +17,10 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import {
@@ -54,7 +54,7 @@ import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
     MatButtonModule,
     MatProgressBarModule,
     MatIconModule,
-    ReactiveFormsModule,
+    FormField,
     MatDialogClose,
   ],
   templateUrl: './description-card.component.html',
@@ -62,8 +62,14 @@ import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescriptionCardComponent implements OnInit, OnDestroy {
+  /** Title and description the editor is changing. */
+  private readonly model = signal({ title: '', description: '' });
+
   /** Tile Editor Form */
-  protected tileEditorForm!: FormGroup;
+  protected readonly tileEditorForm = form(this.model, (fields) => {
+    required(fields.title);
+    required(fields.description);
+  });
 
   /** Default Image URL */
   protected readonly defaultImageSrc = 'https://placehold.co/120x120.png';
@@ -104,7 +110,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * @param dialogRef dialog ref
    * @param data data
    * @param data.project project view
-   * @param formBuilder form builder
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -114,7 +119,6 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<DescriptionCardComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { project: IProjectView },
-    private formBuilder: FormBuilder,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -126,10 +130,9 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    this.tileEditorForm = this.formBuilder.group({
-      title: [this.data.project.viewHeading ?? 'title', [Validators.required]],
-      description: [this.data.project.viewDescription ?? 'description', [Validators.required]],
-      filePicker: [''],
+    this.tileEditorForm().reset({
+      title: this.data.project.viewHeading ?? 'title',
+      description: this.data.project.viewDescription ?? 'description',
     });
   }
 
@@ -172,11 +175,12 @@ export class DescriptionCardComponent implements OnInit, OnDestroy {
    */
   protected saveChanges(): void {
     // Validate form before proceeding
-    if (!this.tileEditorForm.valid) {
+    if (!this.tileEditorForm().valid()) {
       return;
     }
 
-    const { filePicker, title, description } = this.tileEditorForm.value;
+    const { title, description } = this.tileEditorForm().value();
+    const filePicker = this.imageUrl;
     const imageName = `ID-${this.utility.getPaddedDigits(this.data.project.id, 2)}-Icon.webp`;
     const fileStoragePath = `${this.basePathForImages}/${imageName}`;
     const databaseDocPath = `${this.basePathForDocs}/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`;

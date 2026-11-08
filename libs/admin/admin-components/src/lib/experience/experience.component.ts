@@ -1,35 +1,35 @@
-/* eslint-disable no-multi-str */
 import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
   Component,
   effect,
   inject,
-  OnDestroy,
-  OnInit,
   signal,
   Signal,
+  untracked,
+  viewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MatDatepickerInput,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
-  distinctUntilChanged,
   map,
   of,
-  Subscription,
   take,
 } from 'rxjs';
 import {
@@ -37,7 +37,6 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { IExperience } from '@portfolio-v2/state/dataModels';
 import {
   GetDateTimeService,
@@ -48,6 +47,43 @@ import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
 import { DeleteComformationComponent } from './components/delete-comformation.component';
 
+/** Text, dates, and current-job flag the experience editor saves. */
+interface ExperienceValues {
+  /** Position. */
+  position: string;
+  /** Employer. */
+  employer: string;
+  /** Start date. */
+  startDate: Date | null;
+  /** End date. */
+  endDate: Date | null;
+  /** Current job flag. */
+  isCurrent: boolean;
+  /** Time period. */
+  timePeriod: string;
+  /** Short description. */
+  shortDescription: string;
+  /** Points. */
+  points: string;
+}
+
+/**
+ * A blank job. A new object each time so a later edit cannot change the reset value.
+ * @returns empty experience values
+ */
+function emptyExperience(): ExperienceValues {
+  return {
+    position: '',
+    employer: '',
+    startDate: null,
+    endDate: null,
+    isCurrent: false,
+    timePeriod: '',
+    shortDescription: '',
+    points: '',
+  };
+}
+
 /**
  * Admin Experience page
  */
@@ -56,7 +92,7 @@ import { DeleteComformationComponent } from './components/delete-comformation.co
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatIconModule,
     MatButtonModule,
     MatDatepickerModule,
@@ -64,14 +100,13 @@ import { DeleteComformationComponent } from './components/delete-comformation.co
     MatFormFieldModule,
     MatCheckboxModule,
     MatDialogModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.scss',
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminExperienceComponent implements OnInit, OnDestroy {
+export class AdminExperienceComponent {
   /** Experience */
   public experience: IExperience | undefined;
 
@@ -84,8 +119,22 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
    */
   protected readonly experienceData: Signal<IExperience[] | undefined>;
 
+  /** Values the editor is changing. */
+  private readonly model = signal<ExperienceValues>(emptyExperience());
+
+  /** Start and end date inputs, in template order. */
+  private readonly dateInputs = viewChildren(MatDatepickerInput);
+
   /** Experience form */
-  protected experienceForm!: FormGroup;
+  protected readonly experienceForm = form(this.model, (fields) => {
+    required(fields.position);
+    required(fields.employer);
+    required(fields.startDate);
+    required(fields.endDate);
+    required(fields.timePeriod);
+    required(fields.shortDescription);
+    required(fields.points);
+  });
 
   /** Returns true if the edit is successful */
   protected isEditSuccess = of(false);
@@ -102,22 +151,14 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
   /** Date time service */
   private dateTimeService = inject(GetDateTimeService);
 
-  /** Form subscription */
-  private formSubscription?: Subscription;
-
-  /** Flag to prevent recursive calls */
-  private isCalculatingTimePeriod = false;
-
   /**
    * constructor
-   * @param formBuilder form builder
    * @param dialog dialog
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
    */
   constructor(
-    private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private setDataService: SetDataService,
     private store: Store,
@@ -127,60 +168,71 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     this.experienceData = this.store.selectSignal(experienceSelector);
     const firstJob = this.experienceData()?.[0];
     if (firstJob) {
-      this.experience = firstJob;
-      this.selectedJob = firstJob.employer;
-      this.totalYearsOfExperience();
+      this.displaySelected(firstJob);
     }
     effect(() => {
       const nextJob = this.experienceData()?.[0];
-      if (!nextJob || this.experience || !this.experienceForm) {
+      if (!nextJob || this.experience) {
         return;
       }
       this.displaySelected(nextJob);
     });
-  }
-
-  /**
-   * Build the experience form and keep the time period in step with the dates.
-   * @inheritdoc
-   */
-  public ngOnInit(): void {
-    this.experienceForm = this.formBuilder.group({
-      position: [this.experience?.position ?? '', [Validators.required]],
-      employer: [this.experience?.employer ?? '', [Validators.required]],
-      startDate: [
-        this.dateTimeService.convertISOToDate(this.experience?.startDate ?? ''),
-        [Validators.required],
-      ],
-      endDate: [
-        this.dateTimeService.convertISOToDate(this.experience?.endDate ?? ''),
-        [Validators.required],
-      ],
-      isCurrent: [this.experience?.isCurrent ?? false],
-      timePeriod: [`${this.experience?.timePeriod} (${this.yearsOfExperience()})`, [Validators.required]],
-      shortDescription: [this.experience?.shortDescription ?? '', [Validators.required]],
-      points: [this.utility.seperateSentences(this.experience?.points) ?? '', [Validators.required]],
+    effect(() => {
+      const inputs = this.dateInputs();
+      const { startDate, endDate } = this.experienceForm().value();
+      untracked(() => {
+        this.writePicker(inputs[0], startDate);
+        this.writePicker(inputs[1], endDate);
+      });
     });
-
-    // Set up form subscription to automatically calculate time period when both dates are entered
-    this.formSubscription = this.experienceForm.valueChanges.pipe(
-      distinctUntilChanged(),
-    ).subscribe((formValue) => {
-      // Only calculate if not already calculating and both dates are present
-      if (!this.isCalculatingTimePeriod && formValue.startDate && formValue.endDate) {
-        this.calculateTimePeriod();
+    effect(() => {
+      const { startDate, endDate } = this.experienceForm().value();
+      if (!startDate || !endDate) {
+        return;
       }
+      untracked(() => this.calculateTimePeriod());
     });
   }
 
   /**
-   * Drop the form subscription created for the time-period calculation.
-   * @inheritdoc
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
    */
-  public ngOnDestroy(): void {
-    if (this.formSubscription) {
-      this.formSubscription.unsubscribe();
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
+  }
+
+  /**
+   * Store the start date chosen in the date picker.
+   * @param value selected date
+   */
+  protected setStart(value: Date | null): void {
+    if (this.sameInstant(this.experienceForm.startDate().value(), value)) {
+      return;
     }
+    this.experienceForm.startDate().value.set(value);
+  }
+
+  /**
+   * Store the end date chosen in the date picker.
+   * @param value selected date
+   */
+  protected setEnd(value: Date | null): void {
+    if (this.sameInstant(this.experienceForm.endDate().value(), value)) {
+      return;
+    }
+    this.experienceForm.endDate().value.set(value);
+  }
+
+  /**
+   * Store the current-job flag.
+   * @param isCurrent true when the job is current
+   */
+  protected setCurrent(isCurrent: boolean): void {
+    this.experienceForm.isCurrent().value.set(isCurrent);
   }
 
   /**
@@ -192,16 +244,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
       this.experience = exp;
       this.selectedJob = this.experience.employer;
       this.totalYearsOfExperience();
-      this.experienceForm.patchValue({
-        position: this.experience?.position ?? '',
-        employer: this.experience?.employer ?? '',
-        startDate: this.dateTimeService.convertISOToDate(this.experience?.startDate ?? ''),
-        endDate: this.dateTimeService.convertISOToDate(this.experience?.endDate ?? ''),
-        isCurrent: this.experience?.isCurrent ?? false,
-        timePeriod: `${this.experience?.timePeriod} (${this.yearsOfExperience()})`,
-        shortDescription: this.experience?.shortDescription ?? '',
-        points: this.utility.seperateSentences(this.experience?.points) ?? '',
-      });
+      this.experienceForm().reset(this.valuesFrom(this.experience));
     }
   }
 
@@ -209,13 +252,13 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
    * Add experience
    */
   protected addExperience(): void {
-    if (!this.experienceForm.valid) {
+    if (!this.experienceForm().valid()) {
       return;
     }
 
     const {
       position, employer, startDate, endDate, isCurrent, timePeriod, shortDescription, points,
-    } = this.experienceForm.value;
+    } = this.experienceForm().value();
 
     let newId = 0;
     if (this.experienceData()) {
@@ -228,8 +271,8 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
       id: newId,
       position,
       employer,
-      startDate: this.dateTimeService.convertToISOFormat(startDate),
-      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate),
+      startDate: this.dateTimeService.convertToISOFormat(startDate ?? ''),
+      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate ?? ''),
       isCurrent,
       timePeriod: this.removeYearsFromTimePeriod(timePeriod),
       shortDescription,
@@ -239,7 +282,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     const newExperienceValuesArray: IExperience[] = [...this.experienceData()!];
     newExperienceValuesArray[newId - 1] = newExperienceValues;
 
-    if (this.experienceForm.valid) {
+    if (this.experienceForm().valid()) {
       this.isAddSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience${this.utility.getPaddedDigits(newId, 2)}/`, newExperienceValues).pipe(
         take(1),
         map((result) => {
@@ -256,25 +299,17 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
    * Calculate the time period
    */
   protected calculateTimePeriod(): void {
-    // Prevent recursive calls
-    if (this.isCalculatingTimePeriod) {
+    const { startDate, endDate } = this.experienceForm().value();
+    if (!startDate || !endDate) {
       return;
     }
-
-    this.isCalculatingTimePeriod = true;
-
-    try {
-      const { startDate, endDate } = this.experienceForm.value;
-      const startDateStr = this.dateTimeService.convertToISOFormat(startDate).slice(0, 4);
-      const endDatestr = this.dateTimeService.convertToISOFormat(endDate).slice(0, 4);
-      const timePeriod = `${startDateStr} - ${endDatestr}`;
-
-      this.experienceForm.patchValue({
-        timePeriod,
-      }, { emitEvent: false }); // Prevent triggering valueChanges
-    } finally {
-      this.isCalculatingTimePeriod = false;
+    const startDateStr = this.dateTimeService.convertToISOFormat(startDate).slice(0, 4);
+    const endDatestr = this.dateTimeService.convertToISOFormat(endDate).slice(0, 4);
+    const timePeriod = `${startDateStr} - ${endDatestr}`;
+    if (this.experienceForm.timePeriod().value() === timePeriod) {
+      return;
     }
+    this.experienceForm.timePeriod().value.set(timePeriod);
   }
 
   /**
@@ -284,7 +319,7 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
     this.isAddSuccess = of(false);
     this.isEditSuccess = of(false);
     this.isDeleteSuccess = of(false);
-    this.experienceForm.reset();
+    this.experienceForm().reset(emptyExperience());
   }
 
   /**
@@ -334,14 +369,14 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
 
     const {
       position, employer, startDate, endDate, isCurrent, timePeriod, shortDescription, points,
-    } = this.experienceForm.value;
+    } = this.experienceForm().value();
 
     const newExperienceValues: IExperience = {
       ...this.experience,
       position,
       employer,
-      startDate: this.dateTimeService.convertToISOFormat(startDate),
-      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate),
+      startDate: this.dateTimeService.convertToISOFormat(startDate ?? ''),
+      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate ?? ''),
       isCurrent,
       timePeriod: this.removeYearsFromTimePeriod(timePeriod),
       shortDescription,
@@ -379,6 +414,52 @@ export class AdminExperienceComponent implements OnInit, OnDestroy {
           this.deleteExperience();
         }
       });
+  }
+
+  /**
+   * Values for one stored job.
+   * @param job job to show
+   * @returns form values
+   */
+  private valuesFrom(job: IExperience): ExperienceValues {
+    return {
+      position: job.position ?? '',
+      employer: job.employer ?? '',
+      startDate: this.dateTimeService.convertISOToDate(job.startDate ?? ''),
+      endDate: this.dateTimeService.convertISOToDate(job.endDate ?? ''),
+      isCurrent: job.isCurrent ?? false,
+      timePeriod: `${job.timePeriod} (${this.yearsOfExperience()})`,
+      shortDescription: job.shortDescription ?? '',
+      points: this.utility.seperateSentences(job.points) ?? '',
+    };
+  }
+
+  /**
+   * Show a date in the matching picker without writing the same instant again.
+   * @param input date picker input
+   * @param value date to show
+   */
+  private writePicker(input: MatDatepickerInput<Date> | undefined, value: Date | null): void {
+    if (!input || this.sameInstant(input.value, value)) {
+      return;
+    }
+    input.value = value;
+  }
+
+  /**
+   * Whether two dates are the same instant, including both being empty.
+   * @param left first date
+   * @param right second date
+   * @returns true when both are empty or both have the same time
+   */
+  private sameInstant(left: Date | null, right: Date | null): boolean {
+    if (left === right) {
+      return true;
+    }
+    if (!left || !right) {
+      return false;
+    }
+    return left.getTime() === right.getTime();
   }
 
   /**

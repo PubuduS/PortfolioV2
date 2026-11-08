@@ -11,8 +11,7 @@
         <form
           class="admin-form col-12 px-5 text-start"
           novalidate
-          [formGroup]="contactForm"
-          (ngSubmit)="save()"
+          (submit)="save(); $event.preventDefault()"
         >
           <div class="row mb-3">
             <label class="col-12" for="linkedin">LinkedIn</label>
@@ -21,20 +20,18 @@
                 id="linkedin"
                 class="p-2 w-100"
                 type="url"
-                formControlName="linkedin"
+                [formField]="contactForm.linkedin"
               />
             </div>
           </div>
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.linkedin"
-            errorKey="required"
-            message="A LinkedIn address is required"
-          />
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.linkedin"
-            errorKey="invalidURL"
-            message="Enter a full LinkedIn address, starting with https://"
-          />
+          @if (hasError(contactForm.linkedin, 'required')) {
+            <span class="field-error">A LinkedIn address is required</span>
+          }
+          @if (hasError(contactForm.linkedin, 'invalidURL')) {
+            <span class="field-error"
+              >Enter a full LinkedIn address, starting with https://</span
+            >
+          }
 
           <div class="row mb-3 mt-4">
             <label class="col-12" for="github">GitHub</label>
@@ -43,20 +40,18 @@
                 id="github"
                 class="p-2 w-100"
                 type="url"
-                formControlName="github"
+                [formField]="contactForm.github"
               />
             </div>
           </div>
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.github"
-            errorKey="required"
-            message="A GitHub address is required"
-          />
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.github"
-            errorKey="invalidURL"
-            message="Enter a full GitHub address, starting with https://"
-          />
+          @if (hasError(contactForm.github, 'required')) {
+            <span class="field-error">A GitHub address is required</span>
+          }
+          @if (hasError(contactForm.github, 'invalidURL')) {
+            <span class="field-error"
+              >Enter a full GitHub address, starting with https://</span
+            >
+          }
 
           <div class="row mb-3 mt-4">
             <label class="col-12" for="email">Email</label>
@@ -65,20 +60,16 @@
                 id="email"
                 class="p-2 w-100"
                 type="email"
-                formControlName="email"
+                [formField]="contactForm.email"
               />
             </div>
           </div>
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.email"
-            errorKey="required"
-            message="An email address is required"
-          />
-          <admin-portfolio-display-validator-errors
-            [control]="contactForm.controls.email"
-            errorKey="email"
-            message="Enter a valid email address"
-          />
+          @if (hasError(contactForm.email, 'required')) {
+            <span class="field-error">An email address is required</span>
+          }
+          @if (hasError(contactForm.email, 'email')) {
+            <span class="field-error">Enter a valid email address</span>
+          }
 
           <div class="row align-items-center mt-4">
             <div class="col-auto">

@@ -4,6 +4,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  signal,
 } from '@angular/core';
 import {
   MatDialogActions,
@@ -16,11 +17,10 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import {
@@ -62,7 +62,7 @@ import { ProjectCardType } from '../types/project-cards-type.enum';
     MatButtonModule,
     MatProgressBarModule,
     MatIconModule,
-    ReactiveFormsModule,
+    FormField,
     MatDialogClose,
   ],
   templateUrl: './add-tile.component.html',
@@ -70,8 +70,14 @@ import { ProjectCardType } from '../types/project-cards-type.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTileComponent implements OnInit, OnDestroy {
+  /** Title and description the editor is changing. */
+  private readonly model = signal({ title: '', description: '' });
+
   /** Tile Editor Form */
-  protected tileEditorForm!: FormGroup;
+  protected readonly tileEditorForm = form(this.model, (fields) => {
+    required(fields.title);
+    required(fields.description);
+  });
 
   /** Card ID */
   protected nextCardId = this.store.selectSignal(newProjectRecordIdSelector);
@@ -135,7 +141,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
    * @param cdr change detector ref
    * @param dialog dialog
    * @param dialogRef dialog reference
-   * @param formBuilder form builder
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -145,7 +150,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public dialog: MatDialog,
     private dialogRef: MatDialogRef<AddTileComponent>,
-    private formBuilder: FormBuilder,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -157,10 +161,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    this.tileEditorForm = this.formBuilder.group({
-      title: ['', [Validators.required]],
-      description: ['', [Validators.required]],
-    });
+    this.tileEditorForm().reset({ title: '', description: '' });
   }
 
   /**
@@ -222,7 +223,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
       width: '800px',
       data: {
         currentId: this.currentCardId,
-        heading: this.tileEditorForm.value.title,
+        heading: this.tileEditorForm().value().title,
         type: ProjectCardType.standard,
       },
     });
@@ -255,11 +256,11 @@ export class AddTileComponent implements OnInit, OnDestroy {
    */
   protected async saveChanges(): Promise<void> {
     // Validate form before proceeding
-    if (!this.tileEditorForm.valid) {
+    if (!this.tileEditorForm().valid()) {
       return;
     }
 
-    const { title, description } = this.tileEditorForm.value;
+    const { title, description } = this.tileEditorForm().value();
     const imageName = `ID-${this.utility.getPaddedDigits(this.nextCardId(), 2)}-Icon.webp`;
     const fileStoragePath = `${this.basePathForImages}/${imageName}`;
     const databaseDocPath = `${this.basePathForDocs}/project-${this.utility.getPaddedDigits(this.nextCardId(), 2)}/`;

@@ -21,11 +21,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import {
   map,
   Observable,
@@ -46,16 +46,46 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import {
-  urlValidator,
-  firebaseURLValidator,
+  firebaseUrl,
+  webUrl,
 } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import {
-  DisplayValidatorErrorsComponent,
   UploadPhotoComponent,
   ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
+
+/** Text and links the project-card editor saves. */
+interface ProjectCardValues {
+  /** Description. */
+  description: string;
+  /** Technologies. */
+  technologies: string;
+  /** Codebase URL. */
+  codebase: string;
+  /** YouTube URL. */
+  youtube: string;
+  /** Screenshot URL. */
+  screenshot: string;
+  /** Documentation URL. */
+  documentation: string;
+}
+
+/**
+ * A blank project card.
+ * @returns empty card values
+ */
+function emptyCard(): ProjectCardValues {
+  return {
+    description: '',
+    technologies: '',
+    codebase: '',
+    youtube: '',
+    screenshot: '',
+    documentation: '',
+  };
+}
 
 /**
  * Project Cards Component
@@ -71,16 +101,25 @@ import { IProjectCard } from '@portfolio-v2/state/dataModels';
     MatIconModule,
     MatDialogModule,
     MatDialogClose,
-    ReactiveFormsModule,
-    DisplayValidatorErrorsComponent,
+    FormField,
   ],
   templateUrl: './project-cards.component.html',
   styleUrl: './project-cards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectCardsComponent implements OnInit, OnDestroy {
+  /** Values the editor is changing. */
+  private readonly model = signal<ProjectCardValues>(emptyCard());
+
   /** Card Editor Form */
-  protected cardEditorForm!: FormGroup;
+  protected readonly cardEditorForm = form(this.model, (fields) => {
+    required(fields.description);
+    required(fields.technologies);
+    webUrl(fields.codebase);
+    webUrl(fields.youtube);
+    firebaseUrl(fields.screenshot);
+    webUrl(fields.documentation);
+  });
 
   /** Default Image URL */
   protected readonly defaultImageSrc = 'https://placehold.co/300x200.png';
@@ -125,7 +164,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param data.type project card type
    * @param dialog dialog ref
    * @param cdr change detector ref
-   * @param formBuilder form builder
    * @param getDataService get data service
    * @param setDataService set data service
    * @param store ngrx store
@@ -135,7 +173,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: { cardId: number, type: ProjectCardType },
     public dialog: MatDialog,
     private cdr: ChangeDetectorRef,
-    private formBuilder: FormBuilder,
     private getDataService: GetDataService,
     private setDataService: SetDataService,
     private store: Store,
@@ -172,18 +209,18 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @inheritdoc
    */
   public ngOnInit(): void {
-    const card = this.projectCard();
-    this.cardEditorForm = this.formBuilder.group({
-      description: [card?.description ?? '', [Validators.required]],
-      technologies: [card?.tools ?? '', [Validators.required]],
-      codebase: [card?.githubURL ?? '', [urlValidator()]],
-      youtube: [card?.demoURL ?? '', [urlValidator()]],
-      screenshot: [card?.screenshotURL ?? '', [firebaseURLValidator()]],
-      documentation: [card?.documentationURL ?? '', [urlValidator()]],
-    });
-    if (card) {
-      this.hasAppliedCard = true;
-    }
+    this.applyCard(this.projectCard());
+  }
+
+  /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
   }
 
   /**
@@ -191,11 +228,11 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * @param card Stored project card.
    */
   private applyCard(card: IProjectCard | undefined): void {
-    if (!card || this.hasAppliedCard || !this.cardEditorForm) {
+    if (!card || this.hasAppliedCard) {
       return;
     }
     this.hasAppliedCard = true;
-    this.cardEditorForm.patchValue({
+    this.cardEditorForm().reset({
       description: card.description ?? '',
       technologies: card.tools ?? '',
       codebase: card.githubURL ?? '',
@@ -203,7 +240,6 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
       screenshot: card.screenshotURL ?? '',
       documentation: card.documentationURL ?? '',
     });
-    this.cdr.markForCheck();
   }
 
   /**
@@ -271,9 +307,7 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
           stateUpdateAction,
           onImageUploaded: (imageUrl: string) => {
             // Update the form field with the uploaded image URL
-            this.cardEditorForm.patchValue({
-              screenshot: imageUrl,
-            });
+            this.cardEditorForm.screenshot().value.set(imageUrl);
           },
         },
       },
@@ -284,11 +318,11 @@ export class ProjectCardsComponent implements OnInit, OnDestroy {
    * Update project card data
    */
   protected updateData(): void {
-    if (!this.cardEditorForm.valid) return;
+    if (!this.cardEditorForm().valid()) return;
 
     const {
       description, technologies, codebase, youtube, screenshot, documentation,
-    } = this.cardEditorForm.value;
+    } = this.cardEditorForm().value();
 
     let fileStoragePath = '';
     let databaseDocPath = '';

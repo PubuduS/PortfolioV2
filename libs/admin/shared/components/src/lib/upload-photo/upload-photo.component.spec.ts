@@ -7,7 +7,6 @@ import {
   provideMockStore,
   MockStore,
 } from '@ngrx/store/testing';
-import { MockComponents } from 'ng-mocks';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
@@ -15,7 +14,6 @@ import {
   GetDataService,
   SetDataService,
 } from '@portfolio-v2/shared/services';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import {
   getComponentProperty,
   callComponentMethod,
@@ -48,12 +46,7 @@ describe('UploadPhotoComponent', () => {
     mockGetDataService = createSpyObj(GetDataService);
 
     await TestBed.configureTestingModule({
-      imports: [
-        UploadPhotoComponent,
-        MockComponents(
-          DisplayValidatorErrorsComponent,
-        ),
-      ],
+      imports: [UploadPhotoComponent],
       providers: [
         provideMockStore({}),
         { provide: MAT_DIALOG_DATA, useValue: mockUploadConfig },

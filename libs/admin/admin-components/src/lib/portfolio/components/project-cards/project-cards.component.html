@@ -1,7 +1,7 @@
 <div class="card-model">
   @if (projectCard(); as dataRecord) {
     <h1 mat-dialog-title>{{ dataRecord.heading }}</h1>
-    <form [formGroup]="cardEditorForm!">
+    <form (submit)="$event.preventDefault()">
       <mat-dialog-content class="mat-typography">
         <div class="row">
           <div class="col-6">
@@ -32,73 +32,63 @@
             <textarea
               id="description"
               class="form-control"
-              formControlName="description"
+              [formField]="cardEditorForm.description"
               rows="4"
               placeholder="Enter project description"
             ></textarea>
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('description')"
-              errorKey="required"
-              message="A valid description is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.description, 'required')) {
+              <span class="field-error">A valid description is required</span>
+            }
           </div>
 
           <div class="col-12">
             <label class="fw-bold my-2"> Technologies:</label>
             <input
               id="technologies"
-              formControlName="technologies"
+              [formField]="cardEditorForm.technologies"
               class="form-control mb-3"
               type="text"
               placeholder="Technologies used in the project"
             />
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('technologies')"
-              errorKey="required"
-              message="A valid comma separated list of technologies are required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.technologies, 'required')) {
+              <span class="field-error"
+                >A valid comma separated list of technologies are required</span
+              >
+            }
           </div>
 
           <div class="col-6">
             <label class="fw-bold my-2"> Codebase:</label>
             <input
               id="codebase"
-              formControlName="codebase"
+              [formField]="cardEditorForm.codebase"
               class="form-control mb-3"
               type="text"
               placeholder="A link to the codebase [Optional]"
             />
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('codebase')"
-              errorKey="invalidURL"
-              message="A valid URL is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.codebase, 'invalidURL')) {
+              <span class="field-error">A valid URL is required</span>
+            }
           </div>
           <div class="col-6">
             <label class="fw-bold my-2"> Youtube:</label>
             <input
               id="youtube"
-              formControlName="youtube"
+              [formField]="cardEditorForm.youtube"
               class="form-control mb-3"
               type="text"
               placeholder="A youtube link for demo [Optional]"
             />
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('youtube')"
-              errorKey="invalidURL"
-              message="A valid URL is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.youtube, 'invalidURL')) {
+              <span class="field-error">A valid URL is required</span>
+            }
           </div>
           <div class="col-6">
             <label class="fw-bold my-2"> Screenshot:</label>
             <div class="d-flex">
               <input
                 id="screenshot"
-                formControlName="screenshot"
+                [formField]="cardEditorForm.screenshot"
                 class="form-control mb-3 me-2"
                 type="text"
                 placeholder="A link to the screenshot [Optional]"
@@ -112,28 +102,22 @@
                 <mat-icon>upload</mat-icon>
               </button>
             </div>
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('screenshot')"
-              errorKey="invalidURL"
-              message="A valid URL is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.screenshot, 'invalidURL')) {
+              <span class="field-error">A valid URL is required</span>
+            }
           </div>
           <div class="col-6">
             <label class="fw-bold my-2"> Documentation:</label>
             <input
               id="documentation"
-              formControlName="documentation"
+              [formField]="cardEditorForm.documentation"
               class="form-control mb-3"
               type="text"
               placeholder="A link to project documentation [Optional]"
             />
-            <admin-portfolio-display-validator-errors
-              [control]="cardEditorForm.get('documentation')"
-              errorKey="invalidURL"
-              message="A valid URL is required"
-            >
-            </admin-portfolio-display-validator-errors>
+            @if (hasError(cardEditorForm.documentation, 'invalidURL')) {
+              <span class="field-error">A valid URL is required</span>
+            }
           </div>
         </div>
         <!-- Progress Status Section -->

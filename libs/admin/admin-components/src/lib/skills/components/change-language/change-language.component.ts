@@ -3,15 +3,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  signal,
   Signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  type FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { Store } from '@ngrx/store';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +27,6 @@ import {
   SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import { DisplayValidatorErrorsComponent } from '@portfolio-v2/admin/shared/components';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
@@ -39,19 +39,23 @@ import { StateActions } from '@portfolio-v2/state';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    DisplayValidatorErrorsComponent,
   ],
   templateUrl: './change-language.component.html',
   styleUrl: './change-language.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeLanguageComponent implements OnInit {
+  /** Language names, one per paragraph. */
+  private readonly model = signal({ languages: '' });
+
   /** Landing form */
-  protected languageForm!: FormGroup;
+  protected readonly languageForm = form(this.model, (fields) => {
+    required(fields.languages);
+  });
 
   /** Signal containing Skills section data */
   public readonly skillsData: Signal<ISkills | undefined>;
@@ -61,13 +65,11 @@ export class ChangeLanguageComponent implements OnInit {
 
   /**
    * constructor
-   * @param formBuilder form builder
    * @param store ngrx store
    * @param utility utility service
    * @param setDataService set data service
    */
   constructor(
-    private formBuilder: FormBuilder,
     private store: Store,
     private utility: UtilityService,
     private setDataService: SetDataService,
@@ -88,9 +90,20 @@ export class ChangeLanguageComponent implements OnInit {
       ..._.keys(data?.languagesCol2).sort(),
     ];
 
-    this.languageForm = this.formBuilder.group({
-      languages: [this.utility.seperateSentences(languageKeys), [Validators.required]],
+    this.languageForm().reset({
+      languages: this.utility.seperateSentences(languageKeys),
     });
+  }
+
+  /**
+   * Whether a touched or dirty field currently has this error.
+   * @param field field to read
+   * @param kind error kind
+   * @returns true when that error should be shown
+   */
+  protected hasError(field: FieldTree<unknown>, kind: string): boolean {
+    const state = field();
+    return (state.touched() || state.dirty()) && state.getError(kind) !== undefined;
   }
 
   /**
@@ -104,7 +117,7 @@ export class ChangeLanguageComponent implements OnInit {
       return;
     }
 
-    const { languages } = this.languageForm.value;
+    const { languages } = this.languageForm().value();
     const languageArray = this.utility.breakStringToParagraphs(languages);
 
     const [firstHalf, secondHalf] = [

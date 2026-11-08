@@ -13,7 +13,7 @@ test.describe('admin section editors', () => {
     await signInAsAdmin(page);
 
     await expect(page.getByRole('heading', { name: 'Landing Page' })).toBeVisible();
-    await expect(page.locator('select[formcontrolname="seasonsPicker"]')).toHaveValue('winter');
+    await expect(page.locator('#seasonsPicker')).toHaveValue('winter');
     await expect(page.getByLabel('Phone still (WebP)')).toBeVisible();
     await expect(page.getByLabel('Desktop still (WebP)')).toBeVisible();
     await expect(page.getByLabel('Phone clip (WebM)')).toBeVisible();
@@ -34,7 +34,7 @@ test.describe('admin section editors', () => {
     await signInAsAdmin(page);
     await page.goto('/admin/aboutme');
 
-    await expect(page.locator('textarea[formcontrolname="mainIntro"]')).toHaveValue(
+    await expect(page.getByLabel('Main Introduction')).toHaveValue(
       /My name is Pubudu\. Currently, I live in Omaha, Nebraska\./,
     );
   });
@@ -48,7 +48,7 @@ test.describe('admin section editors', () => {
     await page.locator('#previewMode').click();
 
     await expect(page).toHaveURL(/\/admin\/skills$/);
-    await expect(page.locator('textarea[formcontrolname="skillsIntro"]')).toHaveValue(SKILLS_INTRO);
+    await expect(page.locator('#skillsIntro')).toHaveValue(SKILLS_INTRO);
     await expect(page.getByRole('heading', { name: 'Angular: 80%' })).toBeVisible();
   });
 
@@ -65,8 +65,8 @@ test.describe('admin section editors', () => {
 
     await expect(page).toHaveURL(/\/admin\/experience$/);
     await page.getByRole('tab', { name: 'Java Institute' }).click();
-    await expect(page.locator('input[formcontrolname="employer"]')).toHaveValue('Java Institute');
-    await expect(page.locator('input[formcontrolname="position"]')).toHaveValue(
+    await expect(page.getByPlaceholder('Enter employer name')).toHaveValue('Java Institute');
+    await expect(page.getByPlaceholder('Enter job position')).toHaveValue(
       'Software Engineer (JAVA) Java Institute',
     );
   });

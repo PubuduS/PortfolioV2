@@ -6,7 +6,6 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
   MockStore,
   provideMockStore,
@@ -44,10 +43,7 @@ describe('DescriptionCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        DescriptionCardComponent,
-        ReactiveFormsModule,
-      ],
+      imports: [DescriptionCardComponent],
       providers: [
         provideMockStore(),
         { provide: MAT_DIALOG_DATA, useValue: mockProjectData },
@@ -93,10 +89,10 @@ describe('DescriptionCardComponent', () => {
     it('should initialize form on ngOnInit', () => {
       callComponentMethod(component, 'ngOnInit');
 
-      const form = getComponentProperty(component, 'tileEditorForm') as any;
+      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
       expect(form).toBeDefined();
-      expect(form.get('title')?.value).toBe(mockProject.viewHeading);
-      expect(form.get('description')?.value).toBe(mockProject.viewDescription);
+      expect(form.title().value()).toBe(mockProject.viewHeading);
+      expect(form.description().value()).toBe(mockProject.viewDescription);
     });
 
     it('should initialize with correct default values', () => {
@@ -110,9 +106,11 @@ describe('DescriptionCardComponent', () => {
     it('should create form with required validators', () => {
       callComponentMethod(component, 'ngOnInit');
 
-      const form = getComponentProperty(component, 'tileEditorForm') as any;
-      expect(form.get('title')?.validator).toBeDefined();
-      expect(form.get('description')?.validator).toBeDefined();
+      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      form.title().value.set('');
+      form.description().value.set('');
+      expect(form.title().valid()).toBe(false);
+      expect(form.description().valid()).toBe(false);
     });
   });
 
@@ -211,25 +209,25 @@ describe('DescriptionCardComponent', () => {
     });
 
     it('should mark title field as required', () => {
-      const form = getComponentProperty(component, 'tileEditorForm') as any;
-      const titleControl = form.get('title');
+      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const titleControl = form.title();
 
-      titleControl?.setValue('');
-      expect(titleControl?.valid).toBeFalsy();
+      titleControl.value.set('');
+      expect(titleControl.valid()).toBeFalsy();
 
-      titleControl?.setValue('Valid Title');
-      expect(titleControl?.valid).toBeTruthy();
+      titleControl.value.set('Valid Title');
+      expect(titleControl.valid()).toBeTruthy();
     });
 
     it('should mark description field as required', () => {
-      const form = getComponentProperty(component, 'tileEditorForm') as any;
-      const descriptionControl = form.get('description');
+      const form = getComponentProperty(component, 'tileEditorForm') as DescriptionCardComponent['tileEditorForm'];
+      const descriptionControl = form.description();
 
-      descriptionControl?.setValue('');
-      expect(descriptionControl?.valid).toBeFalsy();
+      descriptionControl.value.set('');
+      expect(descriptionControl.valid()).toBeFalsy();
 
-      descriptionControl?.setValue('Valid description');
-      expect(descriptionControl?.valid).toBeTruthy();
+      descriptionControl.value.set('Valid description');
+      expect(descriptionControl.valid()).toBeTruthy();
     });
   });
 

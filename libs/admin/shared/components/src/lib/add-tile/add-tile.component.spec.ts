@@ -102,20 +102,20 @@ describe('AddTileComponent', () => {
   describe('Component Initialization', () => {
     it('should initialize form on ngOnInit', () => {
       expect(component['tileEditorForm']).toBeDefined();
-      expect(component['tileEditorForm'].get('title')).toBeDefined();
-      expect(component['tileEditorForm'].get('description')).toBeDefined();
+      expect(component['tileEditorForm'].title()).toBeDefined();
+      expect(component['tileEditorForm'].description()).toBeDefined();
     });
 
     it('should have required validators on form controls', () => {
-      const titleControl = component['tileEditorForm'].get('title');
-      const descriptionControl = component['tileEditorForm'].get('description');
+      const titleControl = component['tileEditorForm'].title();
+      const descriptionControl = component['tileEditorForm'].description();
 
-      titleControl?.setValue('');
-      descriptionControl?.setValue('');
+      titleControl.value.set('');
+      descriptionControl.value.set('');
 
-      expect(titleControl?.valid).toBeFalsy();
-      expect(descriptionControl?.valid).toBeFalsy();
-      expect(component['tileEditorForm'].valid).toBeFalsy();
+      expect(titleControl.valid()).toBeFalsy();
+      expect(descriptionControl.valid()).toBeFalsy();
+      expect(component['tileEditorForm']().valid()).toBeFalsy();
     });
 
     it('should initialize with default image sources', () => {
@@ -126,17 +126,17 @@ describe('AddTileComponent', () => {
 
   describe('Form Validation', () => {
     it('should validate form as invalid when fields are empty', () => {
-      component['tileEditorForm'].get('title')?.setValue('');
-      component['tileEditorForm'].get('description')?.setValue('');
+      component['tileEditorForm'].title().value.set('');
+      component['tileEditorForm'].description().value.set('');
 
-      expect(component['tileEditorForm'].valid).toBeFalsy();
+      expect(component['tileEditorForm']().valid()).toBeFalsy();
     });
 
     it('should validate form as valid when all fields are filled', () => {
-      component['tileEditorForm'].get('title')?.setValue('Test Title');
-      component['tileEditorForm'].get('description')?.setValue('Test Description');
+      component['tileEditorForm'].title().value.set('Test Title');
+      component['tileEditorForm'].description().value.set('Test Description');
 
-      expect(component['tileEditorForm'].valid).toBeTruthy();
+      expect(component['tileEditorForm']().valid()).toBeTruthy();
     });
   });
 
@@ -193,12 +193,12 @@ describe('AddTileComponent', () => {
 
   describe('Save Changes', () => {
     beforeEach(() => {
-      component['tileEditorForm'].get('title')?.setValue('Test Title');
-      component['tileEditorForm'].get('description')?.setValue('Test Description');
+      component['tileEditorForm'].title().value.set('Test Title');
+      component['tileEditorForm'].description().value.set('Test Description');
     });
 
     it('should not save changes when form is invalid', async () => {
-      component['tileEditorForm'].get('title')?.setValue('');
+      component['tileEditorForm'].title().value.set('');
 
       await component['saveChanges']();
 
@@ -224,8 +224,8 @@ describe('AddTileComponent', () => {
 
   describe('Navigation', () => {
     it('should navigate to card editor with correct data', () => {
-      component['tileEditorForm'].get('title')?.setValue('Test Title');
-      component['tileEditorForm'].get('description')?.setValue('Test Description');
+      component['tileEditorForm'].title().value.set('Test Title');
+      component['tileEditorForm'].description().value.set('Test Description');
 
       const dialogSpy = jest.spyOn(component['dialog'], 'open');
       const closeSpy = jest.spyOn(component['dialogRef'], 'close');

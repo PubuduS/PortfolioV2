@@ -27,6 +27,14 @@
       line-height: 24px;
     }
 
+    .field-error {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: $jasper;
+    }
+
     p {
       font-size: 1.3rem;
     }

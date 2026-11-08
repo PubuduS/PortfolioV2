@@ -7,7 +7,7 @@
         </div>
       </div>
       <div class="row d-flex justify-content-center mt-1">
-        <form [formGroup]="uploadPhotoForm!">
+        <form (submit)="$event.preventDefault()">
           <div class="admin-form col-12 px-5 text-center">
             <!-- File Input Row -->
             <div class="row mb-3 d-flex justify-content-center">
@@ -15,16 +15,12 @@
                 <input
                   type="file"
                   class="form-control"
-                  formControlName="filePicker"
                   accept="image/webp"
                   (change)="onFileChange($event)"
                 />
-                <admin-portfolio-display-validator-errors
-                  [control]="uploadPhotoForm.get('filePicker')"
-                  errorKey="required"
-                  message="A valid image is required"
-                >
-                </admin-portfolio-display-validator-errors>
+                @if (hasError(uploadPhotoForm.fileName, 'required')) {
+                  <span class="field-error">A valid image is required</span>
+                }
               </div>
             </div>
 
