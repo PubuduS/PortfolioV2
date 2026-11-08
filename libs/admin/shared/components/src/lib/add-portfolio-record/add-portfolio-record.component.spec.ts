@@ -12,8 +12,13 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
-import { of } from 'rxjs';
+import {
+  of,
+  Subscription,
+  throwError,
+} from 'rxjs';
 
+import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
   GetDataService,
@@ -294,6 +299,298 @@ describe('AddPortfolioRecordComponent', () => {
           heading: 'Featured Test',
           imageURL: 'https://firebase.com/featured-image.jpg',
         }),
+      );
+    });
+
+    it('should disable empty links and refresh the standard cards', async () => {
+      component['cardAddForm'].description().value.set('Test description');
+      component['cardAddForm'].technologies().value.set('Angular');
+      jest.spyOn(store, 'dispatch');
+
+      await component['addData']();
+      let saved = false;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(true);
+      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
+        'project-data-section/project-01/',
+        expect.objectContaining({
+          gitDisable: true,
+          demoDisable: true,
+          ssDisable: true,
+          docDisable: true,
+        }),
+      );
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.projectCardsStateConnect());
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+    });
+
+    it('should keep the placeholder when the upload fails', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      component['uploadFileAndGetUrl'] = jest.fn().mockRejectedValue(new Error('offline'));
+      component['imageUrl'].set('data:image/webp;base64,abc');
+      component['cardAddForm'].description().value.set('Test description');
+      component['cardAddForm'].technologies().value.set('Angular');
+
+      await component['addData']();
+
+      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
+        'project-data-section/project-01/',
+        expect.objectContaining({ imageURL: component['defaultImageSrc'] }),
+      );
+    });
+
+    it('should leave the preview when the record is not stored', async () => {
+      mockSetDataService.setRecord.mockReturnValue(of('failed'));
+      component['imagePreview'].set('data:image/webp;base64,abc');
+      component['cardAddForm'].description().value.set('Test description');
+      component['cardAddForm'].technologies().value.set('Angular');
+
+      await component['addData']();
+      let saved = true;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(false);
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+    });
+  });
+
+  describe('when a screenshot is chosen', () => {
+    beforeEach(() => {
+      mockUtilityService.getPaddedDigits.mockReturnValue('01');
+      component.ngOnInit();
+    });
+
+    it('should show a required error only after the field is touched', () => {
+      const {description} = component['cardAddForm'];
+
+      expect(component['hasError'](description, 'required')).toBe(false);
+
+      description().markAsTouched();
+
+      expect(component['hasError'](description, 'required')).toBe(true);
+    });
+
+    it('should preview the chosen file', () => {
+      const file = new File(['icon'], 'icon.webp', { type: 'image/webp' });
+      const input = document.createElement('input');
+      Object.defineProperty(input, 'files', { value: [file] });
+      const reader = {
+        result: 'data:image/webp;base64,abc',
+        onload: null as (() => void) | null,
+        readAsDataURL(): void {
+          this.onload?.();
+        },
+      };
+      jest.spyOn(global, 'FileReader').mockImplementation(() => reader as unknown as FileReader);
+
+      component['onFileSelected']({ target: input } as unknown as Event);
+
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+      jest.restoreAllMocks();
+    });
+
+    it('should ignore an empty file picker', () => {
+      component['onFileSelected']({ target: document.createElement('input') } as unknown as Event);
+
+      expect(component['imageUrl']()).toBe('');
+    });
+
+    it('should write the screenshot url back onto a standard card', () => {
+      const open = jest.spyOn(component['dialog'], 'open');
+
+      component['openUploadPhotoPanel']();
+      const data = open.mock.calls[0][1]?.data as {
+        onImageUploaded: (imageUrl: string) => void;
+        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
+      };
+      data.onImageUploaded('https://cdn.example/shot.webp');
+
+      expect(component['cardAddForm'].screenshot().value()).toBe('https://cdn.example/shot.webp');
+      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
+        StateActions.projectCardsStateUpdated({
+          projectCards: [{ ...mockData[0], screenshotURL: 'https://cdn.example/shot.webp' }],
+        }),
+      );
+    });
+
+    it('should send an empty list when the card selector has no array', () => {
+      store.overrideSelector(portfolioCardsSelector, undefined);
+      store.refreshState();
+      const open = jest.spyOn(component['dialog'], 'open');
+
+      component['openUploadPhotoPanel']();
+      const data = open.mock.calls[0][1]?.data as {
+        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
+      };
+
+      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
+        StateActions.projectCardsStateUpdated({ projectCards: [] }),
+      );
+    });
+  });
+
+  describe('when the image upload runs', () => {
+    beforeEach(() => {
+      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
+      mockSetDataService.getProgressValue.mockReturnValue(55);
+      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
+      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/card.webp'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should resolve with the download url', async () => {
+      jest.useFakeTimers();
+      component['uploadProgressIntervalId'] = 8;
+      const pending = component['uploadFileAndGetUrl']('portfolio/project-card-images/ID-01-Image.webp/');
+      const done = expect(pending).resolves.toBe('https://cdn.example/card.webp');
+
+      await jest.advanceTimersByTimeAsync(100);
+
+      await done;
+      expect(component['progressValue']()).toBe(55);
+      expect(component['imageUrl']()).toBe('https://cdn.example/card.webp');
+    });
+
+    it('should reject an empty download url', async () => {
+      jest.useFakeTimers();
+      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
+      const pending = component['uploadFileAndGetUrl']('path');
+      const failed = expect(pending).rejects.toThrow('Failed to get upload URL');
+
+      await jest.advanceTimersByTimeAsync(100);
+
+      await failed;
+    });
+
+    it('should reject when the download lookup fails', async () => {
+      jest.useFakeTimers();
+      mockGetDataService.getPhotoURL.mockReturnValue(throwError(() => new Error('storage down')));
+      const pending = component['uploadFileAndGetUrl']('path');
+      const failed = expect(pending).rejects.toThrow('storage down');
+
+      await jest.advanceTimersByTimeAsync(100);
+
+      await failed;
+    });
+
+    it('should reject when storage does not finish', async () => {
+      jest.useFakeTimers();
+      mockSetDataService.getUploadCompleteState.mockReturnValue(false);
+      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
+      const pending = component['uploadFileAndGetUrl']('path');
+      const failed = expect(pending).rejects.toThrow('Upload timeout');
+
+      await jest.advanceTimersByTimeAsync(30000);
+
+      await failed;
+    });
+
+    it('should drop the upload listeners on destroy', () => {
+      const unsubscribe = jest.fn();
+      component['imageUrlSubscription'] = { unsubscribe } as unknown as Subscription;
+      component['uploadProgressIntervalId'] = 4;
+      component['uploadCheckTimeoutId'] = 5;
+
+      component.ngOnDestroy();
+
+      expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    it('should destroy cleanly when nothing is in flight', () => {
+      expect(() => component.ngOnDestroy()).not.toThrow();
+    });
+  });
+
+  describe('when the card is featured', () => {
+    let featured: AddPortfolioRecordComponent;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [AddPortfolioRecordComponent],
+        providers: [
+          provideMockStore({}),
+          {
+            provide: MAT_DIALOG_DATA,
+            useValue: {
+              currentId: 2,
+              heading: 'Featured Project',
+              type: ProjectCardType.featured,
+            },
+          },
+          { provide: SetDataService, useValue: mockSetDataService },
+          { provide: GetDataService, useValue: mockGetDataService },
+          { provide: UtilityService, useValue: mockUtilityService },
+          { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
+        ],
+      }).compileComponents();
+      store = TestBed.inject(MockStore);
+      store.overrideSelector(portfolioCardsSelector, mockData);
+      store.refreshState();
+      featured = TestBed.createComponent(AddPortfolioRecordComponent).componentInstance;
+      featured.ngOnInit();
+      mockUtilityService.getPaddedDigits.mockReturnValue('02');
+      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
+    });
+
+    it('should refresh the featured cards after a save', async () => {
+      featured['cardAddForm'].heading().value.set('Featured Test');
+      featured['cardAddForm'].description().value.set('Featured description');
+      featured['cardAddForm'].technologies().value.set('Angular');
+      jest.spyOn(store, 'dispatch');
+
+      await featured['addData']();
+      let saved = false;
+      featured['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(true);
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
+    });
+
+    it('should update the matching featured card after a screenshot upload', () => {
+      store.overrideSelector(portfolioCardsSelector, [{ ...mockData[0], id: 2 }]);
+      store.refreshState();
+      const open = jest.spyOn(featured['dialog'], 'open');
+
+      featured['openUploadPhotoPanel']();
+      const data = open.mock.calls[0][1]?.data as {
+        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
+      };
+
+      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
+        StateActions.featuredProjectCardsStateUpdated({
+          projectCards: [{
+            ...mockData[0],
+            id: 2,
+            screenshotURL: 'https://cdn.example/shot.webp',
+          }],
+        }),
+      );
+    });
+
+    it('should send an empty featured list when the selector has no array', () => {
+      store.overrideSelector(portfolioCardsSelector, undefined);
+      store.refreshState();
+      const open = jest.spyOn(featured['dialog'], 'open');
+
+      featured['openUploadPhotoPanel']();
+      const data = open.mock.calls[0][1]?.data as {
+        stateUpdateAction: (updated: { imageSrc: string }) => unknown;
+      };
+
+      expect(data.stateUpdateAction({ imageSrc: 'https://cdn.example/shot.webp' })).toEqual(
+        StateActions.featuredProjectCardsStateUpdated({ projectCards: [] }),
       );
     });
   });

@@ -8,7 +8,10 @@ import {
   MockStore,
 } from '@ngrx/store/testing';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import {
+of,
+Subscription
+} from 'rxjs'
 
 import {
   GetDataService,
@@ -184,6 +187,147 @@ describe('UploadPhotoComponent', () => {
       });
 
       expect(mockSetDataService.pushFileToStorage).toBeDefined();
+    });
+  });
+
+  describe('when a photo is uploaded', () => {
+    beforeEach(() => {
+      mockSetDataService.pushFileToStorage.mockResolvedValue(undefined);
+      mockSetDataService.getProgressValue.mockReturnValue(40);
+      mockSetDataService.getUploadCompleteState.mockReturnValue(true);
+      mockGetDataService.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
+      mockUploadConfig.stateUpdateAction.mockReturnValue({ type: '[Photo] Updated' });
+      jest.spyOn(store, 'dispatch');
+    });
+
+    afterEach(() => {
+      mockUploadConfig.fieldPath = 'test/path/image.jpg/';
+      mockUploadConfig.currentImageUrl = 'https://example.com/current-image.jpg';
+      mockUploadConfig.stateSelector = mockSelector;
+      mockUploadConfig.onImageUploaded = jest.fn();
+      mockUploadConfig.stateUpdateAction = jest.fn().mockReturnValue({ type: '[Photo] Updated' });
+      jest.useRealTimers();
+    });
+
+    it('should preview the chosen file', () => {
+      const file = new File(['icon'], 'icon.webp', { type: 'image/webp' });
+      const input = document.createElement('input');
+      Object.defineProperty(input, 'files', { value: [file] });
+      const reader = {
+        result: 'data:image/webp;base64,abc',
+        onload: null as (() => void) | null,
+        readAsDataURL(): void {
+          this.onload?.();
+        },
+      };
+      jest.spyOn(global, 'FileReader').mockImplementation(() => reader as unknown as FileReader);
+
+      component['onFileChange']({ target: input } as unknown as Event);
+
+      expect(component['uploadPhotoForm'].fileName().value()).toBe('icon.webp');
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+      jest.restoreAllMocks();
+    });
+
+    it('should ignore an empty file picker', () => {
+      const input = document.createElement('input');
+
+      component['onFileChange']({ target: input } as unknown as Event);
+
+      expect(component['uploadPhotoForm'].fileName().value()).toBe('');
+    });
+
+    it('should show a required error after upload is attempted with no file', () => {
+      component.ngOnInit();
+
+      component['uploadData']();
+
+      expect(component['hasError'](component['uploadPhotoForm'].fileName, 'required')).toBe(true);
+      expect(mockSetDataService.pushFileToStorage).not.toHaveBeenCalled();
+    });
+
+    it('should stop when the dialog has no storage path', () => {
+      mockUploadConfig.fieldPath = '';
+      component['uploadPhotoForm'].fileName().value.set('icon.webp');
+
+      component['uploadData']();
+
+      expect(mockSetDataService.pushFileToStorage).not.toHaveBeenCalled();
+    });
+
+    it('should store the download url and tell the caller', () => {
+      jest.useFakeTimers();
+      component.ngOnInit();
+      component['uploadPhotoForm'].fileName().value.set('icon.webp');
+      component['imageUrl'].set('data:image/webp;base64,abc');
+
+      component['uploadData']();
+      jest.advanceTimersByTime(100);
+
+      expect(component['progressValue']()).toBe(40);
+      expect(component['currentImageUrl']()).toBe('https://cdn.example/icon.webp');
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+      expect(mockSetDataService.modifyImageSrcField).toHaveBeenCalledWith(
+        'test/path/image.jpg/',
+        'https://cdn.example/icon.webp',
+      );
+      expect(store.dispatch).toHaveBeenCalledWith({ type: '[Photo] Updated' });
+      expect(mockUploadConfig.onImageUploaded).toHaveBeenCalledWith('https://cdn.example/icon.webp');
+    });
+
+    it('should skip the store update when the url is empty', () => {
+      mockGetDataService.getPhotoURL.mockReturnValue(of(''));
+      component.ngOnInit();
+      component['uploadPhotoForm'].fileName().value.set('icon.webp');
+
+      component['uploadData']();
+
+      expect(mockSetDataService.modifyImageSrcField).not.toHaveBeenCalled();
+      expect(component['currentImageUrl']()).toBe('https://example.com/current-image.jpg');
+    });
+
+    it('should upload without a selector, an action, or a callback', () => {
+      mockUploadConfig.stateSelector = undefined;
+      mockUploadConfig.stateUpdateAction = undefined;
+      mockUploadConfig.onImageUploaded = undefined;
+      mockUploadConfig.currentImageUrl = '';
+      component.ngOnInit();
+      component['uploadPhotoForm'].fileName().value.set('icon.webp');
+
+      component['uploadData']();
+
+      expect(component['currentImageUrl']()).toBe('https://cdn.example/icon.webp');
+      expect(store.dispatch).not.toHaveBeenCalled();
+    });
+
+    it('should swallow a storage rejection and replace a running timer', () => {
+      jest.useFakeTimers();
+      const clear = jest.spyOn(window, 'clearInterval');
+      mockSetDataService.pushFileToStorage.mockRejectedValue(new Error('offline'));
+      component['uploadProgressIntervalId'] = 44;
+      component.ngOnInit();
+      component['uploadPhotoForm'].fileName().value.set('icon.webp');
+
+      component['uploadData']();
+
+      expect(clear).toHaveBeenCalledWith(44);
+    });
+
+    it('should drop the upload listeners on destroy', () => {
+      const unsubscribe = jest.fn();
+      component['myImageSubscription'] = { unsubscribe } as unknown as Subscription;
+      component['imageUrlSubscription'] = { unsubscribe } as unknown as Subscription;
+      component['uploadProgressIntervalId'] = 12;
+      const clear = jest.spyOn(window, 'clearInterval');
+
+      component.ngOnDestroy();
+
+      expect(unsubscribe).toHaveBeenCalledTimes(2);
+      expect(clear).toHaveBeenCalledWith(12);
+    });
+
+    it('should destroy cleanly when nothing is in flight', () => {
+      expect(() => component.ngOnDestroy()).not.toThrow();
     });
   });
 });

@@ -31,21 +31,33 @@ import {
 
 /** One submission error attached to a field. */
 interface SubmissionError {
+  /** Error kind. */
   kind: string;
+  /** Field tree. */
   fieldTree?: FieldTree<unknown>;
 }
 
 /** Text and files the publication editor edits. */
 interface PublicationValues {
+  /** Title. */
   title: string;
+  /** Detail title. */
   detailTitle: string;
+  /** Keywords. */
   keywords: string;
+  /** Summary. */
   summary: string;
+  /** Authors. */
   authors: string;
+  /** Abstract text. */
   abstractText: string;
+  /** Citation. */
   citation: string;
+  /** File name. */
   fileName: string;
+  /** Cover. */
   cover: AssetInput | null;
+  /** Paper. */
   paper: AssetInput | null;
 }
 

@@ -72,6 +72,14 @@ function resumePath(entropy: number): string {
 
 describe('document catalog', () => {
   describe('acceptUpload', () => {
+    describe('when the mime type matches', () => {
+      it('should accept the file', () => {
+        const file = new File(['%PDF'], 'resume.pdf', { type: 'application/pdf' });
+
+        expect(acceptUpload('resume', file)).toEqual({ ok: true });
+      });
+    });
+
     describe('when the mime type is wrong', () => {
       it('should reject the file', () => {
         const file = new File(['%PDF'], 'notes.pdf', { type: 'image/png' });
@@ -180,6 +188,35 @@ describe('document catalog', () => {
         });
 
         expect(result).toEqual({ ok: false, reason: 'protected' });
+        expect(canDelete(stored.catalog, stored.catalog.versions[0].id)).toBe(false);
+      });
+    });
+
+    describe('when the removed id is not in the catalog', () => {
+      it('should keep the catalog and name paths that are no longer live', () => {
+        const stored = uploadTimes('resume', 2);
+        const missingId = createVersionId(1730000000000, 9);
+        const missing = {
+          ...stored.catalog.versions[0],
+          id: missingId,
+          storagePath: storageObjectPath('resume', missingId),
+          pendingDeletes: [resumePath(8)],
+        };
+        const result = applyCatalogCommand('resume', stored.wire, {
+          type: 'remove',
+          version: missing,
+        });
+
+        expect(result.ok).toBe(true);
+        if (!result.ok) {
+          return;
+        }
+        expect(result.wire).toBeNull();
+        expect(result.catalog.versions.map((version) => version.id)).toEqual(
+          stored.catalog.versions.map((version) => version.id),
+        );
+        expect(result.deletePaths).toEqual([missing.storagePath, resumePath(8)]);
+        expect(canDelete(stored.catalog, missingId)).toBe(false);
       });
     });
 
@@ -336,6 +373,14 @@ describe('document catalog', () => {
       );
       expect(resumeHref({ status: 'unreadable' })).toBe(DOCUMENT_KIND_SPECS.resume.bundledUrl);
     });
+
+    it('should use the current download url when a version is ready', () => {
+      const stored = uploadTimes('resume', 1);
+
+      expect(resumeHref({ status: 'ready', catalog: stored.catalog })).toBe(
+        stored.catalog.versions[0].downloadUrl,
+      );
+    });
   });
 
   describe('navigation', () => {
@@ -369,7 +414,9 @@ describe('document catalog', () => {
 
     it('should reject an unknown kind', () => {
       expect(parseKind('coverletter')).toBeNull();
+      expect(parseKind(null)).toBeNull();
       expect(parseKind('resume')).toBe('resume');
+      expect(parseKind('cover-letter')).toBe('cover-letter');
       expect(catalogDocPath('cover-letter')).toBe('document-versions/cover-letter');
     });
   });
@@ -385,6 +432,132 @@ describe('document catalog', () => {
       expect(documentWriteMessage(new DocumentWriteError('protected', 'resume'))).toBe(
         'The only version cannot be deleted.',
       );
+      expect(documentWriteMessage(new DocumentWriteError('rejected-type', null))).toBe(
+        'Choose a PDF or a Word .docx file.',
+      );
+      expect(documentWriteMessage(new DocumentWriteError('unauthenticated'))).toBe(
+        'Sign in before changing documents.',
+      );
+      expect(documentWriteMessage(new DocumentWriteError('upload-failed'))).toBe(
+        'The file did not upload. Nothing was saved.',
+      );
+      expect(documentWriteMessage(new DocumentWriteError('commit-failed'))).toBe(
+        'The version list could not be saved.',
+      );
+      expect(documentWriteMessage(new DocumentWriteError('cleanup-failed'))).toBe(
+        'The version list is saved, but an older file is still in storage.',
+      );
+      expect(documentWriteMessage(new Error('offline'))).toBe(
+        'The version list could not be saved.',
+      );
+      const unexpected = new DocumentWriteError('protected');
+      Object.assign(unexpected, { reason: 'other' });
+      expect(() => documentWriteMessage(unexpected)).toThrow(
+        'Unexpected document write failure: other',
+      );
+    });
+  });
+
+  describe('createVersionId', () => {
+    it('should brand a zero clock and the largest entropy', () => {
+      expect(createVersionId(0, 0)).toBe('0-000000');
+      expect(createVersionId(5, 999999)).toBe('5-999999');
+    });
+
+    it('should reject a clock or entropy outside the stored pattern', () => {
+      expect(() => createVersionId(-1, 1)).toThrow(RangeError);
+      expect(() => createVersionId(1.5, 1)).toThrow(RangeError);
+      expect(() => createVersionId(1, -1)).toThrow(RangeError);
+      expect(() => createVersionId(1, 1.5)).toThrow(RangeError);
+      expect(() => createVersionId(1, 1000000)).toThrow(RangeError);
+    });
+  });
+
+  describe('when a stored version breaks an invariant', () => {
+    const id = createVersionId(1730000000000, 2);
+    const owed = storageObjectPath('resume', createVersionId(1730000000000, 1));
+
+    /**
+     * @param entry one versions row
+     * @returns the parse result
+     */
+    function read(entry: unknown): ReturnType<typeof parseCatalog> {
+      return parseCatalog('resume', { versions: [entry] });
+    }
+
+    it('should keep a pending delete that names another file', () => {
+      const parsed = read({
+        id,
+        uploadedAt: SEEDED_AT,
+        storagePath: storageObjectPath('resume', id),
+        downloadUrl: 'https://files.example/current',
+        pendingDeletes: [owed],
+      });
+
+      expect(parsed.ok).toBe(true);
+      if (!parsed.ok) {
+        return;
+      }
+      expect(parsed.catalog.versions[0].pendingDeletes).toEqual([owed]);
+    });
+
+    it('should reject a row that is not a stored version', () => {
+      const path = storageObjectPath('resume', id);
+      const valid = {
+        id,
+        uploadedAt: SEEDED_AT,
+        storagePath: path,
+        downloadUrl: 'https://files.example/current',
+        pendingDeletes: [] as string[],
+      };
+      const bodies: unknown[] = [
+        'text',
+        { versions: 'nope' },
+        null,
+        { id: 4 },
+        { ...valid, id: 'nope' },
+        { ...valid, id: '0001-000001' },
+        { ...valid, id: '9007199254740993-000001' },
+        { ...valid, uploadedAt: '' },
+        { ...valid, uploadedAt: 4 },
+        { ...valid, storagePath: 'portfolio/documents/resume/other.pdf' },
+        { ...valid, downloadUrl: '' },
+        { ...valid, pendingDeletes: 'none' },
+        { ...valid, pendingDeletes: [4] },
+        { ...valid, pendingDeletes: [path] },
+        { ...valid, pendingDeletes: ['portfolio/documents/cover-letter/nope.docx'] },
+      ];
+
+      bodies.forEach((body) => {
+        expect(read(body).ok).toBe(false);
+      });
+      expect(parseCatalog('resume', []).ok).toBe(false);
+      expect(parseCatalog('resume', { versions: [valid, valid] }).ok).toBe(false);
+      expect(parseCatalog('resume', { versions: [{ id: 4 }, valid] }).ok).toBe(false);
+      expect(read({
+        ...valid,
+        pendingDeletes: ['portfolio/documents/resume/resume-0001-000001.pdf', owed],
+      }).ok).toBe(false);
+      expect(read({
+        ...valid,
+        pendingDeletes: [4, owed],
+      }).ok).toBe(false);
+    });
+
+    it('should keep a cover-letter pending delete that names another file', () => {
+      const coverId = createVersionId(1730000000000, 3);
+      const otherId = createVersionId(1730000000000, 4);
+      const parsed = parseCatalog('cover-letter', {
+        versions: [{
+          id: coverId,
+          uploadedAt: SEEDED_AT,
+          storagePath: storageObjectPath('cover-letter', coverId),
+          downloadUrl: 'https://files.example/letter',
+          pendingDeletes: [storageObjectPath('cover-letter', otherId)],
+        }],
+      });
+
+      expect(parsed.ok).toBe(true);
     });
   });
 });

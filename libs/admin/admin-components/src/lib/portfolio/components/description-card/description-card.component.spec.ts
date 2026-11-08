@@ -11,8 +11,12 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { Subscription } from 'rxjs';
+import {
+of,
+Subscription
+} from 'rxjs'
 
+import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import {
@@ -242,6 +246,192 @@ describe('DescriptionCardComponent', () => {
       store.refreshState();
 
       expect(component['projectView']()).toEqual(newData);
+    });
+  });
+
+  describe('when the tile is saved', () => {
+    let setData: jest.Mocked<SetDataService>;
+    let getData: jest.Mocked<GetDataService>;
+    let utility: jest.Mocked<UtilityService>;
+
+    beforeEach(() => {
+      setData = TestBed.inject(SetDataService) as jest.Mocked<SetDataService>;
+      getData = TestBed.inject(GetDataService) as jest.Mocked<GetDataService>;
+      utility = TestBed.inject(UtilityService) as jest.Mocked<UtilityService>;
+      utility.getPaddedDigits.mockReturnValue('02');
+      setData.setRecord.mockReturnValue(of('successfull'));
+      setData.modifyAField.mockReturnValue(of('successfull'));
+      setData.pushFileToStorage.mockResolvedValue(undefined);
+      setData.getProgressValue.mockReturnValue(40);
+      setData.getUploadCompleteState.mockReturnValue(true);
+      getData.getPhotoURL.mockReturnValue(of('https://cdn.example/icon.webp'));
+      jest.spyOn(store, 'dispatch');
+      component.ngOnInit();
+    });
+
+    afterEach(() => {
+      mockProjectData.project = mockProject;
+      mockProject.id = 2;
+      mockProject.viewHeading = 'Test Project';
+      mockProject.viewDescription = 'Test project description';
+      jest.useRealTimers();
+    });
+
+    it('should ignore a file picker that is not an input', () => {
+      const input = document.createElement('input');
+
+      component['onFileSelected']({ target: input } as unknown as Event);
+
+      expect(component['imageUrl']()).toBe('');
+    });
+
+    it('should preview the file the editor picked', () => {
+      const file = new File(['icon'], 'icon.webp', { type: 'image/webp' });
+      const input = document.createElement('input');
+      Object.defineProperty(input, 'files', { value: [file] });
+      const reader = {
+        result: 'data:image/webp;base64,abc',
+        onload: null as (() => void) | null,
+        readAsDataURL(): void {
+          this.onload?.();
+        },
+      };
+      jest.spyOn(global, 'FileReader').mockImplementation(() => reader as unknown as FileReader);
+
+      component['onFileSelected']({ target: input } as unknown as Event);
+
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+      jest.restoreAllMocks();
+    });
+
+    it('should not write while the title is empty', () => {
+      component['tileEditorForm'].title().value.set('');
+
+      component['saveChanges']();
+
+      expect(setData.setRecord).not.toHaveBeenCalled();
+    });
+
+    it('should keep the current image when no new file was picked', () => {
+      component['saveChanges']();
+      let saved = false;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(true);
+      expect(setData.setRecord).toHaveBeenCalledWith(
+        'project-icon-section/project-02/',
+        expect.objectContaining({
+          viewHeading: 'Test Project',
+          imageURL: mockProject.imageURL,
+        }),
+      );
+      expect(setData.modifyAField).toHaveBeenCalledWith(
+        'project-data-section/project-02/',
+        'Test Project',
+        'heading',
+      );
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+    });
+
+    it('should upload a new icon and store its download url', () => {
+      jest.useFakeTimers();
+      component['imageUrl'].set('data:image/webp;base64,abc');
+
+      component['saveChanges']();
+      jest.advanceTimersByTime(100);
+      component['isEditSuccess'].subscribe();
+
+      expect(setData.pushFileToStorage).toHaveBeenCalledWith(
+        'portfolio/portfolio-tiles/ID-02-Icon.webp',
+        'data:image/webp;base64,abc',
+      );
+      expect(component['progressValue']()).toBe(40);
+      expect(component['isUploadCompleted']()).toBe(true);
+      expect(setData.setRecord).toHaveBeenCalledWith(
+        'project-icon-section/project-02/',
+        expect.objectContaining({ imageURL: 'https://cdn.example/icon.webp' }),
+      );
+    });
+
+    it('should leave the preview when the record does not save', () => {
+      setData.setRecord.mockReturnValue(of('failed'));
+      setData.modifyAField.mockReturnValue(of('failed'));
+      component['imagePreview'].set('data:image/webp;base64,abc');
+
+      component['saveChanges']();
+      let saved = true;
+      component['isEditSuccess'].subscribe((value) => {
+        saved = value;
+      });
+
+      expect(saved).toBe(false);
+      expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
+      expect(store.dispatch).not.toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
+    });
+
+    it('should stop when the tile list has not loaded', () => {
+      store.overrideSelector(portfolioCardsSelector, undefined);
+      store.refreshState();
+
+      component['saveChanges']();
+
+      expect(setData.setRecord).not.toHaveBeenCalled();
+    });
+
+    it('should leave the project card when the heading update fails', () => {
+      setData.modifyAField.mockReturnValue(of('failed'));
+
+      component['saveChanges']();
+      component['isEditSuccess'].subscribe();
+
+      expect(store.dispatch).not.toHaveBeenCalledWith(StateActions.projectCardIDStateConnect());
+    });
+
+    it('should not change the featured card heading', () => {
+      component.data.project = { ...component.data.project, id: 1 };
+
+      component['saveChanges']();
+      component['isEditSuccess'].subscribe();
+
+      expect(setData.modifyAField).not.toHaveBeenCalled();
+    });
+
+    it('should ignore an empty download url', () => {
+      getData.getPhotoURL.mockReturnValue(of(''));
+      component['imageUrl'].set('data:image/webp;base64,abc');
+      setData.pushFileToStorage.mockRejectedValue(new Error('offline'));
+
+      component['saveChanges']();
+
+      expect(component['imageUrl']()).toBe('data:image/webp;base64,abc');
+    });
+
+    it('should use placeholder copy when the tile has no text', () => {
+      component.data.project = {
+        ...component.data.project,
+        viewHeading: undefined as unknown as string,
+        viewDescription: undefined as unknown as string,
+      };
+
+      component.ngOnInit();
+
+      expect(component['tileEditorForm'].title().value()).toBe('title');
+      expect(component['tileEditorForm'].description().value()).toBe('description');
+    });
+
+    it('should replace a progress timer that is already running', () => {
+      jest.useFakeTimers();
+      const clear = jest.spyOn(window, 'clearInterval');
+      component['uploadProgressIntervalId'] = 44;
+      component['imageUrl'].set('data:image/webp;base64,abc');
+
+      component['handleFileUpload']('portfolio/portfolio-tiles/ID-02-Icon.webp');
+
+      expect(clear).toHaveBeenCalledWith(44);
     });
   });
 });

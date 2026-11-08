@@ -29,7 +29,9 @@ import {
 
 /** One submission error attached to a field. */
 interface SubmissionError {
+  /** Error kind. */
   kind: string;
+  /** Field tree. */
   fieldTree?: FieldTree<unknown>;
 }
 

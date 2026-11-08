@@ -33,9 +33,13 @@ import { ContactPopupComponent } from './components/contact_popup/contact_popup.
 
 /** Values posted from the public contact form, including the honeypot. */
 interface ContactValues {
+  /** Email address. */
   email: string;
+  /** Name. */
   name: string;
+  /** Message. */
   message: string;
+  /** Fax number. */
   faxNumber: string;
 }
 
