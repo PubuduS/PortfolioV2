@@ -21,8 +21,9 @@ import { PublicationsComponent } from './publications.component';
 
 /**
  * Store slice the publication selectors read.
- * @param publications
- * @param details
+ * @param publications Publications to display.
+ * @param details Publication details to display.
+ * @returns Store state.
  */
 function stateBanks(
   publications: IPublication[] | undefined,

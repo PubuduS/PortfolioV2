@@ -1,16 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
-  FormGroup,
-  ReactiveFormsModule,
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
+  email,
+  form,
+  FormField,
+  required,
+  submit,
+} from '@angular/forms/signals';
 
 import {
   IEmailValidatorMsgs,
@@ -18,23 +17,39 @@ import {
 } from '@portfolio-v2/state/dataModels';
 import { AuthService } from '@portfolio-v2/shared/services';
 
+/** Email and password entered on the sign-in form. */
+interface LoginValues {
+  /** Email address. */
+  email: string;
+  /** Password. */
+  password: string;
+}
+
 /**
  * Admin Login Panel
  */
 @Component({
   selector: 'portfolio-login',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormField],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
+  /** Email and password the visitor typed. */
+  private readonly loginModel = signal<LoginValues>({
+    email: '',
+    password: '',
+  });
+
   /** Login form */
-  protected loginForm!: FormGroup;
+  protected readonly loginForm = form(this.loginModel, (fields) => {
+    required(fields.email);
+    email(fields.email);
+    required(fields.password);
+  });
+
   /** True until a sign-in attempt is rejected. */
   protected readonly isCredentialsRight = signal(true);
 
@@ -52,33 +67,26 @@ export class LoginComponent implements OnInit {
   /**
    * constructor
    * @param authService auth service
-   * @param formBuilder form builder
    */
   constructor(
     private authService: AuthService,
-    private formBuilder: FormBuilder,
   ) {}
-
-  /**
-   * Build the email and password form.
-   * @inheritdoc
-   */
-  public ngOnInit(): void {
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-    });
-  }
 
   /**
    * Login function
    */
   public async login(): Promise<void> {
-    const { email, password } = this.loginForm.value;
-    const accepted = await this.authService.signIn(email, password);
-    this.isCredentialsRight.set(accepted);
-    if (!accepted) {
-      this.loginForm.reset();
-    }
+    await submit(this.loginForm, async () => {
+      const { email: address, password } = this.loginForm().value();
+      const accepted = await this.authService.signIn(address, password);
+      this.isCredentialsRight.set(accepted);
+      if (!accepted) {
+        this.loginForm().reset({
+          email: '',
+          password: '',
+        });
+      }
+      return undefined;
+    });
   }
 }
