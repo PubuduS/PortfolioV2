@@ -8,7 +8,7 @@ import { Routes } from '@angular/router';
 export const PAGE_ROUTES: Routes = [
   {
     path: 'aboutme',
-    loadComponent: () => import('./about_me/about_me.component').then(
+    loadComponent: () => import('./about-me/about-me.component').then(
       (mod) => mod.AboutMeComponent,
     ),
   },
@@ -32,19 +32,19 @@ export const PAGE_ROUTES: Routes = [
   },
   {
     path: 'featured-projects',
-    loadComponent: () => import('./portfolio/components/featured_projects/featured_projects.component').then(
+    loadComponent: () => import('./portfolio/components/featured-projects/featured-projects.component').then(
       (mod) => mod.FeaturedProjectsComponent,
     ),
   },
   {
     path: 'education',
-    loadChildren: () => import('./education_main/education.route').then(
+    loadChildren: () => import('./education-main/education.route').then(
       (route) => route.EDUCATION_ROUTES,
     ),
   },
   {
     path: 'coverletter',
-    loadComponent: () => import('./cover_letter/cover_letter.component').then(
+    loadComponent: () => import('./cover-letter/cover-letter.component').then(
       (mod) => mod.CoverLetterComponent,
     ),
   },
@@ -56,7 +56,7 @@ export const PAGE_ROUTES: Routes = [
   },
   {
     path: 'party-mode',
-    loadComponent: () => import('./party_mode/party_mode.component').then(
+    loadComponent: () => import('./party-mode/party-mode.component').then(
       (mod) => mod.PartyModeComponent,
     ),
   },

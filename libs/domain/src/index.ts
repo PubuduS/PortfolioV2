@@ -1,21 +1,21 @@
 export { IResult } from './results/IResult';
 export { IWeather, OpenWeatherResponse } from './weather/IWeather';
-export { ICertificateCard } from './certificate_display/ICertificateCard';
+export { ICertificateCard } from './certificate-display/ICertificateCard';
 export {
   CERTIFICATE_COLLECTION,
   NO_CREDENTIAL_ID,
   certificateDocPath,
   nextCertificateId,
   toCertificateDraft,
-} from './certificate_display/certificate';
+} from './certificate-display/certificate';
 export type {
   CertificateDraftFailure,
   CertificateDraftResult,
   CertificateEditTarget,
   CertificateFormValues,
   CertificateStatus,
-} from './certificate_display/certificate';
-export { IProjectCard, IProjectView } from './project_display/IProjectCard';
+} from './certificate-display/certificate';
+export { IProjectCard, IProjectView } from './project-display/IProjectCard';
 export {
   FEATURED_PROJECT_COLLECTION,
   PROJECT_DATA_COLLECTION,
@@ -26,7 +26,7 @@ export {
   projectIconDocPath,
   projectIconFilePath,
   projectScreenshotFilePath,
-} from './project_display/project';
+} from './project-display/project';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
 export {
   PUBLICATION_COLLECTIONS,
@@ -66,11 +66,11 @@ export {
   ISenderNameValidatorMsgs,
   IMessageValidatorMsgs,
   IPasswordValidatorMsgs,
-} from './validator_msgs/IValidatorErrorMsg';
+} from './validator-msgs/IValidatorErrorMsg';
 export { ISkills } from './skills/ISkills';
 export { SKILLS_COLLECTION, SKILLS_DOC_PATH } from './skills/skills';
-export { IAboutMe } from './about_me/IAboutMe';
-export { ABOUT_ME_COLLECTION, ABOUT_ME_DOC_PATH } from './about_me/about-me';
+export { IAboutMe } from './about-me/IAboutMe';
+export { ABOUT_ME_COLLECTION, ABOUT_ME_DOC_PATH } from './about-me/about-me';
 export { IEducation } from './education/IEducation';
 export {
   EDUCATION_COLLECTION,

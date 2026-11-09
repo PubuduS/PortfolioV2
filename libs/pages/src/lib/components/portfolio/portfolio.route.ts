@@ -14,7 +14,7 @@ export const PORTFOLIO_ROUTES: Routes = [
   },
   {
     path: 'featured-projects',
-    loadComponent: () => import('./components/featured_projects/featured_projects.component').then(
+    loadComponent: () => import('./components/featured-projects/featured-projects.component').then(
       (mod) => mod.FeaturedProjectsComponent,
     ),
   },

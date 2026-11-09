@@ -29,7 +29,7 @@ import {
   isPreviewModeSelector,
   isPartyModeSelector,
 } from '@portfolio-v2/state/selectors';
-import { WeatherDisplayComponent } from '../weather_display/weather_display.component';
+import { WeatherDisplayComponent } from '../weather-display/weather-display.component';
 import {
   mirrorUrl,
   navSectionPaths,
