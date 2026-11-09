@@ -348,13 +348,17 @@ describe('ProjectCardsComponent', () => {
       expect(component['imageUrl']()).toBe('firebase-url');
     });
 
-    it('should save the card through the portfolio writer', () => {
+    it('should save the card through the portfolio writer', async () => {
       const testCard: IProjectCard = { ...mockProjectCard };
       writer.saveCard.mockResolvedValue(undefined);
+      jest.spyOn(store, 'dispatch');
 
-      component['saveDataRecord'](testCard);
+      await component['saveDataRecord'](testCard);
 
       expect(writer.saveCard).toHaveBeenCalledWith(testCard, false);
+      expect(component['isEditSuccess']()).toBe(true);
+      expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
   });
 
@@ -381,14 +385,15 @@ describe('ProjectCardsComponent', () => {
       }).not.toThrow();
     });
 
-    it('should handle service failures gracefully', () => {
+    it('should handle service failures gracefully', async () => {
       writer.saveCard.mockRejectedValue(new Error('offline'));
+      jest.spyOn(store, 'dispatch');
 
-      expect(() => {
-        component['updateData']();
-      }).not.toThrow();
+      await component['updateData']();
 
       expect(writer.saveCard).toHaveBeenCalled();
+      expect(component['isEditSuccess']()).toBe(false);
+      expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
   });
 

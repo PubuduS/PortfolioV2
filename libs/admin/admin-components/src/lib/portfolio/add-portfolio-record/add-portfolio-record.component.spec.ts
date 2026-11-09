@@ -12,7 +12,6 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
-import { firstValueFrom } from 'rxjs';
 
 import { fieldHasError } from '@portfolio-v2/shared/forms';
 import { StateActions } from '@portfolio-v2/state';
@@ -310,9 +309,8 @@ describe('AddPortfolioRecordComponent', () => {
       jest.spyOn(store, 'dispatch');
 
       await component['addData']();
-      const saved = await firstValueFrom(component['isEditSuccess']);
 
-      expect(saved).toBe(true);
+      expect(component['isEditSuccess']()).toBe(true);
       expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           gitDisable: true,
@@ -349,9 +347,8 @@ describe('AddPortfolioRecordComponent', () => {
       component['cardAddForm'].technologies().value.set('Angular');
 
       await component['addData']();
-      const saved = await firstValueFrom(component['isEditSuccess']);
 
-      expect(saved).toBe(false);
+      expect(component['isEditSuccess']()).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
     });
   });
@@ -504,9 +501,8 @@ describe('AddPortfolioRecordComponent', () => {
       jest.spyOn(store, 'dispatch');
 
       await featured['addData']();
-      const saved = await firstValueFrom(featured['isEditSuccess']);
 
-      expect(saved).toBe(true);
+      expect(featured['isEditSuccess']()).toBe(true);
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
     });
 

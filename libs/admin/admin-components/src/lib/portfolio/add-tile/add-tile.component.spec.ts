@@ -271,12 +271,8 @@ describe('AddTileComponent', () => {
 
     it('should save the placeholder when no file was picked', async () => {
       await component['saveChanges']();
-      let saved = false;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
 
-      expect(saved).toBe(true);
+      expect(component['isEditSuccess']()).toBe(true);
       expect(writer.saveTile).toHaveBeenCalledWith(expect.objectContaining({
         id: 3,
         viewHeading: 'Test Title',
@@ -321,13 +317,8 @@ describe('AddTileComponent', () => {
       component['imagePreview'].set('data:image/webp;base64,abc');
 
       await component['saveChanges']();
-      await Promise.resolve();
-      let saved = true;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
 
-      expect(saved).toBe(false);
+      expect(component['isEditSuccess']()).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
     });
 

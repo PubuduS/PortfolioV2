@@ -11,7 +11,6 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { firstValueFrom } from 'rxjs';
 
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
@@ -281,10 +280,9 @@ describe('DescriptionCardComponent', () => {
     });
 
     it('should keep the current image when no new file was picked', async () => {
-      component['saveChanges']();
-      const saved = await firstValueFrom(component['isEditSuccess']);
+      await component['saveChanges']();
 
-      expect(saved).toBe(true);
+      expect(component['isEditSuccess']()).toBe(true);
       expect(writer.saveTile).toHaveBeenCalledWith(expect.objectContaining({
         viewHeading: 'Test Project',
         imageURL: mockProject.imageURL,
@@ -316,10 +314,9 @@ describe('DescriptionCardComponent', () => {
       writer.saveTile.mockRejectedValue(new Error('offline'));
       component['imagePreview'].set('data:image/webp;base64,abc');
 
-      component['saveChanges']();
-      const saved = await firstValueFrom(component['isEditSuccess']);
+      await component['saveChanges']();
 
-      expect(saved).toBe(false);
+      expect(component['isEditSuccess']()).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
@@ -336,8 +333,7 @@ describe('DescriptionCardComponent', () => {
     it('should leave the project card when the heading update fails', async () => {
       writer.patchCardHeading.mockRejectedValue(new Error('offline'));
 
-      component['saveChanges']();
-      await firstValueFrom(component['isEditSuccess']);
+      await component['saveChanges']();
 
       expect(writer.patchCardHeading).toHaveBeenCalled();
     });
@@ -345,8 +341,7 @@ describe('DescriptionCardComponent', () => {
     it('should not change the featured card heading', async () => {
       component.data.project = { ...component.data.project, id: 1 };
 
-      component['saveChanges']();
-      await firstValueFrom(component['isEditSuccess']);
+      await component['saveChanges']();
 
       expect(writer.patchCardHeading).not.toHaveBeenCalled();
     });

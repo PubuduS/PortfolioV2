@@ -57,9 +57,11 @@
               <a routerLink="/admin/analytics">Analytics</a>
             </li>
           }
-          <li class="nav-item">
-            <a [routerLink]="['content/admin']">Admin</a>
-          </li>
+          @if (!isAdminMode()) {
+            <li class="nav-item">
+              <a [routerLink]="['content/admin']">Admin</a>
+            </li>
+          }
 
           <!-- This is needed for space between contact button and cover letter menu item -->
           <li class="nav-item contact"></li>

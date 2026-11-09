@@ -21,14 +21,6 @@ import {
 } from '@angular/forms/signals';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
-import {
-  catchError,
-  from,
-  map,
-  Observable,
-  of,
-  take,
-} from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { TilePreviewComponent } from '@portfolio-v2/admin/shared/components';
@@ -81,8 +73,8 @@ export class DescriptionCardComponent implements OnInit {
   /** Selected Image URL */
   protected readonly imageUrl = signal('');
 
-  /** Returns true if the edit is successful */
-  protected isEditSuccess = of(false);
+  /** True after a tile is stored. */
+  protected readonly isEditSuccess = signal(false);
 
   /** Upload Complete Flag */
   protected readonly isUploadCompleted = signal(false);
@@ -144,7 +136,7 @@ export class DescriptionCardComponent implements OnInit {
   /**
    * Save changes
    */
-  protected saveChanges(): void {
+  protected async saveChanges(): Promise<void> {
     // Validate form before proceeding
     if (!this.tileEditorForm().valid()) {
       return;
@@ -171,8 +163,7 @@ export class DescriptionCardComponent implements OnInit {
     // Create updated project view
     const newProjectView = this.createUpdatedProjectView(title, description, imageURL);
 
-    // Save to database and handle success/updates
-    this.isEditSuccess = this.saveDataRecord(newProjectView, title);
+    await this.saveDataRecord(newProjectView, title);
   }
 
   /**
@@ -212,26 +203,26 @@ export class DescriptionCardComponent implements OnInit {
    * Persist project changes to the database
    * @param newProjectView updated project view
    * @param title new project title
-   * @returns observable of success status
+   * @returns true when the tile is stored
    */
-  private saveDataRecord(
+  private async saveDataRecord(
     newProjectView: IProjectView,
     title: string,
-  ): Observable<boolean> {
-    return from(this.writer.saveTile(newProjectView)).pipe(
-      take(1),
-      map(() => {
-        this.data.project = newProjectView;
-        this.imagePreview.set(this.defaultImageSrc);
-        this.updateRelatedProjectCard(title);
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return true;
-      }),
-      catchError(() => {
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return of(false);
-      }),
-    );
+  ): Promise<boolean> {
+    this.isEditSuccess.set(false);
+    try {
+      await this.writer.saveTile(newProjectView);
+      this.data.project = newProjectView;
+      this.imagePreview.set(this.defaultImageSrc);
+      this.updateRelatedProjectCard(title);
+      this.store.dispatch(StateActions.portfolioCardsStateConnect());
+      this.isEditSuccess.set(true);
+      return true;
+    } catch {
+      this.store.dispatch(StateActions.portfolioCardsStateConnect());
+      this.isEditSuccess.set(false);
+      return false;
+    }
   }
 
   /**
