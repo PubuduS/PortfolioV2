@@ -22,23 +22,19 @@ import {
   MatDialog,
   MatDialogModule,
 } from '@angular/material/dialog';
-import {
-  map,
-  of,
-  take,
-} from 'rxjs';
 
 import { fieldHasError } from '@portfolio-v2/shared/forms';
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { UploadPhotoComponent } from '@portfolio-v2/admin/shared/components';
 import { webUrl } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import { IUploadPhotoConfig } from '@portfolio-v2/admin/shared/types';
+import {
+  AboutMeWriter,
+  aboutMeWriteMessage,
+} from './services/about-me-writer.service';
 
 /** Text the about-me editor saves. */
 interface AboutMeValues {
@@ -102,8 +98,14 @@ export class AboutMeComponent implements OnInit {
     webUrl(fields.linkField);
   });
 
-  /** Returns true if the save is successful */
-  protected isSaveSuccess = of(false);
+  /** True after a save has been written. */
+  protected readonly isSaveSuccess = signal(false);
+
+  /** Shown when the write fails. */
+  protected readonly saveError = signal<string | null>(null);
+
+  /** Photo chosen in this visit, before it is stored on the document. */
+  private readonly uploadedImage = signal<string | undefined>(undefined);
 
   /** Signal containing About Me section data */
   public readonly aboutMeData: Signal<IAboutMe | undefined>;
@@ -113,13 +115,13 @@ export class AboutMeComponent implements OnInit {
 
   /**
    * constructor
-   * @param setDataService Set Data Service
+   * @param writer about-me writes
    * @param store ngrx store
    * @param dialog Mat Dialog
    * @param utility utility service
    */
   constructor(
-    private setDataService: SetDataService,
+    private writer: AboutMeWriter,
     private store: Store,
     private dialog: MatDialog,
     private utility: UtilityService,
@@ -176,13 +178,7 @@ export class AboutMeComponent implements OnInit {
           fieldPath: 'portfolio/about-me-section/profile/MyPhoto.webp/',
           currentImageUrl: this.aboutMeData()?.imageSrc,
           onImageUploaded: (imageUrl: string) => {
-            const current = this.aboutMeData();
-            if (!current) {
-              return;
-            }
-            this.store.dispatch(StateActions.aboutMeStateUpdated({
-              aboutMe: { ...current, imageSrc: imageUrl },
-            }));
+            this.uploadedImage.set(imageUrl);
           },
         } satisfies IUploadPhotoConfig,
       },
@@ -192,14 +188,14 @@ export class AboutMeComponent implements OnInit {
   /**
    * Update data
    */
-  protected updateData(): void {
+  protected async updateData(): Promise<void> {
     const {
       mainIntro, subIntro, leftPoints, rightPoints, linkField,
     } = this.aboutMeForm().value();
 
     const newAboutMeValues: IAboutMe = {
       id: 1,
-      imageSrc: this.aboutMeData()?.imageSrc ?? '',
+      imageSrc: this.uploadedImage() ?? this.aboutMeData()?.imageSrc ?? '',
       intro: this.utility.breakStringToParagraphs(mainIntro),
       subHeadingIntro: subIntro,
       leftPoints: this.utility.breakStringToParagraphs(leftPoints),
@@ -207,14 +203,13 @@ export class AboutMeComponent implements OnInit {
       link: linkField,
     };
 
-    this.isSaveSuccess = this.setDataService.setRecord<IAboutMe>('about-me-section/part-01/', newAboutMeValues).pipe(
-      take(1),
-      map((result) => {
-        this.store.dispatch(StateActions.aboutMeStateUpdated({
-          aboutMe: newAboutMeValues,
-        }));
-        return result === 'successfull';
-      }),
-    );
+    this.isSaveSuccess.set(false);
+    this.saveError.set(null);
+    try {
+      await this.writer.save(newAboutMeValues);
+      this.isSaveSuccess.set(true);
+    } catch (error) {
+      this.saveError.set(aboutMeWriteMessage(error));
+    }
   }
 }

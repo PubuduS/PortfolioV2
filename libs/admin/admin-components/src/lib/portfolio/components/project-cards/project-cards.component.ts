@@ -23,6 +23,8 @@ import {
   required,
 } from '@angular/forms/signals';
 import {
+  catchError,
+  from,
   map,
   Observable,
   of,
@@ -48,7 +50,11 @@ import {
   ProjectCardType,
   UploadPhotoComponent,
 } from '@portfolio-v2/admin/shared/components';
-import { IProjectCard } from '@portfolio-v2/state/dataModels';
+import {
+  IProjectCard,
+  projectCardImageFilePath,
+} from '@portfolio-v2/state/dataModels';
+import { PortfolioWriter } from '../../services/portfolio-writer.service';
 
 /** Text and links the project-card editor saves. */
 interface ProjectCardValues {
@@ -152,6 +158,7 @@ export class ProjectCardsComponent implements OnInit {
    * @param data.type project card type
    * @param dialog dialog ref
    * @param setDataService set data service
+   * @param writer portfolio writes
    * @param store ngrx store
    * @param utility utility service
    */
@@ -159,6 +166,7 @@ export class ProjectCardsComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { cardId: number, type: ProjectCardType },
     public dialog: MatDialog,
     private setDataService: SetDataService,
+    private writer: PortfolioWriter,
     private store: Store,
     private utility: UtilityService,
   ) {
@@ -262,15 +270,8 @@ export class ProjectCardsComponent implements OnInit {
       description, technologies, codebase, youtube, screenshot, documentation,
     } = this.cardEditorForm().value();
 
-    let fileStoragePath = '';
-    let databaseDocPath = '';
-    if (this.data.type === ProjectCardType.featured) {
-      fileStoragePath = `portfolio/featured-projects/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
-      databaseDocPath = `featured-project-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
-    } else {
-      fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.cardId, 2)}-Image.webp/`;
-      databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.cardId, 2)}/`;
-    }
+    const featured = this.data.type === ProjectCardType.featured;
+    const fileStoragePath = projectCardImageFilePath(this.cardId, featured);
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
     const chosenImage = this.imageUrl();
@@ -299,10 +300,7 @@ export class ProjectCardsComponent implements OnInit {
       docDisable: documentation === '',
     };
 
-    this.isEditSuccess = this.saveDataRecord(
-      databaseDocPath,
-      updatedCard,
-    );
+    this.isEditSuccess = this.saveDataRecord(updatedCard);
   }
 
   /**
@@ -320,29 +318,34 @@ export class ProjectCardsComponent implements OnInit {
 
   /**
    * Save project card to database and handle success/updates
-   * @param databaseDocPath path to the project document
    * @param newProjectCard updated project card
    * @returns observable of success status
    */
-  private saveDataRecord(
-    databaseDocPath: string,
-    newProjectCard: IProjectCard,
-  ): Observable<boolean> {
-    return this.setDataService
-      .setRecord<IProjectCard>(databaseDocPath, newProjectCard).pipe(
+  private saveDataRecord(newProjectCard: IProjectCard): Observable<boolean> {
+    const featured = this.data.type === ProjectCardType.featured;
+    return from(this.writer.saveCard(newProjectCard, featured)).pipe(
       take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Reset the preview to placeholder
-          this.imagePreview.set(this.defaultImageSrc);
-        }
-        if (this.data.type === ProjectCardType.featured) {
-          this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
-        } else {
-          this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        }
-        return result === 'successfull';
+      map(() => {
+        this.imagePreview.set(this.defaultImageSrc);
+        this.connectSavedCard(featured);
+        return true;
+      }),
+      catchError(() => {
+        this.connectSavedCard(featured);
+        return of(false);
       }),
     );
+  }
+
+  /**
+   * Ask the live listener to refresh the card that was just written.
+   * @param featured true when the card is a featured project
+   */
+  private connectSavedCard(featured: boolean): void {
+    if (featured) {
+      this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
+      return;
+    }
+    this.store.dispatch(StateActions.portfolioCardsStateConnect());
   }
 }

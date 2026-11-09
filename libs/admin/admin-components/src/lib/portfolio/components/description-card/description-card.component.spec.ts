@@ -11,7 +11,7 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
@@ -22,6 +22,7 @@ import {
   UtilityService,
 } from '@portfolio-v2/shared/services';
 import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
+import { PortfolioWriter } from '../../services/portfolio-writer.service';
 import { DescriptionCardComponent } from './description-card.component';
 
 describe('DescriptionCardComponent', () => {
@@ -56,11 +57,11 @@ describe('DescriptionCardComponent', () => {
         },
         {
           provide: SetDataService,
-          useValue: createSpyObj(SetDataService.name, [
-            'uploadDataUrl',
-            'setRecord',
-            'modifyAField',
-          ]),
+          useValue: createSpyObj(SetDataService.name, ['uploadDataUrl']),
+        },
+        {
+          provide: PortfolioWriter,
+          useValue: createSpyObj(PortfolioWriter),
         },
         {
           provide: UtilityService,
@@ -221,14 +222,13 @@ describe('DescriptionCardComponent', () => {
 
   describe('when the tile is saved', () => {
     let setData: jest.Mocked<SetDataService>;
-    let utility: jest.Mocked<UtilityService>;
+    let writer: jest.Mocked<PortfolioWriter>;
 
     beforeEach(() => {
       setData = TestBed.inject(SetDataService) as jest.Mocked<SetDataService>;
-      utility = TestBed.inject(UtilityService) as jest.Mocked<UtilityService>;
-      utility.getPaddedDigits.mockReturnValue('02');
-      setData.setRecord.mockReturnValue(of('successfull'));
-      setData.modifyAField.mockReturnValue(of('successfull'));
+      writer = TestBed.inject(PortfolioWriter) as jest.Mocked<PortfolioWriter>;
+      writer.saveTile.mockResolvedValue(undefined);
+      writer.patchCardHeading.mockResolvedValue(undefined);
       setData.uploadDataUrl.mockImplementation(async (_path, _dataUrl, onProgress) => {
         onProgress?.(100);
         return 'https://cdn.example/icon.webp';
@@ -277,29 +277,19 @@ describe('DescriptionCardComponent', () => {
 
       component['saveChanges']();
 
-      expect(setData.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveTile).not.toHaveBeenCalled();
     });
 
-    it('should keep the current image when no new file was picked', () => {
+    it('should keep the current image when no new file was picked', async () => {
       component['saveChanges']();
-      let saved = false;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      const saved = await firstValueFrom(component['isEditSuccess']);
 
       expect(saved).toBe(true);
-      expect(setData.setRecord).toHaveBeenCalledWith(
-        'project-icon-section/project-02/',
-        expect.objectContaining({
-          viewHeading: 'Test Project',
-          imageURL: mockProject.imageURL,
-        }),
-      );
-      expect(setData.modifyAField).toHaveBeenCalledWith(
-        'project-data-section/project-02/',
-        'Test Project',
-        'heading',
-      );
+      expect(writer.saveTile).toHaveBeenCalledWith(expect.objectContaining({
+        viewHeading: 'Test Project',
+        imageURL: mockProject.imageURL,
+      }));
+      expect(writer.patchCardHeading).toHaveBeenCalledWith(mockProject.id, 'Test Project');
       expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
     });
 
@@ -316,23 +306,18 @@ describe('DescriptionCardComponent', () => {
       );
       expect(component['progressValue']()).toBe(100);
       expect(component['isUploadCompleted']()).toBe(true);
-      expect(setData.setRecord).toHaveBeenCalledWith(
-        'project-icon-section/project-02/',
+      expect(writer.saveTile).toHaveBeenCalledWith(
         expect.objectContaining({ imageURL: 'data:image/webp;base64,abc' }),
       );
       expect(component['imageUrl']()).toBe('https://cdn.example/icon.webp');
     });
 
-    it('should leave the preview when the record does not save', () => {
-      setData.setRecord.mockReturnValue(of('failed'));
-      setData.modifyAField.mockReturnValue(of('failed'));
+    it('should leave the preview when the record does not save', async () => {
+      writer.saveTile.mockRejectedValue(new Error('offline'));
       component['imagePreview'].set('data:image/webp;base64,abc');
 
       component['saveChanges']();
-      let saved = true;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      const saved = await firstValueFrom(component['isEditSuccess']);
 
       expect(saved).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
@@ -345,25 +330,25 @@ describe('DescriptionCardComponent', () => {
 
       component['saveChanges']();
 
-      expect(setData.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveTile).not.toHaveBeenCalled();
     });
 
-    it('should leave the project card when the heading update fails', () => {
-      setData.modifyAField.mockReturnValue(of('failed'));
+    it('should leave the project card when the heading update fails', async () => {
+      writer.patchCardHeading.mockRejectedValue(new Error('offline'));
 
       component['saveChanges']();
-      component['isEditSuccess'].subscribe();
+      await firstValueFrom(component['isEditSuccess']);
 
-      expect(setData.modifyAField).toHaveBeenCalled();
+      expect(writer.patchCardHeading).toHaveBeenCalled();
     });
 
-    it('should not change the featured card heading', () => {
+    it('should not change the featured card heading', async () => {
       component.data.project = { ...component.data.project, id: 1 };
 
       component['saveChanges']();
-      component['isEditSuccess'].subscribe();
+      await firstValueFrom(component['isEditSuccess']);
 
-      expect(setData.modifyAField).not.toHaveBeenCalled();
+      expect(writer.patchCardHeading).not.toHaveBeenCalled();
     });
 
     it('should keep the preview when storage rejects the upload', async () => {

@@ -13,6 +13,7 @@ import { Store } from '@ngrx/store';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
 import { ProjectCardComponent } from './components/project_card/project_card.component';
+import { ProjectTileComponent } from './components/project-tile/project-tile.component';
 
 /**
  * Portfolio Section
@@ -23,6 +24,7 @@ import { ProjectCardComponent } from './components/project_card/project_card.com
   imports: [
     MatButtonModule,
     MatDialogModule,
+    ProjectTileComponent,
   ],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',

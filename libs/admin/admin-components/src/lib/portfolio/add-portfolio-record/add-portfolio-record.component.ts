@@ -21,6 +21,8 @@ import {
   required,
 } from '@angular/forms/signals';
 import {
+  catchError,
+  from,
   map,
   Observable,
   of,
@@ -37,10 +39,16 @@ import {
   webUrl,
 } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
-import { IProjectCard } from '@portfolio-v2/state/dataModels';
-import { ProjectCardFieldsComponent } from '../project-card-fields/project-card-fields.component';
-import { UploadPhotoComponent } from '../upload-photo/upload-photo.component';
-import { ProjectCardType } from '../types/project-cards-type.enum';
+import {
+  IProjectCard,
+  projectCardImageFilePath,
+} from '@portfolio-v2/state/dataModels';
+import {
+  ProjectCardFieldsComponent,
+  ProjectCardType,
+  UploadPhotoComponent,
+} from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../services/portfolio-writer.service';
 
 /** Text and links for a new project card. */
 interface NewCardValues {
@@ -150,12 +158,14 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
    * @param setDataService set data service
    * @param store ngrx store
    * @param utility utility service
+   * @param writer portfolio writes
    */
   constructor(
     public dialog: MatDialog,
     private setDataService: SetDataService,
     private store: Store,
     private utility: UtilityService,
+    private writer: PortfolioWriter,
   ) {}
 
   /**
@@ -235,18 +245,12 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       description, technologies, codebase, youtube, screenshot, documentation,
     } = this.cardAddForm().value();
 
+    const featured = this.data.type === ProjectCardType.featured;
     let { heading } = this.data;
-    let fileStoragePath = '';
-    let databaseDocPath = '';
-
-    if (this.data.type === ProjectCardType.featured) {
+    if (featured) {
       heading = this.cardAddForm().value().heading || 'Default Heading';
-      fileStoragePath = `portfolio/featured-projects/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
-      databaseDocPath = `featured-project-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
-    } else {
-      fileStoragePath = `portfolio/project-card-images/ID-${this.utility.getPaddedDigits(this.data.currentId, 2)}-Image.webp/`;
-      databaseDocPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.currentId, 2)}/`;
     }
+    const fileStoragePath = projectCardImageFilePath(this.data.currentId, featured);
 
     // Handle file upload if a new file was selected (check if imageUrl is not empty/default)
     const chosenImage = this.imageUrl();
@@ -283,10 +287,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       docDisable: documentation === '',
     };
 
-    this.isEditSuccess = this.saveDataRecord(
-      databaseDocPath,
-      updatedCard,
-    );
+    this.isEditSuccess = this.saveDataRecord(updatedCard);
   }
 
   /**
@@ -329,31 +330,35 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
 
   /**
    * Save project card to database and handle success/updates
-   * @param databaseDocPath path to the project document
    * @param newProjectCard updated project card
    * @returns observable of success status
    */
-  private saveDataRecord(
-    databaseDocPath: string,
-    newProjectCard: IProjectCard,
-  ): Observable<boolean> {
-    return this.setDataService
-      .setRecord<IProjectCard>(databaseDocPath, newProjectCard).pipe(
+  private saveDataRecord(newProjectCard: IProjectCard): Observable<boolean> {
+    const featured = this.data.type === ProjectCardType.featured;
+    return from(this.writer.saveCard(newProjectCard, featured)).pipe(
       take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Reset the preview to placeholder
-          this.imagePreview.set(this.defaultImageSrc);
-        }
-        if (this.data.type === ProjectCardType.featured) {
-          this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
-        } else {
-          this.store.dispatch(StateActions.portfolioCardsStateConnect());
-          this.store.dispatch(StateActions.projectCardsStateConnect());
-        }
-
-        return result === 'successfull';
+      map(() => {
+        this.imagePreview.set(this.defaultImageSrc);
+        this.connectSavedCard(featured);
+        return true;
+      }),
+      catchError(() => {
+        this.connectSavedCard(featured);
+        return of(false);
       }),
     );
+  }
+
+  /**
+   * Ask the live listeners to refresh the card that was just written.
+   * @param featured true when the card is a featured project
+   */
+  private connectSavedCard(featured: boolean): void {
+    if (featured) {
+      this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
+      return;
+    }
+    this.store.dispatch(StateActions.portfolioCardsStateConnect());
+    this.store.dispatch(StateActions.projectCardsStateConnect());
   }
 }

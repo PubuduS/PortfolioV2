@@ -1,15 +1,24 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-
-import { initializeApp, getApps, type App } from 'firebase-admin/app';
-import { getAuth, type Auth } from 'firebase-admin/auth';
+import {
+initializeApp,
+getApps,
+type App
+} from 'firebase-admin/app'
+import {
+getAuth,
+type Auth
+} from 'firebase-admin/auth'
 import {
   GeoPoint,
   getFirestore,
   Timestamp,
   type Firestore,
 } from 'firebase-admin/firestore';
-import { getStorage, type Storage } from 'firebase-admin/storage';
+import {
+getStorage,
+type Storage
+} from 'firebase-admin/storage'
 
 import {
   BASELINE_ROOT,
@@ -45,9 +54,17 @@ export interface EmulatorClients {
 let clients: EmulatorClients | null = null;
 
 /**
+ * Formats one emulator host and port.
+ * @param name Emulator service name.
+ * @returns host:port
+ */
+function hostPort(name: keyof typeof EMULATOR_PORTS): string {
+  return `${EMULATOR_TARGET.hosts[name]}:${EMULATOR_PORTS[name]}`;
+}
+
+/**
  * Opens firebase-admin against the demo emulators.
  * Callers must already be inside a process that passed the emulator guard.
- *
  * @returns Cached emulator clients.
  */
 export function connectEmulators(): EmulatorClients {
@@ -73,41 +90,62 @@ export function connectEmulators(): EmulatorClients {
 }
 
 /**
- * Writes the committed baseline into the running emulators.
- * A second run overwrites the same documents, objects, and admin user.
+ * Reads and parses a JSON file.
+ * @param filePath Absolute file path.
+ * @returns Parsed JSON.
  */
-export async function seedBaseline(): Promise<void> {
-  assertEmulatorTarget(EMULATOR_TARGET);
-  clearCredentialEnv();
-  const { firestore, auth, storage } = connectEmulators();
-  const manifest = await readManifest();
-  const codec = codecFor(firestore);
-  let docCount = 0;
-  for (const collection of Object.keys(manifest.firestore).sort()) {
-    const documents = await readCollection(collection);
-    for (const document of documents) {
-      await writeDocument(firestore, codec, collection, document);
-      docCount += 1;
-    }
-  }
-  const bucket = storage.bucket(EMULATOR_BUCKET);
-  for (const objectPath of Object.keys(manifest.storage).sort()) {
-    const entry = manifest.storage[objectPath];
-    if (!entry) {
-      throw new Error(`missing storage manifest entry ${objectPath}`);
-    }
-    const bytes = await fs.readFile(storagePath(objectPath));
-    await bucket.file(objectPath).save(bytes, {
-      contentType: entry.contentType,
-      resumable: false,
-      validation: false,
-      metadata: { contentType: entry.contentType },
-    });
-  }
-  await ensureAdmin(auth);
-  process.stdout.write(`seeded ${docCount} docs and ${Object.keys(manifest.storage).length} objects\n`);
+async function readJson(filePath: string): Promise<unknown> {
+  const text = await fs.readFile(filePath, 'utf8');
+  return JSON.parse(text) as unknown;
 }
 
+/**
+ * Reads db/baseline/manifest.json.
+ * @returns Parsed baseline manifest.
+ */
+async function readManifest(): Promise<BaselineManifest> {
+  return parseManifest(await readJson(path.join(BASELINE_ROOT, 'manifest.json')));
+}
+
+/**
+ * Builds the admin SDK codec used to decode baseline values.
+ * @param firestore Emulator Firestore client.
+ * @returns Decode codec.
+ */
+function codecFor(firestore: Firestore): DecodeCodec {
+  return {
+    timestamp: (seconds, nanoseconds) => new Timestamp(seconds, nanoseconds),
+    geopoint: (latitude, longitude) => new GeoPoint(latitude, longitude),
+    bytes: (base64) => Buffer.from(base64, 'base64'),
+    reference: (referencePath) => firestore.doc(referencePath),
+  };
+}
+
+/**
+ * Reads one collection file from db/baseline/firestore.
+ * @param collection Collection id.
+ * @returns Documents in file order.
+ */
+async function readCollection(collection: string): Promise<BaselineDocument[]> {
+  return parseBaselineDocuments(await readJson(path.join(BASELINE_ROOT, 'firestore', `${collection}.json`)));
+}
+
+/**
+ * True when the value is a plain object.
+ * @param value Value to test.
+ * @returns Whether the value is a non-array object.
+ */
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Writes one decoded baseline document into Firestore.
+ * @param firestore Emulator Firestore client.
+ * @param codec Constructors for Firestore-only types.
+ * @param collection Collection id.
+ * @param document Baseline document.
+ */
 async function writeDocument(
   firestore: Firestore,
   codec: DecodeCodec,
@@ -124,6 +162,34 @@ async function writeDocument(
   await firestore.collection(collection).doc(document.id).set(decoded);
 }
 
+/**
+ * Maps a storage object path onto a file under db/baseline/storage.
+ * @param objectPath Storage object path.
+ * @returns Absolute file path.
+ */
+function storagePath(objectPath: string): string {
+  if (objectPath.startsWith('/') || objectPath.split('/').includes('..')) {
+    throw new Error(`refusing storage path ${objectPath}`);
+  }
+  return path.join(BASELINE_ROOT, 'storage', ...objectPath.split('/'));
+}
+
+/**
+ * Reads a Firebase error code when the thrown value has one.
+ * @param error Caught value.
+ * @returns Code string, or an empty string.
+ */
+function errorCode(error: unknown): string {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    return String(error.code);
+  }
+  return '';
+}
+
+/**
+ * Creates or updates the emulator admin account.
+ * @param auth Emulator Auth client.
+ */
 async function ensureAdmin(auth: Auth): Promise<void> {
   try {
     const user = await auth.getUserByEmail(TEST_ADMIN_EMAIL);
@@ -144,50 +210,51 @@ async function ensureAdmin(auth: Auth): Promise<void> {
   }
 }
 
-function codecFor(firestore: Firestore): DecodeCodec {
-  return {
-    timestamp: (seconds, nanoseconds) => new Timestamp(seconds, nanoseconds),
-    geopoint: (latitude, longitude) => new GeoPoint(latitude, longitude),
-    bytes: (base64) => Buffer.from(base64, 'base64'),
-    reference: (referencePath) => firestore.doc(referencePath),
-  };
+/**
+ * Writes the committed baseline into the running emulators.
+ * A second run overwrites the same documents, objects, and admin user.
+ */
+export async function seedBaseline(): Promise<void> {
+  assertEmulatorTarget(EMULATOR_TARGET);
+  clearCredentialEnv();
+  const { firestore, auth, storage } = connectEmulators();
+  const manifest = await readManifest();
+  const codec = codecFor(firestore);
+  let docCount = 0;
+  const collections = Object.keys(manifest.firestore).sort();
+  await collections.reduce(async (previous, collection) => {
+    await previous;
+    const documents = await readCollection(collection);
+    await documents.reduce(async (docPrevious, document) => {
+      await docPrevious;
+      await writeDocument(firestore, codec, collection, document);
+      docCount += 1;
+    }, Promise.resolve());
+  }, Promise.resolve());
+  const bucket = storage.bucket(EMULATOR_BUCKET);
+  const objectPaths = Object.keys(manifest.storage).sort();
+  await objectPaths.reduce(async (previous, objectPath) => {
+    await previous;
+    const entry = manifest.storage[objectPath];
+    if (!entry) {
+      throw new Error(`missing storage manifest entry ${objectPath}`);
+    }
+    const bytes = await fs.readFile(storagePath(objectPath));
+    await bucket.file(objectPath).save(bytes, {
+      contentType: entry.contentType,
+      resumable: false,
+      validation: false,
+      metadata: { contentType: entry.contentType },
+    });
+  }, Promise.resolve());
+  await ensureAdmin(auth);
+  process.stdout.write(`seeded ${docCount} docs and ${Object.keys(manifest.storage).length} objects\n`);
 }
 
-async function readManifest(): Promise<BaselineManifest> {
-  return parseManifest(await readJson(path.join(BASELINE_ROOT, 'manifest.json')));
-}
-
-async function readCollection(collection: string): Promise<BaselineDocument[]> {
-  return parseBaselineDocuments(await readJson(path.join(BASELINE_ROOT, 'firestore', `${collection}.json`)));
-}
-
-async function readJson(filePath: string): Promise<unknown> {
-  const text = await fs.readFile(filePath, 'utf8');
-  return JSON.parse(text) as unknown;
-}
-
-function storagePath(objectPath: string): string {
-  if (objectPath.startsWith('/') || objectPath.split('/').includes('..')) {
-    throw new Error(`refusing storage path ${objectPath}`);
-  }
-  return path.join(BASELINE_ROOT, 'storage', ...objectPath.split('/'));
-}
-
-function hostPort(name: keyof typeof EMULATOR_PORTS): string {
-  return `${EMULATOR_TARGET.hosts[name]}:${EMULATOR_PORTS[name]}`;
-}
-
-function errorCode(error: unknown): string {
-  if (typeof error === 'object' && error !== null && 'code' in error) {
-    return String(error.code);
-  }
-  return '';
-}
-
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
+/**
+ * Writes the failure and exits the process.
+ * @param error Caught value.
+ */
 function fail(error: unknown): never {
   const message = error instanceof Error
     ? error.stack ?? error.message

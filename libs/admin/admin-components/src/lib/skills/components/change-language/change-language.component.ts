@@ -15,21 +15,16 @@ import {
 import { Store } from '@ngrx/store';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  map,
-  of,
-  take,
-} from 'rxjs';
 import { MatDialogModule } from '@angular/material/dialog';
 
 import { fieldHasError } from '@portfolio-v2/shared/forms';
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
-import { StateActions } from '@portfolio-v2/state';
+import {
+  SkillsWriter,
+  skillsWriteMessage,
+} from '../../services/skills-writer.service';
 
 /**
  * Change Languege Keys
@@ -60,19 +55,22 @@ export class ChangeLanguageComponent implements OnInit {
   /** Signal containing Skills section data */
   public readonly skillsData: Signal<ISkills | undefined>;
 
-  /** Returns true if the save is successful */
-  protected isSaveSuccess = of(false);
+  /** True after a save has been written. */
+  protected readonly isSaveSuccess = signal(false);
+
+  /** Shown when the write fails. */
+  protected readonly saveError = signal<string | null>(null);
 
   /**
    * constructor
    * @param store ngrx store
    * @param utility utility service
-   * @param setDataService set data service
+   * @param writer skills writes
    */
   constructor(
     private store: Store,
     private utility: UtilityService,
-    private setDataService: SetDataService,
+    private writer: SkillsWriter,
   ) {
     this.skillsData = this.store.selectSignal(skillsSelector);
   }
@@ -101,7 +99,7 @@ export class ChangeLanguageComponent implements OnInit {
   /**
    * Modify Keys of the languages
    */
-  public saveLanguageKeys(): void {
+  public async saveLanguageKeys(): Promise<void> {
     const skills = this.skillsData();
     if (!skills) {
       return;
@@ -127,14 +125,13 @@ export class ChangeLanguageComponent implements OnInit {
       languagesCol2: languageRightObject,
     };
 
-    this.isSaveSuccess = this.setDataService
-      .setRecord<ISkills>('skills-section/latest/', newSkillsValues)
-      .pipe(
-        take(1),
-        map((result) => {
-          this.store.dispatch(StateActions.skillsStateUpdated({ skills: newSkillsValues }));
-          return result === 'successfull';
-        }),
-      );
+    this.isSaveSuccess.set(false);
+    this.saveError.set(null);
+    try {
+      await this.writer.save(newSkillsValues);
+      this.isSaveSuccess.set(true);
+    } catch (error) {
+      this.saveError.set(skillsWriteMessage(error));
+    }
   }
 }

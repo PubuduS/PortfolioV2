@@ -1,0 +1,9 @@
+@if (disabled()) {
+  <span class="disabled">
+    <img [src]="icon()" [alt]="alt()" [title]="tooltip()" />
+  </span>
+} @else {
+  <a [href]="href()" target="_blank">
+    <img [src]="icon()" [alt]="alt()" [title]="tooltip()" />
+  </a>
+}

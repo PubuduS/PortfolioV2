@@ -12,11 +12,13 @@ import {
 } from '@portfolio-v2/const';
 import { StateActions } from '@portfolio-v2/state';
 import { featuredProjectCardsSelector } from '@portfolio-v2/state/selectors';
+import { ProjectLinkIconComponent } from '../project-link-icon/project-link-icon.component';
 
 /** Featured project page */
 @Component({
   selector: 'portfolio-v2-featured-projects',
   standalone: true,
+  imports: [ProjectLinkIconComponent],
   templateUrl: './featured_projects.component.html',
   styleUrl: './featured_projects.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

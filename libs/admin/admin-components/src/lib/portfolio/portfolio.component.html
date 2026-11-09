@@ -13,36 +13,27 @@
           <ul>
             @for (project of projectView(); track $index) {
               <li class="bounceOut" data-t-show="4">
-                <admin-update-delete-buttons
-                  [config]="{
-                    isVerticalLayout: true,
-                    deleteButtonDisabled: project.id === 1,
-                    editButtonDisabled: false,
-                    deleteButtonClick: getDeleteClickHandler(project.id),
-                    editButtonClick: getEditClickHandler(project),
-                  }"
-                ></admin-update-delete-buttons>
-                <a data-toggle="modal">
-                  @if (project.id === 1) {
-                    <button mat-button (click)="goToFeaturedPRojectsPage()">
-                      <img
-                        [src]="project.imageURL"
-                        alt="project"
-                        [title]="toolTip"
-                      />
-                    </button>
-                  } @else {
-                    <button mat-button (click)="openDialog(project.id)">
-                      <img
-                        [src]="project.imageURL"
-                        alt="project"
-                        [title]="toolTip"
-                      />
-                    </button>
-                  }
-                  <h3>{{ project.viewHeading }}</h3>
-                  <p>{{ project.viewDescription }}</p>
-                </a>
+                <portfolio-v2-project-tile
+                  [imageUrl]="project.imageURL"
+                  [heading]="project.viewHeading"
+                  [description]="project.viewDescription"
+                  [tooltip]="toolTip"
+                  (imageClick)="
+                    project.id === 1
+                      ? goToFeaturedPRojectsPage()
+                      : openDialog(project.id)
+                  "
+                >
+                  <admin-update-delete-buttons
+                    [config]="{
+                      isVerticalLayout: true,
+                      deleteButtonDisabled: project.id === 1,
+                      editButtonDisabled: false,
+                      deleteButtonClick: getDeleteClickHandler(project.id),
+                      editButtonClick: getEditClickHandler(project),
+                    }"
+                  />
+                </portfolio-v2-project-tile>
               </li>
             }
             <li class="bounceOut" data-t-show="4">

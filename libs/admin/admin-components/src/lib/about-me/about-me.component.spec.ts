@@ -8,17 +8,17 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 
-import { SetDataService } from '@portfolio-v2/shared/services';
 import { IAboutMe } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { aboutMeSelector } from '@portfolio-v2/state/selectors';
 import { AboutMeComponent } from './about-me.component';
+import { AboutMeWriter } from './services/about-me-writer.service';
 
 describe('AboutMeComponent', () => {
   let component: AboutMeComponent;
   let fixture: ComponentFixture<AboutMeComponent>;
   let store: MockStore;
-  let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<AboutMeWriter>;
   const mockData: IAboutMe = {
     id: 1,
     imageSrc: 'some url',
@@ -30,14 +30,15 @@ describe('AboutMeComponent', () => {
   };
 
   beforeEach(async () => {
-    mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(AboutMeWriter);
+    writer.save.mockResolvedValue(mockData);
     await TestBed.configureTestingModule({
       imports: [AboutMeComponent],
       providers: [
         provideMockStore(),
         {
-          provide: SetDataService,
-          useValue: mockSetDataService,
+          provide: AboutMeWriter,
+          useValue: writer,
         },
       ],
     }).compileComponents();
@@ -80,7 +81,7 @@ describe('AboutMeComponent when the record arrives after the page opens', () => 
       imports: [AboutMeComponent],
       providers: [
         provideMockStore(),
-        { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+        { provide: AboutMeWriter, useValue: createSpyObj(AboutMeWriter) },
       ],
     }).compileComponents();
 

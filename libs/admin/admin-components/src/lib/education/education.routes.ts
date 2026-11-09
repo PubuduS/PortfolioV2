@@ -13,7 +13,7 @@ export const EDUCATION_ADMIN_ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('@portfolio-v2/portfolio-pages').then(
+    loadComponent: () => import('@portfolio-v2/portfolio-pages/education-main').then(
       (mod) => mod.EducationMainComponent,
     ),
   },

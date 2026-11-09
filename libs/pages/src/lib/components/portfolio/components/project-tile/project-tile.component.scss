@@ -1,0 +1,49 @@
+@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+
+:host {
+  display: contents;
+}
+
+// These rules used to live on the page. Emulated encapsulation stops that
+// stylesheet from reaching markup owned by this component.
+:host-context(.my-projects) a {
+  max-width: 310px;
+  display: block;
+}
+
+:host-context(.my-projects) button {
+  margin-bottom: 20%;
+}
+
+:host-context(.my-projects) img {
+  margin-top: 40%;
+  transition: all 0.4s ease-in-out;
+}
+
+:host-context(li:hover) img {
+  transform: scaleX(-1);
+}
+
+:host-context(.my-projects) h3 {
+  margin: 16px 0;
+  font-size: 24px;
+  line-height: 29px;
+  color: $ghost-gray;
+}
+
+:host-context(.my-projects) p {
+  margin: 0;
+  line-height: 19px;
+  color: $ghost-gray;
+}
+
+:host-context(li:nth-child(2)) a,
+:host-context(li:nth-child(5)) a,
+:host-context(li:nth-child(7)) a,
+:host-context(li:nth-child(8)) a {
+  margin: 0 auto;
+}
+
+:host-context(li:nth-child(3n)) a {
+  margin-left: auto;
+}

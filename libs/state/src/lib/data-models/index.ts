@@ -20,6 +20,12 @@ export {
   FEATURED_PROJECT_COLLECTION,
   PROJECT_DATA_COLLECTION,
   PROJECT_ICON_COLLECTION,
+  featuredProjectDocPath,
+  projectCardImageFilePath,
+  projectDataDocPath,
+  projectIconDocPath,
+  projectIconFilePath,
+  projectScreenshotFilePath,
 } from './project_display/project';
 export { IPublication, IPublicationDetails } from './publications/IPublication';
 export {
@@ -45,7 +51,7 @@ export type {
   PublicationId,
 } from './publications/publication';
 export { IExperience } from './experience/IExperience';
-export { EXPERIENCE_COLLECTION } from './experience/experience';
+export { EXPERIENCE_COLLECTION, experienceDocPath } from './experience/experience';
 export { ISocialInfor } from './social/ISocialInfor';
 export {
   SOCIAL_COLLECTION,
@@ -62,9 +68,9 @@ export {
   IPasswordValidatorMsgs,
 } from './validator_msgs/IValidatorErrorMsg';
 export { ISkills } from './skills/ISkills';
-export { SKILLS_COLLECTION } from './skills/skills';
+export { SKILLS_COLLECTION, SKILLS_DOC_PATH } from './skills/skills';
 export { IAboutMe } from './about_me/IAboutMe';
-export { ABOUT_ME_COLLECTION } from './about_me/about-me';
+export { ABOUT_ME_COLLECTION, ABOUT_ME_DOC_PATH } from './about_me/about-me';
 export { IEducation } from './education/IEducation';
 export {
   EDUCATION_COLLECTION,

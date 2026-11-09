@@ -7,6 +7,24 @@ import {
   parseBaselineDocuments,
 } from './typed-json';
 
+/**
+ * Builds a baseline document with one string field.
+ * @param id Document id.
+ * @param title Title field value.
+ * @returns Baseline document.
+ */
+function document(id: string, title: string): BaselineDocument {
+  return {
+    id,
+    data: {
+      type: 'map',
+      fields: {
+        title: { type: 'string', value: title },
+      },
+    },
+  };
+}
+
 const codec: DecodeCodec = {
   timestamp: (seconds, nanoseconds) => ({
     seconds,
@@ -84,15 +102,3 @@ describe('typed json', () => {
     expect(parsed).toEqual([{ id: 'doc-1', data: encoded }]);
   });
 });
-
-function document(id: string, title: string): BaselineDocument {
-  return {
-    id,
-    data: {
-      type: 'map',
-      fields: {
-        title: { type: 'string', value: title },
-      },
-    },
-  };
-}

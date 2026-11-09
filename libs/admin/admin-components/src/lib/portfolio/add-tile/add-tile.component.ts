@@ -9,7 +9,6 @@ import {
   MatDialogActions,
   MatDialogContent,
   MatDialogClose,
-  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
@@ -23,28 +22,42 @@ import {
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import {
+  catchError,
+  from,
   map,
-  take,
   Observable,
-  firstValueFrom,
+  of,
+  take,
   BehaviorSubject,
 } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+  IProjectView,
+  projectIconFilePath,
+} from '@portfolio-v2/state/dataModels';
+import { SetDataService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 import {
   portfolioCardsSelector,
   projectCardSelector,
   newProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { AddPortfolioRecordComponent } from '../add-portfolio-record/add-portfolio-record.component';
-import { ProjectCardType } from '../types/project-cards-type.enum';
-import { TilePreviewComponent } from '../tile-preview/tile-preview.component';
+import {
+  ProjectCardType,
+  TilePreviewComponent,
+} from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../services/portfolio-writer.service';
+
+/** What Next asks the portfolio page to open. */
+export interface TileEditorNext {
+  /** Id of the tile that was just stored. */
+  currentId: number;
+  /** Heading copied onto the new card. */
+  heading: string;
+  /** Standard card, never the featured card. */
+  type: ProjectCardType;
+}
 
 /**
  * Add Tile Component
@@ -111,12 +124,6 @@ export class AddTileComponent implements OnInit, OnDestroy {
   /** Updated image */
   protected readonly updatedImage = this.store.selectSignal(projectCardSelector(this.nextCardId()));
 
-  /** Base Path for Images */
-  private readonly basePathForImages = 'portfolio/portfolio-tiles';
-
-  /** Base Path Docs */
-  private readonly basePathForDocs = 'project-icon-section';
-
   /** Current Card ID */
   private readonly currentCardId = this.nextCardId();
 
@@ -131,18 +138,16 @@ export class AddTileComponent implements OnInit, OnDestroy {
 
   /**
    * constructor
-   * @param dialog dialog
    * @param dialogRef dialog reference
    * @param setDataService set data service
    * @param store ngrx store
-   * @param utility utility service
+   * @param writer portfolio writes
    */
   constructor(
-    public dialog: MatDialog,
-    private dialogRef: MatDialogRef<AddTileComponent>,
+    private dialogRef: MatDialogRef<AddTileComponent, TileEditorNext>,
     private setDataService: SetDataService,
     private store: Store,
-    private utility: UtilityService,
+    private writer: PortfolioWriter,
   ) {}
 
   /**
@@ -167,46 +172,24 @@ export class AddTileComponent implements OnInit, OnDestroy {
    */
   protected async deleteTile(): Promise<void> {
     try {
-      // Delete from database (required)
-      const isDeleteTileSuccess = await firstValueFrom(
-        this.setDataService.deleteRecord(`project-icon-section/project-${this.utility.getPaddedDigits(this.currentCardId, 2)}/`),
-      );
-
-      // Try to delete icon file (optional - don't fail if file doesn't exist)
-      try {
-        await firstValueFrom(
-          this.setDataService.deleteFileFromStorage(`portfolio/portfolio-tiles/ID-${this.utility.getPaddedDigits(this.currentCardId, 2)}-Icon.webp`),
-        );
-      } catch (_iconError) {
-        // Icon file doesn't exist or can't be deleted - this is OK, continue with database deletion
-      }
-
-      if (isDeleteTileSuccess === 'successfull') {
-        // Update the store with the new array (without the deleted item)
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        // Close the dialog if database deletion was successful (icon deletion is optional)
-        this.dialogRef.close();
-      }
+      await this.writer.removeNewTile(this.currentCardId);
+      this.store.dispatch(StateActions.portfolioCardsStateConnect());
+      this.dialogRef.close();
     } catch (_error) {
-      // Handle any errors that might occur during the delete operation
-      // Error handling can be added here if needed
+      // Leave the dialog open when the tile document is still there.
     }
   }
 
   /**
-   * Go to card editor
+   * Ask the portfolio page to open the card editor.
+   * Opening it here attaches the next dialog to this view, and closing
+   * this dialog destroys that view before the form can render.
    */
   protected goToCardEditor(): void {
-    this.dialogRef.close();
-    this.dialog.open(AddPortfolioRecordComponent, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      data: {
-        currentId: this.currentCardId,
-        heading: this.tileEditorForm().value().title,
-        type: ProjectCardType.standard,
-      },
+    this.dialogRef.close({
+      currentId: this.currentCardId,
+      heading: this.tileEditorForm().value().title,
+      type: ProjectCardType.standard,
     });
   }
 
@@ -241,9 +224,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
     }
 
     const { title, description } = this.tileEditorForm().value();
-    const imageName = `ID-${this.utility.getPaddedDigits(this.nextCardId(), 2)}-Icon.webp`;
-    const fileStoragePath = `${this.basePathForImages}/${imageName}`;
-    const databaseDocPath = `${this.basePathForDocs}/project-${this.utility.getPaddedDigits(this.nextCardId(), 2)}/`;
+    const fileStoragePath = projectIconFilePath(this.nextCardId());
 
     // Validate project view exists
     const projectViewData = this.projectView();
@@ -268,7 +249,7 @@ export class AddTileComponent implements OnInit, OnDestroy {
     const newProjectView = this.createNewProjectView(title, description, imageURL);
 
     // Save to database and handle success/updates
-    this.addDataRecord(databaseDocPath, newProjectView).pipe(
+    this.addDataRecord(newProjectView).pipe(
       take(1),
     ).subscribe({
       next: (success) => {
@@ -341,24 +322,22 @@ export class AddTileComponent implements OnInit, OnDestroy {
 
   /**
    * Persist project changes to the database
-   * @param databaseDocPath path to the project document
    * @param newProjectView updated project view
    * @returns observable of success status
    */
   private addDataRecord(
-    databaseDocPath: string,
     newProjectView: IProjectView,
   ): Observable<boolean> {
-    return this.setDataService
-      .setRecord<IProjectView>(databaseDocPath, newProjectView).pipe(
+    return from(this.writer.saveTile(newProjectView)).pipe(
       take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Reset the preview to placeholder
-          this.imagePreview.set(this.defaultImageSrc);
-        }
+      map(() => {
+        this.imagePreview.set(this.defaultImageSrc);
         this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return result === 'successfull';
+        return true;
+      }),
+      catchError(() => {
+        this.store.dispatch(StateActions.portfolioCardsStateConnect());
+        return of(false);
       }),
     );
   }

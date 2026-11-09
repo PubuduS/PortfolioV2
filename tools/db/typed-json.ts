@@ -67,138 +67,224 @@ const REST_KEYS = [
 type RestKey = (typeof REST_KEYS)[number];
 
 /**
- * Encodes a Firestore REST value or an admin SDK value.
- * Whole-number doubles become integers so emulator reads match the snapshot.
- *
- * @param value Raw REST value or admin SDK value.
- * @param source Which boundary the value crossed.
- * @returns Typed JSON for the baseline.
+ * True when the value is a plain object.
+ * @param value Value to test.
+ * @returns Whether the value is a non-array object.
  */
-export function encodeTypedValue(value: unknown, source: 'rest' | 'admin'): TypedValue {
-  switch (source) {
-    case 'rest':
-      return encodeRest(value);
-    case 'admin':
-      return encodeAdmin(value);
-    default: {
-      const neverSource: never = source;
-      throw new Error(`unsupported encode source ${String(neverSource)}`);
-    }
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
   }
+  const proto: unknown = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
 
 /**
- * Decodes typed JSON with the caller's codec for special Firestore types.
- *
- * @param value Typed JSON value.
- * @param codec Constructors for timestamp, point, bytes, and reference.
- * @returns A value the codec and plain JSON can represent.
+ * Throws unless the value is a plain object.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The object.
  */
-export function decodeTypedValue(value: TypedValue, codec: DecodeCodec): unknown {
-  switch (value.type) {
-    case 'null':
-      return null;
-    case 'boolean':
-      return value.value;
-    case 'integer':
-      return integerToNumber(value.value);
-    case 'double':
-      return value.value;
-    case 'string':
-      return value.value;
-    case 'bytes':
-      return codec.bytes(value.value);
-    case 'timestamp':
-      return codec.timestamp(integerToNumber(value.seconds), value.nanoseconds);
-    case 'geopoint':
-      return codec.geopoint(value.latitude, value.longitude);
-    case 'reference':
-      return codec.reference(value.path);
-    case 'array':
-      return value.values.map((item) => decodeTypedValue(item, codec));
-    case 'map':
-      return decodeMap(value.fields, codec);
-    default: {
-      const neverValue: never = value;
-      throw new Error(`unsupported typed value ${JSON.stringify(neverValue)}`);
-    }
+function expectRecord(value: unknown, label: string): Record<string, unknown> {
+  if (!isPlainRecord(value)) {
+    throw new Error(`${label} is not an object`);
   }
+  return value;
 }
 
 /**
- * Parses a collection file that was read from disk.
- *
- * @param value Unknown JSON.
- * @returns Documents in file order.
+ * Reads the single REST type key on a value.
+ * @param record REST value.
+ * @returns Type key.
  */
-export function parseBaselineDocuments(value: unknown): BaselineDocument[] {
-  if (!Array.isArray(value)) {
-    throw new Error('baseline collection is not an array');
+function restKey(record: Record<string, unknown>): RestKey {
+  const keys = REST_KEYS.filter((key) => Object.prototype.hasOwnProperty.call(record, key));
+  if (keys.length !== 1) {
+    throw new Error(`firestore rest value has ${keys.length} type keys`);
   }
-  return value.map((item, index) => parseBaselineDocument(item, index));
+  const key = keys[0];
+  if (!key) {
+    throw new Error('firestore rest value has no type key');
+  }
+  return key;
 }
 
 /**
- * Parses manifest JSON from disk.
- *
- * @param value Unknown JSON.
- * @returns Manifest.
+ * Throws unless the value is a boolean.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The boolean.
  */
-export function parseManifest(value: unknown): BaselineManifest {
-  const record = expectRecord(value, 'manifest');
-  const firestore = expectRecord(record['firestore'], 'manifest.firestore');
-  const storage = expectRecord(record['storage'], 'manifest.storage');
+function expectBoolean(value: unknown, label: string): boolean {
+  if (typeof value !== 'boolean') {
+    throw new Error(`${label} is not a boolean`);
+  }
+  return value;
+}
+
+/**
+ * Throws unless the value is a string.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The string.
+ */
+function expectString(value: unknown, label: string): string {
+  if (typeof value !== 'string') {
+    throw new Error(`${label} is not a string`);
+  }
+  return value;
+}
+
+/**
+ * Throws unless the value is an integer string.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The integer text.
+ */
+function expectIntegerString(value: unknown, label: string): string {
+  const text = expectString(value, label);
+  if (!/^-?\d+$/.test(text)) {
+    throw new Error(`${label} is not an integer string`);
+  }
+  return text;
+}
+
+/**
+ * Encodes a JavaScript number as an integer or a double.
+ * @param value Finite number.
+ * @returns Typed number.
+ */
+function encodeJsNumber(value: number): TypedValue {
+  if (!Number.isFinite(value)) {
+    throw new Error('non-finite number');
+  }
+  if (Number.isSafeInteger(value)) {
+    return { type: 'integer', value: String(value) };
+  }
+  return { type: 'double', value };
+}
+
+/**
+ * Encodes a REST double, storing whole numbers as integers.
+ * @param value REST double.
+ * @returns Typed number.
+ */
+function encodeDouble(value: unknown): TypedValue {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) {
+    throw new Error('non-finite double');
+  }
+  return encodeJsNumber(numeric);
+}
+
+/**
+ * Rewrites base64 into the standard alphabet.
+ * @param value Base64 text.
+ * @returns Normalized base64.
+ */
+function normalizeBase64(value: string): string {
+  return Buffer.from(value, 'base64').toString('base64');
+}
+
+/**
+ * Encodes an RFC3339 timestamp.
+ * @param value Timestamp text.
+ * @returns Typed timestamp.
+ */
+function encodeTimestamp(value: string): TypedValue {
+  const match = value.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z$/);
+  if (!match) {
+    throw new Error('bad timestamp');
+  }
+  const nanos = Number((match[2] ?? '').padEnd(9, '0'));
+  const millis = Date.parse(`${match[1]}Z`);
+  if (Number.isNaN(millis)) {
+    throw new Error('bad timestamp');
+  }
   return {
-    sourceProjectId: expectString(record['sourceProjectId'], 'manifest.sourceProjectId'),
-    capturedAt: expectString(record['capturedAt'], 'manifest.capturedAt'),
-    sanitizerVersion: expectNumber(record['sanitizerVersion'], 'manifest.sanitizerVersion'),
-    firestore: parseFirestoreManifest(firestore),
-    storage: parseStorageManifest(storage),
+    type: 'timestamp',
+    seconds: String(Math.floor(millis / 1000)),
+    nanoseconds: nanos,
   };
 }
 
 /**
- * Stable JSON used for collection hashes. Key order does not change the hash.
- *
- * @param value JSON data.
- * @returns Canonical JSON text.
+ * Reads the document path from a REST reference.
+ * @param value REST reference string.
+ * @returns Document path.
  */
-export function canonicalJson(value: unknown): string {
-  return JSON.stringify(sortKeys(value));
+function referencePath(value: string): string {
+  const marker = '/documents/';
+  const index = value.lastIndexOf(marker);
+  if (index < 0) {
+    throw new Error('reference has no document path');
+  }
+  return value.slice(index + marker.length);
 }
 
 /**
- * SHA-256 hex digest of text or bytes.
- *
- * @param content Payload to hash.
- * @returns Hex digest.
+ * Throws unless the value is a number.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The number.
  */
-export function sha256Hex(content: string): string {
-  return createHash('sha256').update(content).digest('hex');
+function expectNumber(value: unknown, label: string): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    throw new Error(`${label} is not a number`);
+  }
+  return value;
 }
 
 /**
- * SHA-256 hex digest of raw bytes.
- *
- * @param content Bytes to hash.
- * @returns Hex digest.
+ * Encodes a REST geo point.
+ * @param value REST geoPointValue.
+ * @returns Typed geo point.
  */
-export function sha256Bytes(content: Buffer): string {
-  return createHash('sha256').update(content.toString('latin1'), 'latin1').digest('hex');
+function encodeGeoPoint(value: unknown): TypedValue {
+  const record = expectRecord(value, 'geoPointValue');
+  return {
+    type: 'geopoint',
+    latitude: expectNumber(record['latitude'] ?? 0, 'latitude'),
+    longitude: expectNumber(record['longitude'] ?? 0, 'longitude'),
+  };
 }
 
 /**
- * Hash of a collection after sorting documents by id.
- *
- * @param documents Collection documents.
- * @returns Hex digest.
+ * Encodes one Firestore REST value.
+ * @param value REST value.
+ * @returns Typed JSON.
  */
-export function canonicalCollectionHash(documents: readonly BaselineDocument[]): string {
-  const sorted = [...documents].sort((left, right) => left.id.localeCompare(right.id));
-  return sha256Hex(canonicalJson(sorted));
-}
-
 function encodeRest(value: unknown): TypedValue {
+  /**
+   * Encodes a REST array value.
+   * @param arrayValue arrayValue field.
+   * @returns Typed values.
+   */
+  function encodeRestArray(arrayValue: unknown): TypedValue[] {
+    const arrayRecord = expectRecord(arrayValue, 'arrayValue');
+    const values = arrayRecord['values'] ?? [];
+    if (!Array.isArray(values)) {
+      throw new Error('arrayValue.values is not an array');
+    }
+    return values.map((item) => encodeRest(item));
+  }
+
+  /**
+   * Encodes a REST map value.
+   * @param mapValue mapValue field.
+   * @returns Typed fields.
+   */
+  function encodeRestFields(mapValue: unknown): Record<string, TypedValue> {
+    const mapRecord = expectRecord(mapValue, 'mapValue');
+    const fields = mapRecord['fields'] ?? {};
+    const fieldRecord = expectRecord(fields, 'mapValue.fields');
+    const encoded: Record<string, TypedValue> = {};
+    Object.entries(fieldRecord).forEach(([key, child]) => {
+      encoded[key] = encodeRest(child);
+    });
+    return encoded;
+  }
+
   const record = expectRecord(value, 'rest value');
   const key = restKey(record);
   switch (key) {
@@ -231,6 +317,63 @@ function encodeRest(value: unknown): TypedValue {
   }
 }
 
+/**
+ * Encodes bytes as base64.
+ * @param value Bytes.
+ * @returns Base64 text.
+ */
+function base64Bytes(value: Buffer | Uint8Array): string {
+  if (Buffer.isBuffer(value)) {
+    return value.toString('base64');
+  }
+  const chars: string[] = [];
+  for (let index = 0; index < value.byteLength; index += 1) {
+    chars.push(String.fromCharCode(value[index] ?? 0));
+  }
+  return Buffer.from(chars.join(''), 'latin1').toString('base64');
+}
+
+/**
+ * True when the object looks like a Firestore timestamp.
+ * @param value Admin SDK object.
+ * @returns Whether the object is a timestamp.
+ */
+function isTimestamp(value: object): value is { seconds: number; nanoseconds: number } {
+  const candidate = value as { seconds?: unknown; nanoseconds?: unknown; toDate?: unknown };
+  return typeof candidate.toDate === 'function'
+    && typeof candidate.seconds === 'number'
+    && typeof candidate.nanoseconds === 'number';
+}
+
+/**
+ * True when the object looks like a Firestore geo point.
+ * @param value Admin SDK object.
+ * @returns Whether the object is a geo point.
+ */
+function isGeoPoint(value: object): value is { latitude: number; longitude: number } {
+  const candidate = value as { latitude?: unknown; longitude?: unknown; isEqual?: unknown };
+  return typeof candidate.isEqual === 'function'
+    && typeof candidate.latitude === 'number'
+    && typeof candidate.longitude === 'number';
+}
+
+/**
+ * True when the object looks like a Firestore document reference.
+ * @param value Admin SDK object.
+ * @returns Whether the object is a reference.
+ */
+function isReference(value: object): value is { path: string; id: string } {
+  const candidate = value as { path?: unknown; id?: unknown; collection?: unknown };
+  return typeof candidate.collection === 'function'
+    && typeof candidate.path === 'string'
+    && typeof candidate.id === 'string';
+}
+
+/**
+ * Encodes one firebase-admin value.
+ * @param value Admin SDK value.
+ * @returns Typed JSON.
+ */
 function encodeAdmin(value: unknown): TypedValue {
   if (value === null) {
     return { type: 'null' };
@@ -273,97 +416,162 @@ function encodeAdmin(value: unknown): TypedValue {
     throw new Error('unsupported admin object');
   }
   const fields: Record<string, TypedValue> = {};
-  for (const [key, child] of Object.entries(value)) {
+  Object.entries(value).forEach(([key, child]) => {
     fields[key] = encodeAdmin(child);
-  }
+  });
   return { type: 'map', fields };
 }
 
-function encodeDouble(value: unknown): TypedValue {
-  const numeric = typeof value === 'number' ? value : Number(value);
+/**
+ * Encodes a Firestore REST value or an admin SDK value.
+ * Whole-number doubles become integers so emulator reads match the snapshot.
+ * @param value Raw REST value or admin SDK value.
+ * @param source Which boundary the value crossed.
+ * @returns Typed JSON for the baseline.
+ */
+export function encodeTypedValue(value: unknown, source: 'rest' | 'admin'): TypedValue {
+  switch (source) {
+    case 'rest':
+      return encodeRest(value);
+    case 'admin':
+      return encodeAdmin(value);
+    default: {
+      const neverSource: never = source;
+      throw new Error(`unsupported encode source ${String(neverSource)}`);
+    }
+  }
+}
+
+/**
+ * Converts an integer string that fits in a safe integer.
+ * @param value Integer text.
+ * @returns Number.
+ */
+function integerToNumber(value: string): number {
+  const numeric = Number(value);
+  if (!Number.isSafeInteger(numeric)) {
+    throw new Error(`integer is outside the safe range: ${value}`);
+  }
+  return numeric;
+}
+
+/**
+ * Decodes typed JSON with the caller's codec for special Firestore types.
+ * @param value Typed JSON value.
+ * @param codec Constructors for timestamp, point, bytes, and reference.
+ * @returns A value the codec and plain JSON can represent.
+ */
+export function decodeTypedValue(value: TypedValue, codec: DecodeCodec): unknown {
+  /**
+   * Decodes a typed map into a plain object.
+   * @param fields Typed map fields.
+   * @param mapCodec Constructors for special Firestore types.
+   * @returns Plain object.
+   */
+  function decodeMap(
+    fields: Readonly<Record<string, TypedValue>>,
+    mapCodec: DecodeCodec,
+  ): Record<string, unknown> {
+    const decoded: Record<string, unknown> = {};
+    Object.entries(fields).forEach(([key, child]) => {
+      decoded[key] = decodeTypedValue(child, mapCodec);
+    });
+    return decoded;
+  }
+
+  switch (value.type) {
+    case 'null':
+      return null;
+    case 'boolean':
+      return value.value;
+    case 'integer':
+      return integerToNumber(value.value);
+    case 'double':
+      return value.value;
+    case 'string':
+      return value.value;
+    case 'bytes':
+      return codec.bytes(value.value);
+    case 'timestamp':
+      return codec.timestamp(integerToNumber(value.seconds), value.nanoseconds);
+    case 'geopoint':
+      return codec.geopoint(value.latitude, value.longitude);
+    case 'reference':
+      return codec.reference(value.path);
+    case 'array':
+      return value.values.map((item) => decodeTypedValue(item, codec));
+    case 'map':
+      return decodeMap(value.fields, codec);
+    default: {
+      const neverValue: never = value;
+      throw new Error(`unsupported typed value ${JSON.stringify(neverValue)}`);
+    }
+  }
+}
+
+/**
+ * Throws unless the value is a finite number.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns The number.
+ */
+function expectFiniteNumber(value: unknown, label: string): number {
+  const numeric = expectNumber(value, label);
   if (!Number.isFinite(numeric)) {
-    throw new Error('non-finite double');
+    throw new Error(`${label} is not finite`);
   }
-  return encodeJsNumber(numeric);
+  return numeric;
 }
 
-function encodeJsNumber(value: number): TypedValue {
-  if (!Number.isFinite(value)) {
-    throw new Error('non-finite number');
+/**
+ * Throws unless the value is a nanosecond count.
+ * @param value Value to test.
+ * @param label Name used in the error.
+ * @returns Nanoseconds.
+ */
+function expectNanoseconds(value: unknown, label: string): number {
+  const numeric = expectNumber(value, `${label}.nanoseconds`);
+  if (!Number.isInteger(numeric) || numeric < 0 || numeric > 999999999) {
+    throw new Error(`${label}.nanoseconds is out of range`);
   }
-  if (Number.isSafeInteger(value)) {
-    return { type: 'integer', value: String(value) };
-  }
-  return { type: 'double', value };
+  return numeric;
 }
 
-function encodeTimestamp(value: string): TypedValue {
-  const match = value.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z$/);
-  if (!match) {
-    throw new Error('bad timestamp');
-  }
-  const nanos = Number((match[2] ?? '').padEnd(9, '0'));
-  const millis = Date.parse(`${match[1]}Z`);
-  if (Number.isNaN(millis)) {
-    throw new Error('bad timestamp');
-  }
-  return {
-    type: 'timestamp',
-    seconds: String(Math.floor(millis / 1000)),
-    nanoseconds: nanos,
-  };
-}
-
-function encodeGeoPoint(value: unknown): TypedValue {
-  const record = expectRecord(value, 'geoPointValue');
-  return {
-    type: 'geopoint',
-    latitude: expectNumber(record['latitude'] ?? 0, 'latitude'),
-    longitude: expectNumber(record['longitude'] ?? 0, 'longitude'),
-  };
-}
-
-function encodeRestArray(value: unknown): TypedValue[] {
-  const record = expectRecord(value, 'arrayValue');
-  const values = record['values'] ?? [];
-  if (!Array.isArray(values)) {
-    throw new Error('arrayValue.values is not an array');
-  }
-  return values.map((item) => encodeRest(item));
-}
-
-function encodeRestFields(value: unknown): Record<string, TypedValue> {
-  const record = expectRecord(value, 'mapValue');
-  const fields = record['fields'] ?? {};
-  const fieldRecord = expectRecord(fields, 'mapValue.fields');
-  const encoded: Record<string, TypedValue> = {};
-  for (const [key, child] of Object.entries(fieldRecord)) {
-    encoded[key] = encodeRest(child);
-  }
-  return encoded;
-}
-
-function decodeMap(fields: Readonly<Record<string, TypedValue>>, codec: DecodeCodec): Record<string, unknown> {
-  const decoded: Record<string, unknown> = {};
-  for (const [key, child] of Object.entries(fields)) {
-    decoded[key] = decodeTypedValue(child, codec);
-  }
-  return decoded;
-}
-
-function parseBaselineDocument(value: unknown, index: number): BaselineDocument {
-  const record = expectRecord(value, `document ${index}`);
-  const data = parseTypedValue(record['data'], `document ${index} data`);
-  if (data.type !== 'map') {
-    throw new Error(`document ${index} data is not a map`);
-  }
-  return {
-    id: expectString(record['id'], `document ${index} id`),
-    data,
-  };
-}
-
+/**
+ * Parses one typed JSON value from disk.
+ * @param value Unknown JSON.
+ * @param label Name used in errors.
+ * @returns Typed value.
+ */
 function parseTypedValue(value: unknown, label: string): TypedValue {
+  /**
+   * Parses a typed JSON array.
+   * @param arrayValue values field.
+   * @param arrayLabel Label used in errors.
+   * @returns Typed values.
+   */
+  function parseTypedArray(arrayValue: unknown, arrayLabel: string): TypedValue[] {
+    if (!Array.isArray(arrayValue)) {
+      throw new Error(`${arrayLabel}.values is not an array`);
+    }
+    return arrayValue.map((item, index) => parseTypedValue(item, `${arrayLabel}[${index}]`));
+  }
+
+  /**
+   * Parses a typed JSON map.
+   * @param mapValue fields object.
+   * @param mapLabel Label used in errors.
+   * @returns Typed fields.
+   */
+  function parseTypedFields(mapValue: unknown, mapLabel: string): Record<string, TypedValue> {
+    const fieldRecord = expectRecord(mapValue, `${mapLabel}.fields`);
+    const fields: Record<string, TypedValue> = {};
+    Object.entries(fieldRecord).forEach(([key, child]) => {
+      fields[key] = parseTypedValue(child, `${mapLabel}.${key}`);
+    });
+    return fields;
+  }
+
   const record = expectRecord(value, label);
   const kind = expectString(record['type'], `${label}.type`);
   switch (kind) {
@@ -402,91 +610,98 @@ function parseTypedValue(value: unknown, label: string): TypedValue {
   }
 }
 
-function parseTypedArray(value: unknown, label: string): TypedValue[] {
+/**
+ * Parses one document from a collection file.
+ * @param value Unknown JSON.
+ * @param index Position in the file.
+ * @returns Baseline document.
+ */
+function parseBaselineDocument(value: unknown, index: number): BaselineDocument {
+  const record = expectRecord(value, `document ${index}`);
+  const data = parseTypedValue(record['data'], `document ${index} data`);
+  if (data.type !== 'map') {
+    throw new Error(`document ${index} data is not a map`);
+  }
+  return {
+    id: expectString(record['id'], `document ${index} id`),
+    data,
+  };
+}
+
+/**
+ * Parses a collection file that was read from disk.
+ * @param value Unknown JSON.
+ * @returns Documents in file order.
+ */
+export function parseBaselineDocuments(value: unknown): BaselineDocument[] {
   if (!Array.isArray(value)) {
-    throw new Error(`${label}.values is not an array`);
+    throw new Error('baseline collection is not an array');
   }
-  return value.map((item, index) => parseTypedValue(item, `${label}[${index}]`));
+  return value.map((item, index) => parseBaselineDocument(item, index));
 }
 
-function parseTypedFields(value: unknown, label: string): Record<string, TypedValue> {
-  const record = expectRecord(value, `${label}.fields`);
-  const fields: Record<string, TypedValue> = {};
-  for (const [key, child] of Object.entries(record)) {
-    fields[key] = parseTypedValue(child, `${label}.${key}`);
-  }
-  return fields;
-}
-
-function parseFirestoreManifest(value: Record<string, unknown>): Record<string, FirestoreManifestEntry> {
+/**
+ * Parses the firestore section of a manifest.
+ * @param value Unknown object.
+ * @returns Collection hashes.
+ */
+function parseFirestoreManifest(
+  value: Record<string, unknown>,
+): Record<string, FirestoreManifestEntry> {
   const entries: Record<string, FirestoreManifestEntry> = {};
-  for (const [name, child] of Object.entries(value)) {
+  Object.entries(value).forEach(([name, child]) => {
     const record = expectRecord(child, `firestore.${name}`);
     entries[name] = {
       docCount: expectNumber(record['docCount'], `firestore.${name}.docCount`),
       sha256: expectString(record['sha256'], `firestore.${name}.sha256`),
     };
-  }
+  });
   return entries;
 }
 
-function parseStorageManifest(value: Record<string, unknown>): Record<string, StorageManifestEntry> {
+/**
+ * Parses the storage section of a manifest.
+ * @param value Unknown object.
+ * @returns Object hashes.
+ */
+function parseStorageManifest(
+  value: Record<string, unknown>,
+): Record<string, StorageManifestEntry> {
   const entries: Record<string, StorageManifestEntry> = {};
-  for (const [name, child] of Object.entries(value)) {
+  Object.entries(value).forEach(([name, child]) => {
     const record = expectRecord(child, `storage.${name}`);
     entries[name] = {
       sha256: expectString(record['sha256'], `storage.${name}.sha256`),
       bytes: expectNumber(record['bytes'], `storage.${name}.bytes`),
       contentType: expectString(record['contentType'], `storage.${name}.contentType`),
     };
-  }
+  });
   return entries;
 }
 
-function restKey(record: Record<string, unknown>): RestKey {
-  const keys = REST_KEYS.filter((key) => Object.prototype.hasOwnProperty.call(record, key));
-  if (keys.length !== 1) {
-    throw new Error(`firestore rest value has ${keys.length} type keys`);
-  }
-  const key = keys[0];
-  if (!key) {
-    throw new Error('firestore rest value has no type key');
-  }
-  return key;
+/**
+ * Parses manifest JSON from disk.
+ * @param value Unknown JSON.
+ * @returns Manifest.
+ */
+export function parseManifest(value: unknown): BaselineManifest {
+  const record = expectRecord(value, 'manifest');
+  const firestore = expectRecord(record['firestore'], 'manifest.firestore');
+  const storage = expectRecord(record['storage'], 'manifest.storage');
+  return {
+    sourceProjectId: expectString(record['sourceProjectId'], 'manifest.sourceProjectId'),
+    capturedAt: expectString(record['capturedAt'], 'manifest.capturedAt'),
+    sanitizerVersion: expectNumber(record['sanitizerVersion'], 'manifest.sanitizerVersion'),
+    firestore: parseFirestoreManifest(firestore),
+    storage: parseStorageManifest(storage),
+  };
 }
 
-function referencePath(value: string): string {
-  const marker = '/documents/';
-  const index = value.lastIndexOf(marker);
-  if (index < 0) {
-    throw new Error('reference has no document path');
-  }
-  return value.slice(index + marker.length);
-}
-
-function integerToNumber(value: string): number {
-  const numeric = Number(value);
-  if (!Number.isSafeInteger(numeric)) {
-    throw new Error(`integer is outside the safe range: ${value}`);
-  }
-  return numeric;
-}
-
-function normalizeBase64(value: string): string {
-  return Buffer.from(value, 'base64').toString('base64');
-}
-
-function base64Bytes(value: Buffer | Uint8Array): string {
-  if (Buffer.isBuffer(value)) {
-    return value.toString('base64');
-  }
-  const chars: string[] = [];
-  for (let index = 0; index < value.byteLength; index += 1) {
-    chars.push(String.fromCharCode(value[index] ?? 0));
-  }
-  return Buffer.from(chars.join(''), 'latin1').toString('base64');
-}
-
+/**
+ * Sorts object keys so a hash does not depend on key order.
+ * @param value JSON data.
+ * @returns Value with sorted keys.
+ */
 function sortKeys(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map((item) => sortKeys(item));
@@ -495,89 +710,45 @@ function sortKeys(value: unknown): unknown {
     return value;
   }
   const sorted: Record<string, unknown> = {};
-  for (const key of Object.keys(value).sort()) {
+  Object.keys(value).sort().forEach((key) => {
     sorted[key] = sortKeys(value[key]);
-  }
+  });
   return sorted;
 }
 
-function isTimestamp(value: object): value is { seconds: number; nanoseconds: number } {
-  const candidate = value as { seconds?: unknown; nanoseconds?: unknown; toDate?: unknown };
-  return typeof candidate.toDate === 'function'
-    && typeof candidate.seconds === 'number'
-    && typeof candidate.nanoseconds === 'number';
+/**
+ * Stable JSON used for collection hashes. Key order does not change the hash.
+ * @param value JSON data.
+ * @returns Canonical JSON text.
+ */
+export function canonicalJson(value: unknown): string {
+  return JSON.stringify(sortKeys(value));
 }
 
-function isGeoPoint(value: object): value is { latitude: number; longitude: number } {
-  const candidate = value as { latitude?: unknown; longitude?: unknown; isEqual?: unknown };
-  return typeof candidate.isEqual === 'function'
-    && typeof candidate.latitude === 'number'
-    && typeof candidate.longitude === 'number';
+/**
+ * SHA-256 hex digest of text or bytes.
+ * @param content Payload to hash.
+ * @returns Hex digest.
+ */
+export function sha256Hex(content: string): string {
+  return createHash('sha256').update(content).digest('hex');
 }
 
-function isReference(value: object): value is { path: string; id: string } {
-  const candidate = value as { path?: unknown; id?: unknown; collection?: unknown };
-  return typeof candidate.collection === 'function'
-    && typeof candidate.path === 'string'
-    && typeof candidate.id === 'string';
+/**
+ * SHA-256 hex digest of raw bytes.
+ * @param content Bytes to hash.
+ * @returns Hex digest.
+ */
+export function sha256Bytes(content: Buffer): string {
+  return createHash('sha256').update(content.toString('latin1'), 'latin1').digest('hex');
 }
 
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-  const proto: unknown = Object.getPrototypeOf(value);
-  return proto === Object.prototype || proto === null;
-}
-
-function expectRecord(value: unknown, label: string): Record<string, unknown> {
-  if (!isPlainRecord(value)) {
-    throw new Error(`${label} is not an object`);
-  }
-  return value;
-}
-
-function expectString(value: unknown, label: string): string {
-  if (typeof value !== 'string') {
-    throw new Error(`${label} is not a string`);
-  }
-  return value;
-}
-
-function expectBoolean(value: unknown, label: string): boolean {
-  if (typeof value !== 'boolean') {
-    throw new Error(`${label} is not a boolean`);
-  }
-  return value;
-}
-
-function expectNumber(value: unknown, label: string): number {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    throw new Error(`${label} is not a number`);
-  }
-  return value;
-}
-
-function expectFiniteNumber(value: unknown, label: string): number {
-  const numeric = expectNumber(value, label);
-  if (!Number.isFinite(numeric)) {
-    throw new Error(`${label} is not finite`);
-  }
-  return numeric;
-}
-
-function expectIntegerString(value: unknown, label: string): string {
-  const text = expectString(value, label);
-  if (!/^-?\d+$/.test(text)) {
-    throw new Error(`${label} is not an integer string`);
-  }
-  return text;
-}
-
-function expectNanoseconds(value: unknown, label: string): number {
-  const numeric = expectNumber(value, `${label}.nanoseconds`);
-  if (!Number.isInteger(numeric) || numeric < 0 || numeric > 999999999) {
-    throw new Error(`${label}.nanoseconds is out of range`);
-  }
-  return numeric;
+/**
+ * Hash of a collection after sorting documents by id.
+ * @param documents Collection documents.
+ * @returns Hex digest.
+ */
+export function canonicalCollectionHash(documents: readonly BaselineDocument[]): string {
+  const sorted = [...documents].sort((left, right) => left.id.localeCompare(right.id));
+  return sha256Hex(canonicalJson(sorted));
 }

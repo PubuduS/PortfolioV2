@@ -5,6 +5,7 @@ import {
   OnInit,
   signal,
   Signal,
+  ViewContainerRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
@@ -16,24 +17,21 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {
-  map,
-  of,
-  take,
-} from 'rxjs';
-import {
   MatDialog,
   MatDialogModule,
 } from '@angular/material/dialog';
 
+import { openAdminDialog } from '@portfolio-v2/admin/shared/components';
 import { fieldHasError } from '@portfolio-v2/shared/forms';
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { ChangeLanguageComponent } from './components/change-language/change-language.component';
+import {
+  SkillsWriter,
+  skillsWriteMessage,
+} from './services/skills-writer.service';
 
 /** Text the skills editor saves. Language levels sit beside the form. */
 interface SkillsValues {
@@ -102,8 +100,11 @@ export class SkillsComponent implements OnInit {
 
   /** Signal containing Skills section data */
   public readonly skillsData: Signal<ISkills | undefined>;
-  /** Returns true if the save is successful */
-  protected isSaveSuccess = of(false);
+  /** True after a save has been written. */
+  protected readonly isSaveSuccess = signal(false);
+
+  /** Shown when the write fails. */
+  protected readonly saveError = signal<string | null>(null);
 
   /** True after the form has been filled from a stored record. */
   private hasAppliedSkills = false;
@@ -112,14 +113,16 @@ export class SkillsComponent implements OnInit {
    * constructor
    * @param store ngrx store
    * @param utility utility service
-   * @param setDataService set data service
+   * @param writer skills writes
    * @param dialog mat dialog
+   * @param viewContainerRef view that can see the route writer
    */
   constructor(
     private store: Store,
     private utility: UtilityService,
-    private setDataService: SetDataService,
+    private writer: SkillsWriter,
     private dialog: MatDialog,
+    private viewContainerRef: ViewContainerRef,
   ) {
     this.store.dispatch(StateActions.skillsStateConnect());
     this.skillsData = this.store.selectSignal(skillsSelector);
@@ -181,13 +184,13 @@ export class SkillsComponent implements OnInit {
    * Open the photo upload dialog
    */
   protected openDialog(): void {
-    this.dialog.open(ChangeLanguageComponent, { autoFocus: 'first-tabbable', restoreFocus: true });
+    openAdminDialog(this.dialog, this.viewContainerRef, ChangeLanguageComponent, undefined);
   }
 
   /**
    * Update data
    */
-  protected updateData(): void {
+  protected async updateData(): Promise<void> {
     const {
       skillsIntro, toolHeading, leftSubHeading,
       rightSubHeading, leftPoints, rightPoints,
@@ -205,15 +208,14 @@ export class SkillsComponent implements OnInit {
       software: this.utility.breakStringToParagraphs(rightPoints),
     };
 
-    this.isSaveSuccess = this.setDataService.setRecord<ISkills>('skills-section/latest/', newSkillsValues).pipe(
-      take(1),
-      map((result) => {
-        this.store.dispatch(StateActions.skillsStateUpdated({
-          skills: newSkillsValues,
-        }));
-        return result === 'successfull';
-      }),
-    );
+    this.isSaveSuccess.set(false);
+    this.saveError.set(null);
+    try {
+      await this.writer.save(newSkillsValues);
+      this.isSaveSuccess.set(true);
+    } catch (error) {
+      this.saveError.set(skillsWriteMessage(error));
+    }
   }
 
   /**

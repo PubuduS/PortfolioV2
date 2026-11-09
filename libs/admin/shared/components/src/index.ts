@@ -1,6 +1,4 @@
-export * from './lib/add-portfolio-record/add-portfolio-record.component';
 export * from './lib/add-record/add-record.component';
-export * from './lib/add-tile/add-tile.component';
 export * from './lib/dialogs/admin-delete/admin-delete-dialog.component';
 export * from './lib/dialogs/admin-delete/admin-delete-dialog.data';
 export * from './lib/dialogs/admin-record/admin-record-dialog.component';

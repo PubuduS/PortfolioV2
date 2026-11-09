@@ -48,6 +48,27 @@ test.describe('admin portfolio tiles', () => {
     await signInAsAdmin(page);
   });
 
+  test('should open the card editor when Next is clicked', async ({ page }) => {
+    await openAdminPortfolio(page);
+    await projectTile(page, 'Add').getByRole('button').click();
+    const editor = dialog(page);
+    await expect(editor.getByRole('heading', { name: 'Tile Editor' })).toBeVisible();
+    await editor.getByLabel('Title').fill(TILE_TITLE);
+    await editor.getByLabel('Description').fill(TILE_DESCRIPTION);
+    await editor.getByRole('button', { name: 'Add' }).click();
+    await editor.getByRole('button', { name: 'Next' }).click();
+
+    const card = dialog(page);
+    await expect(card.getByRole('heading', { name: 'Add a New Record' })).toBeVisible();
+    await expect(card.getByRole('heading', { name: 'Tile Editor' })).toHaveCount(0);
+    await expect(card.getByLabel('Description')).toBeVisible();
+    await expect(card.getByText('Technologies:')).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Add' })).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(dialog(page)).toHaveCount(0);
+  });
+
   test('should remove a new tile only after delete is confirmed', async ({ page }) => {
     await openAdminPortfolio(page);
     await addTile(page);

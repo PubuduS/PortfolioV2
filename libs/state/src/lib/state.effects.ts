@@ -5,6 +5,11 @@ import {
   ofType,
 } from '@ngrx/effects';
 import {
+  Action,
+  ActionCreator,
+  Creator,
+} from '@ngrx/store';
+import {
   switchMap,
   catchError,
   map,
@@ -23,7 +28,6 @@ import {
   IAboutMe,
   ICertificateCard,
   IEducation,
-  IExperience,
   IProjectCard,
   IProjectView,
   IPublication,
@@ -36,6 +40,9 @@ import {
   SKILLS_COLLECTION,
   SOCIAL_COLLECTION,
 } from './data-models';
+
+/** An action creator `ofType` can match. */
+type ConnectAction = ActionCreator<string, Creator>;
 
 /**
  * Side Effects for State Bank
@@ -52,145 +59,104 @@ export class StateEffects {
     private dbService: GetDataService,
   ) {}
 
-  /**
-   * Connects to about me state to get page information.
-   */
-  public connectToAboutMeState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.aboutMeStateConnect),
-    switchMap(() => this.dbService.getData<IAboutMe>(ABOUT_ME_COLLECTION).pipe(
-      map((aboutMe: IAboutMe) => StateActions.aboutMeStateUpdated({ aboutMe })),
-      catchError((error: Error) => this.handleErrors('About-me', error)),
-    )),
+  /** Connects to about me state to get page information. */
+  public connectToAboutMeState = createEffect(() => this.connectCollection(
+    StateActions.aboutMeStateConnect,
+    () => this.dbService.getData<IAboutMe>(ABOUT_ME_COLLECTION),
+    (aboutMe) => StateActions.aboutMeStateUpdated({ aboutMe }),
+  ));
+
+  /** Connects to certificate cards state to get page information. */
+  public connectToCertificatesCardsState = createEffect(() => this.connectCollection(
+    StateActions.certificatesCardsStateConnect,
+    () => this.dbService.getDataArray<ICertificateCard>(CERTIFICATE_COLLECTION, false),
+    (certificates) => StateActions.certificatesCardsStateUpdated({ certificates }),
+  ));
+
+  /** Connects to education cards state to get page information. */
+  public connectToEducatiuonCardsState = createEffect(() => this.connectCollection(
+    StateActions.educationCardsStateConnect,
+    () => this.dbService.getDataArray<IEducation>(EDUCATION_COLLECTION, false),
+    (education) => StateActions.educationCardsStateUpdated({ education }),
+  ));
+
+  /** Connects to experiences state to get page information. */
+  public connectToExperiencesState = createEffect(() => this.connectCollection(
+    StateActions.experienceStateConnect,
+    () => this.dbService.getExperienceSectionData(EXPERIENCE_COLLECTION),
+    (experiences) => StateActions.experienceStateUpdated({ experiences }),
+  ));
+
+  /** Connects to portfolio cards state to get page information. */
+  public connectToPortfolioCardsState = createEffect(() => this.connectCollection(
+    StateActions.portfolioCardsStateConnect,
+    () => this.dbService.getDataArray<IProjectView>(PROJECT_ICON_COLLECTION),
+    (portfolioCards) => StateActions.portfolioCardsStateUpdated({ portfolioCards }),
+  ));
+
+  /** Connects to project cards state to get page information. */
+  public connectToProjectCardsState = createEffect(() => this.connectCollection(
+    StateActions.projectCardsStateConnect,
+    () => this.dbService.getDataArray<IProjectCard>(PROJECT_DATA_COLLECTION),
+    (projectCards) => StateActions.projectCardsStateUpdated({ projectCards }),
+  ));
+
+  /** Connects to featured project cards state to get page information. */
+  public connectToFeaturedProjectCardsState = createEffect(() => this.connectCollection(
+    StateActions.featuredProjectCardsStateConnect,
+    () => this.dbService.getDataArray<IProjectCard>(FEATURED_PROJECT_COLLECTION),
+    (projectCards) => StateActions.featuredProjectCardsStateUpdated({ projectCards }),
+  ));
+
+  /** Connects to publication cards state to get page information. */
+  public connectToPublicationCardsState = createEffect(() => this.connectCollection(
+    StateActions.publicationCardsStateConnect,
+    () => this.dbService.getDataArray<IPublication>(PUBLICATION_COLLECTIONS.card),
+    (publications) => StateActions.publicationCardsStateUpdated({ publications }),
+  ));
+
+  /** Connects to publication details cards state to get page information. */
+  public connectToPublicationDetailsCardsState = createEffect(() => this.connectCollection(
+    StateActions.publicationDetailCardsStateConnect,
+    () => this.dbService.getDataArray<IPublicationDetails>(PUBLICATION_COLLECTIONS.details),
+    (publicationDetails) => StateActions.publicationDetailCardsStateUpdated({
+      publicationDetails,
+    }),
+  ));
+
+  /** Connects to skills state to get page information. */
+  public connectToSkillsState = createEffect(() => this.connectCollection(
+    StateActions.skillsStateConnect,
+    () => this.dbService.getData<ISkills>(SKILLS_COLLECTION),
+    (skills) => StateActions.skillsStateUpdated({ skills }),
+  ));
+
+  /** Connects to social media information state to get page information. */
+  public connectToSocialMediaInformationState = createEffect(() => this.connectCollection(
+    StateActions.socialMediaInformationStateConnect,
+    () => this.dbService.getDataArray<ISocialInfor>(SOCIAL_COLLECTION),
+    (socialInfor) => StateActions.socialMediaInformationStateUpdated({ socialInfor }),
   ));
 
   /**
-   * Connects to certificate cards state to get page information.
+   * Subscribe to one collection and store what it emits.
+   * A failed load leaves the slice at its last value.
+   * @param connect action that opens the listener
+   * @param load collection read
+   * @param updated action that stores the loaded value
+   * @returns the effect stream
    */
-  public connectToCertificatesCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.certificatesCardsStateConnect),
-    switchMap(() => this.dbService
-      .getDataArray<ICertificateCard>(CERTIFICATE_COLLECTION, false).pipe(
-      map((certificates: ICertificateCard[]) => StateActions
-        .certificatesCardsStateUpdated({ certificates })),
-      catchError((error: Error) => this.handleErrors('Certificates card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to education cards state to get page information.
-   */
-  public connectToEducatiuonCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.educationCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IEducation>(EDUCATION_COLLECTION, false).pipe(
-      map((education: IEducation[]) => StateActions
-        .educationCardsStateUpdated({ education })),
-      catchError((error: Error) => this.handleErrors('Education card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to experiences state to get page information.
-   */
-  public connectToExperiencesState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.experienceStateConnect),
-    switchMap(() => this.dbService.getExperienceSectionData(EXPERIENCE_COLLECTION).pipe(
-      map((experiences: IExperience[]) => StateActions.experienceStateUpdated({ experiences })),
-      catchError((error: Error) => this.handleErrors('Experience', error)),
-    )),
-  ));
-
-  /**
-   * Connects to portfolio cards state to get page information.
-   */
-  public connectToPortfolioCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.portfolioCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectView>(PROJECT_ICON_COLLECTION).pipe(
-      map((portfolioCards: IProjectView[]) => StateActions
-        .portfolioCardsStateUpdated({ portfolioCards })),
-      catchError((error: Error) => this.handleErrors('Portfolio card error', error)),
-    )),
-  ));
-
-  /**
-   * Connects to project cards state to get page information.
-   */
-  public connectToProjectCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.projectCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectCard>(PROJECT_DATA_COLLECTION).pipe(
-      map((projectCards: IProjectCard[]) => StateActions
-        .projectCardsStateUpdated({ projectCards })),
-      catchError((error: Error) => this.handleErrors('Project card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to featured project cards state to get page information.
-   */
-  public connectToFeaturedProjectCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.featuredProjectCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IProjectCard>(FEATURED_PROJECT_COLLECTION).pipe(
-      map((projectCards: IProjectCard[]) => StateActions
-        .featuredProjectCardsStateUpdated({ projectCards })),
-      catchError((error: Error) => this.handleErrors('Featured project card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to publication cards state to get page information.
-   */
-  public connectToPublicationCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.publicationCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IPublication>(PUBLICATION_COLLECTIONS.card).pipe(
-      map((publications: IPublication[]) => StateActions
-        .publicationCardsStateUpdated({ publications })),
-      catchError((error: Error) => this.handleErrors('Publication card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to publication details cards state to get page information.
-   */
-  public connectToPublicationDetailsCardsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.publicationDetailCardsStateConnect),
-    switchMap(() => this.dbService.getDataArray<IPublicationDetails>(
-      PUBLICATION_COLLECTIONS.details,
-    ).pipe(
-      map((publicationDetails: IPublicationDetails[]) => StateActions
-        .publicationDetailCardsStateUpdated({ publicationDetails })),
-      catchError((error: Error) => this.handleErrors('Publication details card', error)),
-    )),
-  ));
-
-  /**
-   * Connects to skills state to get page information.
-   */
-  public connectToSkillsState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.skillsStateConnect),
-    switchMap(() => this.dbService.getData<ISkills>(SKILLS_COLLECTION).pipe(
-      map((skills: ISkills) => StateActions.skillsStateUpdated({ skills })),
-      catchError((error: Error) => this.handleErrors('Skills', error)),
-    )),
-  ));
-
-  /**
-   * Connects to social media information state to get page information.
-   */
-  public connectToSocialMediaInformationState = createEffect(() => this.actions.pipe(
-    ofType(StateActions.socialMediaInformationStateConnect),
-    switchMap(() => this.dbService.getDataArray<ISocialInfor>(SOCIAL_COLLECTION).pipe(
-      map((socialInfor: ISocialInfor[]) => StateActions
-        .socialMediaInformationStateUpdated({ socialInfor })),
-      catchError((error: Error) => this.handleErrors('Social media information state', error)),
-    )),
-  ));
-
-  /**
-   * Drop a failed load so the slice stays at its last value.
-   * @param _place which collection failed
-   * @param _error failure from Firestore
-   * @returns empty observable
-   */
-  private handleErrors(_place: string, _error: Error): Observable<never> {
-    return EMPTY;
+  private connectCollection<T, A extends Action>(
+    connect: ConnectAction,
+    load: () => Observable<T>,
+    updated: (value: T) => A,
+  ): Observable<A> {
+    return this.actions.pipe(
+      ofType(connect),
+      switchMap(() => load().pipe(
+        map((value) => updated(value)),
+        catchError(() => EMPTY),
+      )),
+    );
   }
 }

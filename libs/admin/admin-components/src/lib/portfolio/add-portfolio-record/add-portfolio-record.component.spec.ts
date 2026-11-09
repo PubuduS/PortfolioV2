@@ -12,7 +12,7 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 import { MockComponents } from 'ng-mocks';
-import { of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { fieldHasError } from '@portfolio-v2/shared/forms';
 import { StateActions } from '@portfolio-v2/state';
@@ -27,6 +27,7 @@ import {
   UploadPhotoComponent,
   ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../services/portfolio-writer.service';
 import { AddPortfolioRecordComponent } from './add-portfolio-record.component';
 
 describe('AddPortfolioRecordComponent', () => {
@@ -43,11 +44,14 @@ describe('AddPortfolioRecordComponent', () => {
   let fixture: ComponentFixture<AddPortfolioRecordComponent>;
   let store: MockStore;
   let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<PortfolioWriter>;
   let mockGetDataService: jest.Mocked<GetDataService>;
   let mockUtilityService: jest.Mocked<UtilityService>;
 
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(PortfolioWriter);
+    writer.saveCard.mockResolvedValue(undefined);
     mockGetDataService = createSpyObj(GetDataService);
     mockUtilityService = createSpyObj(UtilityService);
 
@@ -67,6 +71,7 @@ describe('AddPortfolioRecordComponent', () => {
           },
         },
         { provide: SetDataService, useValue: mockSetDataService },
+        { provide: PortfolioWriter, useValue: writer },
         { provide: GetDataService, useValue: mockGetDataService },
         { provide: UtilityService, useValue: mockUtilityService },
         { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -117,6 +122,7 @@ describe('AddPortfolioRecordComponent', () => {
             },
           },
           { provide: SetDataService, useValue: mockSetDataService },
+          { provide: PortfolioWriter, useValue: writer },
           { provide: GetDataService, useValue: mockGetDataService },
           { provide: UtilityService, useValue: mockUtilityService },
           { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -167,6 +173,7 @@ describe('AddPortfolioRecordComponent', () => {
             },
           },
           { provide: SetDataService, useValue: mockSetDataService },
+          { provide: PortfolioWriter, useValue: writer },
           { provide: GetDataService, useValue: mockGetDataService },
           { provide: UtilityService, useValue: mockUtilityService },
           { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -194,7 +201,7 @@ describe('AddPortfolioRecordComponent', () => {
   describe('addData', () => {
     beforeEach(() => {
       component.ngOnInit();
-      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
+      writer.saveCard.mockResolvedValue(undefined);
       mockUtilityService.getPaddedDigits.mockReturnValue('01');
     });
 
@@ -203,7 +210,7 @@ describe('AddPortfolioRecordComponent', () => {
 
       await component['addData']?.();
 
-      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveCard).not.toHaveBeenCalled();
     });
 
     it('should submit form data for standard projects', async () => {
@@ -216,16 +223,13 @@ describe('AddPortfolioRecordComponent', () => {
 
       await component['addData']?.();
 
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
-        expect.objectContaining({
-          id: 1,
-          heading: 'Test Project',
-          description: 'Test description',
-          tools: 'Angular, TypeScript',
-          imageURL: 'https://placehold.co/300x200.png', // Default since no file uploaded
-        }),
-      );
+      expect(writer.saveCard).toHaveBeenCalledWith(expect.objectContaining({
+        id: 1,
+        heading: 'Test Project',
+        description: 'Test description',
+        tools: 'Angular, TypeScript',
+        imageURL: 'https://placehold.co/300x200.png',
+      }), false);
     });
 
     it('should handle file upload for standard projects', async () => {
@@ -242,11 +246,11 @@ describe('AddPortfolioRecordComponent', () => {
       await component['addData']?.();
 
       expect(mockUploadMethod).toHaveBeenCalledWith('portfolio/project-card-images/ID-01-Image.webp/');
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           imageURL: 'https://firebase.com/uploaded-image.jpg',
         }),
+        false,
       );
     });
 
@@ -266,6 +270,7 @@ describe('AddPortfolioRecordComponent', () => {
             },
           },
           { provide: SetDataService, useValue: mockSetDataService },
+          { provide: PortfolioWriter, useValue: writer },
           { provide: GetDataService, useValue: mockGetDataService },
           { provide: UtilityService, useValue: mockUtilityService },
           { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -290,12 +295,12 @@ describe('AddPortfolioRecordComponent', () => {
       await featuredComponent['addData']?.();
 
       expect(mockUploadMethod).toHaveBeenCalledWith('portfolio/featured-projects/ID-02-Image.webp/');
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'featured-project-section/project-02/',
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           heading: 'Featured Test',
           imageURL: 'https://firebase.com/featured-image.jpg',
         }),
+        true,
       );
     });
 
@@ -305,20 +310,17 @@ describe('AddPortfolioRecordComponent', () => {
       jest.spyOn(store, 'dispatch');
 
       await component['addData']();
-      let saved = false;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      const saved = await firstValueFrom(component['isEditSuccess']);
 
       expect(saved).toBe(true);
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           gitDisable: true,
           demoDisable: true,
           ssDisable: true,
           docDisable: true,
         }),
+        false,
       );
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.projectCardsStateConnect());
@@ -334,23 +336,20 @@ describe('AddPortfolioRecordComponent', () => {
 
       await component['addData']();
 
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({ imageURL: component['defaultImageSrc'] }),
+        false,
       );
     });
 
     it('should leave the preview when the record is not stored', async () => {
-      mockSetDataService.setRecord.mockReturnValue(of('failed'));
+      writer.saveCard.mockRejectedValue(new Error('offline'));
       component['imagePreview'].set('data:image/webp;base64,abc');
       component['cardAddForm'].description().value.set('Test description');
       component['cardAddForm'].technologies().value.set('Angular');
 
       await component['addData']();
-      let saved = true;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      const saved = await firstValueFrom(component['isEditSuccess']);
 
       expect(saved).toBe(false);
       expect(component['imagePreview']()).toBe('data:image/webp;base64,abc');
@@ -483,6 +482,7 @@ describe('AddPortfolioRecordComponent', () => {
             },
           },
           { provide: SetDataService, useValue: mockSetDataService },
+          { provide: PortfolioWriter, useValue: writer },
           { provide: GetDataService, useValue: mockGetDataService },
           { provide: UtilityService, useValue: mockUtilityService },
           { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -494,7 +494,7 @@ describe('AddPortfolioRecordComponent', () => {
       featured = TestBed.createComponent(AddPortfolioRecordComponent).componentInstance;
       featured.ngOnInit();
       mockUtilityService.getPaddedDigits.mockReturnValue('02');
-      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
+      writer.saveCard.mockResolvedValue(undefined);
     });
 
     it('should refresh the featured cards after a save', async () => {
@@ -504,10 +504,7 @@ describe('AddPortfolioRecordComponent', () => {
       jest.spyOn(store, 'dispatch');
 
       await featured['addData']();
-      let saved = false;
-      featured['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      const saved = await firstValueFrom(featured['isEditSuccess']);
 
       expect(saved).toBe(true);
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.featuredProjectCardsStateConnect());
