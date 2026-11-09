@@ -28,6 +28,8 @@
           "libs/shared/src/lib/styles/_colors.scss",
           "libs/shared/src/lib/styles/_mixins.scss",
           "libs/shared/src/lib/styles/_layout.scss",
+          "libs/shared/src/lib/styles/_sections.scss",
+          "libs/shared/src/lib/styles/_featured-projects.scss",
           "libs/shared/src/lib/styles/styles.scss"
         ]
       }

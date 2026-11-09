@@ -40,7 +40,11 @@
       "executor": "nx-stylelint:lint",
       "options": {
         "lintFilePatterns": [
-          "libs/pages/src/lib/components/experience/**/*.scss"
+          "libs/pages/src/lib/components/experience/**/*.scss",
+          "libs/pages/src/lib/components/skills/**/*.scss",
+          "libs/pages/src/lib/components/portfolio/portfolio.component.scss",
+          "libs/pages/src/lib/components/portfolio/components/featured-projects/**/*.scss",
+          "libs/pages/src/lib/components/portfolio/components/project-tile/project-tile.component.scss"
         ]
       }
     }

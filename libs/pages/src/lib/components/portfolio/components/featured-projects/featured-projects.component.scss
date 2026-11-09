@@ -1,5 +1,4 @@
-// Featured Projects Component - Pages Version
-@use 'apps/portfolio-v2/src/assets/SCSS/featured-projects' as *;
+@use 'styles' as *;
 
 .featured-projects-container {
   @include featured-projects-all;

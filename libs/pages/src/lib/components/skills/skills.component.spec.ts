@@ -54,7 +54,11 @@ describe('SkillsComponent', () => {
   });
 
   it('should create', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
     expect(component).toBeTruthy();
+    expect(root.querySelector('.skills-section .progress')).not.toBeNull();
+    expect(root.textContent).toContain('some language1');
   });
 
   it('should connect the skills section when the page opens', () => {

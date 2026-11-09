@@ -12,8 +12,10 @@
   @include page-offset;
 
   display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
+  height: auto;
   background-color: $background;
   padding-block: 2.5rem;
   padding-block-start: calc(var(--site-header-block) + 2.5rem);
