@@ -8,12 +8,6 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { MockComponents } from 'ng-mocks';
-import {
-  of,
-  throwError,
-} from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { StateActions } from '@portfolio-v2/state';
 import {
@@ -30,8 +24,8 @@ import {
   projectCardSelector,
   newProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
-import { AddPortfolioRecordComponent } from '@portfolio-v2/admin/shared/components';
-import { ProjectCardType } from '../types/project-cards-type.enum';
+import { ProjectCardType } from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../services/portfolio-writer.service';
 import { AddTileComponent } from './add-tile.component';
 
 describe('AddTileComponent', () => {
@@ -39,6 +33,7 @@ describe('AddTileComponent', () => {
   let fixture: ComponentFixture<AddTileComponent>;
   let store: MockStore;
   let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<PortfolioWriter>;
   let mockGetDataService: jest.Mocked<GetDataService>;
   let mockUtilityService: jest.Mocked<UtilityService>;
 
@@ -70,19 +65,20 @@ describe('AddTileComponent', () => {
 
   beforeEach(async () => {
     mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(PortfolioWriter);
+    writer.saveTile.mockResolvedValue(undefined);
+    writer.removeNewTile.mockResolvedValue(undefined);
     mockGetDataService = createSpyObj(GetDataService);
     mockUtilityService = createSpyObj(UtilityService);
 
     await TestBed.configureTestingModule({
       imports: [
         AddTileComponent,
-        MockComponents(
-          AddPortfolioRecordComponent,
-        ),
       ],
       providers: [
         provideMockStore({}),
         { provide: SetDataService, useValue: mockSetDataService },
+        { provide: PortfolioWriter, useValue: writer },
         { provide: GetDataService, useValue: mockGetDataService },
         { provide: UtilityService, useValue: mockUtilityService },
         { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
@@ -208,47 +204,35 @@ describe('AddTileComponent', () => {
 
       await component['saveChanges']();
 
-      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveTile).not.toHaveBeenCalled();
     });
   });
 
   describe('Delete Tile', () => {
-    it('should handle icon file deletion failure gracefully', async () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
-      mockSetDataService.deleteFileFromStorage.mockReturnValue(of(undefined).pipe(
-        map(() => { throw new Error('File not found'); }),
-      ));
-
+    it('should close after the new tile is removed', async () => {
       const closeSpy = jest.spyOn(component['dialogRef'], 'close');
 
       await component['deleteTile']();
 
-      // Should still succeed even if icon file deletion fails
+      expect(writer.removeNewTile).toHaveBeenCalledWith(component['currentCardId']);
       expect(closeSpy).toHaveBeenCalled();
     });
   });
 
   describe('Navigation', () => {
-    it('should navigate to card editor with correct data', () => {
+    it('should hand the saved tile back so the page can open the card editor', () => {
       component['tileEditorForm'].title().value.set('Test Title');
       component['tileEditorForm'].description().value.set('Test Description');
 
-      const dialogSpy = jest.spyOn(component['dialog'], 'open');
       const closeSpy = jest.spyOn(component['dialogRef'], 'close');
 
       component['goToCardEditor']();
 
-      expect(closeSpy).toHaveBeenCalled();
-      expect(dialogSpy).toHaveBeenCalledWith(
-        AddPortfolioRecordComponent,
-        expect.objectContaining({
-          data: expect.objectContaining({
-            currentId: 3,
-            heading: 'Test Title',
-            type: ProjectCardType.standard,
-          }),
-        }),
-      );
+      expect(closeSpy).toHaveBeenCalledWith({
+        currentId: 3,
+        heading: 'Test Title',
+        type: ProjectCardType.standard,
+      });
     });
   });
 
@@ -275,7 +259,7 @@ describe('AddTileComponent', () => {
         onProgress?.(80);
         return 'https://cdn.example/icon.webp';
       });
-      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
+      writer.saveTile.mockResolvedValue(undefined);
       component['tileEditorForm'].title().value.set('Test Title');
       component['tileEditorForm'].description().value.set('Test Description');
       jest.spyOn(store, 'dispatch');
@@ -293,14 +277,11 @@ describe('AddTileComponent', () => {
       });
 
       expect(saved).toBe(true);
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-icon-section/project-03/',
-        expect.objectContaining({
-          id: 3,
-          viewHeading: 'Test Title',
-          imageURL: component['defaultImageSrc'],
-        }),
-      );
+      expect(writer.saveTile).toHaveBeenCalledWith(expect.objectContaining({
+        id: 3,
+        viewHeading: 'Test Title',
+        imageURL: component['defaultImageSrc'],
+      }));
       expect(component['imagePreview']()).toBe(component['defaultImageSrc']);
       expect(component['newUpdatedImage']()).toBe(component['defaultImageSrc']);
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
@@ -318,8 +299,7 @@ describe('AddTileComponent', () => {
         expect.any(Function),
       );
       expect(component['progressValue']()).toBe(80);
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-icon-section/project-03/',
+      expect(writer.saveTile).toHaveBeenCalledWith(
         expect.objectContaining({ imageURL: 'https://cdn.example/icon.webp' }),
       );
       expect(component['newUpdatedImage']()).toBe('https://cdn.example/icon.webp');
@@ -331,26 +311,17 @@ describe('AddTileComponent', () => {
 
       await component['saveChanges']();
 
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'project-icon-section/project-03/',
+      expect(writer.saveTile).toHaveBeenCalledWith(
         expect.objectContaining({ imageURL: component['defaultImageSrc'] }),
       );
     });
 
-    it('should mark the save failed when the record errors', async () => {
-      mockSetDataService.setRecord.mockReturnValue(throwError(() => new Error('offline')));
-      const next = jest.spyOn(component['editSuccessSubject'], 'next');
-
-      await component['saveChanges']();
-
-      expect(next).toHaveBeenCalledWith(false);
-    });
-
     it('should mark the save failed when the record is not stored', async () => {
-      mockSetDataService.setRecord.mockReturnValue(of('failed'));
+      writer.saveTile.mockRejectedValue(new Error('offline'));
       component['imagePreview'].set('data:image/webp;base64,abc');
 
       await component['saveChanges']();
+      await Promise.resolve();
       let saved = true;
       component['isEditSuccess'].subscribe((value) => {
         saved = value;
@@ -366,7 +337,7 @@ describe('AddTileComponent', () => {
 
       await component['saveChanges']();
 
-      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveTile).not.toHaveBeenCalled();
     });
 
     it('should give up when storage does not finish', async () => {
@@ -397,27 +368,17 @@ describe('AddTileComponent', () => {
     });
 
     it('should close after the record and the icon are removed', async () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
-      mockSetDataService.deleteFileFromStorage.mockReturnValue(of('removed'));
       jest.spyOn(store, 'dispatch');
 
       await component['deleteTile']();
 
+      expect(writer.removeNewTile).toHaveBeenCalledWith(component['currentCardId']);
       expect(component['dialogRef'].close).toHaveBeenCalled();
       expect(store.dispatch).toHaveBeenCalledWith(StateActions.portfolioCardsStateConnect());
     });
 
     it('should stay open when the record is not removed', async () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('failed'));
-      mockSetDataService.deleteFileFromStorage.mockReturnValue(of('removed'));
-
-      await component['deleteTile']();
-
-      expect(component['dialogRef'].close).not.toHaveBeenCalled();
-    });
-
-    it('should stay open when the record delete errors', async () => {
-      mockSetDataService.deleteRecord.mockReturnValue(throwError(() => new Error('offline')));
+      writer.removeNewTile.mockRejectedValue(new Error('offline'));
 
       await component['deleteTile']();
 

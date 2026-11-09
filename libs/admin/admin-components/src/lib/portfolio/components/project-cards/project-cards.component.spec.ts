@@ -2,7 +2,6 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
-import { of } from 'rxjs';
 import {
   MockStore,
   provideMockStore,
@@ -22,6 +21,7 @@ import {
   ProjectCardType,
   UploadPhotoComponent,
 } from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../../services/portfolio-writer.service';
 import { ProjectCardsComponent } from './project-cards.component';
 
 // Mock complete project card data
@@ -46,6 +46,7 @@ describe('ProjectCardsComponent', () => {
   let fixture: ComponentFixture<ProjectCardsComponent>;
   let getDataService: jest.Mocked<GetDataService>;
   let setDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<PortfolioWriter>;
   let utilityService: jest.Mocked<UtilityService>;
   let store: MockStore;
 
@@ -57,6 +58,8 @@ describe('ProjectCardsComponent', () => {
   beforeEach(async () => {
     getDataService = createSpyObj(GetDataService);
     setDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(PortfolioWriter);
+    writer.saveCard.mockResolvedValue(undefined);
     utilityService = createSpyObj(UtilityService);
 
     await TestBed.configureTestingModule({
@@ -74,6 +77,7 @@ describe('ProjectCardsComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: mockProjectData },
         { provide: GetDataService, useValue: getDataService },
         { provide: SetDataService, useValue: setDataService },
+        { provide: PortfolioWriter, useValue: writer },
         { provide: UtilityService, useValue: utilityService },
       ],
     }).compileComponents();
@@ -217,7 +221,7 @@ describe('ProjectCardsComponent', () => {
   describe('Data Update Functionality', () => {
     beforeEach(() => {
       component.ngOnInit();
-      jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('successfull'));
+      writer.saveCard.mockResolvedValue(undefined);
       jest.spyOn(setDataService, 'uploadDataUrl').mockImplementation(async (_path, _dataUrl, onProgress) => {
         onProgress?.(100);
         return 'uploaded-url';
@@ -230,14 +234,13 @@ describe('ProjectCardsComponent', () => {
 
       component['updateData']();
 
-      expect(setDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.saveCard).not.toHaveBeenCalled();
     });
 
     it('should update project card data when form is valid', () => {
       component['updateData']();
 
-      expect(setDataService.setRecord).toHaveBeenCalledWith(
-        expect.stringContaining('project-data-section'),
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           id: mockProjectCard.id,
           description: mockProjectCard.description,
@@ -247,6 +250,7 @@ describe('ProjectCardsComponent', () => {
           screenshotURL: mockProjectCard.screenshotURL,
           documentationURL: mockProjectCard.documentationURL,
         }),
+        false,
       );
     });
 
@@ -272,27 +276,27 @@ describe('ProjectCardsComponent', () => {
 
       component['updateData']();
 
-      expect(setDataService.setRecord).toHaveBeenCalledWith(
-        expect.any(String),
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
-          gitDisable: false, // Has URL, so not disabled
-          demoDisable: true, // Empty, so disabled
-          ssDisable: false, // Has URL, so not disabled
-          docDisable: true, // Empty, so disabled
+          gitDisable: false,
+          demoDisable: true,
+          ssDisable: false,
+          docDisable: true,
         }),
+        false,
       );
     });
 
-    it('should call setRecord with updated project card data', () => {
+    it('should call saveCard to update project card data', () => {
       component['updateData']();
 
-      expect(setDataService.setRecord).toHaveBeenCalledWith(
-        expect.stringContaining('project-data-section'),
+      expect(writer.saveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           id: mockProjectCard.id,
           description: mockProjectCard.description,
           tools: mockProjectCard.tools,
         }),
+        false,
       );
     });
   });
@@ -344,13 +348,13 @@ describe('ProjectCardsComponent', () => {
       expect(component['imageUrl']()).toBe('firebase-url');
     });
 
-    it('should handle SetDataService record saving', () => {
+    it('should save the card through the portfolio writer', () => {
       const testCard: IProjectCard = { ...mockProjectCard };
-      jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('successfull'));
+      writer.saveCard.mockResolvedValue(undefined);
 
-      component['saveDataRecord']('test/path', testCard);
+      component['saveDataRecord'](testCard);
 
-      expect(setDataService.setRecord).toHaveBeenCalledWith('test/path', testCard);
+      expect(writer.saveCard).toHaveBeenCalledWith(testCard, false);
     });
   });
 
@@ -378,14 +382,13 @@ describe('ProjectCardsComponent', () => {
     });
 
     it('should handle service failures gracefully', () => {
-      jest.spyOn(setDataService, 'setRecord').mockReturnValue(of('error occurred'));
+      writer.saveCard.mockRejectedValue(new Error('offline'));
 
       expect(() => {
         component['updateData']();
       }).not.toThrow();
 
-      // Should still complete without throwing
-      expect(setDataService.setRecord).toHaveBeenCalled();
+      expect(writer.saveCard).toHaveBeenCalled();
     });
   });
 
@@ -416,6 +419,7 @@ describe('ProjectCardsComponent', () => {
           { provide: MAT_DIALOG_DATA, useValue: mockFeaturedProjectData },
           { provide: GetDataService, useValue: getDataService },
           { provide: SetDataService, useValue: setDataService },
+        { provide: PortfolioWriter, useValue: writer },
           { provide: UtilityService, useValue: utilityService },
         ],
       }).compileComponents();
@@ -476,6 +480,7 @@ describe('ProjectCardsComponent when the card arrives after the dialog opens', (
         },
         { provide: GetDataService, useValue: createSpyObj(GetDataService) },
         { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+        { provide: PortfolioWriter, useValue: createSpyObj(PortfolioWriter) },
         { provide: UtilityService, useValue: createSpyObj(UtilityService) },
       ],
     }).compileComponents();

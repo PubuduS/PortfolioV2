@@ -1,10 +1,12 @@
-import { EMULATOR_TARGET, type EmulatorTarget } from './constants';
+import {
+EMULATOR_TARGET,
+type EmulatorTarget
+} from './constants'
 
 const LOCAL_HOSTS: ReadonlySet<string> = new Set(['127.0.0.1', 'localhost']);
 
 /**
  * Throws unless the target is a demo project on a loopback host.
- *
  * @param target Project id and emulator hosts.
  */
 export function assertEmulatorTarget(target: EmulatorTarget): void {
@@ -15,17 +17,16 @@ export function assertEmulatorTarget(target: EmulatorTarget): void {
   if (hosts.length === 0) {
     throw new Error('refusing target with no hosts');
   }
-  for (const host of hosts) {
+  hosts.forEach((host) => {
     if (!LOCAL_HOSTS.has(host)) {
       throw new Error(`refusing non-local host ${host}`);
     }
-  }
+  });
 }
 
 /**
  * Throws when any emulator host variable is present.
  * Snapshot must talk to live project reads, never to a local emulator.
- *
  * @param env Process environment to inspect.
  */
 export function assertSnapshotHasNoEmulatorHost(env: NodeJS.ProcessEnv): void {
@@ -37,7 +38,6 @@ export function assertSnapshotHasNoEmulatorHost(env: NodeJS.ProcessEnv): void {
 
 /**
  * Throws unless the live HTTP method is a read.
- *
  * @param method HTTP method about to be sent.
  */
 export function assertLiveMethod(method: string): void {
@@ -54,7 +54,6 @@ export function clearCredentialEnv(): void {
 
 /**
  * True when this file was the tsx entry point.
- *
  * @param scriptName File name under tools/db, including the extension.
  * @returns Whether the current process was started as that script.
  */
@@ -63,7 +62,10 @@ export function isDirectScript(scriptName: string): boolean {
   return entry.endsWith(`/tools/db/${scriptName}`);
 }
 
-/** The only emulator target this package is allowed to write. */
+/**
+ * The only emulator target this package is allowed to write.
+ * @returns Demo project id and loopback hosts.
+ */
 export function emulatorTarget(): EmulatorTarget {
   return EMULATOR_TARGET;
 }

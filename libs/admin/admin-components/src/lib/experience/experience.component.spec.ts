@@ -8,26 +8,23 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { MockComponents } from 'ng-mocks';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { IExperience } from '@portfolio-v2/state/dataModels';
+import { AdminDeleteDialogComponent } from '@portfolio-v2/admin/shared/components';
 import { AdminExperienceComponent } from './experience.component';
-import { DeleteComformationComponent } from './components/delete-comformation.component';
+import { ExperienceWriter } from './services/experience-writer.service';
 
 describe('AdminExperienceComponent', () => {
   let component: AdminExperienceComponent;
   let fixture: ComponentFixture<AdminExperienceComponent>;
   let store: MockStore;
   let mockUtilityService: jest.Mocked<UtilityService>;
-  let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<ExperienceWriter>;
   const mockData: IExperience[] = [{
     id: 1,
     position: 'some position',
@@ -42,11 +39,11 @@ describe('AdminExperienceComponent', () => {
 
   beforeEach(async () => {
     mockUtilityService = createSpyObj(UtilityService);
-    mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(ExperienceWriter);
+    writer.save.mockResolvedValue(mockData[0]);
     await TestBed.configureTestingModule({
       imports: [
         AdminExperienceComponent,
-        MockComponents(DeleteComformationComponent),
         NoopAnimationsModule,
       ],
       providers: [
@@ -56,8 +53,8 @@ describe('AdminExperienceComponent', () => {
           useValue: mockUtilityService,
         },
         {
-          provide: SetDataService,
-          useValue: mockSetDataService,
+          provide: ExperienceWriter,
+          useValue: writer,
         },
       ],
     }).compileComponents();
@@ -84,8 +81,7 @@ describe('AdminExperienceComponent', () => {
       mockUtilityService.getPaddedDigits.mockImplementation(
         (value: number, width: number) => String(value).padStart(width, '0'),
       );
-      mockSetDataService.setRecord.mockReturnValue(of('successfull'));
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
+      writer.save.mockResolvedValue(mockData[0]);
       const fields = component['experienceForm'];
       fields.position().value.set('Engineer');
       fields.employer().value.set('Acme');
@@ -97,161 +93,102 @@ describe('AdminExperienceComponent', () => {
       fields.points().value.set('Shipped the app');
     });
 
-    it('should not save while required fields are empty', () => {
+    it('should not save while required fields are empty', async () => {
       component['clearForm']();
 
-      component['addExperience']();
+      await component['addExperience']();
 
-      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.save).not.toHaveBeenCalled();
     });
 
-    it('should save a new current job', () => {
-      component['addExperience']();
-      let saved = false;
-      component['isAddSuccess'].subscribe((value) => {
-        saved = value;
-      });
+    it('should save a new current job', async () => {
+      await component['addExperience']();
 
-      expect(saved).toBe(true);
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'experience-section/experience02/',
-        expect.objectContaining({
-          id: 2,
-          position: 'Engineer',
-          endDate: 'present',
-          isCurrent: true,
-          timePeriod: '2020 - 2022',
-          points: ['Shipped the app'],
-        }),
-      );
-      expect(store.dispatch).toHaveBeenCalledWith(StateActions.experienceStateUpdated({
-        experiences: expect.arrayContaining([
-          expect.objectContaining({ id: 2, employer: 'Acme' }),
-        ]),
+      expect(component['isAddSuccess']()).toBe(true);
+      expect(writer.save).toHaveBeenCalledWith(expect.objectContaining({
+        id: 2,
+        position: 'Engineer',
+        endDate: 'present',
+        isCurrent: true,
+        timePeriod: '2020 - 2022',
+        points: ['Shipped the app'],
+      }));
+      expect(store.dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
+        type: StateActions.experienceStateUpdated.type,
       }));
     });
 
-    it('should save the first job when the list is empty', () => {
+    it('should save the first job when the list is empty', async () => {
       store.overrideSelector(experienceSelector, []);
       store.refreshState();
 
-      component['addExperience']();
-      component['isAddSuccess'].subscribe();
+      await component['addExperience']();
 
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'experience-section/experience01/',
-        expect.objectContaining({ id: 1 }),
-      );
+      expect(writer.save).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }));
     });
 
-    it('should replace the selected job and keep a dated end', () => {
+    it('should replace the selected job and keep a dated end', async () => {
       const fields = component['experienceForm'];
       fields.isCurrent().value.set(false);
       fields.timePeriod().value.set('');
 
-      component['editExperience']();
-      let saved = false;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      await component['editExperience']();
 
-      expect(saved).toBe(true);
-      expect(mockSetDataService.setRecord).toHaveBeenCalledWith(
-        'experience-section/experience01/',
-        expect.objectContaining({
-          id: 1,
-          endDate: '2022-06-01',
-          timePeriod: '',
-        }),
-      );
+      expect(component['isEditSuccess']()).toBe(true);
+      expect(writer.save).toHaveBeenCalledWith(expect.objectContaining({
+        id: 1,
+        endDate: '2022-06-01',
+        timePeriod: '',
+      }));
     });
 
-    it('should leave the record when the save does not succeed', () => {
-      mockSetDataService.setRecord.mockReturnValue(of('failed'));
+    it('should leave the record when the save does not succeed', async () => {
+      writer.save.mockRejectedValue(new Error('offline'));
 
-      component['editExperience']();
-      let saved = true;
-      component['isEditSuccess'].subscribe((value) => {
-        saved = value;
-      });
+      await component['editExperience']();
 
-      expect(saved).toBe(false);
+      expect(component['isEditSuccess']()).toBe(false);
+      expect(component['saveError']()).toBe('The experience could not be saved.');
     });
   });
 
   describe('when a job is removed', () => {
-    beforeEach(() => {
-      mockUtilityService.getPaddedDigits.mockImplementation(
-        (value: number, width: number) => String(value).padStart(width, '0'),
-      );
-    });
-
     it('should do nothing when nothing is selected', () => {
       component.experience = undefined;
+      jest.spyOn(component['dialog'], 'open');
 
-      component['deleteExperience']();
+      component['openDeleteConfirmation']();
 
-      expect(mockSetDataService.deleteRecord).not.toHaveBeenCalled();
+      expect(component['dialog'].open).not.toHaveBeenCalled();
     });
 
-    it('should do nothing when edit is asked with nothing selected', () => {
+    it('should do nothing when edit is asked with nothing selected', async () => {
       component.experience = undefined;
 
-      component['editExperience']();
+      await component['editExperience']();
 
-      expect(mockSetDataService.setRecord).not.toHaveBeenCalled();
+      expect(writer.save).not.toHaveBeenCalled();
     });
 
-    it('should drop the selected job after a successful delete', () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
-
-      component['deleteExperience']();
-      let removed = false;
-      component['isDeleteSuccess'].subscribe((value) => {
-        removed = value;
-      });
-
-      expect(removed).toBe(true);
-      expect(mockSetDataService.deleteRecord).toHaveBeenCalledWith('experience-section/experience01/');
-      expect(component.experience).toBeUndefined();
-      expect(component['selectedJob']).toBe('Mock Employer');
-    });
-
-    it('should keep the selection when the delete fails', () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('failed'));
-
-      component['deleteExperience']();
-      let removed = true;
-      component['isDeleteSuccess'].subscribe((value) => {
-        removed = value;
-      });
-
-      expect(removed).toBe(false);
-      expect(component.experience?.id).toBe(1);
-    });
-
-    it('should still ask storage to delete an id that is not in the list', () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
-      component.experience = { ...mockData[0], id: 9 };
-
-      component['deleteExperience']();
-      component['isDeleteSuccess'].subscribe();
-
-      expect(mockSetDataService.deleteRecord).toHaveBeenCalledWith('experience-section/experience09/');
-    });
-
-    it('should delete only after the confirmation dialog accepts', () => {
-      mockSetDataService.deleteRecord.mockReturnValue(of('successfull'));
+    it('should drop the selected job after the confirmation accepts', () => {
       jest.spyOn(component['dialog'], 'open').mockReturnValue({
         afterClosed: () => of(true),
       } as ReturnType<MatDialog['open']>);
 
       component['openDeleteConfirmation']();
 
-      expect(component['dialog'].open).toHaveBeenCalledWith(DeleteComformationComponent, {
-        data: { record: component.experience },
-      });
-      expect(mockSetDataService.deleteRecord).toHaveBeenCalled();
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        AdminDeleteDialogComponent,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            record: expect.objectContaining({ id: 1 }),
+            writer: ExperienceWriter,
+          }),
+        }),
+      );
+      expect(component['isDeleteSuccess']()).toBe(true);
+      expect(component.experience).toBeUndefined();
+      expect(component['selectedJob']).toBe('Mock Employer');
     });
 
     it('should keep the job when the confirmation dialog is dismissed', () => {
@@ -261,7 +198,8 @@ describe('AdminExperienceComponent', () => {
 
       component['openDeleteConfirmation']();
 
-      expect(mockSetDataService.deleteRecord).not.toHaveBeenCalled();
+      expect(component.experience?.id).toBe(1);
+      expect(component['isDeleteSuccess']()).toBe(false);
     });
   });
 
@@ -353,20 +291,13 @@ describe('AdminExperienceComponent', () => {
   });
 
   describe('when the job list has not loaded', () => {
-    it('should stop before assigning a new id', () => {
+    it('should not save before the list has loaded', async () => {
       store.overrideSelector(experienceSelector, undefined);
       store.refreshState();
-      const fields = component['experienceForm'];
-      fields.position().value.set('Engineer');
-      fields.employer().value.set('Acme');
-      fields.startDate().value.set(new Date(2020, 0, 1));
-      fields.endDate().value.set(new Date(2022, 5, 1));
-      fields.isCurrent().value.set(true);
-      fields.timePeriod().value.set('2020 - 2022');
-      fields.shortDescription().value.set('Built software');
-      fields.points().value.set('Shipped the app');
 
-      expect(() => component['addExperience']()).toThrow(TypeError);
+      await component['addExperience']();
+
+      expect(writer.save).not.toHaveBeenCalled();
     });
   });
 });
@@ -381,13 +312,12 @@ describe('AdminExperienceComponent when the record arrives after the page opens'
     await TestBed.configureTestingModule({
       imports: [
         AdminExperienceComponent,
-        MockComponents(DeleteComformationComponent),
         NoopAnimationsModule,
       ],
       providers: [
         provideMockStore(),
         { provide: UtilityService, useValue: utility },
-        { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+        { provide: ExperienceWriter, useValue: createSpyObj(ExperienceWriter) },
       ],
     }).compileComponents();
 

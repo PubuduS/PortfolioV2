@@ -10,11 +10,15 @@ import {
   provideMockStore,
 } from '@ngrx/store/testing';
 import { MockComponents } from 'ng-mocks';
+import { of } from 'rxjs';
 
 import { StateActions } from '@portfolio-v2/state';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
+import { ProjectCardType } from '@portfolio-v2/admin/shared/components';
 import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
+import { AddPortfolioRecordComponent } from './add-portfolio-record/add-portfolio-record.component';
+import { AddTileComponent } from './add-tile/add-tile.component';
 import { PortfolioComponent } from './portfolio.component';
 import { ProjectCardsComponent } from './components/project-cards/project-cards.component';
 import { DescriptionCardComponent } from './components/description-card/description-card.component';
@@ -75,7 +79,6 @@ describe('PortfolioComponent', () => {
     jest.spyOn(component['router'], 'navigate');
 
     fixture.detectChanges();
-    await fixture.whenStable();
   });
 
   describe('Component Properties', () => {
@@ -92,6 +95,47 @@ describe('PortfolioComponent', () => {
     });
   });
 
+  describe('addNewRecord', () => {
+    it('should open the card editor after Next closes the tile editor', () => {
+      const next = {
+        currentId: 4,
+        heading: 'Test Title',
+        type: ProjectCardType.standard,
+      };
+      const open = jest.spyOn(component['dialog'], 'open');
+      open.mockReturnValueOnce({
+        afterClosed: () => of(next),
+      } as never);
+
+      callComponentMethod(component, 'addNewRecord');
+
+      expect(open).toHaveBeenNthCalledWith(
+        1,
+        AddTileComponent,
+        expect.objectContaining({ width: '600px' }),
+      );
+      expect(open).toHaveBeenNthCalledWith(
+        2,
+        AddPortfolioRecordComponent,
+        expect.objectContaining({
+          width: '800px',
+          data: next,
+        }),
+      );
+    });
+
+    it('should stay on the grid when the tile editor closes without Next', () => {
+      const open = jest.spyOn(component['dialog'], 'open');
+      open.mockReturnValueOnce({
+        afterClosed: () => of(undefined),
+      } as never);
+
+      callComponentMethod(component, 'addNewRecord');
+
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('openDialog', () => {
     it('should open ProjectCardsComponent dialog with correct config and data', () => {
       const projectId = 2;
@@ -104,7 +148,10 @@ describe('PortfolioComponent', () => {
 
       callComponentMethod(component, 'openDialog', projectId);
 
-      expect(component['dialog'].open).toHaveBeenCalledWith(ProjectCardsComponent, expectedConfig);
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        ProjectCardsComponent,
+        expect.objectContaining(expectedConfig),
+      );
     });
   });
 
@@ -120,7 +167,10 @@ describe('PortfolioComponent', () => {
 
       callComponentMethod(component, 'openDialogDescription', project);
 
-      expect(component['dialog'].open).toHaveBeenCalledWith(DescriptionCardComponent, expectedConfig);
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        DescriptionCardComponent,
+        expect.objectContaining(expectedConfig),
+      );
     });
 
     it('should pass the project data correctly', () => {
@@ -149,7 +199,10 @@ describe('PortfolioComponent', () => {
 
       callComponentMethod(component, 'openDeleteDialog', projectId);
 
-      expect(component['dialog'].open).toHaveBeenCalledWith(DeletePortfolioTileComponent, expectedConfig);
+      expect(component['dialog'].open).toHaveBeenCalledWith(
+        DeletePortfolioTileComponent,
+        expect.objectContaining(expectedConfig),
+      );
     });
 
     it('should pass the project data correctly for regular projects', () => {

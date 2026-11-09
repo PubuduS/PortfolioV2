@@ -22,21 +22,24 @@ import {
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import {
+  catchError,
+  from,
   map,
+  Observable,
   of,
   take,
-  Observable,
 } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { TilePreviewComponent } from '@portfolio-v2/admin/shared/components';
-import { IProjectView } from '@portfolio-v2/state/dataModels';
 import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+  IProjectView,
+  projectIconFilePath,
+} from '@portfolio-v2/state/dataModels';
+import { SetDataService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
+import { PortfolioWriter } from '../../services/portfolio-writer.service';
 
 /**
  * Description Card Component
@@ -87,12 +90,6 @@ export class DescriptionCardComponent implements OnInit {
   /** Image Upload Progress Value */
   protected readonly progressValue = signal(0);
 
-  /** Base Path for Images */
-  private readonly basePathForImages = 'portfolio/portfolio-tiles';
-
-  /** Base Path Docs */
-  private readonly basePathForDocs = 'project-icon-section';
-
   /** Observable of project data such as icons, headings and descriptions */
   private readonly projectView = this.store.selectSignal(portfolioCardsSelector);
 
@@ -102,15 +99,15 @@ export class DescriptionCardComponent implements OnInit {
    * @param data data
    * @param data.project project view
    * @param setDataService set data service
+   * @param writer portfolio writes
    * @param store ngrx store
-   * @param utility utility service
    */
   constructor(
     public dialogRef: MatDialogRef<DescriptionCardComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { project: IProjectView },
     private setDataService: SetDataService,
+    private writer: PortfolioWriter,
     private store: Store,
-    private utility: UtilityService,
   ) {}
 
   /**
@@ -155,9 +152,7 @@ export class DescriptionCardComponent implements OnInit {
 
     const { title, description } = this.tileEditorForm().value();
     const filePicker = this.imageUrl();
-    const imageName = `ID-${this.utility.getPaddedDigits(this.data.project.id, 2)}-Icon.webp`;
-    const fileStoragePath = `${this.basePathForImages}/${imageName}`;
-    const databaseDocPath = `${this.basePathForDocs}/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`;
+    const fileStoragePath = projectIconFilePath(this.data.project.id);
 
     // Handle file upload if a new file was selected
     if (filePicker) {
@@ -177,11 +172,7 @@ export class DescriptionCardComponent implements OnInit {
     const newProjectView = this.createUpdatedProjectView(title, description, imageURL);
 
     // Save to database and handle success/updates
-    this.isEditSuccess = this.saveDataRecord(
-      databaseDocPath,
-      newProjectView,
-      title,
-    );
+    this.isEditSuccess = this.saveDataRecord(newProjectView, title);
   }
 
   /**
@@ -219,45 +210,39 @@ export class DescriptionCardComponent implements OnInit {
 
   /**
    * Persist project changes to the database
-   * @param databaseDocPath path to the project document
    * @param newProjectView updated project view
    * @param title new project title
    * @returns observable of success status
    */
   private saveDataRecord(
-    databaseDocPath: string,
     newProjectView: IProjectView,
     title: string,
   ): Observable<boolean> {
-    return this.setDataService
-      .setRecord<IProjectView>(databaseDocPath, newProjectView).pipe(
+    return from(this.writer.saveTile(newProjectView)).pipe(
       take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Update the displayed project data with the new image
-          this.data.project = newProjectView;
-          // Reset the preview to placeholder
-          this.imagePreview.set(this.defaultImageSrc);
-
-          // Update the related project card
-          this.updateRelatedProjectCard(title);
-        }
+      map(() => {
+        this.data.project = newProjectView;
+        this.imagePreview.set(this.defaultImageSrc);
+        this.updateRelatedProjectCard(title);
         this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return result === 'successfull';
+        return true;
+      }),
+      catchError(() => {
+        this.store.dispatch(StateActions.portfolioCardsStateConnect());
+        return of(false);
       }),
     );
   }
 
   /**
-   * Update related project card in the database
+   * Update related project card in the database.
+   * The featured tile has no standard card to patch.
    * @param title new title for the project card
    */
   private updateRelatedProjectCard(title: string): void {
-    if (this.data.project.id !== 1) {
-      const projectCardPath = `project-data-section/project-${this.utility.getPaddedDigits(this.data.project.id, 2)}/`;
-      this.setDataService.modifyAField(projectCardPath, title, 'heading')
-        .pipe(take(1))
-        .subscribe();
+    if (this.data.project.id === 1) {
+      return;
     }
+    this.writer.patchCardHeading(this.data.project.id, title).catch(() => undefined);
   }
 }

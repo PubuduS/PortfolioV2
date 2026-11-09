@@ -24,6 +24,24 @@
         "apps/portfolio-v2/src/environments/environment.emulator.ts"
       ],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
+      "@portfolio-v2/portfolio-pages/education-main": [
+        "libs/pages/src/lib/components/education_main/education_main.component.ts"
+      ],
+      "@portfolio-v2/portfolio-pages/landing-banner": [
+        "libs/pages/src/lib/components/landing_banner/landing_banner.component.ts"
+      ],
+      "@portfolio-v2/portfolio-pages/page-not-found": [
+        "libs/pages/src/lib/components/page_not_found/page_not_found.component.ts"
+      ],
+      "@portfolio-v2/portfolio-pages/page-routes": [
+        "libs/pages/src/lib/components/page.route.ts"
+      ],
+      "@portfolio-v2/portfolio-pages/project-tile": [
+        "libs/pages/src/lib/components/portfolio/components/project-tile/project-tile.component.ts"
+      ],
+      "@portfolio-v2/portfolio-pages/project-link-icon": [
+        "libs/pages/src/lib/components/portfolio/components/project-link-icon/project-link-icon.component.ts"
+      ],
       "@portfolio-v2/shared/components": [
         "libs/shared/src/lib/components/index.ts"
       ],

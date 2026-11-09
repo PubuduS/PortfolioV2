@@ -1,5 +1,22 @@
-import { compareBaseline, type ObservedState } from './compare';
+import {
+  compareBaseline,
+  type ObservedState,
+} from './compare';
 import { type BaselineManifest } from './typed-json';
+
+/**
+ * Builds an observed state that copies the manifest.
+ * @param source Expected baseline.
+ * @param hasAdminUser Whether the admin account is present.
+ * @returns Observed state for compareBaseline.
+ */
+function observedFrom(source: BaselineManifest, hasAdminUser = true): ObservedState {
+  return {
+    firestore: source.firestore,
+    storage: source.storage,
+    hasAdminUser,
+  };
+}
 
 const manifest: BaselineManifest = {
   sourceProjectId: 'portfolio-c9b8e',
@@ -86,11 +103,3 @@ describe('baseline comparison', () => {
     });
   });
 });
-
-function observedFrom(source: BaselineManifest, hasAdminUser = true): ObservedState {
-  return {
-    firestore: source.firestore,
-    storage: source.storage,
-    hasAdminUser,
-  };
-}

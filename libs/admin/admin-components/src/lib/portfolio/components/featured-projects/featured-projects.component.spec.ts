@@ -16,10 +16,10 @@ import {
 } from '@portfolio-v2/state/selectors';
 import { spyOnMethod } from '@portfolio-v2/shared/test-helpers';
 import {
-  AddPortfolioRecordComponent,
   ProjectCardType,
   UpdateDeleteButtonsComponent,
 } from '@portfolio-v2/admin/shared/components';
+import { AddPortfolioRecordComponent } from '../../add-portfolio-record/add-portfolio-record.component';
 import { DeletePortfolioTileComponent } from '../delete-portfolio-tile/delete-portfolio-tile.component';
 import { FeaturedProjectsComponent } from './featured-projects.component';
 import { ProjectCardsComponent } from '../project-cards/project-cards.component';

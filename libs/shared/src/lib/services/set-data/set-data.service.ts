@@ -10,8 +10,6 @@ import {
 import {
   Firestore,
   doc,
-  setDoc,
-  deleteDoc,
   writeBatch,
   runTransaction,
 } from '@angular/fire/firestore';
@@ -28,6 +26,7 @@ import { AllowedRecords } from '../../types';
 /** One document write inside a single batch. */
 export type WriteOp =
   | { readonly kind: 'set'; readonly path: string; readonly value: AllowedRecords }
+  | { readonly kind: 'merge'; readonly path: string; readonly value: { readonly [key: string]: unknown } }
   | { readonly kind: 'delete'; readonly path: string };
 
 /**
@@ -113,71 +112,6 @@ export class SetDataService {
   }
 
   /**
-   * Modify a field in a record
-   * @param path database path
-   * @param value value to add
-   * @param field field to modify
-   * @returns observable doc reference
-   */
-  public modifyAField(path: string, value: string | undefined, field: string): Observable<string> {
-    if (!value) {
-      return of('empty');
-    }
-    const docRef = doc(this.firestore, path);
-    return from(setDoc(docRef, { [field]: value }, { merge: true })).pipe(
-      map(() => 'successfull'),
-      catchError((error) => of(`error ${error}`)),
-    );
-  }
-
-  /**
-   * Modify image
-   * @param path database path
-   * @param value value to add
-   * @returns observable doc reference
-   */
-  public modifyImageSrcField(path: string, value: string | undefined): Observable<string> {
-    if (!value) {
-      return of('empty');
-    }
-    const docRef = doc(this.firestore, path);
-    return from(setDoc(docRef, { imageSrc: value }, { merge: true })).pipe(
-      map(() => 'successfull'),
-      catchError((error) => of(`error ${error}`)),
-    );
-  }
-
-  /**
-   * Replace a record with new value
-   * @param path database path
-   * @param value value to add
-   * @returns observable doc reference
-   */
-  public setRecord<T extends AllowedRecords>(path: string, value: T): Observable<string> {
-    if (!value) {
-      return of('empty');
-    }
-    const docRef = doc(this.firestore, path);
-    return from(setDoc(docRef, value)).pipe(
-      map(() => 'successfull'),
-      catchError((error) => of(`error ${error}`)),
-    );
-  }
-
-  /**
-   * Delete a record from Firestore
-   * @param path database path
-   * @returns observable doc reference
-   */
-  public deleteRecord(path: string): Observable<string> {
-    const docRef = doc(this.firestore, path);
-    return from(deleteDoc(docRef)).pipe(
-      map(() => 'successfull'),
-      catchError((error) => of(`error ${error}`)),
-    );
-  }
-
-  /**
    * Apply document writes in one Firestore batch.
    * @param ops set and delete operations
    * @returns resolves when the batch commits
@@ -189,6 +123,9 @@ export class SetDataService {
       switch (op.kind) {
         case 'set':
           batch.set(docRef, op.value);
+          break;
+        case 'merge':
+          batch.set(docRef, op.value, { merge: true });
           break;
         case 'delete':
           batch.delete(docRef);

@@ -34,135 +34,13 @@
                 }
               </div>
               <div class="tab-content ps-5" id="v-pills-tabContent">
-                @if (experience) {
-                  <div
-                    class="tab-pane fade show active"
-                    role="tabpanel"
-                    aria-labelledby="v-pills-home-tab"
-                  >
-                    <div class="row">
-                      <div class="col-10">
-                        <input
-                          class="mb-2 fs-5 px-2 w-100"
-                          [formField]="experienceForm.position"
-                          placeholder="Enter job position"
-                        />
-                      </div>
-                      <div class="col-2">
-                        <button
-                          mat-fab
-                          extended
-                          color="warn"
-                          class="float-end"
-                          id="clear"
-                          (click)="clearForm()"
-                        >
-                          <mat-icon>clear</mat-icon>
-                          Clear
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      @if (hasError(experienceForm.position, 'required')) {
-                        <span class="field-error"
-                          >A valid position is required</span
-                        >
-                      }
-                    </div>
-                    <input
-                      class="my-2 fs-6 px-2 w-100"
-                      [formField]="experienceForm.employer"
-                      placeholder="Enter employer name"
-                    />
-                    <div class="col-12">
-                      @if (hasError(experienceForm.employer, 'required')) {
-                        <span class="field-error"
-                          >A valid employer is required</span
-                        >
-                      }
-                    </div>
-                    <div class="row">
-                      <div class="col-4">
-                        <mat-form-field>
-                          <mat-label>Start Date</mat-label>
-                          <input
-                            matInput
-                            [matDatepicker]="startPicker"
-                            (dateChange)="setStart($event.value)"
-                          />
-                          <mat-hint>MM/DD/YYYY</mat-hint>
-                          <mat-datepicker-toggle
-                            matIconSuffix
-                            [for]="startPicker"
-                          ></mat-datepicker-toggle>
-                          <mat-datepicker #startPicker></mat-datepicker>
-                        </mat-form-field>
-                      </div>
-                      <div class="col-4">
-                        <mat-form-field>
-                          <mat-label>End Date</mat-label>
-                          <input
-                            matInput
-                            [matDatepicker]="endPicker"
-                            (dateChange)="setEnd($event.value)"
-                          />
-                          <mat-hint>MM/DD/YYYY</mat-hint>
-                          <mat-datepicker-toggle
-                            matIconSuffix
-                            [for]="endPicker"
-                          ></mat-datepicker-toggle>
-                          <mat-datepicker #endPicker></mat-datepicker>
-                        </mat-form-field>
-                      </div>
-                      <div class="col-4">
-                        <mat-checkbox
-                          class="my-2"
-                          [checked]="experienceForm.isCurrent().value()"
-                          (change)="setCurrent($event.checked)"
-                          >Is Current?</mat-checkbox
-                        >
-                      </div>
-                    </div>
-
-                    <input
-                      class="my-2 fs-6 px-2 w-100"
-                      [formField]="experienceForm.timePeriod"
-                      placeholder="e.g., 2023 - Present"
-                    />
-                    <textarea
-                      class="my-2 p-2 w-100"
-                      [formField]="experienceForm.shortDescription"
-                      rows="6"
-                      cols="100"
-                      placeholder="Enter a short description of your role and responsibilities"
-                    ></textarea>
-                    <div class="col-12">
-                      @if (
-                        hasError(experienceForm.shortDescription, 'required')
-                      ) {
-                        <span class="field-error"
-                          >A valid description is required</span
-                        >
-                      }
-                    </div>
-
-                    <textarea
-                      class="my-2 p-2 w-100"
-                      [formField]="experienceForm.points"
-                      rows="6"
-                      cols="100"
-                      placeholder="Enter job responsibilities and achievements (one per line)"
-                    ></textarea>
-                    <div class="col-12">
-                      @if (hasError(experienceForm.points, 'required')) {
-                        <span class="field-error"
-                          >A valid points are required</span
-                        >
-                      }
-                    </div>
-                  </div>
-                }
+                <div
+                  class="tab-pane fade show active"
+                  role="tabpanel"
+                  aria-labelledby="v-pills-home-tab"
+                >
+                  <admin-experience-form (cleared)="clearForm()" />
+                </div>
               </div>
             </div>
           </div>
@@ -179,13 +57,13 @@
                   class="float-end"
                   id="save"
                   (click)="addExperience()"
-                  [disabled]="experienceForm().invalid()"
+                  [disabled]="jobForm()?.experienceForm()?.invalid() ?? true"
                 >
                   <mat-icon>add</mat-icon>
                   Add
                 </button>
               </div>
-              @if (isAddSuccess | async) {
+              @if (isAddSuccess()) {
                 <div class="col-1">
                   <mat-icon class="mx-1 success w-100 h-100"
                     >check_circle</mat-icon
@@ -200,13 +78,13 @@
                   class="float-end"
                   id="save"
                   (click)="editExperience()"
-                  [disabled]="experienceForm().invalid()"
+                  [disabled]="jobForm()?.experienceForm()?.invalid() ?? true"
                 >
                   <mat-icon>edit</mat-icon>
                   Edit
                 </button>
               </div>
-              @if (isEditSuccess | async) {
+              @if (isEditSuccess()) {
                 <div class="col-1">
                   <mat-icon class="mx-1 success w-100 h-100"
                     >check_circle</mat-icon
@@ -221,18 +99,21 @@
                   class="float-end"
                   id="delete"
                   (click)="openDeleteConfirmation()"
-                  [disabled]="experienceForm().invalid()"
+                  [disabled]="jobForm()?.experienceForm()?.invalid() ?? true"
                 >
                   <mat-icon>delete</mat-icon>
                   Delete
                 </button>
               </div>
-              @if (isDeleteSuccess | async) {
+              @if (isDeleteSuccess()) {
                 <div class="col-1">
                   <mat-icon class="mx-1 success w-100 h-100"
                     >check_circle</mat-icon
                   >
                 </div>
+              }
+              @if (saveError(); as saveError) {
+                <p class="field-error">{{ saveError }}</p>
               }
             </div>
           </div>

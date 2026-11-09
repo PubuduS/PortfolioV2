@@ -12,29 +12,29 @@ import {
 import { seedBaseline } from './seed';
 
 /**
- * Clears Auth, Firestore, and Storage in the emulators, then seeds the baseline.
+ * Formats one emulator host and port.
+ * @param name Emulator service name.
+ * @returns host:port
  */
-export async function resetBaseline(): Promise<void> {
-  assertEmulatorTarget(EMULATOR_TARGET);
-  clearCredentialEnv();
-  await clearEmulators();
-  await seedBaseline();
-  process.stdout.write('reset complete\n');
+function endpoint(name: keyof typeof EMULATOR_PORTS): string {
+  return `${EMULATOR_TARGET.hosts[name]}:${EMULATOR_PORTS[name]}`;
 }
 
-async function clearEmulators(): Promise<void> {
-  const project = encodeURIComponent(EMULATOR_TARGET.projectId);
-  const firestoreHost = endpoint('firestore');
-  const authHost = endpoint('auth');
-  const storageHost = endpoint('storage');
-  await request(
-    `http://${firestoreHost}/emulator/v1/projects/${project}/databases/(default)/documents`,
-    'DELETE',
-  );
-  await request(`http://${authHost}/emulator/v1/projects/${project}/accounts`, 'DELETE');
-  await request(`http://${storageHost}/internal/reset`, 'POST');
+/**
+ * Drops the query string so a log line does not include tokens.
+ * @param url Request URL.
+ * @returns Origin and path.
+ */
+function safeUrl(url: string): string {
+  const parsed = new URL(url);
+  return `${parsed.origin}${parsed.pathname}`;
 }
 
+/**
+ * Sends one HTTP request to an emulator admin endpoint.
+ * @param url Request URL.
+ * @param method HTTP method.
+ */
 function request(url: string, method: 'DELETE' | 'POST'): Promise<void> {
   const target = new URL(url);
   return new Promise((resolve, reject) => {
@@ -60,15 +60,37 @@ function request(url: string, method: 'DELETE' | 'POST'): Promise<void> {
   });
 }
 
-function endpoint(name: keyof typeof EMULATOR_PORTS): string {
-  return `${EMULATOR_TARGET.hosts[name]}:${EMULATOR_PORTS[name]}`;
+/**
+ * Deletes Auth, Firestore, and Storage data in the local emulators.
+ */
+async function clearEmulators(): Promise<void> {
+  const project = encodeURIComponent(EMULATOR_TARGET.projectId);
+  const firestoreHost = endpoint('firestore');
+  const authHost = endpoint('auth');
+  const storageHost = endpoint('storage');
+  await request(
+    `http://${firestoreHost}/emulator/v1/projects/${project}/databases/(default)/documents`,
+    'DELETE',
+  );
+  await request(`http://${authHost}/emulator/v1/projects/${project}/accounts`, 'DELETE');
+  await request(`http://${storageHost}/internal/reset`, 'POST');
 }
 
-function safeUrl(url: string): string {
-  const parsed = new URL(url);
-  return `${parsed.origin}${parsed.pathname}`;
+/**
+ * Clears Auth, Firestore, and Storage in the emulators, then seeds the baseline.
+ */
+export async function resetBaseline(): Promise<void> {
+  assertEmulatorTarget(EMULATOR_TARGET);
+  clearCredentialEnv();
+  await clearEmulators();
+  await seedBaseline();
+  process.stdout.write('reset complete\n');
 }
 
+/**
+ * Writes the failure and exits the process.
+ * @param error Caught value.
+ */
 function fail(error: unknown): never {
   const message = error instanceof Error
     ? error.stack ?? error.message

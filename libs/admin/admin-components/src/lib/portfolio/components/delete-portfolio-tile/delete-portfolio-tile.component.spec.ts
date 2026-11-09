@@ -8,22 +8,17 @@ import {
 } from '@angular/material/dialog';
 import { provideMockStore } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
-import { of } from 'rxjs';
 
 import { IProjectCard } from '@portfolio-v2/state/dataModels';
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
 import { callComponentMethod } from '@portfolio-v2/shared/test-helpers';
 import { ProjectCardType } from '@portfolio-v2/admin/shared/components';
+import { PortfolioWriter } from '../../services/portfolio-writer.service';
 import { DeletePortfolioTileComponent } from './delete-portfolio-tile.component';
 
 describe('DeletePortfolioTileComponent', () => {
   let component: DeletePortfolioTileComponent;
   let fixture: ComponentFixture<DeletePortfolioTileComponent>;
-  let utility: jest.Mocked<UtilityService>;
-  let setDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<PortfolioWriter>;
 
   const mockProject: IProjectCard = {
     id: 1,
@@ -39,16 +34,12 @@ describe('DeletePortfolioTileComponent', () => {
   };
 
   beforeEach(async () => {
-    utility = createSpyObj(UtilityService);
-    setDataService = createSpyObj(SetDataService);
-    utility['getPaddedDigits'].mockReturnValue('01');
-    setDataService['deleteRecord'].mockReturnValue(of('successfull'));
-    setDataService['deleteFileFromStorage'].mockReturnValue(of('successfull'));
+    writer = createSpyObj(PortfolioWriter);
+    writer.removeStandardProject.mockResolvedValue(undefined);
+    writer.removeFeaturedProject.mockResolvedValue(undefined);
 
     await TestBed.configureTestingModule({
-      imports: [
-        DeletePortfolioTileComponent,
-      ],
+      imports: [DeletePortfolioTileComponent],
       providers: [
         provideMockStore({
           initialState: {
@@ -58,9 +49,7 @@ describe('DeletePortfolioTileComponent', () => {
         }),
         { provide: MAT_DIALOG_DATA, useValue: mockProjectData },
         { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
-        { provide: SetDataService, useValue: setDataService },
-        { provide: UtilityService, useValue: utility },
-
+        { provide: PortfolioWriter, useValue: writer },
       ],
     }).compileComponents();
 
@@ -73,124 +62,52 @@ describe('DeletePortfolioTileComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Component Initialization', () => {
-    it('should initialize with correct default values', () => {
-      expect(component['projectCard']).toBeDefined();
-    });
-
-    it('should have access to injected data', () => {
-      expect(component.data).toBe(mockProjectData);
-      expect(component.data.recordId).toBe(mockProject.id);
-      expect(component.data.type).toBe(ProjectCardType.standard);
-    });
+  it('should expose the dialog record', () => {
+    expect(component.data).toBe(mockProjectData);
+    expect(component.data.recordId).toBe(mockProject.id);
+    expect(component.data.type).toBe(ProjectCardType.standard);
   });
 
-  describe('Delete Tile Functionality', () => {
-    it('should not delete if project ID is not available', () => {
-      const invalidProjectData: { recordId?: number } = {};
-
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        imports: [DeletePortfolioTileComponent],
-        providers: [
-          provideMockStore({}),
-          { provide: MAT_DIALOG_DATA, useValue: invalidProjectData },
-          { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
-          { provide: SetDataService, useValue: setDataService },
-          { provide: UtilityService, useValue: utility },
-        ],
-      });
-
-      const newComponent = TestBed.createComponent(DeletePortfolioTileComponent);
-      const { componentInstance } = newComponent;
-
-      callComponentMethod(componentInstance, 'deleteTile');
-
-      expect(setDataService['deleteRecord']).not.toHaveBeenCalled();
+  it('should not delete when the dialog has no record id', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [DeletePortfolioTileComponent],
+      providers: [
+        provideMockStore({}),
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
+        { provide: PortfolioWriter, useValue: writer },
+      ],
     });
 
-    it('should delete tile, card data, and storage files when project ID is available', () => {
-      callComponentMethod(component, 'deleteTile');
+    const newComponent = TestBed.createComponent(DeletePortfolioTileComponent);
+    callComponentMethod(newComponent.componentInstance, 'deleteTile');
 
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledTimes(2);
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/portfolio-tiles/ID-01-Icon.webp',
-      );
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/project-screenshots/normal/ID-01-Screenshot.webp',
-      );
-
-      expect(setDataService['deleteRecord']).toHaveBeenCalledTimes(2);
-      expect(setDataService['deleteRecord']).toHaveBeenCalledWith(
-        'project-icon-section/project-01/',
-      );
-      expect(setDataService['deleteRecord']).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
-      );
-    });
-
-    it('should call utility service to format project ID', () => {
-      callComponentMethod(component, 'deleteTile');
-
-      expect(utility['getPaddedDigits']).toHaveBeenCalledWith(mockProject.id, 2);
-    });
-
-    it('should attempt all delete operations when project ID is available', () => {
-      callComponentMethod(component, 'deleteTile');
-
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/portfolio-tiles/ID-01-Icon.webp',
-      );
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/project-screenshots/normal/ID-01-Screenshot.webp',
-      );
-
-      expect(setDataService['deleteRecord']).toHaveBeenCalledWith(
-        'project-icon-section/project-01/',
-      );
-
-      expect(setDataService['deleteRecord']).toHaveBeenCalledWith(
-        'project-data-section/project-01/',
-      );
-    });
-
-    it('should call utility service to format project ID', () => {
-      callComponentMethod(component, 'deleteTile');
-
-      expect(utility['getPaddedDigits']).toHaveBeenCalledWith(mockProject.id, 2);
-    });
-
-    it('should close when the files are already gone and the records are removed', () => {
-      setDataService['deleteFileFromStorage'].mockReturnValue(
-        of('error FirebaseError: storage/object-not-found'),
-      );
-
-      callComponentMethod(component, 'deleteTile');
-
-      expect(component.dialogRef.close).toHaveBeenCalled();
-    });
-
-    it('should stay open when a database delete fails', () => {
-      setDataService['deleteRecord'].mockReturnValue(of('error permission'));
-
-      callComponentMethod(component, 'deleteTile');
-
-      expect(component.dialogRef.close).not.toHaveBeenCalled();
-    });
-
-    // Note: Store dispatch behavior is tested in integration tests
-    // since forkJoin async behavior is complex to test with mocked services
-    // The unit tests focus on verifying correct service method calls
+    expect(writer.removeStandardProject).not.toHaveBeenCalled();
   });
 
-  describe('Featured Project Deletion', () => {
+  it('should close after the tile records are removed', async () => {
+    callComponentMethod(component, 'deleteTile');
+    await fixture.whenStable();
+
+    expect(writer.removeStandardProject).toHaveBeenCalledWith(mockProject.id);
+    expect(component.dialogRef.close).toHaveBeenCalled();
+    expect(component['isOverallSuccess']).toBe(true);
+  });
+
+  it('should stay open when a database delete fails', async () => {
+    writer.removeStandardProject.mockRejectedValue(new Error('permission'));
+
+    callComponentMethod(component, 'deleteTile');
+    await fixture.whenStable();
+
+    expect(component.dialogRef.close).not.toHaveBeenCalled();
+    expect(component['isOverallSuccess']).toBe(false);
+  });
+
+  describe('when the record is featured', () => {
     let featuredComponent: DeletePortfolioTileComponent;
     let featuredFixture: ComponentFixture<DeletePortfolioTileComponent>;
-
-    const mockFeaturedProjectData = {
-      recordId: mockProject.id,
-      type: ProjectCardType.featured,
-    };
 
     beforeEach(async () => {
       TestBed.resetTestingModule();
@@ -202,10 +119,12 @@ describe('DeletePortfolioTileComponent', () => {
               featuredProjectCards: [mockProject],
             },
           }),
-          { provide: MAT_DIALOG_DATA, useValue: mockFeaturedProjectData },
+          {
+            provide: MAT_DIALOG_DATA,
+            useValue: { recordId: mockProject.id, type: ProjectCardType.featured },
+          },
           { provide: MatDialogRef, useValue: createSpyObj(MatDialogRef.name, ['close']) },
-          { provide: SetDataService, useValue: setDataService },
-          { provide: UtilityService, useValue: utility },
+          { provide: PortfolioWriter, useValue: writer },
         ],
       }).compileComponents();
 
@@ -214,43 +133,12 @@ describe('DeletePortfolioTileComponent', () => {
       await featuredFixture.whenStable();
     });
 
-    it('should initialize with correct data for featured projects', () => {
-      expect(featuredComponent.data).toBe(mockFeaturedProjectData);
-      expect(featuredComponent.data.recordId).toBe(mockProject.id);
-      expect(featuredComponent.data.type).toBe(ProjectCardType.featured);
-    });
-
-    it('should delete featured project files and database record', () => {
+    it('should close after the featured record is removed', async () => {
       callComponentMethod(featuredComponent, 'deleteFeaturedProject');
+      await featuredFixture.whenStable();
 
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledTimes(2);
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/project-screenshots/featured/ID-01-Screenshot.webp',
-      );
-      expect(setDataService['deleteFileFromStorage']).toHaveBeenCalledWith(
-        'portfolio/featured-projects/ID-01-Image.webp',
-      );
-
-      expect(setDataService['deleteRecord']).toHaveBeenCalledTimes(1);
-      expect(setDataService['deleteRecord']).toHaveBeenCalledWith(
-        'featured-project-section/project-01/',
-      );
-    });
-
-    it('should call utility service to format featured project ID', () => {
-      callComponentMethod(featuredComponent, 'deleteFeaturedProject');
-
-      expect(utility['getPaddedDigits']).toHaveBeenCalledWith(mockProject.id, 2);
-    });
-  });
-
-  describe('Dialog Integration', () => {
-    it('should have access to dialog reference', () => {
-      expect(component.dialogRef).toBeDefined();
-    });
-
-    it('should have access to dialog data', () => {
-      expect(component.data).toBe(mockProjectData);
+      expect(writer.removeFeaturedProject).toHaveBeenCalledWith(mockProject.id);
+      expect(featuredComponent.dialogRef.close).toHaveBeenCalled();
     });
   });
 });

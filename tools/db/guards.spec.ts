@@ -1,13 +1,29 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { EMULATOR_TARGET, type EmulatorTarget } from './constants';
+import {
+  EMULATOR_TARGET,
+  type EmulatorTarget,
+} from './constants';
 import {
   assertEmulatorTarget,
   assertLiveMethod,
   assertSnapshotHasNoEmulatorHost,
   clearCredentialEnv,
 } from './guards';
+
+/**
+ * Puts one process environment variable back after a test.
+ * @param name Environment variable name.
+ * @param value Previous value, or undefined when it was unset.
+ */
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+  process.env[name] = value;
+}
 
 describe('emulator target guard', () => {
   it('should accept the demo loopback target', () => {
@@ -107,11 +123,3 @@ describe('credential env', () => {
     expect(process.env['FIREBASE_TOKEN']).toBeUndefined();
   });
 });
-
-function restoreEnv(name: string, value: string | undefined): void {
-  if (value === undefined) {
-    delete process.env[name];
-    return;
-  }
-  process.env[name] = value;
-}

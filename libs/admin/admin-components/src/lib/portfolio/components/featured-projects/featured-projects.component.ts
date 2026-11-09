@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Signal,
+  ViewContainerRef,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
@@ -18,10 +19,12 @@ import {
   newFeaturedProjectRecordIdSelector,
 } from '@portfolio-v2/state/selectors';
 import {
+  openAdminDialog,
   UpdateDeleteButtonsComponent,
-  AddPortfolioRecordComponent,
   ProjectCardType,
 } from '@portfolio-v2/admin/shared/components';
+import { ProjectLinkIconComponent } from '@portfolio-v2/portfolio-pages/project-link-icon';
+import { AddPortfolioRecordComponent } from '../../add-portfolio-record/add-portfolio-record.component';
 import { ProjectCardsComponent } from '../project-cards/project-cards.component';
 import { DeletePortfolioTileComponent } from '../delete-portfolio-tile/delete-portfolio-tile.component';
 
@@ -33,6 +36,7 @@ import { DeletePortfolioTileComponent } from '../delete-portfolio-tile/delete-po
   imports: [
     CommonModule,
     UpdateDeleteButtonsComponent,
+    ProjectLinkIconComponent,
   ],
   templateUrl: './featured-projects.component.html',
   styleUrl: './featured-projects.component.scss',
@@ -52,10 +56,12 @@ export class FeaturedProjectsComponent {
    * constructor
    * @param dialog dialog
    * @param store ngrx store
+   * @param viewContainerRef view that can see the route writer
    */
   constructor(
     public dialog: MatDialog,
     private store: Store,
+    private viewContainerRef: ViewContainerRef,
   ) {
     this.store.dispatch(StateActions.featuredProjectCardsStateConnect());
     this.featuredProjectCards = this.store.selectSignal(featuredProjectCardsSelector);
@@ -65,16 +71,11 @@ export class FeaturedProjectsComponent {
    * Open a dialog for a new featured project.
    */
   protected addNewRecord(): void {
-    this.dialog.open(AddPortfolioRecordComponent, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      data: {
-        currentId: this.nextCardId(),
-        heading: 'Default Heading',
-        type: ProjectCardType.featured,
-      },
-    });
+    openAdminDialog(this.dialog, this.viewContainerRef, AddPortfolioRecordComponent, {
+      currentId: this.nextCardId(),
+      heading: 'Default Heading',
+      type: ProjectCardType.featured,
+    }, '800px');
   }
 
   /**
@@ -98,12 +99,13 @@ export class FeaturedProjectsComponent {
    * @param id project id
    */
   private openProjectCardEditDialog(id: number): void {
-    this.dialog.open(ProjectCardsComponent, {
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
-      width: '800px',
-      data: { cardId: id, type: ProjectCardType.featured },
-    });
+    openAdminDialog(
+      this.dialog,
+      this.viewContainerRef,
+      ProjectCardsComponent,
+      { cardId: id, type: ProjectCardType.featured },
+      '800px',
+    );
   }
 
   /**
@@ -111,14 +113,12 @@ export class FeaturedProjectsComponent {
    * @param projectId project id
    */
   private openDeleteDialog(projectId: number): void {
-    this.dialog.open(
+    openAdminDialog(
+      this.dialog,
+      this.viewContainerRef,
       DeletePortfolioTileComponent,
-      {
-        autoFocus: 'first-tabbable',
-        restoreFocus: true,
-        width: '800px',
-        data: { recordId: projectId, type: ProjectCardType.featured },
-      },
+      { recordId: projectId, type: ProjectCardType.featured },
+      '800px',
     );
   }
 }

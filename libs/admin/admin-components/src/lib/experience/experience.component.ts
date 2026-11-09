@@ -7,82 +7,36 @@ import {
   signal,
   Signal,
   untracked,
-  viewChildren,
+  viewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
-import {
-  form,
-  FormField,
-  required,
-} from '@angular/forms/signals';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MatDatepickerInput,
-  MatDatepickerModule,
-} from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import {
-  map,
-  of,
-  take,
-} from 'rxjs';
-import {
-  MatDialog,
-  MatDialogModule,
-} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { take } from 'rxjs';
 
+import {
+  AdminDeleteDialogComponent,
+  openAdminDialog,
+} from '@portfolio-v2/admin/shared/components';
 import { fieldHasError } from '@portfolio-v2/shared/forms';
-import { IExperience } from '@portfolio-v2/state/dataModels';
 import {
   GetDateTimeService,
-  SetDataService,
   UtilityService,
 } from '@portfolio-v2/shared/services';
-import { experienceSelector } from '@portfolio-v2/state/selectors';
 import { StateActions } from '@portfolio-v2/state';
-import { DeleteComformationComponent } from './components/delete-comformation.component';
-
-/** Text, dates, and current-job flag the experience editor saves. */
-interface ExperienceValues {
-  /** Position. */
-  position: string;
-  /** Employer. */
-  employer: string;
-  /** Start date. */
-  startDate: Date | null;
-  /** End date. */
-  endDate: Date | null;
-  /** Current job flag. */
-  isCurrent: boolean;
-  /** Time period. */
-  timePeriod: string;
-  /** Short description. */
-  shortDescription: string;
-  /** Points. */
-  points: string;
-}
-
-/**
- * A blank job. A new object each time so a later edit cannot change the reset value.
- * @returns empty experience values
- */
-function emptyExperience(): ExperienceValues {
-  return {
-    position: '',
-    employer: '',
-    startDate: null,
-    endDate: null,
-    isCurrent: false,
-    timePeriod: '',
-    shortDescription: '',
-    points: '',
-  };
-}
+import { IExperience } from '@portfolio-v2/state/dataModels';
+import { experienceSelector } from '@portfolio-v2/state/selectors';
+import {
+  ExperienceFormComponent,
+  ExperienceValues,
+} from './experience-form/experience-form.component';
+import {
+  ExperienceWriter,
+  experienceWriteMessage,
+} from './services/experience-writer.service';
 
 /**
  * Admin Experience page
@@ -92,18 +46,12 @@ function emptyExperience(): ExperienceValues {
   standalone: true,
   imports: [
     CommonModule,
-    FormField,
     MatIconModule,
     MatButtonModule,
-    MatDatepickerModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCheckboxModule,
-    MatDialogModule,
+    ExperienceFormComponent,
   ],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.scss',
-  providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminExperienceComponent {
@@ -119,93 +67,76 @@ export class AdminExperienceComponent {
    */
   protected readonly experienceData: Signal<IExperience[] | undefined>;
 
-  /** Values the editor is changing. */
-  private readonly model = signal<ExperienceValues>(emptyExperience());
+  /** Job fields. */
+  protected readonly jobForm = viewChild(ExperienceFormComponent);
 
-  /** Start and end date inputs, in template order. */
-  private readonly dateInputs = viewChildren(MatDatepickerInput);
+  /** True after a new job is stored. */
+  protected readonly isAddSuccess = signal(false);
 
-  /** Experience form */
-  protected readonly experienceForm = form(this.model, (fields) => {
-    required(fields.position);
-    required(fields.employer);
-    required(fields.startDate);
-    required(fields.endDate);
-    required(fields.timePeriod);
-    required(fields.shortDescription);
-    required(fields.points);
-  });
+  /** True after an edit is stored. */
+  protected readonly isEditSuccess = signal(false);
 
-  /** Returns true if the edit is successful */
-  protected isEditSuccess = of(false);
+  /** True after a job is removed. */
+  protected readonly isDeleteSuccess = signal(false);
 
-  /** Returns true if the add is successful */
-  protected isAddSuccess = of(false);
-
-  /** Returns true if the delete is successful */
-  protected isDeleteSuccess = of(false);
+  /** Shown when a save fails. */
+  protected readonly saveError = signal<string | null>(null);
 
   /** Selected job */
   protected selectedJob = '';
 
   /** Date time service */
-  private dateTimeService = inject(GetDateTimeService);
+  private readonly dateTimeService = inject(GetDateTimeService);
+
+  /** Dialog service. */
+  private readonly dialog = inject(MatDialog);
+
+  /** Page view, so the delete dialog can see the route writer. */
+  private readonly viewContainerRef = inject(ViewContainerRef);
+
+  /** Experience writes. */
+  private readonly writer = inject(ExperienceWriter);
+
+  /** Application store. */
+  private readonly store = inject(Store);
+
+  /** Utility service. */
+  private readonly utility = inject(UtilityService);
 
   /**
-   * constructor
-   * @param dialog dialog
-   * @param setDataService set data service
-   * @param store ngrx store
-   * @param utility utility service
+   * Open the experience listener and show the first job once the form exists.
    */
-  constructor(
-    private dialog: MatDialog,
-    private setDataService: SetDataService,
-    private store: Store,
-    private utility: UtilityService,
-  ) {
+  constructor() {
     this.store.dispatch(StateActions.experienceStateConnect());
     this.experienceData = this.store.selectSignal(experienceSelector);
-    const firstJob = this.experienceData()?.[0];
-    if (firstJob) {
-      this.displaySelected(firstJob);
-    }
     effect(() => {
+      const form = this.jobForm();
       const nextJob = this.experienceData()?.[0];
-      if (!nextJob || this.experience) {
+      if (!form || !nextJob || this.experience) {
         return;
       }
-      this.displaySelected(nextJob);
-    });
-    effect(() => {
-      const inputs = this.dateInputs();
-      const { startDate, endDate } = this.experienceForm().value();
-      untracked(() => {
-        this.writePicker(inputs[0], startDate);
-        this.writePicker(inputs[1], endDate);
-      });
-    });
-    effect(() => {
-      const { startDate, endDate } = this.experienceForm().value();
-      if (!startDate || !endDate) {
-        return;
-      }
-      untracked(() => this.calculateTimePeriod());
+      untracked(() => this.displaySelected(nextJob));
     });
   }
 
-  /** Whether a touched or dirty field currently has this error. */
-  protected readonly hasError = fieldHasError;
+  /**
+   * The job form, once the view has created it.
+   * @returns the form field tree
+   */
+  protected get experienceForm(): ExperienceFormComponent['experienceForm'] {
+    const editor = this.jobForm();
+    if (!editor) {
+      throw new Error('missing experience form');
+    }
+    return editor.experienceForm;
+  }
 
   /**
    * Store the start date chosen in the date picker.
    * @param value selected date
    */
   protected setStart(value: Date | null): void {
-    if (this.sameInstant(this.experienceForm.startDate().value(), value)) {
-      return;
-    }
-    this.experienceForm.startDate().value.set(value);
+    this.jobForm()?.setStart(value);
   }
 
   /**
@@ -213,10 +144,7 @@ export class AdminExperienceComponent {
    * @param value selected date
    */
   protected setEnd(value: Date | null): void {
-    if (this.sameInstant(this.experienceForm.endDate().value(), value)) {
-      return;
-    }
-    this.experienceForm.endDate().value.set(value);
+    this.jobForm()?.setEnd(value);
   }
 
   /**
@@ -224,234 +152,161 @@ export class AdminExperienceComponent {
    * @param isCurrent true when the job is current
    */
   protected setCurrent(isCurrent: boolean): void {
-    this.experienceForm.isCurrent().value.set(isCurrent);
+    this.jobForm()?.setCurrent(isCurrent);
   }
+
+  /**
+   * Calculate the time period.
+   */
+  protected calculateTimePeriod(): void {
+    this.jobForm()?.calculateTimePeriod();
+  }
+
+  /** Whether a touched or dirty field currently has this error. */
+  protected readonly hasError = fieldHasError;
 
   /**
    * Display selected
    * @param exp job details
    */
   public displaySelected(exp: IExperience): void {
-    if (exp) {
-      this.experience = exp;
-      this.selectedJob = this.experience.employer;
-      this.totalYearsOfExperience();
-      this.experienceForm().reset(this.valuesFrom(this.experience));
+    if (!exp) {
+      return;
     }
+    this.experience = exp;
+    this.selectedJob = this.experience.employer;
+    this.totalYearsOfExperience();
+    this.jobForm()?.apply(this.experience, this.yearsOfExperience());
   }
 
   /**
    * Add experience
    */
-  protected addExperience(): void {
-    if (!this.experienceForm().valid()) {
+  protected async addExperience(): Promise<void> {
+    const editor = this.jobForm();
+    const jobs = this.experienceData();
+    if (!editor || !editor.experienceForm().valid() || !jobs) {
       return;
     }
 
-    const {
-      position, employer, startDate, endDate, isCurrent, timePeriod, shortDescription, points,
-    } = this.experienceForm().value();
-
-    let newId = 0;
-    if (this.experienceData()) {
-      const lastElement = _.first(this.experienceData()!);
-      newId = (lastElement?.id ?? 0) + 1;
-    } else {
-      newId = 1;
-    }
-    const newExperienceValues: IExperience = {
-      id: newId,
-      position,
-      employer,
-      startDate: this.dateTimeService.convertToISOFormat(startDate ?? ''),
-      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate ?? ''),
-      isCurrent,
-      timePeriod: this.removeYearsFromTimePeriod(timePeriod),
-      shortDescription,
-      points: points ? this.utility.breakStringToParagraphs(points) : [],
-    };
-
-    const newExperienceValuesArray: IExperience[] = [...this.experienceData()!];
-    newExperienceValuesArray[newId - 1] = newExperienceValues;
-
-    if (this.experienceForm().valid()) {
-      this.isAddSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience${this.utility.getPaddedDigits(newId, 2)}/`, newExperienceValues).pipe(
-        take(1),
-        map((result) => {
-          this.store.dispatch(StateActions.experienceStateUpdated({
-            experiences: newExperienceValuesArray,
-          }));
-          return result === 'successfull';
-        }),
-      );
-    }
-  }
-
-  /**
-   * Calculate the time period
-   */
-  protected calculateTimePeriod(): void {
-    const { startDate, endDate } = this.experienceForm().value();
-    if (!startDate || !endDate) {
-      return;
-    }
-    const startDateStr = this.dateTimeService.convertToISOFormat(startDate).slice(0, 4);
-    const endDatestr = this.dateTimeService.convertToISOFormat(endDate).slice(0, 4);
-    const timePeriod = `${startDateStr} - ${endDatestr}`;
-    if (this.experienceForm.timePeriod().value() === timePeriod) {
-      return;
-    }
-    this.experienceForm.timePeriod().value.set(timePeriod);
+    const nextId = (_.first(jobs)?.id ?? 0) + 1;
+    await this.persist(this.recordFrom(nextId, editor.experienceForm().value()), true);
   }
 
   /**
    * Clear the form
    */
   protected clearForm(): void {
-    this.isAddSuccess = of(false);
-    this.isEditSuccess = of(false);
-    this.isDeleteSuccess = of(false);
-    this.experienceForm().reset(emptyExperience());
-  }
-
-  /**
-   * Delete experience
-   */
-  protected deleteExperience(): void {
-    if (!this.experience) {
-      return;
-    }
-
-    // Remove from local array
-    const newExperienceValuesArray: IExperience[] = [...this.experienceData()!];
-    const index = newExperienceValuesArray.findIndex((exp) => exp.id === this.experience!.id);
-
-    if (index !== -1) {
-      newExperienceValuesArray.splice(index, 1);
-    }
-
-    // Delete from database
-    this.isDeleteSuccess = this.setDataService.deleteRecord(`experience-section/experience${this.utility.getPaddedDigits(this.experience.id, 2)}/`).pipe(
-      take(1),
-      map((result) => {
-        if (result === 'successfull') {
-          // Update the store with the new array (without the deleted item)
-          this.store.dispatch(StateActions.experienceStateUpdated({
-            experiences: newExperienceValuesArray,
-          }));
-
-          // Clear selection
-          this.experience = _.first(newExperienceValuesArray);
-          this.selectedJob = this.experience?.employer ?? 'Mock Employer';
-
-          return true;
-        }
-        return false;
-      }),
-    );
+    this.isAddSuccess.set(false);
+    this.isEditSuccess.set(false);
+    this.isDeleteSuccess.set(false);
+    this.saveError.set(null);
+    this.jobForm()?.clear();
   }
 
   /**
    * Edit experience
    */
-  protected editExperience(): void {
-    if (!this.experience) {
+  protected async editExperience(): Promise<void> {
+    const editor = this.jobForm();
+    if (!this.experience || !editor || !editor.experienceForm().valid()) {
       return;
     }
 
-    const {
-      position, employer, startDate, endDate, isCurrent, timePeriod, shortDescription, points,
-    } = this.experienceForm().value();
-
-    const newExperienceValues: IExperience = {
-      ...this.experience,
-      position,
-      employer,
-      startDate: this.dateTimeService.convertToISOFormat(startDate ?? ''),
-      endDate: isCurrent ? 'present' : this.dateTimeService.convertToISOFormat(endDate ?? ''),
-      isCurrent,
-      timePeriod: this.removeYearsFromTimePeriod(timePeriod),
-      shortDescription,
-      points: this.utility.breakStringToParagraphs(points),
-    };
-
-    const newExperienceValuesArray: IExperience[] = [...this.experienceData()!];
-    newExperienceValuesArray[this.experience.id - 1] = newExperienceValues;
-
-    this.isEditSuccess = this.setDataService.setRecord<IExperience>(`experience-section/experience${this.utility.getPaddedDigits(this.experience.id, 2)}/`, newExperienceValues).pipe(
-      take(1),
-      map((result) => {
-        this.store.dispatch(StateActions.experienceStateUpdated({
-          experiences: newExperienceValuesArray,
-        }));
-        return result === 'successfull';
-      }),
+    const next = this.recordFrom(
+      this.experience.id,
+      editor.experienceForm().value(),
+      this.experience,
     );
+    await this.persist(next, false);
   }
 
   /**
    * Open delete confirmation dialog
    */
   protected openDeleteConfirmation(): void {
-    const dialogRef = this.dialog.open(DeleteComformationComponent, {
-      data: { record: this.experience },
-    });
-
-    dialogRef.afterClosed()
-      .pipe(
-        take(1),
-      )
-      .subscribe((result) => {
-        if (result) {
-          this.deleteExperience();
-        }
-      });
-  }
-
-  /**
-   * Values for one stored job.
-   * @param job job to show
-   * @returns form values
-   */
-  private valuesFrom(job: IExperience): ExperienceValues {
-    return {
-      position: job.position ?? '',
-      employer: job.employer ?? '',
-      startDate: this.dateTimeService.convertISOToDate(job.startDate ?? ''),
-      endDate: this.dateTimeService.convertISOToDate(job.endDate ?? ''),
-      isCurrent: job.isCurrent ?? false,
-      timePeriod: `${job.timePeriod} (${this.yearsOfExperience()})`,
-      shortDescription: job.shortDescription ?? '',
-      points: this.utility.seperateSentences(job.points) ?? '',
-    };
-  }
-
-  /**
-   * Show a date in the matching picker without writing the same instant again.
-   * @param input date picker input
-   * @param value date to show
-   */
-  private writePicker(input: MatDatepickerInput<Date> | undefined, value: Date | null): void {
-    if (!input || this.sameInstant(input.value, value)) {
+    const job = this.experience;
+    if (!job) {
       return;
     }
-    input.value = value;
+
+    const dialogRef = openAdminDialog(
+      this.dialog,
+      this.viewContainerRef,
+      AdminDeleteDialogComponent,
+      {
+        title: 'Delete experience',
+        lines: [job.employer, job.position],
+        record: job,
+        writer: ExperienceWriter,
+        writeMessage: experienceWriteMessage,
+      },
+      '800px',
+    );
+
+    dialogRef.afterClosed().pipe(take(1)).subscribe((removed) => {
+      if (!removed) {
+        return;
+      }
+      this.isDeleteSuccess.set(true);
+      const remaining = (this.experienceData() ?? []).filter((item) => item.id !== job.id);
+      const next = _.first(remaining);
+      this.experience = next;
+      this.selectedJob = next?.employer ?? 'Mock Employer';
+      if (next) {
+        this.displaySelected(next);
+      }
+    });
   }
 
   /**
-   * Whether two dates are the same instant, including both being empty.
-   * @param left first date
-   * @param right second date
-   * @returns true when both are empty or both have the same time
+   * Store one job. The live listener refreshes the list.
+   * @param record job to store
+   * @param isNew true when this is an add
    */
-  private sameInstant(left: Date | null, right: Date | null): boolean {
-    if (left === right) {
-      return true;
+  private async persist(record: IExperience, isNew: boolean): Promise<void> {
+    this.isAddSuccess.set(false);
+    this.isEditSuccess.set(false);
+    this.saveError.set(null);
+    try {
+      await this.writer.save(record);
+      if (isNew) {
+        this.isAddSuccess.set(true);
+      } else {
+        this.isEditSuccess.set(true);
+      }
+    } catch (error) {
+      this.saveError.set(experienceWriteMessage(error));
     }
-    if (!left || !right) {
-      return false;
-    }
-    return left.getTime() === right.getTime();
+  }
+
+  /**
+   * Build the stored job from the form.
+   * A current job keeps the end date as `present`.
+   * @param id job id
+   * @param values form values
+   * @param current job being edited, when this is not a new job
+   * @returns the document to store
+   */
+  private recordFrom(
+    id: number,
+    values: ExperienceValues,
+    current?: IExperience,
+  ): IExperience {
+    return {
+      ...current,
+      id,
+      position: values.position,
+      employer: values.employer,
+      startDate: this.dateTimeService.convertToISOFormat(values.startDate ?? ''),
+      endDate: values.isCurrent
+        ? 'present'
+        : this.dateTimeService.convertToISOFormat(values.endDate ?? ''),
+      isCurrent: values.isCurrent,
+      timePeriod: this.removeYearsFromTimePeriod(values.timePeriod),
+      shortDescription: values.shortDescription,
+      points: this.utility.breakStringToParagraphs(values.points),
+    };
   }
 
   /**
@@ -464,7 +319,6 @@ export class AdminExperienceComponent {
       return '';
     }
 
-    // Remove the pattern "(X.X Years)" or "(X.X Year)" from the end of the string
     return timePeriod.replace(/\s*\(\d+\.?\d*\s*(?:Years?|Year)\)$/, '').trim();
   }
 
@@ -481,6 +335,8 @@ export class AdminExperienceComponent {
     const numOfYears = this.dateTimeService
       .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
 
-    this.yearsOfExperience = signal(numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`);
+    this.yearsOfExperience = signal(
+      numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`,
+    );
   }
 }

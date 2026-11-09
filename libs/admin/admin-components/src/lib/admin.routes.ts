@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
 
+import { AboutMeWriter } from './about-me/services/about-me-writer.service';
 import { DocumentVersionRemover } from './documents/services/document-version-remover';
 import { DocumentWriter } from './documents/services/document-writer.service';
+import { ExperienceWriter } from './experience/services/experience-writer.service';
+import { SkillsWriter } from './skills/services/skills-writer.service';
 
 /**
  * Admin page routes.
@@ -17,18 +20,21 @@ export const ADMIN_PAGE_ROUTES: Routes = [
   },
   {
     path: 'aboutme',
+    providers: [AboutMeWriter],
     loadComponent: () => import('./about-me/about-me.component').then(
       (mod) => mod.AboutMeComponent,
     ),
   },
   {
     path: 'skills',
+    providers: [SkillsWriter],
     loadComponent: () => import('./skills/skills.component').then(
       (mod) => mod.SkillsComponent,
     ),
   },
   {
     path: 'experience',
+    providers: [ExperienceWriter],
     loadComponent: () => import('./experience/experience.component').then(
       (mod) => mod.AdminExperienceComponent,
     ),

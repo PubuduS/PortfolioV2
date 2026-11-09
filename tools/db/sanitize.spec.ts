@@ -13,6 +13,12 @@ import {
 } from './sanitize';
 import { type BaselineDocument } from './typed-json';
 
+/**
+ * Builds a baseline document whose fields are all strings.
+ * @param id Document id.
+ * @param fields Field names and string values.
+ * @returns Baseline document.
+ */
 function textDoc(id: string, fields: Record<string, string>): BaselineDocument {
   const encoded: Record<string, { type: 'string'; value: string }> = {};
   Object.entries(fields).forEach(([key, value]) => {
@@ -24,6 +30,12 @@ function textDoc(id: string, fields: Record<string, string>): BaselineDocument {
   };
 }
 
+/**
+ * Reads one string field from a baseline document.
+ * @param document Document to read.
+ * @param field Field name.
+ * @returns Field text.
+ */
 function stringField(document: BaselineDocument | undefined, field: string): string {
   if (!document || document.data.type !== 'map') {
     throw new Error('missing document');

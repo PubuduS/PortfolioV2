@@ -8,20 +8,18 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
 import { SkillsComponent } from './skills.component';
+import { SkillsWriter } from './services/skills-writer.service';
 
 describe('SkillsComponent', () => {
   let component: SkillsComponent;
   let fixture: ComponentFixture<SkillsComponent>;
   let store: MockStore;
-  let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<SkillsWriter>;
   let mockUtilityService: jest.Mocked<UtilityService>;
   const mockSkills: ISkills = {
     id: 1,
@@ -45,7 +43,7 @@ describe('SkillsComponent', () => {
   };
 
   beforeEach(async () => {
-    mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(SkillsWriter);
     mockUtilityService = createSpyObj(UtilityService);
     mockUtilityService.seperateSentences.mockReturnValue('');
     await TestBed.configureTestingModule({
@@ -53,8 +51,8 @@ describe('SkillsComponent', () => {
       providers: [
         provideMockStore(),
         {
-          provide: SetDataService,
-          useValue: mockSetDataService,
+          provide: SkillsWriter,
+          useValue: writer,
         },
         {
           provide: UtilityService,
@@ -91,7 +89,7 @@ describe('SkillsComponent when the record arrives after the page opens', () => {
       imports: [SkillsComponent],
       providers: [
         provideMockStore(),
-        { provide: SetDataService, useValue: createSpyObj(SetDataService) },
+        { provide: SkillsWriter, useValue: createSpyObj(SkillsWriter) },
         { provide: UtilityService, useValue: utility },
       ],
     }).compileComponents();

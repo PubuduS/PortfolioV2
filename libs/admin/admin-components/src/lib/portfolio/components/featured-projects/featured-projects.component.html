@@ -19,79 +19,40 @@
                     >
                     <ul class="links">
                       <li>
-                        @if (project.gitDisable) {
-                          <span class="disabled">
-                            <img
-                              [src]="icons.githubIco"
-                              alt="git"
-                              [title]="icons.gitIcoTooltip"
-                          /></span>
-                        } @else {
-                          <a [href]="project.githubURL" target="_blank">
-                            <img
-                              [src]="icons.githubIco"
-                              alt="git"
-                              [title]="icons.gitIcoTooltip"
-                          /></a>
-                        }
+                        <portfolio-v2-project-link-icon
+                          [disabled]="project.gitDisable"
+                          [href]="project.githubURL"
+                          [icon]="icons.githubIco"
+                          alt="git"
+                          [tooltip]="icons.gitIcoTooltip"
+                        />
                       </li>
-
                       <li>
-                        @if (project.demoDisable) {
-                          <span class="disabled">
-                            <img
-                              [src]="icons.videoIco"
-                              alt="share"
-                              [title]="icons.videoIcoTooltip"
-                          /></span>
-                        } @else {
-                          <a [href]="project.demoURL" target="_blank">
-                            <img
-                              [src]="icons.videoIco"
-                              alt="share"
-                              [title]="icons.videoIcoTooltip"
-                          /></a>
-                        }
+                        <portfolio-v2-project-link-icon
+                          [disabled]="project.demoDisable"
+                          [href]="project.demoURL"
+                          [icon]="icons.videoIco"
+                          alt="share"
+                          [tooltip]="icons.videoIcoTooltip"
+                        />
                       </li>
-
                       <li>
-                        @if (project.docDisable) {
-                          <span class="disabled">
-                            <img
-                              [src]="icons.documentIco"
-                              alt="file"
-                              [title]="icons.documentationIcoTooltip"
-                            />
-                          </span>
-                        } @else {
-                          <a [href]="project.documentationURL" target="_blank">
-                            <img
-                              [src]="icons.documentIco"
-                              alt="file"
-                              [title]="icons.documentationIcoTooltip"
-                            />
-                          </a>
-                        }
+                        <portfolio-v2-project-link-icon
+                          [disabled]="project.docDisable"
+                          [href]="project.documentationURL"
+                          [icon]="icons.documentIco"
+                          alt="file"
+                          [tooltip]="icons.documentationIcoTooltip"
+                        />
                       </li>
-
                       <li>
-                        @if (project.ssDisable) {
-                          <span class="disabled">
-                            <img
-                              [src]="icons.screenshotIco"
-                              alt="cut"
-                              [title]="icons.screenshotIcoTooltip"
-                            />
-                          </span>
-                        } @else {
-                          <a [href]="project.screenshotURL" target="_blank">
-                            <img
-                              [src]="icons.screenshotIco"
-                              alt="cut"
-                              [title]="icons.screenshotIcoTooltip"
-                            />
-                          </a>
-                        }
+                        <portfolio-v2-project-link-icon
+                          [disabled]="project.ssDisable"
+                          [href]="project.screenshotURL"
+                          [icon]="icons.screenshotIco"
+                          alt="cut"
+                          [tooltip]="icons.screenshotIcoTooltip"
+                        />
                       </li>
                     </ul>
                   </figcaption>

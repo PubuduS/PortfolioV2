@@ -8,19 +8,17 @@ import {
 } from '@ngrx/store/testing';
 import { createSpyObj } from 'jest-createspyobj';
 
-import {
-  SetDataService,
-  UtilityService,
-} from '@portfolio-v2/shared/services';
+import { UtilityService } from '@portfolio-v2/shared/services';
 import { ISkills } from '@portfolio-v2/state/dataModels';
 import { skillsSelector } from '@portfolio-v2/state/selectors';
+import { SkillsWriter } from '../../services/skills-writer.service';
 import { ChangeLanguageComponent } from './change-language.component';
 
 describe('ChangeLanguageComponent', () => {
   let component: ChangeLanguageComponent;
   let fixture: ComponentFixture<ChangeLanguageComponent>;
   let store: MockStore;
-  let mockSetDataService: jest.Mocked<SetDataService>;
+  let writer: jest.Mocked<SkillsWriter>;
   let mockUtilityService: jest.Mocked<UtilityService>;
   const mockSkills: ISkills = {
     id: 1,
@@ -44,7 +42,7 @@ describe('ChangeLanguageComponent', () => {
   };
 
   beforeEach(async () => {
-    mockSetDataService = createSpyObj(SetDataService);
+    writer = createSpyObj(SkillsWriter);
     mockUtilityService = createSpyObj(UtilityService);
     mockUtilityService.seperateSentences.mockReturnValue('');
     await TestBed.configureTestingModule({
@@ -52,8 +50,8 @@ describe('ChangeLanguageComponent', () => {
       providers: [
         provideMockStore(),
         {
-          provide: SetDataService,
-          useValue: mockSetDataService,
+          provide: SkillsWriter,
+          useValue: writer,
         },
         {
           provide: UtilityService,

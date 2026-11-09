@@ -1,0 +1,8 @@
+<ng-content />
+<a data-toggle="modal">
+  <button mat-button (click)="imageClick.emit()">
+    <img [src]="imageUrl()" alt="project" [title]="tooltip()" />
+  </button>
+  <h3>{{ heading() }}</h3>
+  <p>{{ description() }}</p>
+</a>
