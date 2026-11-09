@@ -1,11 +1,11 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'styles' as *;
 
 .main {
   background-color: $nocturne-navy;
-  min-height: 100%;
+  min-block-size: 100%;
 
   .content {
-    margin-top: 14vh;
+    @include page-offset;
 
     h2 {
       color: $white;

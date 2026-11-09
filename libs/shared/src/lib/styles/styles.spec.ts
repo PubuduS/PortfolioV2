@@ -68,6 +68,16 @@ describe('shared styles', () => {
     expect(css.indexOf('flex: 1 1 100%')).toBeLessThan(css.indexOf('flex-basis: 33.333%'));
   });
 
+  it('should clear the header on the education and cover letter pages', () => {
+    const education = compileFixture('.page { @include education-section; }');
+    const cover = compileFixture('.page { @include cover-letter-page; }');
+
+    expect(education).toContain('padding-block-start: var(--site-header-block)');
+    expect(education).toContain('background-color: #facf5a');
+    expect(cover).toContain('padding-block-start: var(--site-header-block)');
+    expect(cover).not.toContain('padding-top');
+  });
+
   it('should stack experience tabs until the lg breakpoint', () => {
     const css = compileFixture('.tabs { @include experience-tabs; }');
 

@@ -1,29 +1,19 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/education' as *;
+@use 'styles' as *;
 
 .education-full {
   @include education-section;
-  padding: 100px 0 40px;
-  padding-top: 10%;
-}
 
-h2 {
-  font-size: 24px;
-}
+  .uni-wrap {
+    @include education-card;
 
-.uni-wrap {
-  @include education-card;
-  margin-bottom: 60px;
+    margin-block-end: 3.75rem;
 
-  &.high p {
-    span {
-      width: 55%;
+    &.high p span {
+      inline-size: 55%;
 
-      &:first-child {
-        width: 22%;
-      }
-
+      &:first-child,
       &.pice {
-        width: 22%;
+        inline-size: 22%;
       }
     }
   }

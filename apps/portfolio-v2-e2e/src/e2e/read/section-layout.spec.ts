@@ -71,6 +71,7 @@ test.describe('skills, portfolio, and featured project layout', () => {
 
   test('should stack portfolio tiles on a phone', async ({ page }) => {
     await openSection(page, 390, 'Portfolio', /\/content\/portfolio$/, 'SOME OF MY PROJECTS');
+    await expect(page.getByRole('heading', { name: 'Featured Projects' })).toBeVisible();
     const box = await page.evaluate(() => {
       const list = document.querySelector('.my-projects > ul')?.getBoundingClientRect();
       const tile = document.querySelector('.my-projects > ul > li')?.getBoundingClientRect();
@@ -91,6 +92,7 @@ test.describe('skills, portfolio, and featured project layout', () => {
 
   test('should place portfolio tiles in a row on a laptop', async ({ page }) => {
     await openSection(page, 1280, 'Portfolio', /\/content\/portfolio$/, 'SOME OF MY PROJECTS');
+    await expect(page.getByRole('heading', { name: 'Featured Projects' })).toBeVisible();
     const box = await page.evaluate(() => {
       const list = document.querySelector('.my-projects > ul')?.getBoundingClientRect();
       const tile = document.querySelector('.my-projects > ul > li')?.getBoundingClientRect();
@@ -137,6 +139,7 @@ test.describe('skills, portfolio, and featured project layout', () => {
     await openSection(page, 1280, 'Portfolio', /\/content\/portfolio$/, 'SOME OF MY PROJECTS');
     await page.locator('li').filter({ hasText: 'Featured Projects' }).getByRole('button').click();
     await expect(page).toHaveURL(/\/content\/portfolio\/featured-projects$/);
+    await expect(page.getByRole('heading', { name: 'Gait Trainer' })).toBeVisible();
 
     const box = await page.evaluate(() => {
       const image = document.querySelector('.featured-project img')?.getBoundingClientRect();

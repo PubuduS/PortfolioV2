@@ -23,8 +23,8 @@ test.describe('public contact form', () => {
   });
 
   test('should accept a message through the local function', async ({ page }) => {
-    await page.goto('/home');
-    await page.getByRole('link', { name: 'Contact' }).click();
+    await page.goto('/content/contact');
+    await expect(page.getByRole('heading', { name: /get in touch/i })).toBeVisible();
     await page.getByPlaceholder('Your Email Address').fill('ada@example.com');
     await page.getByPlaceholder('Your Name').fill('Ada');
     await page.getByPlaceholder('Your Message').fill('Hello from the contact form.');

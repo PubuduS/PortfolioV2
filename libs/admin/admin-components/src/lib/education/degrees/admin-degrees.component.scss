@@ -1,34 +1,36 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/education' as *;
+@use 'styles' as *;
 
 .degrees-admin {
   @include education-section;
-  min-height: 100vh;
-  // The admin nav bar is two rows tall, so the title needs more room than on the public page.
-  padding: 200px 0 40px;
+
+  min-block-size: 100vh;
+  padding-block-start: calc(var(--site-header-block) + 6rem);
 
   .degree-grid {
     display: grid;
-    gap: 0 30px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    list-style: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
     margin: 0;
     padding: 0;
+    list-style: none;
 
-    @media (max-width: 768px) {
-      grid-template-columns: minmax(0, 1fr);
+    @include from-width(md) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 1.875rem;
     }
   }
 
   .degree-card {
     display: flex;
     flex-direction: column;
-    margin-block-end: 70px;
     position: relative;
+    margin-block-end: 4.5rem;
 
     .uni-wrap {
       @include education-card;
+
       flex: 1 1 auto;
-      padding-block-end: 50px;
+      padding-block-end: 3rem;
     }
   }
 
@@ -38,9 +40,8 @@
   }
 
   .degree-card admin-update-delete-buttons {
-    inset-inline-end: auto;
-    inset-inline-start: 50%;
-    top: calc(100% - 20px);
+    inset-block-start: calc(100% - 1.25rem);
+    inset-inline: 50% auto;
     transform: translateX(-50%);
   }
 }
