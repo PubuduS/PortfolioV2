@@ -72,6 +72,30 @@ function partyButton(root: ParentNode): HTMLElement {
   return party;
 }
 
+/**
+ * @param root nav element
+ * @returns the compact-menu button
+ */
+function menuToggle(root: ParentNode): HTMLButtonElement {
+  const toggle = root.querySelector('.menu-toggle');
+  if (!(toggle instanceof HTMLButtonElement)) {
+    throw new Error('menu toggle missing');
+  }
+  return toggle;
+}
+
+/**
+ * @param root nav element
+ * @returns the section list
+ */
+function primaryNavigation(root: ParentNode): HTMLElement {
+  const nav = root.querySelector('#primary-navigation');
+  if (!(nav instanceof HTMLElement)) {
+    throw new Error('navigation missing');
+  }
+  return nav;
+}
+
 function navAnchor(root: ParentNode, label: string): HTMLAnchorElement | undefined {
   return [...root.querySelectorAll('a')].find(
     (item) => item.textContent?.trim() === label,
@@ -143,6 +167,60 @@ describe('NavBarComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('when the menu toggle is used', () => {
+    it('should open and close the section list', () => {
+      const toggle = menuToggle(nativeElement);
+      const nav = primaryNavigation(nativeElement);
+
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+      expect(toggle.getAttribute('aria-label')).toBe('Open menu');
+      expect(nav.classList.contains('is-open')).toBe(false);
+
+      toggle.click();
+      fixture.detectChanges();
+
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+      expect(toggle.getAttribute('aria-label')).toBe('Close menu');
+      expect(nav.classList.contains('is-open')).toBe(true);
+
+      toggle.click();
+      fixture.detectChanges();
+
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+      expect(nav.classList.contains('is-open')).toBe(false);
+    });
+
+    it('should close the section list after a link is chosen', () => {
+      menuToggle(nativeElement).click();
+      fixture.detectChanges();
+
+      navLink(nativeElement, 'Skills').click();
+      fixture.detectChanges();
+
+      expect(primaryNavigation(nativeElement).classList.contains('is-open')).toBe(false);
+    });
+
+    it('should close the section list when a press lands outside the bar', () => {
+      menuToggle(nativeElement).click();
+      fixture.detectChanges();
+
+      document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(primaryNavigation(nativeElement).classList.contains('is-open')).toBe(false);
+    });
+
+    it('should close the section list when Escape is pressed', () => {
+      menuToggle(nativeElement).click();
+      fixture.detectChanges();
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(primaryNavigation(nativeElement).classList.contains('is-open')).toBe(false);
+    });
   });
 
   describe('Button behaviour', () => {

@@ -1,20 +1,12 @@
 @if (!weatherErr()) {
-  <div class="weather-panel w-100 h-100 d-flex justify-content-center">
-    <div class="row d-flex text-center">
-      <div class="col-12 mb-2">
-        <img class="weatherAnim" [src]="weatherIcon()" />
-        <span class="weather-info">In Omaha: </span>
-        <span class="weather-info mx-3"
-          >🌡️ {{ weatherData()?.temprature }} F</span
-        >
-        <span class="weather-info mx-3"
-          >🍃 {{ weatherData()?.windSpeed }} mph</span
-        >
-        <span class="weather-info mx-3">💧 {{ weatherData()?.humidity }}%</span>
-        <span class="weather-info mx-3"
-          >👀 {{ weatherData()?.description }}</span
-        >
-      </div>
-    </div>
+  <div class="weather-panel">
+    <img class="weatherAnim" [src]="weatherIcon()" alt="" />
+    <p class="weather-line">
+      <span class="weather-info">In Omaha:</span>
+      <span class="weather-info">🌡️ {{ weatherData()?.temprature }} F</span>
+      <span class="weather-info">🍃 {{ weatherData()?.windSpeed }} mph</span>
+      <span class="weather-info">💧 {{ weatherData()?.humidity }}%</span>
+      <span class="weather-info">👀 {{ weatherData()?.description }}</span>
+    </p>
   </div>
 }

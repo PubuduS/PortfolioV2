@@ -1,18 +1,55 @@
 @use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
 
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .weather-panel {
   display: flex;
   align-items: center;
+  justify-content: safe center;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
 
-  .weather-info {
-    color: $white;
-    font-size: 1rem;
+  .weather-line {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
     white-space: nowrap;
   }
 
+  .weather-info {
+    color: $white;
+    font-size: 0.875rem;
+  }
+
   .weatherAnim {
-    height: 3rem;
+    width: auto;
+    height: 2rem;
+    flex: 0 0 auto;
     object-fit: contain;
-    vertical-align: middle;
+  }
+}
+
+@media (min-width: 48rem) {
+  .weather-panel {
+    gap: 0.75rem;
+
+    .weather-line {
+      gap: 0.85rem;
+    }
+
+    .weather-info {
+      font-size: 1.05rem;
+    }
+
+    .weatherAnim {
+      height: 2.5rem;
+    }
   }
 }
