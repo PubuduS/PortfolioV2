@@ -1,14 +1,14 @@
 import { createHash } from 'node:crypto';
 
 import {
-  CONTACT_EMAIL_MAX as EMAIL_MAX,
-  CONTACT_MAX_LINKS as MAX_LINKS,
-  CONTACT_MESSAGE_MAX as MESSAGE_MAX,
-  CONTACT_MESSAGE_MIN as MESSAGE_MIN,
-  CONTACT_NAME_MAX as NAME_MAX,
-  CONTACT_NAME_MIN as NAME_MIN,
-  CONTACT_NAME_PATTERN as NAME_PATTERN,
-} from '../../libs/contracts/contact-limits';
+  CONTACT_EMAIL_MAX,
+  CONTACT_MAX_LINKS,
+  CONTACT_MESSAGE_MAX,
+  CONTACT_MESSAGE_MIN,
+  CONTACT_NAME_MAX,
+  CONTACT_NAME_MIN,
+  CONTACT_NAME_PATTERN,
+} from '@portfolio-v2/contracts/contact-limits';
 
 /** Inbox that receives every contact-form message. Callers cannot choose another recipient. */
 export const OWNER_EMAIL = 'pubudusupun@gmail.com';
@@ -98,7 +98,7 @@ export class ContactRejected extends Error {
   /**
    * @param code Machine-readable reason.
    */
-  public constructor(public readonly code: ContactFailure) {
+  constructor(public readonly code: ContactFailure) {
     super(code);
     this.name = 'ContactRejected';
   }
@@ -168,9 +168,92 @@ export function readBucket(value: unknown): UsageBucket | undefined {
   };
 }
 
+function advance(
+  bucket: UsageBucket | undefined,
+  nowMs: number,
+  windowMs: number,
+  limit: number,
+): { bucket: UsageBucket; allowed: boolean } {
+  const expired = bucket === undefined || nowMs - bucket.windowStartMs >= windowMs;
+  const windowStartMs = expired
+    ? nowMs
+    : bucket.windowStartMs;
+  const count = expired
+    ? 0
+    : bucket.count;
+  if (count >= limit) {
+    return {
+      bucket: {
+        windowStartMs,
+        count,
+      },
+      allowed: false,
+    };
+  }
+  return {
+    bucket: {
+      windowStartMs,
+      count: count + 1,
+    },
+    allowed: true,
+  };
+}
+
+function emptyBucket(nowMs: number): UsageBucket {
+  return {
+    windowStartMs: nowMs,
+    count: 0,
+  };
+}
+
+function isHoneypot(value: unknown): boolean {
+  if (value === undefined || value === '') {
+    return false;
+  }
+  if (typeof value !== 'string') {
+    return true;
+  }
+  return value.trim().length > 0;
+}
+
+function isSafeEmail(value: string): boolean {
+  return value.length > 0
+    && value.length <= CONTACT_EMAIL_MAX
+    && !/[\r\n<>]/.test(value)
+    && EMAIL_PATTERN.test(value);
+}
+
+function isSafeName(value: string): boolean {
+  return value.length >= CONTACT_NAME_MIN
+    && value.length <= CONTACT_NAME_MAX
+    && CONTACT_NAME_PATTERN.test(value);
+}
+
+function isSafeMessage(value: string): boolean {
+  if (
+    value.length < CONTACT_MESSAGE_MIN
+    || value.length > CONTACT_MESSAGE_MAX
+    || value.includes('\0')
+  ) {
+    return false;
+  }
+  const links = value.match(LINK_PATTERN);
+  return links === null || links.length <= CONTACT_MAX_LINKS;
+}
+
+function headerValue(value: string): string {
+  return value.replace(/[\r\n]/g, '');
+}
+
 /**
  * Accepts the message when every limit still has room, and increments those counters.
  * @param input Current counters and whether an address bucket applies.
+ * @param input.nowMs Current timestamp.
+ * @param input.email Email counter.
+ * @param input.ip IP counter.
+ * @param input.hourly Hourly counter.
+ * @param input.daily Daily counter.
+ * @param input.trackIp Whether to track IP addresses.
  * @returns The next counters. A denial does not increment anything.
  */
 export function consumeQuota(input: {
@@ -317,77 +400,4 @@ export async function acceptContactMessage(
     accepted: true,
     dryRun: false,
   };
-}
-
-function advance(
-  bucket: UsageBucket | undefined,
-  nowMs: number,
-  windowMs: number,
-  limit: number,
-): { bucket: UsageBucket; allowed: boolean } {
-  const expired = bucket === undefined || nowMs - bucket.windowStartMs >= windowMs;
-  const windowStartMs = expired
-    ? nowMs
-    : bucket.windowStartMs;
-  const count = expired
-    ? 0
-    : bucket.count;
-  if (count >= limit) {
-    return {
-      bucket: {
-        windowStartMs,
-        count,
-      },
-      allowed: false,
-    };
-  }
-  return {
-    bucket: {
-      windowStartMs,
-      count: count + 1,
-    },
-    allowed: true,
-  };
-}
-
-function emptyBucket(nowMs: number): UsageBucket {
-  return {
-    windowStartMs: nowMs,
-    count: 0,
-  };
-}
-
-function isHoneypot(value: unknown): boolean {
-  if (value === undefined || value === '') {
-    return false;
-  }
-  if (typeof value !== 'string') {
-    return true;
-  }
-  return value.trim().length > 0;
-}
-
-function isSafeEmail(value: string): boolean {
-  return value.length > 0
-    && value.length <= EMAIL_MAX
-    && !/[\r\n<>]/.test(value)
-    && EMAIL_PATTERN.test(value);
-}
-
-function isSafeName(value: string): boolean {
-  return value.length >= NAME_MIN
-    && value.length <= NAME_MAX
-    && NAME_PATTERN.test(value);
-}
-
-function isSafeMessage(value: string): boolean {
-  if (value.length < MESSAGE_MIN || value.length > MESSAGE_MAX || value.includes('\0')) {
-    return false;
-  }
-  const links = value.match(LINK_PATTERN);
-  return links === null || links.length <= MAX_LINKS;
-}
-
-function headerValue(value: string): string {
-  return value.replace(/[\r\n]/g, '');
 }

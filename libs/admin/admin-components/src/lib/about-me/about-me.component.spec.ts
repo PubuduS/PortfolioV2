@@ -59,6 +59,18 @@ describe('AboutMeComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(StateActions.aboutMeStateConnect());
   });
 
+  it('should show the save failure next to Save', async () => {
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+    writer.save.mockRejectedValue(new Error('offline'));
+
+    await component['updateData']();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent?.trim()).toBe(
+      'About me could not be saved.',
+    );
+  });
+
   it('should keep an edited form when a later store update arrives', () => {
     component['aboutMeForm'].mainIntro().value.set('edited intro');
     store.overrideSelector(aboutMeSelector, {

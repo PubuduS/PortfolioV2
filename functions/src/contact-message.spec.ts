@@ -40,6 +40,25 @@ describe('parseContact', () => {
     });
   });
 
+  it('should accept a name with a space up to 50 characters', () => {
+    const longName = `${'A'.repeat(24)} ${'B'.repeat(25)}`;
+    expect(parseContact({
+      ...validPayload,
+      name: 'Pubudu Wijes',
+    }).kind).toBe('ok');
+    expect(parseContact({
+      ...validPayload,
+      name: longName,
+    })).toEqual({
+      kind: 'ok',
+      contact: {
+        email: 'ada@example.com',
+        name: longName,
+        message: 'Hello from the contact form.',
+      },
+    });
+  });
+
   it('should ignore a recipient supplied by the caller', () => {
     const parsed = parseContact({
       ...validPayload,
@@ -65,7 +84,8 @@ describe('parseContact', () => {
       'hello',
       { email: 'not-an-email', name: 'Ada', message: 'Hello from the contact form.' },
       { email: 'ada@example.com', name: 'A', message: 'Hello from the contact form.' },
-      { email: 'ada@example.com', name: 'Ada Lovelace', message: 'Hello from the contact form.' },
+      { email: 'ada@example.com', name: 'Ada1', message: 'Hello from the contact form.' },
+      { email: 'ada@example.com', name: 'A'.repeat(51), message: 'Hello from the contact form.' },
       { email: 'ada@example.com', name: 'Ada', message: 'short' },
       { email: 'ada@example.com\nBcc: spam@example.com', name: 'Ada', message: 'Hello from the contact form.' },
     ])('should reject %p', (payload) => {
