@@ -150,7 +150,7 @@ export class NavBarComponent {
    * @returns the current address, unless it is the party page
    */
   private pageBeforePartyMode(): string {
-    const { url }= this.router;
+    const { url } = this.router;
     const path = url.split(/[?#]/)[0];
     return path === '/content/party-mode' ? this.sectionPath().about : url;
   }

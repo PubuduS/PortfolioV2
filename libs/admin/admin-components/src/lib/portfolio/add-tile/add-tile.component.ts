@@ -21,15 +21,6 @@ import {
 } from '@angular/forms/signals';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
-import {
-  catchError,
-  from,
-  map,
-  Observable,
-  of,
-  take,
-  BehaviorSubject,
-} from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import {
@@ -106,11 +97,8 @@ export class AddTileComponent implements OnInit, OnDestroy {
   /** Selected file for upload */
   protected selectedFile: File | null = null;
 
-  /** Subject for edit success state */
-  private editSuccessSubject = new BehaviorSubject<boolean>(false);
-
-  /** Observable for edit success state (used with async pipe) */
-  protected isEditSuccess = this.editSuccessSubject.asObservable();
+  /** True after a tile is stored. */
+  protected readonly isEditSuccess = signal(false);
 
   /** Upload Complete Flag */
   protected readonly isUploadCompleted = signal(false);
@@ -248,18 +236,8 @@ export class AddTileComponent implements OnInit, OnDestroy {
     // Create updated project view with the correct image URL
     const newProjectView = this.createNewProjectView(title, description, imageURL);
 
-    // Save to database and handle success/updates
-    this.addDataRecord(newProjectView).pipe(
-      take(1),
-    ).subscribe({
-      next: (success) => {
-        this.editSuccessSubject.next(success);
-        this.newUpdatedImage.set(imageURL);
-      },
-      error: (_error) => {
-        this.editSuccessSubject.next(false);
-      },
-    });
+    await this.addDataRecord(newProjectView);
+    this.newUpdatedImage.set(imageURL);
   }
 
   /**
@@ -323,22 +301,20 @@ export class AddTileComponent implements OnInit, OnDestroy {
   /**
    * Persist project changes to the database
    * @param newProjectView updated project view
-   * @returns observable of success status
+   * @returns true when the tile is stored
    */
-  private addDataRecord(
-    newProjectView: IProjectView,
-  ): Observable<boolean> {
-    return from(this.writer.saveTile(newProjectView)).pipe(
-      take(1),
-      map(() => {
-        this.imagePreview.set(this.defaultImageSrc);
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return true;
-      }),
-      catchError(() => {
-        this.store.dispatch(StateActions.portfolioCardsStateConnect());
-        return of(false);
-      }),
-    );
+  private async addDataRecord(newProjectView: IProjectView): Promise<boolean> {
+    this.isEditSuccess.set(false);
+    try {
+      await this.writer.saveTile(newProjectView);
+      this.imagePreview.set(this.defaultImageSrc);
+      this.store.dispatch(StateActions.portfolioCardsStateConnect());
+      this.isEditSuccess.set(true);
+      return true;
+    } catch {
+      this.store.dispatch(StateActions.portfolioCardsStateConnect());
+      this.isEditSuccess.set(false);
+      return false;
+    }
   }
 }

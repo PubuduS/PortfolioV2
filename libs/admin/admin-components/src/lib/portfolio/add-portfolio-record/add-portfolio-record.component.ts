@@ -20,14 +20,6 @@ import {
   form,
   required,
 } from '@angular/forms/signals';
-import {
-  catchError,
-  from,
-  map,
-  Observable,
-  of,
-  take,
-} from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -128,8 +120,8 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /** Default Image URL */
   protected readonly defaultImageSrc = 'https://placehold.co/300x200.png';
 
-  /** Returns true if the edit is successful */
-  protected isEditSuccess = of(false);
+  /** True after a card is stored. */
+  protected readonly isEditSuccess = signal(false);
 
   /** Preview Image URL */
   protected readonly imagePreview = signal(this.defaultImageSrc);
@@ -287,7 +279,7 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
       docDisable: documentation === '',
     };
 
-    this.isEditSuccess = this.saveDataRecord(updatedCard);
+    await this.saveDataRecord(updatedCard);
   }
 
   /**
@@ -331,22 +323,22 @@ export class AddPortfolioRecordComponent implements OnInit, OnDestroy {
   /**
    * Save project card to database and handle success/updates
    * @param newProjectCard updated project card
-   * @returns observable of success status
+   * @returns true when the card is stored
    */
-  private saveDataRecord(newProjectCard: IProjectCard): Observable<boolean> {
+  private async saveDataRecord(newProjectCard: IProjectCard): Promise<boolean> {
     const featured = this.data.type === ProjectCardType.featured;
-    return from(this.writer.saveCard(newProjectCard, featured)).pipe(
-      take(1),
-      map(() => {
-        this.imagePreview.set(this.defaultImageSrc);
-        this.connectSavedCard(featured);
-        return true;
-      }),
-      catchError(() => {
-        this.connectSavedCard(featured);
-        return of(false);
-      }),
-    );
+    this.isEditSuccess.set(false);
+    try {
+      await this.writer.saveCard(newProjectCard, featured);
+      this.imagePreview.set(this.defaultImageSrc);
+      this.connectSavedCard(featured);
+      this.isEditSuccess.set(true);
+      return true;
+    } catch {
+      this.connectSavedCard(featured);
+      this.isEditSuccess.set(false);
+      return false;
+    }
   }
 
   /**

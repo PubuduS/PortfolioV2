@@ -156,6 +156,10 @@ describe('NavBarComponent', () => {
         expect(navAnchor(nativeElement, 'Analytics')).toBeUndefined();
       });
 
+      it('should display the admin link', () => {
+        expect(navAnchor(nativeElement, 'Admin')).toBeTruthy();
+      });
+
       it('should display admin button', () => {
         const partyBtn = nativeElement.querySelector('#partyMode');
         expect(partyBtn).toBeTruthy();
@@ -203,6 +207,10 @@ describe('NavBarComponent', () => {
       it('should display preview button', () => {
         const previewBtn = nativeElement.querySelector('#previewMode');
         expect(previewBtn).toBeTruthy();
+      });
+
+      it('should hide the admin link', () => {
+        expect(navAnchor(nativeElement, 'Admin')).toBeUndefined();
       });
 
       it('returns to the admin page party mode was opened from', () => {
@@ -289,6 +297,7 @@ describe('NavBarComponent', () => {
         expect(navLink(nativeElement, 'Home').getAttribute('href')).toBe('/home');
         expect(navLink(nativeElement, 'Skills').getAttribute('href')).toBe('/content/skills');
         expect(navAnchor(nativeElement, 'Analytics')).toBeUndefined();
+        expect(navAnchor(nativeElement, 'Admin')).toBeUndefined();
       });
     });
   });

@@ -62,7 +62,7 @@
               >
             }
           </div>
-          @if (isEditSuccess | async) {
+          @if (isEditSuccess()) {
             <div class="mt-2">
               <mat-icon
                 class="success w-100 h-100 d-flex justify-content-center"
@@ -79,7 +79,7 @@
     <mat-dialog-actions
       class="btnGroup d-flex justify-content-end gap-2 flex-wrap p-3"
     >
-      @if ((isEditSuccess | async) === false) {
+      @if (isEditSuccess() === false) {
         <button
           mat-fab
           extended
@@ -103,7 +103,7 @@
         </button>
       }
 
-      @if ((isEditSuccess | async) === false) {
+      @if (isEditSuccess() === false) {
         <button
           mat-fab
           extended
