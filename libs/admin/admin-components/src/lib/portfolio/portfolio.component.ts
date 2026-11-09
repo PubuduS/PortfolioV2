@@ -136,7 +136,7 @@ export class PortfolioComponent {
   }
 
   /** Go to featured project page */
-  protected goToFeaturedPRojectsPage(): void {
+  protected goToFeaturedProjectsPage(): void {
     this.router.navigate(['/admin/portfolio/featured-projects']);
   }
 

@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   signal,
@@ -25,6 +26,7 @@ import { fieldHasError } from '@portfolio-v2/shared/forms';
 import {
   GetDateTimeService,
   UtilityService,
+  yearsExperienceLabel,
 } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
 import { IExperience } from '@portfolio-v2/state/dataModels';
@@ -55,11 +57,25 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminExperienceComponent {
+  /** Date time service */
+  private readonly dateTimeService = inject(GetDateTimeService);
+
   /** Experience */
   public experience: IExperience | undefined;
 
+  /** Job whose year span is on screen. */
+  private readonly selectedExperience = signal<IExperience | undefined>(undefined);
+
   /** Number of years of experience */
-  public yearsOfExperience: Signal<string> = signal<string>('1 Year');
+  public readonly yearsOfExperience = computed(() => {
+    const job = this.selectedExperience();
+    if (!job?.startDate || !job?.endDate) {
+      return '1 Year';
+    }
+    return yearsExperienceLabel(
+      this.dateTimeService.getYearsOfExperience(job.startDate, job.endDate),
+    );
+  });
 
   /**
    * Array of IExperience.
@@ -84,9 +100,6 @@ export class AdminExperienceComponent {
 
   /** Selected job */
   protected selectedJob = '';
-
-  /** Date time service */
-  private readonly dateTimeService = inject(GetDateTimeService);
 
   /** Dialog service. */
   private readonly dialog = inject(MatDialog);
@@ -174,8 +187,8 @@ export class AdminExperienceComponent {
       return;
     }
     this.experience = exp;
+    this.selectedExperience.set(exp);
     this.selectedJob = this.experience.employer;
-    this.totalYearsOfExperience();
     this.jobForm()?.apply(this.experience, this.yearsOfExperience());
   }
 
@@ -320,23 +333,5 @@ export class AdminExperienceComponent {
     }
 
     return timePeriod.replace(/\s*\(\d+\.?\d*\s*(?:Years?|Year)\)$/, '').trim();
-  }
-
-  /**
-   * Calculate the total years of experience by
-   * calculating the difference between the start and end date
-   */
-  private totalYearsOfExperience(): void {
-    if (!this.experience?.startDate || !this.experience?.endDate) {
-      this.yearsOfExperience = signal('1 Year');
-      return;
-    }
-
-    const numOfYears = this.dateTimeService
-      .getYearsOfExperience(this.experience.startDate, this.experience.endDate);
-
-    this.yearsOfExperience = signal(
-      numOfYears > 1.0 ? `${numOfYears.toString()} Years` : `${numOfYears.toString()} Year`,
-    );
   }
 }

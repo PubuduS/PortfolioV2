@@ -1,7 +1,7 @@
 import {
   IProjectCard,
   IProjectView,
-} from '../data-models';
+} from '@portfolio-v2/state/dataModels';
 import { StoreState } from '../state.state';
 import { newProjectRecordIdSelector } from './new-project-record-id.selector';
 

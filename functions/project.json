@@ -3,7 +3,7 @@
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "functions/src",
   "projectType": "application",
-  "tags": ["functions"],
+  "tags": ["scope:functions"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

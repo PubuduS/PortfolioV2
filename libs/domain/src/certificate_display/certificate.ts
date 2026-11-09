@@ -1,4 +1,4 @@
-import { isWebUrl } from '@portfolio-v2/shared/validators/url-pattern';
+import { isWebUrl } from '../url-pattern';
 import { ICertificateCard } from './ICertificateCard';
 
 /** Firestore collection that holds one document per certificate. */

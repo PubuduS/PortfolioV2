@@ -52,7 +52,7 @@ export type {
 } from './publications/publication';
 export { IExperience } from './experience/IExperience';
 export { EXPERIENCE_COLLECTION, experienceDocPath } from './experience/experience';
-export { ISocialInfor } from './social/ISocialInfor';
+export { ISocialInfo } from './social/i-social-info';
 export {
   SOCIAL_COLLECTION,
   SOCIAL_LINK_ICONS,

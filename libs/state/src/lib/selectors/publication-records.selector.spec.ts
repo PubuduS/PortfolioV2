@@ -1,7 +1,7 @@
 import {
   IPublication,
   IPublicationDetails,
-} from '../data-models';
+} from '@portfolio-v2/state/dataModels';
 import {
   nextPublicationRecordIdSelector,
   publicationRecordsSelector,

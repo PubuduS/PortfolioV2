@@ -14,8 +14,8 @@ import {
   IPublication,
   IPublicationDetails,
   ISkills,
-  ISocialInfor,
-} from './data-models';
+  ISocialInfo,
+} from '@portfolio-v2/state/dataModels';
 
 /** Actions that load and replace slices of the portfolio store. */
 export const StateActions = createActionGroup({
@@ -56,7 +56,7 @@ export const StateActions = createActionGroup({
     'Publication Detail Cards State Updated': props<{ publicationDetails: IPublicationDetails[] }>(),
 
     'Social Media Information State Connect': emptyProps(),
-    'Social Media Information State Updated': props<{ socialInfor: ISocialInfor[] }>(),
+    'Social Media Information State Updated': props<{ socialInfor: ISocialInfo[] }>(),
 
     'Admin State Updated': props<{ isAdmin: boolean }>(),
 

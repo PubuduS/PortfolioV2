@@ -5,7 +5,7 @@
   "prefix": "portfolio",
   "projectType": "library",
   "tags": [
-    "shared"
+    "scope:shared"
   ],
   "targets": {
     "test": {

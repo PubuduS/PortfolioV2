@@ -18,7 +18,7 @@ import { StateActions } from '@portfolio-v2/state';
 import {
   parseCatalog,
   type CatalogView,
-  type ISocialInfor,
+  type ISocialInfo,
 } from '@portfolio-v2/state/dataModels';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { CoverLetterComponent } from './cover_letter.component';
@@ -66,7 +66,7 @@ describe('CoverLetterComponent', () => {
   let store: MockStore;
   let documents: { view: jest.Mock; coverLetterTemplate: jest.Mock };
   let view: ReturnType<typeof signal<CatalogView>>;
-  const links: ISocialInfor[] = [
+  const links: ISocialInfo[] = [
     {
       id: 1,
       media: 'https://www.linkedin.com/in/ada',

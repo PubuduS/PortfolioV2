@@ -1,4 +1,4 @@
-import { IEducation } from '../data-models';
+import { IEducation } from '@portfolio-v2/state/dataModels';
 import { StoreState } from '../state.state';
 import {
   educationSelector,

@@ -16,13 +16,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@portfolio-v2/contracts/contact-limits": ["libs/contracts/contact-limits.ts"],
+      "@portfolio-v2/contracts/site-analytics": ["libs/contracts/site-analytics.ts"],
+      "@portfolio-v2/data-access/get-data": ["libs/data-access/src/get-data.service.ts"],
+      "@portfolio-v2/data-access/get-date-time": ["libs/data-access/src/get-date-time.service.ts"],
+      "@portfolio-v2/domain/url-pattern": ["libs/domain/src/url-pattern.ts"],
       "@portfolio-v2/const": ["libs/const/index.ts"],
-      "@portfolio-v2/environment": [
-        "apps/portfolio-v2/src/environments/index.ts"
-      ],
-      "@portfolio-v2/environment/emulator": [
-        "apps/portfolio-v2/src/environments/environment.emulator.ts"
-      ],
+      "@portfolio-v2/environment": ["libs/environment/src/index.ts"],
+      "@portfolio-v2/environment/emulator": ["libs/environment/src/environment.emulator.ts"],
+      "@portfolio-v2/environment/model": ["libs/environment/src/environment.model.ts"],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
       "@portfolio-v2/portfolio-pages/education-main": [
         "libs/pages/src/lib/components/education_main/education_main.component.ts"
@@ -64,9 +66,7 @@
       "@portfolio-v2/shared/types": ["libs/shared/src/lib/types/index.ts"],
       "@portfolio-v2/state": ["libs/state/src/index.ts"],
       "@portfolio-v2/state/actions": ["libs/state/src/lib/state.actions.ts"],
-      "@portfolio-v2/state/dataModels": [
-        "libs/state/src/lib/data-models/index.ts"
-      ],
+      "@portfolio-v2/state/dataModels": ["libs/domain/src/index.ts"],
       "@portfolio-v2/state/selectors": [
         "libs/state/src/lib/selectors/index.ts"
       ],
@@ -85,7 +85,7 @@
       "@portfolio-v2/tools/coverage/remap": ["tools/coverage/remap.ts"],
       "@portfolio-v2/tools/coverage/workspace-path": ["tools/coverage/workspace-path.ts"]
     },
-    "strict": false,
+    "strict": true,
     "noUncheckedSideEffectImports": false,
     "esModuleInterop": false,
     "ignoreDeprecations": "6.0"

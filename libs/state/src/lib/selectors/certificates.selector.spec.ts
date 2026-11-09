@@ -1,4 +1,4 @@
-import { ICertificateCard } from '../data-models';
+import { ICertificateCard } from '@portfolio-v2/state/dataModels';
 import {
   certificatesSelector,
   nextCertificateIdSelector,

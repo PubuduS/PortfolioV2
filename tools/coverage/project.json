@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/coverage",
   "projectType": "library",
-  "tags": ["tools"],
+  "tags": ["scope:tools"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

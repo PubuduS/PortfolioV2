@@ -1,7 +1,7 @@
-import { HighlightPipePipe } from './highlight-pipe.pipe';
+import { HighlightPipe } from './highlight-pipe.pipe';
 
-describe('HighlightPipePipe', () => {
-  const pipe = new HighlightPipePipe();
+describe('HighlightPipe', () => {
+  const pipe = new HighlightPipe();
 
   describe('when the text is empty', () => {
     it.each(['', null, undefined])('should return an empty string for %p', (value) => {

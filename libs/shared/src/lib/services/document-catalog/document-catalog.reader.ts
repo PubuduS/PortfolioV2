@@ -15,6 +15,7 @@ import {
   shareReplay,
 } from 'rxjs';
 
+import { GetDataService } from '@portfolio-v2/data-access/get-data';
 import {
   type CatalogView,
   DOCUMENT_KIND_SPECS,
@@ -22,7 +23,6 @@ import {
   catalogDocPath,
   parseCatalog,
 } from '@portfolio-v2/state/dataModels';
-import { GetDataService } from '../get-data/get-data.service';
 
 /**
  * Root listener for both catalog documents.

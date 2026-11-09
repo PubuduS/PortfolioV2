@@ -1,4 +1,4 @@
-import { IProjectView } from '../data-models';
+import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { StoreState } from '../state.state';
 import { portfolioCardSelector } from './portfolio-card.selector';
 

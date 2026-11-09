@@ -38,10 +38,6 @@ import {
   provideStorage,
 } from '@angular/fire/storage';
 import {
-  getDatabase,
-  provideDatabase,
-} from '@angular/fire/database';
-import {
   connectFunctionsEmulator,
   getFunctions,
   provideFunctions,
@@ -54,6 +50,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
+import { environment } from '@portfolio-v2/environment';
+import { AppEnvironment } from '@portfolio-v2/environment/model';
 import {
   AUTH_TARGET,
   authAppName,
@@ -64,8 +62,6 @@ import {
   stateReducers,
   StateEffects,
 } from '@portfolio-v2/state';
-import { environment } from '../environments/environment';
-import { AppEnvironment } from '../environments/environment.model';
 import { adminSessionMetaReducers } from './admin-session-storage';
 import { appRoutes } from './app.routes';
 
@@ -89,7 +85,6 @@ const liveOnlyProviders: Array<Provider | EnvironmentProviders> = emulators
   ? []
   : [
     provideAnalytics(() => getAnalytics(firebaseApp())),
-    provideDatabase(() => getDatabase(firebaseApp())),
     providePerformance(() => getPerformance(firebaseApp())),
     ScreenTrackingService,
     UserTrackingService,

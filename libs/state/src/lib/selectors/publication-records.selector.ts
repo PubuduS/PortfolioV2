@@ -3,7 +3,7 @@ import { createSelector } from '@ngrx/store';
 import {
   joinPublications,
   nextPublicationId,
-} from '../data-models/publications/publication';
+} from '@portfolio-v2/state/dataModels';
 import { publicationDetailsCardsSelector } from './publication-details.selector';
 import { publicationCardsSelector } from './publications.selector';
 

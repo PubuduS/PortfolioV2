@@ -120,14 +120,108 @@ export default [
       rules: {
         ...config.rules,
         '@nx/enforce-module-boundaries': [
-          'off',
+          'error',
           {
-            enforceBuildableLibDependency: true,
+            enforceBuildableLibDependency: false,
             allow: [],
+            allowCircularSelfDependency: true,
+            checkDynamicDependenciesExceptions: [
+              '@portfolio-v2/admin-components',
+              '@portfolio-v2/admin-components/**',
+              '@portfolio-v2/portfolio-pages',
+              '@portfolio-v2/portfolio-pages/**',
+              '@portfolio-v2/shared/**',
+            ],
             depConstraints: [
               {
-                sourceTag: '*',
-                onlyDependOnLibsWithTags: ['*'],
+                sourceTag: 'type:app',
+                onlyDependOnLibsWithTags: [
+                  'scope:pages',
+                  'scope:admin',
+                  'scope:admin-shared',
+                  'scope:admin-types',
+                  'scope:shared',
+                  'scope:state',
+                  'scope:domain',
+                  'scope:data-access',
+                  'scope:environment',
+                ],
+              },
+              {
+                sourceTag: 'scope:e2e',
+                onlyDependOnLibsWithTags: ['scope:environment', 'scope:tools'],
+              },
+              {
+                sourceTag: 'scope:pages',
+                onlyDependOnLibsWithTags: [
+                  'scope:shared',
+                  'scope:state',
+                  'scope:domain',
+                  'scope:data-access',
+                  'scope:contracts',
+                ],
+              },
+              {
+                sourceTag: 'scope:admin',
+                onlyDependOnLibsWithTags: [
+                  'scope:pages',
+                  'scope:admin-shared',
+                  'scope:admin-types',
+                  'scope:shared',
+                  'scope:state',
+                  'scope:domain',
+                  'scope:data-access',
+                  'scope:contracts',
+                ],
+              },
+              {
+                sourceTag: 'scope:admin-shared',
+                onlyDependOnLibsWithTags: [
+                  'scope:admin-types',
+                  'scope:shared',
+                  'scope:domain',
+                ],
+              },
+              {
+                sourceTag: 'scope:admin-types',
+                onlyDependOnLibsWithTags: [],
+              },
+              {
+                sourceTag: 'scope:shared',
+                onlyDependOnLibsWithTags: [
+                  'scope:state',
+                  'scope:domain',
+                  'scope:data-access',
+                  'scope:environment',
+                ],
+              },
+              {
+                sourceTag: 'scope:state',
+                onlyDependOnLibsWithTags: ['scope:domain', 'scope:data-access'],
+              },
+              {
+                sourceTag: 'scope:data-access',
+                onlyDependOnLibsWithTags: ['scope:domain'],
+              },
+              {
+                sourceTag: 'scope:domain',
+                onlyDependOnLibsWithTags: [],
+              },
+              {
+                sourceTag: 'scope:contracts',
+                onlyDependOnLibsWithTags: [],
+              },
+              {
+                sourceTag: 'scope:environment',
+                onlyDependOnLibsWithTags: [],
+              },
+              {
+                sourceTag: 'scope:tools',
+                onlyDependOnLibsWithTags: ['scope:domain'],
+              },
+              {
+                sourceTag: 'scope:functions',
+                onlyDependOnLibsWithTags: [],
               },
             ],
           },

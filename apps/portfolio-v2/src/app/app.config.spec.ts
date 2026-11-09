@@ -23,7 +23,7 @@ import {
   getStorage,
 } from '@angular/fire/storage';
 
-import { type AppEnvironment } from '../environments/environment.model';
+import { type AppEnvironment } from '@portfolio-v2/environment/model';
 
 /** Factories captured from the Firebase providers while a config loads. */
 const mockFactories: Array<() => unknown> = [];
@@ -66,7 +66,7 @@ const emulatorEnvironment: AppEnvironment = {
   },
 };
 
-jest.mock('../environments/environment', () => ({
+jest.mock('@portfolio-v2/environment', () => ({
   get environment() {
     return mockEnvironment.current;
   },
@@ -249,7 +249,7 @@ describe('appConfig', () => {
       expect(connectFirestoreEmulator).not.toHaveBeenCalled();
       expect(connectFunctionsEmulator).not.toHaveBeenCalled();
       expect(getAnalytics).toHaveBeenCalledWith({ name: 'firebase-app' });
-      expect(getDatabase).toHaveBeenCalledWith({ name: 'firebase-app' });
+      expect(getDatabase).not.toHaveBeenCalled();
       expect(getPerformance).toHaveBeenCalledWith({ name: 'firebase-app' });
     });
   });

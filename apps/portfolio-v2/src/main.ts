@@ -4,9 +4,9 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 
+import { environment } from '@portfolio-v2/environment';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { environment } from './environments';
 
 if (environment.production) {
   enableProdMode();

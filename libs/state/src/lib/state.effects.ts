@@ -17,8 +17,7 @@ import {
   EMPTY,
 } from 'rxjs';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
-import { StateActions } from './state.actions';
+import { GetDataService } from '@portfolio-v2/data-access/get-data';
 import {
   ABOUT_ME_COLLECTION,
   CERTIFICATE_COLLECTION,
@@ -33,13 +32,14 @@ import {
   IPublication,
   IPublicationDetails,
   ISkills,
-  ISocialInfor,
+  ISocialInfo,
   PROJECT_DATA_COLLECTION,
   PROJECT_ICON_COLLECTION,
   PUBLICATION_COLLECTIONS,
   SKILLS_COLLECTION,
   SOCIAL_COLLECTION,
-} from './data-models';
+} from '@portfolio-v2/state/dataModels';
+import { StateActions } from './state.actions';
 
 /** An action creator `ofType` can match. */
 type ConnectAction = ActionCreator<string, Creator>;
@@ -74,7 +74,7 @@ export class StateEffects {
   ));
 
   /** Connects to education cards state to get page information. */
-  public connectToEducatiuonCardsState = createEffect(() => this.connectCollection(
+  public connectToEducationCardsState = createEffect(() => this.connectCollection(
     StateActions.educationCardsStateConnect,
     () => this.dbService.getDataArray<IEducation>(EDUCATION_COLLECTION, false),
     (education) => StateActions.educationCardsStateUpdated({ education }),
@@ -134,7 +134,7 @@ export class StateEffects {
   /** Connects to social media information state to get page information. */
   public connectToSocialMediaInformationState = createEffect(() => this.connectCollection(
     StateActions.socialMediaInformationStateConnect,
-    () => this.dbService.getDataArray<ISocialInfor>(SOCIAL_COLLECTION),
+    () => this.dbService.getDataArray<ISocialInfo>(SOCIAL_COLLECTION),
     (socialInfor) => StateActions.socialMediaInformationStateUpdated({ socialInfor }),
   ));
 

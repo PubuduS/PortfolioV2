@@ -19,7 +19,7 @@ import {
 } from '@angular/fire/storage';
 
 import { IExperience } from '@portfolio-v2/state/dataModels';
-import { GetDateTimeService } from '../get-date-time/get-date-time.service';
+import { GetDateTimeService } from './get-date-time.service';
 import { GetDataService } from './get-data.service';
 
 jest.mock('@angular/fire/firestore', () => {
@@ -164,7 +164,9 @@ describe('GetdataService', () => {
       const rows = await firstValueFrom(service.getExperienceSectionData('experience-section'));
 
       expect(rows[0].endDate).toBe(today);
+      expect(rows[0].timePeriod).toBe(`2024 - ${today.slice(0, 4)}`);
       expect(rows[1].endDate).toBe('2020-01-01');
+      expect(rows[1].timePeriod).toBe('2024 - present');
       expect(orderBy).toHaveBeenCalledWith('id', 'desc');
     });
   });

@@ -5,7 +5,7 @@
   "prefix": "admin",
   "projectType": "library",
   "tags": [
-    "admin-components"
+    "scope:admin"
   ],
   "targets": {
     "test": {

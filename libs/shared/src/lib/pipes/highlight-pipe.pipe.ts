@@ -10,7 +10,7 @@ import {
   name: 'highlightPipe',
   standalone: true,
 })
-export class HighlightPipePipe implements PipeTransform {
+export class HighlightPipe implements PipeTransform {
   /**
    * retunrs highlighted string
    * @param text text string

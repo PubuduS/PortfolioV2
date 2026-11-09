@@ -1,5 +1,15 @@
 import { createHash } from 'node:crypto';
 
+import {
+  CONTACT_EMAIL_MAX as EMAIL_MAX,
+  CONTACT_MAX_LINKS as MAX_LINKS,
+  CONTACT_MESSAGE_MAX as MESSAGE_MAX,
+  CONTACT_MESSAGE_MIN as MESSAGE_MIN,
+  CONTACT_NAME_MAX as NAME_MAX,
+  CONTACT_NAME_MIN as NAME_MIN,
+  CONTACT_NAME_PATTERN as NAME_PATTERN,
+} from '../../libs/contracts/contact-limits';
+
 /** Inbox that receives every contact-form message. Callers cannot choose another recipient. */
 export const OWNER_EMAIL = 'pubudusupun@gmail.com';
 
@@ -23,27 +33,6 @@ export const HOUR_MS = 60 * 60 * 1000;
 
 /** Daily counter window. */
 export const DAY_MS = 24 * HOUR_MS;
-
-/** Shortest accepted name. Matches the contact form. */
-const NAME_MIN = 2;
-
-/** Longest accepted name. Matches the contact form. */
-const NAME_MAX = 12;
-
-/** Shortest accepted message. Matches the contact form. */
-const MESSAGE_MIN = 10;
-
-/** Longest accepted message. Matches the contact form. */
-const MESSAGE_MAX = 1000;
-
-/** Longest accepted email address. */
-const EMAIL_MAX = 254;
-
-/** Messages with more links than this are rejected. */
-const MAX_LINKS = 5;
-
-/** Letters only, same rule as the contact form. */
-const NAME_PATTERN = /^[a-zA-Z]+$/;
 
 /** One line, no header-breaking characters. */
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

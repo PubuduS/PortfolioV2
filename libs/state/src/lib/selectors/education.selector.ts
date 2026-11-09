@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 
-import { nextEducationId } from '../data-models/education/education';
+import { nextEducationId } from '@portfolio-v2/state/dataModels';
 import { StateSelector } from './state.selector';
 
 /**

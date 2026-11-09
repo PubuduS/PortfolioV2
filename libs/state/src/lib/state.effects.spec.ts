@@ -9,7 +9,7 @@ import {
   throwError,
 } from 'rxjs';
 
-import { GetDataService } from '@portfolio-v2/shared/services';
+import { GetDataService } from '@portfolio-v2/data-access/get-data';
 import {
   ABOUT_ME_COLLECTION,
   CERTIFICATE_COLLECTION,
@@ -25,13 +25,13 @@ import {
   IPublication,
   IPublicationDetails,
   ISkills,
-  ISocialInfor,
+  ISocialInfo,
   PROJECT_DATA_COLLECTION,
   PROJECT_ICON_COLLECTION,
   PUBLICATION_COLLECTIONS,
   SKILLS_COLLECTION,
   SOCIAL_COLLECTION,
-} from './data-models';
+} from '@portfolio-v2/state/dataModels';
 import { StateActions } from './state.actions';
 import { StateEffects } from './state.effects';
 
@@ -126,7 +126,7 @@ const cases: LoadCase[] = [
     label: 'education',
     method: 'getDataArray',
     args: [EDUCATION_COLLECTION, false],
-    read: (effects) => effects.connectToEducatiuonCardsState,
+    read: (effects) => effects.connectToEducationCardsState,
     connect: StateActions.educationCardsStateConnect(),
     updated: (payload) => StateActions.educationCardsStateUpdated({
       education: payload as IEducation[],
@@ -159,7 +159,7 @@ const cases: LoadCase[] = [
     read: (effects) => effects.connectToSocialMediaInformationState,
     connect: StateActions.socialMediaInformationStateConnect(),
     updated: (payload) => StateActions.socialMediaInformationStateUpdated({
-      socialInfor: payload as ISocialInfor[],
+      socialInfor: payload as ISocialInfo[],
     }),
   },
 ];

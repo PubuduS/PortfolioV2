@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Provide a local environment file
-        run: cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+        run: cp libs/environment/src/environment.emulator.ts libs/environment/src/environment.ts
 
       - name: Lint
         run: npm run lint
@@ -96,7 +96,7 @@ jobs:
         run: npm ci
 
       - name: Provide a local environment file
-        run: cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+        run: cp libs/environment/src/environment.emulator.ts libs/environment/src/environment.ts
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
@@ -240,7 +240,7 @@ jobs:
         run: npm ci
 
       - name: Provide a local environment file
-        run: cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+        run: cp libs/environment/src/environment.emulator.ts libs/environment/src/environment.ts
 
       - name: Download Jest coverage
         uses: actions/download-artifact@v4
