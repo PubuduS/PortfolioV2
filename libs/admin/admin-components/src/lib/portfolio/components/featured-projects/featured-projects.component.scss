@@ -2,4 +2,9 @@
 
 .featured-projects-container {
   @include featured-projects-all;
+
+  // The edit and delete buttons are absolutely positioned, so each card is their box.
+  .project-card {
+    position: relative;
+  }
 }

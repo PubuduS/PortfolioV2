@@ -44,7 +44,13 @@
           "libs/pages/src/lib/components/skills/**/*.scss",
           "libs/pages/src/lib/components/portfolio/portfolio.component.scss",
           "libs/pages/src/lib/components/portfolio/components/featured-projects/**/*.scss",
-          "libs/pages/src/lib/components/portfolio/components/project-tile/project-tile.component.scss"
+          "libs/pages/src/lib/components/portfolio/components/project-tile/project-tile.component.scss",
+          "libs/pages/src/lib/components/education-main/components/education/education.component.scss",
+          "libs/pages/src/lib/components/education-main/components/certifications/certifications.component.scss",
+          "libs/pages/src/lib/components/education-main/components/publications/publications.component.scss",
+          "libs/pages/src/lib/components/cover-letter/cover-letter.component.scss",
+          "libs/pages/src/lib/components/about-me/about-me.component.scss",
+          "libs/pages/src/lib/components/contact/contact.component.scss"
         ]
       }
     }

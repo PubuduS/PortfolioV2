@@ -1,58 +1,60 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
-@use 'apps/portfolio-v2/src/assets/SCSS/cover-letter' as *;
+@use 'styles' as *;
 
 @include cover-letter-page;
 
 .bottom {
-  margin-bottom: 10%;
-  margin-top: 4%;
+  margin-block: 4% 10%;
+}
+
+textarea.form-control {
+  block-size: 8.75rem;
+  padding-block-start: 1.125rem;
 }
 
 .contact-detail h2 {
+  margin: 2.5rem 0 1.5rem;
   color: $icy-petal;
-  font-size: 40px;
+  font-size: 1.75rem;
   font-weight: 800;
-  line-height: 49px;
-  margin: 73px 0 40px;
+  line-height: 1.2;
   text-transform: uppercase;
+
+  @include from-width(md) {
+    margin-block-start: 4.5rem;
+    font-size: 2.5rem;
+    line-height: 3rem;
+  }
 }
 
 .contact-detail p a {
-  color: $ghost-gray;
   font-weight: 500;
+  color: $ghost-gray;
 }
 
 .contact-detail p a:hover {
   text-decoration: underline;
 }
 
-.social {
+.cover-letter-full .contact-detail .social {
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.social li {
-  margin-right: 50px;
-}
-
-.social li a {
+.cover-letter-full .contact-detail .social li a {
+  display: flex;
   align-items: center;
-  background-color: $sky-byte;
-  border-radius: 7px;
-  color: $white;
-  display: flex;
-  font-size: 32px;
-  height: 60px;
   justify-content: center;
+  inline-size: 3.75rem;
+  block-size: 3.75rem;
+  font-size: 2rem;
+  color: $white;
+  background-color: $sky-byte;
+  border-radius: 0.4rem;
   transition: all 0.4s ease-in-out;
-  width: 60px;
 }
 
-.social li a:hover {
-  background: $white;
+.cover-letter-full .contact-detail .social li a:hover {
   color: $midnigh-graphite;
-}
-
-textarea.form-control {
-  height: 140px;
-  padding-top: 18px;
+  background: $white;
 }

@@ -1,46 +1,46 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
-@use 'apps/portfolio-v2/src/assets/SCSS/certificates' as *;
+@use 'styles' as *;
 
 .certificates-admin {
   @include certificates-section;
-  min-height: 100vh;
-  // The admin nav bar is two rows tall, so the title needs more room than on the public page.
-  padding: 200px 0 40px;
+
+  min-block-size: 100vh;
+  padding-block-start: calc(var(--site-header-block) + 6rem);
 
   .certificate-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    list-style: none;
+    grid-template-columns: minmax(0, 1fr);
     margin: 0;
     padding: 0;
+    list-style: none;
 
-    @media (max-width: 768px) {
-      grid-template-columns: minmax(0, 1fr);
+    @include from-width(md) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   .certificate-card {
     display: flex;
     flex-direction: column;
-    margin-block-end: 70px;
-    padding: 15px;
     position: relative;
+    margin-block-end: 4.5rem;
+    padding: 1rem;
 
     section {
       @include certificate-card;
+
       flex: 1 1 auto;
     }
   }
 
   .add-certificate {
-    margin-block-start: 35px;
     --admin-add-heading: #{$white};
+
+    margin-block-start: 2rem;
   }
 
   .certificate-card admin-update-delete-buttons {
-    inset-inline-end: auto;
-    inset-inline-start: 50%;
-    top: calc(100% - 20px);
+    inset-block-start: calc(100% - 1.25rem);
+    inset-inline: 50% auto;
     transform: translateX(-50%);
   }
 }

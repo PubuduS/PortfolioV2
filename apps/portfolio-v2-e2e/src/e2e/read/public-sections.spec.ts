@@ -90,6 +90,8 @@ test.describe('public sections', () => {
 
   test('should return to the page party mode was opened from', async ({ page }) => {
     await page.goto('/content/skills');
+    await expect(page).toHaveURL(/\/content\/skills$/);
+    await expect(page.getByRole('heading', { name: 'Tecnical Skills' })).toBeVisible();
     await page.locator('#partyMode').click();
 
     await expect(page).toHaveURL(/\/content\/party-mode$/);

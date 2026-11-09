@@ -1,25 +1,28 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
-@use 'apps/portfolio-v2/src/assets/SCSS/certificates' as *;
+@use 'styles' as *;
 
 .certifications-full {
   @include certificates-section;
-  padding: 100px 0 40px;
 
   .certifications-wrap {
     ul {
       display: flex;
-      flex-wrap: wrap;
+      flex-flow: column wrap;
       justify-content: center;
       padding: 0;
 
-      li {
-        list-style: none;
-        padding: 15px;
+      @include from-width(md) {
+        flex-direction: row;
       }
+    }
+
+    li {
+      padding: 1rem;
+      list-style: none;
     }
 
     section {
       @include certificate-card;
+
       transition: all 0.4s ease-in-out;
 
       &:hover {
@@ -31,24 +34,14 @@
       }
 
       p a {
-        color: $electric-teal;
         font-weight: bold;
+        color: $electric-teal;
 
         &:hover {
           color: $tropical-jade;
           text-decoration: underline;
         }
       }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .certifications-wrap ul {
-      flex-direction: column;
-    }
-
-    .certifications-wrap section {
-      margin-bottom: 30px;
     }
   }
 }

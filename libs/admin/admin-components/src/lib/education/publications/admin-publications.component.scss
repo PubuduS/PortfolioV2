@@ -1,39 +1,38 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/publications' as *;
+@use 'styles' as *;
 
 .publications-admin {
   @include publications-section;
-  padding: 100px 0 80px;
 
   .section-title {
-    margin-bottom: 40px;
+    margin-block-end: 2.5rem;
   }
 
   .publication-grid {
-    align-items: stretch;
     display: grid;
-    gap: 0 32px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 2rem;
 
-    @media (max-width: 991px) {
+    @include from-width(sm) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @media (max-width: 575px) {
-      grid-template-columns: minmax(0, 1fr);
+    @include from-width(lg) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   .publication-card {
-    margin-bottom: 110px;
-    min-height: 0;
     position: relative;
+    min-block-size: 0;
+    margin-block-end: 7rem;
 
     mat-card {
       display: flex;
       flex: 1 1 auto;
       flex-direction: column;
-      height: 100%;
-      min-height: 0;
+      min-block-size: 0;
+      block-size: 100%;
     }
   }
 
@@ -43,9 +42,8 @@
   }
 
   .publication-card admin-update-delete-buttons {
-    inset-inline-end: auto;
-    inset-inline-start: 50%;
-    top: calc(100% + 16px);
+    inset-block-start: calc(100% + 1rem);
+    inset-inline: 50% auto;
     transform: translateX(-50%);
   }
 }

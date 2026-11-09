@@ -1,124 +1,119 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'styles' as *;
 
 .get-in-touchfull {
-  background-color: $nocturne-navy;
-  padding: 100px 0 80px;
-  padding-top: 10%;
+  @include section-shell($nocturne-navy);
 }
 
 h2 {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
-/*section-title*/
 .section-title h2 {
+  @include section-title;
+
+  margin-block-end: 2.5rem;
   color: $icy-petal;
   text-align: center;
-  margin-bottom: 60px;
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 49px;
   text-transform: uppercase;
-  margin-top: 3%;
 }
 
 .bottom {
-  margin-top: 4%;
-  margin-bottom: 4%;
+  margin-block: 1.5rem;
 }
 
 .get-in-touchfull .section-title {
-  margin-bottom: 40px;
-  text-align: left;
+  margin-block-end: 2.5rem;
+  text-align: start;
 }
-/*contact-detail*/
+
 .contact-detail {
+  padding-inline-end: 0;
   color: $ghost-gray;
-  padding-right: 55px;
+
+  @include from-width(md) {
+    padding-inline-end: 3.5rem;
+  }
 }
+
 .contact-detail h2 {
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 49px;
-  text-transform: uppercase;
-  margin: 73px 0 40px;
+  margin: 2.5rem 0 1.5rem;
   color: $icy-petal;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+
+  @include from-width(md) {
+    margin-block-start: 4.5rem;
+    font-size: 2.5rem;
+    line-height: 3rem;
+  }
 }
+
 .contact-detail p {
-  margin: 0 0 35px;
+  margin: 0 0 2rem;
 }
+
 .contact-detail p a {
   font-weight: 500;
   color: $ghost-gray;
 }
+
 .contact-detail p a:hover {
   text-decoration: underline;
 }
-.social {
-  display: flex;
-}
-.social li {
-  margin-right: 50px;
-}
-.social li a:hover {
-  background: $white;
-  color: $midnigh-graphite;
-}
-.social li a {
-  transition: all 0.4s ease-in-out;
-  width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  height: 60px;
-  border-radius: 7px;
-  background-color: $sky-byte;
-  color: $white;
-}
-/*contact-form*/
+
 .contact-form ul li {
-  margin-bottom: 20px;
+  margin-block-end: 1.25rem;
 }
+
 .form-control {
+  block-size: 3.7rem;
+  padding-inline-start: 1.25rem;
+  color: $ghost-gray;
+  background-color: $nocturne-navy;
   border: 1px solid $icy-petal;
-  background-color: $nocturne-navy;
-  color: $ghost-gray;
-  height: 59px;
-  padding-left: 20px;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
+
 .form-control:focus {
-  background-color: $nocturne-navy;
   color: $ghost-gray;
+  background-color: $nocturne-navy;
 }
+
 .form-control::placeholder {
   color: $ghost-gray;
 }
+
 textarea.form-control {
-  height: 140px;
-  padding-top: 18px;
+  block-size: 8.75rem;
+  padding-block-start: 1.125rem;
 }
+
 .submit-btn {
-  background-color: $electric-teal;
-  height: 59px;
-  width: 139px;
+  inline-size: 8.7rem;
+  block-size: 3.7rem;
   color: $nocturne-navy;
+  background-color: $electric-teal;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   transition: all 0.4s ease-in-out;
 }
+
 .submit-btn:hover {
   opacity: 0.9;
   box-shadow: 0 0 10px $obsidian-veil;
 }
+
 .submit-btn:disabled {
   opacity: 0.55;
   box-shadow: none;
 }
+
 .contact-form {
   position: relative;
 }
+
 .contact-trap {
   position: absolute;
   inline-size: 1px;
@@ -128,10 +123,36 @@ textarea.form-control {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
 .contact-feedback {
+  margin-block-end: 1.25rem;
   color: $electric-teal;
-  margin-bottom: 20px;
 }
+
 .contact-feedback.is-error {
   color: $jasper;
+}
+
+.get-in-touchfull .contact-detail .social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.get-in-touchfull .contact-detail .social li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 3.75rem;
+  block-size: 3.75rem;
+  font-size: 2rem;
+  color: $white;
+  background-color: $sky-byte;
+  border-radius: 0.4rem;
+  transition: all 0.4s ease-in-out;
+}
+
+.get-in-touchfull .contact-detail .social li a:hover {
+  color: $midnigh-graphite;
+  background: $white;
 }

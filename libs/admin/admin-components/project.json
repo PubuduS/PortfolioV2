@@ -28,7 +28,13 @@
           "libs/admin/admin-components/src/lib/experience/experience.component.scss",
           "libs/admin/admin-components/src/lib/skills/skills.component.scss",
           "libs/admin/admin-components/src/lib/portfolio/portfolio.component.scss",
-          "libs/admin/admin-components/src/lib/portfolio/components/featured-projects/featured-projects.component.scss"
+          "libs/admin/admin-components/src/lib/portfolio/components/featured-projects/featured-projects.component.scss",
+          "libs/admin/admin-components/src/lib/education/degrees/admin-degrees.component.scss",
+          "libs/admin/admin-components/src/lib/education/certificates/admin-certificates.component.scss",
+          "libs/admin/admin-components/src/lib/education/publications/admin-publications.component.scss",
+          "libs/admin/admin-components/src/lib/documents/admin-documents.component.scss",
+          "libs/admin/admin-components/src/lib/about-me/about-me.component.scss",
+          "libs/admin/admin-components/src/lib/contact/admin-contact.component.scss"
         ]
       }
     }
