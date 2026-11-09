@@ -1,125 +1,188 @@
-<div class="row w-100 mx-4 mt-2 main">
-  <div class="col-lg-2 col-4">
-    <a href="index.html" class="logo mr-auto"
-      ><img src="assets/images/logo/footer-logo.svg" alt="logo"
-    /></a>
-  </div>
+<div class="nav-shell">
+  <a class="logo" [routerLink]="sectionPath().home" (click)="closeMenu()">
+    <img src="assets/images/logo/footer-logo.svg" alt="Pubudu Wijesooriya" />
+  </a>
 
-  <div class="col-lg-8 col-3">
-    <nav class="navbar navbar-expand-lg">
-      <button
-        class="navbar-toggler collapsed"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="fa fa-bars"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().home">Home</a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().about">About Me</a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().skills">Skills</a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().experience">Experience</a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().portfolio">Portfolio</a>
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="sectionPath().education">Education</a>
-          </li>
-          <li class="nav-item">
-            @if (resumeTarget(); as resume) {
-              @if (resume.kind === 'file') {
-                <a class="nav-link" [attr.href]="resume.href" target="_blank"
-                  >Resume</a
-                >
-              } @else {
-                <a class="nav-link" [routerLink]="resume.path">Resume</a>
-              }
-            }
-          </li>
-          <li class="nav-item">
-            <a [routerLink]="coverLetterTarget().path">Cover Letter</a>
-          </li>
-          @if (showAnalytics()) {
-            <li class="nav-item">
-              <a routerLink="/admin/analytics">Analytics</a>
-            </li>
+  <nav
+    id="primary-navigation"
+    class="primary-nav"
+    [class.is-open]="isMenuOpen()"
+    aria-label="Primary"
+  >
+    <ul>
+      <li>
+        <a
+          [routerLink]="sectionPath().home"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMenu()"
+          >Home</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="sectionPath().about"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >About Me</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="sectionPath().skills"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >Skills</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="sectionPath().experience"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >Experience</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="sectionPath().portfolio"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >Portfolio</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="sectionPath().education"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >Education</a
+        >
+      </li>
+      <li>
+        @if (resumeTarget(); as resume) {
+          @if (resume.kind === 'file') {
+            <a [attr.href]="resume.href" target="_blank" (click)="closeMenu()"
+              >Resume</a
+            >
+          } @else {
+            <a
+              [routerLink]="resume.path"
+              routerLinkActive="is-active"
+              (click)="closeMenu()"
+              >Resume</a
+            >
           }
-          @if (!isAdminMode()) {
-            <li class="nav-item">
-              <a [routerLink]="['content/admin']">Admin</a>
-            </li>
-          }
+        }
+      </li>
+      <li>
+        <a
+          [routerLink]="coverLetterTarget().path"
+          routerLinkActive="is-active"
+          (click)="closeMenu()"
+          >Cover Letter</a
+        >
+      </li>
+      @if (showAnalytics()) {
+        <li>
+          <a
+            routerLink="/admin/analytics"
+            routerLinkActive="is-active"
+            (click)="closeMenu()"
+            >Analytics</a
+          >
+        </li>
+      }
+      @if (!isAdminMode()) {
+        <li>
+          <a
+            [routerLink]="['content/admin']"
+            routerLinkActive="is-active"
+            (click)="closeMenu()"
+            >Admin</a
+          >
+        </li>
+      }
+    </ul>
+  </nav>
 
-          <!-- This is needed for space between contact button and cover letter menu item -->
-          <li class="nav-item contact"></li>
-        </ul>
-      </div>
-    </nav>
-  </div>
-  <div class="col-lg-1 col-3">
+  <div class="nav-actions">
     <a
-      class="header-btn ml-auto"
+      class="header-btn contact-link"
       [routerLink]="sectionPath().contact"
       data-contact-btn="Contact"
+      (click)="closeMenu()"
       >Contact</a
     >
-  </div>
-  <div class="col-lg-1 col-1">
-    <button mat-fab color="warn" id="partyMode" (click)="togglePartyMode()">
+    <button
+      mat-fab
+      color="warn"
+      id="partyMode"
+      type="button"
+      aria-label="Party mode"
+      [attr.aria-pressed]="isPartyMode() ? 'true' : 'false'"
+      (click)="togglePartyMode()"
+    >
       <mat-icon>celebration</mat-icon>
     </button>
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-controls="primary-navigation"
+      [attr.aria-expanded]="isMenuOpen() ? 'true' : 'false'"
+      [attr.aria-label]="isMenuOpen() ? 'Close menu' : 'Open menu'"
+      (click)="toggleMenu($event)"
+    >
+      <span
+        class="fa"
+        [class.fa-bars]="!isMenuOpen()"
+        [class.fa-times]="isMenuOpen()"
+        aria-hidden="true"
+      ></span>
+    </button>
   </div>
-</div>
 
-<div class="row col-12 weather">
-  @if (isAdminMode()) {
-    <div class="col-1 mx-2">
-      @if (!isPreviewMode()) {
+  <div class="nav-tools">
+    @if (isAdminMode()) {
+      <div class="admin-actions">
+        @if (!isPreviewMode()) {
+          <button
+            mat-fab
+            extended
+            color="warn"
+            id="previewMode"
+            type="button"
+            (click)="togglePreview()"
+          >
+            <mat-icon>preview</mat-icon>
+            Preview
+          </button>
+        } @else {
+          <button
+            mat-fab
+            extended
+            color="primary"
+            id="previewMode"
+            type="button"
+            (click)="togglePreview()"
+          >
+            <mat-icon>admin_panel_settings</mat-icon>
+            Admin
+          </button>
+        }
         <button
           mat-fab
           extended
-          color="warn"
-          id="previewMode"
-          (click)="togglePreview()"
+          color="accent"
+          id="logout"
+          type="button"
+          (click)="logOut()"
         >
-          <mat-icon>preview</mat-icon>
-          Preview
+          <mat-icon>logout</mat-icon>
+          Logout
         </button>
-      } @else {
-        <button
-          mat-fab
-          extended
-          color="primary"
-          id="previewMode"
-          (click)="togglePreview()"
-        >
-          <mat-icon>admin_panel_settings</mat-icon>
-          Admin
-        </button>
-      }
-    </div>
-    <div class="col-1">
-      <button mat-fab extended color="accent" id="logout" (click)="logOut()">
-        <mat-icon>logout</mat-icon>
-        Logout
-      </button>
-    </div>
-  }
-
-  <div class="col-9">
+      </div>
+    }
     <portfolio-v2-weather-display></portfolio-v2-weather-display>
   </div>
 </div>

@@ -1,8 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
+  ElementRef,
+  HostListener,
   Signal,
+  computed,
+  signal,
 } from '@angular/core';
 import {
   RouterModule,
@@ -63,6 +66,9 @@ export class NavBarComponent {
   /** Returns true if party mode is on; false otherwise */
   protected readonly isPartyMode: Signal<boolean>;
 
+  /** True while the compact navigation list is open. */
+  protected readonly isMenuOpen = signal(false);
+
   /** Resume link for the current admin and preview flags. */
   protected readonly resumeTarget: Signal<ResumeNavTarget>;
 
@@ -84,12 +90,14 @@ export class NavBarComponent {
    * @param authService auth Service
    * @param router Router
    * @param documents catalog reader for the visitor resume href
+   * @param host host element, used to tell inside clicks from outside clicks
    */
   constructor(
     private store: Store,
     private authService: AuthService,
     private router: Router,
     private documents: DocumentCatalogReader,
+    private host: ElementRef<HTMLElement>,
   ) {
     this.isAdminMode = this.store.selectSignal(isAdminModeSelector);
     this.isPreviewMode = this.store.selectSignal(isPreviewModeSelector);
@@ -111,9 +119,41 @@ export class NavBarComponent {
   }
 
   /**
+   * Close the compact navigation list.
+   */
+  protected closeMenu(): void {
+    this.isMenuOpen.set(false);
+  }
+
+  /**
+   * Close the compact list when Escape is pressed.
+   */
+  @HostListener('document:keydown.escape')
+  protected closeMenuOnEscape(): void {
+    this.closeMenu();
+  }
+
+  /**
+   * Close the compact list when a press lands outside the bar.
+   * @param event document click
+   */
+  @HostListener('document:click', ['$event'])
+  protected closeMenuOnOutsideClick(event: Event): void {
+    if (!this.isMenuOpen()) {
+      return;
+    }
+    const { target } = event;
+    if (target instanceof Node && this.host.nativeElement.contains(target)) {
+      return;
+    }
+    this.closeMenu();
+  }
+
+  /**
    * Logout
    */
   protected logOut(): void {
+    this.closeMenu();
     this.authService.logout();
   }
 
@@ -121,6 +161,7 @@ export class NavBarComponent {
    * Toggle preview and admin modes while in admin mode.
    */
   protected togglePreview(): void {
+    this.closeMenu();
     this.store.dispatch(
       StateActions.previewModeStateUpdated({ isPreviewMode: !this.isPreviewMode() }),
     );
@@ -128,9 +169,19 @@ export class NavBarComponent {
   }
 
   /**
+   * Open or close the compact navigation list.
+   * @param event click on the menu button
+   */
+  protected toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.isMenuOpen.update((isOpen) => !isOpen);
+  }
+
+  /**
    * Toggle party mode, returning to the page it was opened from.
    */
   protected togglePartyMode(): void {
+    this.closeMenu();
     const leaving = this.isPartyMode();
     if (!leaving) {
       this.partyReturnUrl = this.pageBeforePartyMode();
