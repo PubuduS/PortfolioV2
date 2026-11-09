@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 
-import { nextCertificateId } from '../data-models/certificate_display/certificate';
+import { nextCertificateId } from '@portfolio-v2/state/dataModels';
 import { StateSelector } from './state.selector';
 
 /**

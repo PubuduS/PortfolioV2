@@ -5,7 +5,7 @@
   "prefix": "admin",
   "projectType": "library",
   "tags": [
-    "admin-shared"
+    "scope:admin-shared"
   ],
   "targets": {
     "test": {

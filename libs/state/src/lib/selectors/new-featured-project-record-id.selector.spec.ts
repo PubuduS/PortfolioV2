@@ -1,4 +1,4 @@
-import { IProjectCard } from '../data-models';
+import { IProjectCard } from '@portfolio-v2/state/dataModels';
 import { StoreState } from '../state.state';
 import { newFeaturedProjectRecordIdSelector } from './new-featured-project-record-id.selector';
 

@@ -1,5 +1,5 @@
 /** Interface for Social Media Information */
-export interface ISocialInfor {
+export interface ISocialInfo {
   /** ID */
   id: number,
   /** Media link */

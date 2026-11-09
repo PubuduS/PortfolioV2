@@ -8,8 +8,8 @@ import {
   IPublication,
   IPublicationDetails,
   ISkills,
-  ISocialInfor,
-} from './data-models';
+  ISocialInfo,
+} from '@portfolio-v2/state/dataModels';
 
 /** State interface */
 export interface StoreState {
@@ -38,7 +38,7 @@ export interface StoreState {
   /** Publication detail documents. */
   publicationDetails?: IPublicationDetails[],
   /** Social links shown in the footer and cover letter. */
-  socialInfor?: ISocialInfor[],
+  socialInfor?: ISocialInfo[],
   /** Whether an admin is signed in for this session. */
   isAdmin: boolean,
   /** Whether the admin is previewing the public site. */

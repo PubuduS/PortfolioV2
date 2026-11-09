@@ -5,7 +5,7 @@
   "prefix": "lib",
   "projectType": "library",
   "tags": [
-    "state"
+    "scope:state"
   ],
   "targets": {
     "test": {

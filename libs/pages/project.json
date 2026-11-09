@@ -5,7 +5,7 @@
   "prefix": "portfolio-v2",
   "projectType": "library",
   "tags": [
-    "pages"
+    "scope:pages"
   ],
   "targets": {
     "test": {

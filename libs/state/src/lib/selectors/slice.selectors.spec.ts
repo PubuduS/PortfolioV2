@@ -3,8 +3,8 @@ import {
   IExperience,
   IPublication,
   ISkills,
-  ISocialInfor,
-} from '../data-models';
+  ISocialInfo,
+} from '@portfolio-v2/state/dataModels';
 import { StoreState } from '../state.state';
 import { aboutMeSelector } from './about-me.selector';
 import { experienceSelector } from './experience.selector';
@@ -74,7 +74,7 @@ const publication: IPublication = {
 };
 
 /** One stored social link. */
-const social: ISocialInfor = {
+const social: ISocialInfo = {
   id: 1,
   media: 'https://example.com',
   mediaIcon: 'link',

@@ -6,7 +6,7 @@
     "lib": ["ES2022"],
     "types": ["node"],
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": "..",
     "strict": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -17,6 +17,6 @@
     "sourceMap": true,
     "noUncheckedSideEffectImports": false
   },
-  "include": ["src"],
+  "include": ["src", "../libs/contracts"],
   "exclude": ["src/**/*.spec.ts"]
 }

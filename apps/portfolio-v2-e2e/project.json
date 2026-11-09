@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/portfolio-v2-e2e/src",
-  "tags": [],
+  "tags": ["scope:e2e"],
   "implicitDependencies": [
     "portfolio-v2"
   ],

@@ -29,13 +29,13 @@ import {
   IPublication,
   IPublicationDetails,
   ISkills,
-  ISocialInfor,
+  ISocialInfo,
 } from '@portfolio-v2/state/dataModels';
-import { GetDateTimeService } from '../get-date-time/get-date-time.service';
+import { GetDateTimeService } from './get-date-time.service';
 
 /** Custom Data */
 type CustomData = IAboutMe | ICertificateCard | IEducation | IExperience |
-IProjectView | IPublication | ISkills | ISocialInfor | IProjectCard | IPublicationDetails;
+IProjectView | IPublication | ISkills | ISocialInfo | IProjectCard | IPublicationDetails;
 
 /**
  * Get Data Searvice
@@ -99,10 +99,7 @@ export class GetDataService {
     const cardCollection = collection(this.firestore, location);
     const orderedQuery = query(cardCollection, orderBy('id', 'desc'));
     const experienceData = (collectionData(orderedQuery) as Observable<IExperience[]>).pipe(
-      map((data) => _.map(data, (exp: IExperience) => ({
-        ...exp,
-        endDate: exp.endDate === 'present' ? this.dateTimeService.convertDateToISOString(new Date()) : exp.endDate,
-      }))),
+      map((data) => _.map(data, (exp: IExperience) => this.withCurrentEnd(exp))),
     );
     return experienceData;
   }
@@ -126,5 +123,27 @@ export class GetDataService {
   public getPhotoURL(filePath: string): Observable<string> {
     const fileRef = ref(this.storage, filePath);
     return from(getDownloadURL(fileRef));
+  }
+
+  /**
+   * A current job stores `present`. Show today's year without writing it back.
+   * @param job stored job
+   * @returns the job, with today's end date and year when it is current
+   */
+  private withCurrentEnd(job: IExperience): IExperience {
+    if (job.endDate !== 'present') {
+      return job;
+    }
+    const today = this.dateTimeService.convertDateToISOString(new Date());
+    const year = today.slice(0, 4);
+    const separator = job.timePeriod.indexOf('-');
+    const timePeriod = separator === -1
+      ? job.timePeriod
+      : `${job.timePeriod.slice(0, separator).trimEnd()} - ${year}`;
+    return {
+      ...job,
+      endDate: today,
+      timePeriod,
+    };
   }
 }

@@ -22,7 +22,7 @@ import { SetDataService } from '@portfolio-v2/shared/services';
 import { webUrl } from '@portfolio-v2/shared/validators';
 import { StateActions } from '@portfolio-v2/state';
 import {
-  ISocialInfor,
+  ISocialInfo,
   SOCIAL_LINK_ICONS,
   SOCIAL_LINK_IDS,
   socialDocPath,
@@ -138,7 +138,7 @@ export class AdminContactComponent implements OnInit {
    * Copy stored links into the form once, leaving later edits in place.
    * @param social Stored links, once the listener has delivered them.
    */
-  private applySocial(social: ISocialInfor[] | undefined): void {
+  private applySocial(social: ISocialInfo[] | undefined): void {
     if (this.hasAppliedSocial || !social?.length) {
       return;
     }
@@ -156,7 +156,7 @@ export class AdminContactComponent implements OnInit {
    * @param id Link id.
    * @returns The stored address, or an empty string when that link is missing.
    */
-  private mediaFor(social: readonly ISocialInfor[], id: number): string {
+  private mediaFor(social: readonly ISocialInfo[], id: number): string {
     return social.find((item) => item.id === id)?.media ?? '';
   }
 
@@ -189,7 +189,7 @@ export class AdminContactComponent implements OnInit {
    * Build the three records from the form, keeping each stored icon.
    * @returns LinkedIn, GitHub, and email records.
    */
-  private recordsFromForm(): ISocialInfor[] {
+  private recordsFromForm(): ISocialInfo[] {
     const { linkedin, github, email: address } = this.contactForm().value();
     return [
       this.record(SOCIAL_LINK_IDS.linkedin, linkedin, SOCIAL_LINK_ICONS.linkedin),
@@ -205,7 +205,7 @@ export class AdminContactComponent implements OnInit {
    * @param fallbackIcon Icon used when the stored record has none.
    * @returns Record ready to store.
    */
-  private record(id: number, media: string, fallbackIcon: string): ISocialInfor {
+  private record(id: number, media: string, fallbackIcon: string): ISocialInfo {
     const storedIcon = this.socialInfor()?.find((item) => item.id === id)?.mediaIcon;
     return {
       id,

@@ -6,11 +6,11 @@ import {
 import { createSpyObj } from 'jest-createspyobj';
 import { Subject } from 'rxjs';
 
+import { GetDataService } from '@portfolio-v2/data-access/get-data';
 import {
   createVersionId,
   storageObjectPath,
 } from '@portfolio-v2/state/dataModels';
-import { GetDataService } from '../get-data/get-data.service';
 import { DocumentCatalogReader } from './document-catalog.reader';
 
 jest.mock('@angular/fire/firestore', () => {

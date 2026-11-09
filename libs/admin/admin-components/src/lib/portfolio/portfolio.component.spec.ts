@@ -219,9 +219,9 @@ describe('PortfolioComponent', () => {
     });
   });
 
-  describe('goToFeaturedPRojectsPage', () => {
+  describe('goToFeaturedProjectsPage', () => {
     it('should navigate to featured projects page', () => {
-      callComponentMethod(component, 'goToFeaturedPRojectsPage');
+      callComponentMethod(component, 'goToFeaturedProjectsPage');
 
       expect(component['router'].navigate).toHaveBeenCalledWith(['/admin/portfolio/featured-projects']);
     });

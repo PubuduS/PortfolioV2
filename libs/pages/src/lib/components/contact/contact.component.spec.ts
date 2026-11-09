@@ -10,7 +10,7 @@ import {
 } from '@ngrx/store/testing';
 
 import { ContactMailService } from '@portfolio-v2/shared/services';
-import { ISocialInfor } from '@portfolio-v2/state/dataModels';
+import { ISocialInfo } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { ContactComponent } from './contact.component';
@@ -19,7 +19,7 @@ describe('ContactComponent', () => {
   let fixture: ComponentFixture<ContactComponent>;
   let store: MockStore;
   let mail: jest.Mocked<ContactMailService>;
-  const mockData: ISocialInfor[] = [
+  const mockData: ISocialInfo[] = [
     {
       id: 1,
       media: 'https://www.linkedin.com/in/ada',

@@ -43,16 +43,16 @@ npm ci --prefix functions
 4. `environment.ts` and `environment.development.ts` stay on your machine. Git does not store them, so keep a copy of both outside this repository. On a new clone, create `environment.ts` only when it is missing:
 
 ```powershell
-$destination = 'apps/portfolio-v2/src/environments/environment.ts'
+$destination = 'libs/environment/src/environment.ts'
 if (-not (Test-Path $destination)) {
-  Copy-Item apps/portfolio-v2/src/environments/environment.emulator.ts $destination
+  Copy-Item libs/environment/src/environment.emulator.ts $destination
 }
 ```
 
 On macOS or Linux:
 
 ```bash
-test -f apps/portfolio-v2/src/environments/environment.ts || cp apps/portfolio-v2/src/environments/environment.emulator.ts apps/portfolio-v2/src/environments/environment.ts
+test -f libs/environment/src/environment.ts || cp libs/environment/src/environment.emulator.ts libs/environment/src/environment.ts
 ```
 
 ## Run

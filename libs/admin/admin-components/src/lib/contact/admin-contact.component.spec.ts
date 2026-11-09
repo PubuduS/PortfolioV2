@@ -10,7 +10,7 @@ import { createSpyObj } from 'jest-createspyobj';
 
 import { SetDataService } from '@portfolio-v2/shared/services';
 import { StateActions } from '@portfolio-v2/state';
-import { ISocialInfor } from '@portfolio-v2/state/dataModels';
+import { ISocialInfo } from '@portfolio-v2/state/dataModels';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
 import { AdminContactComponent } from './admin-contact.component';
 
@@ -18,7 +18,7 @@ describe('AdminContactComponent', () => {
   let fixture: ComponentFixture<AdminContactComponent>;
   let store: MockStore;
   let setData: jest.Mocked<SetDataService>;
-  const storedLinks: ISocialInfor[] = [
+  const storedLinks: ISocialInfo[] = [
     { id: 1, media: 'https://www.linkedin.com/in/ada', mediaIcon: 'fa-linkedin' },
     { id: 2, media: 'https://github.com/ada', mediaIcon: 'fa-github' },
     { id: 3, media: 'ada@example.test', mediaIcon: 'fa-envelope' },

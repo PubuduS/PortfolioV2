@@ -4,7 +4,7 @@
   "sourceRoot": "libs/admin/shared/types/src",
   "prefix": "admin",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:admin-types"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

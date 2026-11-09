@@ -18,6 +18,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 
 import {
+  CONTACT_MESSAGE_MAX,
+  CONTACT_MESSAGE_MIN,
+  CONTACT_NAME_MAX,
+  CONTACT_NAME_MIN,
+  CONTACT_NAME_PATTERN,
+} from '@portfolio-v2/contracts/contact-limits';
+import {
   ContactMailService,
   type ContactSendStatus,
 } from '@portfolio-v2/shared/services';
@@ -56,19 +63,19 @@ interface ContactValues {
 })
 export class ContactComponent {
   /** Name minimum length */
-  protected readonly nameMinLen: number = 2;
+  protected readonly nameMinLen = CONTACT_NAME_MIN;
 
   /** Name maximum length */
-  protected readonly nameMaxLen: number = 12;
+  protected readonly nameMaxLen = CONTACT_NAME_MAX;
 
   /** Name regex pattern */
-  private readonly namePattern = /^[a-zA-Z]+$/;
+  private readonly namePattern = CONTACT_NAME_PATTERN;
 
   /** Message minimum length */
-  protected readonly msgMinLen: number = 10;
+  protected readonly msgMinLen = CONTACT_MESSAGE_MIN;
 
   /** Message maximum length */
-  protected readonly msgMaxLen: number = 1000;
+  protected readonly msgMaxLen = CONTACT_MESSAGE_MAX;
 
   /** Message the visitor typed, plus the hidden fax field. */
   private readonly contactModel = signal<ContactValues>({
