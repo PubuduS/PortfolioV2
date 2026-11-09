@@ -30,7 +30,7 @@
           "apps/portfolio-v2/src/assets/SCSS/styles.scss"
         ],
         "stylePreprocessorOptions": {
-          "includePaths": ["."]
+          "includePaths": ["libs/shared/src/lib/styles", "."]
         }
       },
       "configurations": {
@@ -95,6 +95,14 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/portfolio-v2/src/assets/SCSS/colors.scss"
+        ]
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",

@@ -1,0 +1,120 @@
+@use 'colors' as *;
+@use 'mixins' as *;
+
+/// Clearance under the fixed header. `:root` defines `--site-header-block`.
+@mixin page-offset {
+  padding-block-start: var(--site-header-block);
+}
+
+/// Full-width section with room under the header.
+/// @param $background section background color
+@mixin section-shell($background) {
+  @include page-offset;
+
+  display: flex;
+  position: relative;
+  width: 100%;
+  background-color: $background;
+  padding-block: 2.5rem;
+  padding-block-start: calc(var(--site-header-block) + 2.5rem);
+
+  @include from-width(md) {
+    padding-block: 4rem;
+    padding-block-start: calc(var(--site-header-block) + 4rem);
+  }
+}
+
+/// Centered section heading.
+@mixin section-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+
+  @include from-width(md) {
+    font-size: 2.5rem;
+    line-height: 3rem;
+  }
+}
+
+/// Job list above the detail on a phone, beside it from the lg breakpoint.
+@mixin experience-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  > .nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: start;
+  }
+
+  .tab-content {
+    min-width: 0;
+    color: $ghost-gray;
+
+    h3,
+    span,
+    p {
+      color: inherit;
+    }
+
+    span {
+      display: block;
+    }
+  }
+
+  .nav-link {
+    position: relative;
+    padding-block: 1rem;
+    padding-inline: 0.75rem 0.5rem;
+    line-height: 1.4;
+    color: $lemon-grass;
+    transition: color 0.4s ease-in-out;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: 4px;
+      background-color: $lemon-grass;
+    }
+
+    &:hover,
+    &.active {
+      background-color: transparent;
+      color: $icy-petal;
+      font-weight: 600;
+    }
+
+    &:hover::before,
+    &.active::before {
+      background-color: $icy-petal;
+    }
+  }
+
+  @include from-width(lg) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    > .nav {
+      flex: 0 0 20rem;
+      text-align: end;
+    }
+
+    .tab-content {
+      flex: 1 1 auto;
+      padding-inline-start: 2rem;
+    }
+
+    .nav-link {
+      padding-inline: 0.5rem 1rem;
+
+      &::before {
+        inset-inline: auto -4px;
+      }
+    }
+  }
+}

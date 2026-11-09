@@ -1,0 +1,28 @@
+@use 'sass:map';
+
+$breakpoint-sm: 36rem;
+$breakpoint-md: 48rem;
+$breakpoint-lg: 64rem;
+$breakpoint-xl: 80rem;
+
+/**
+ * Phone layout is the default. This adds a wider layout.
+ * @param $name sm, md, lg, or xl
+ */
+@mixin from-width($name) {
+  $widths: (
+    sm: $breakpoint-sm,
+    md: $breakpoint-md,
+    lg: $breakpoint-lg,
+    xl: $breakpoint-xl,
+  );
+  $width: map.get($widths, $name);
+
+  @if not $width {
+    @error "Unknown breakpoint #{$name}.";
+  }
+
+  @media (min-width: $width) {
+    @content;
+  }
+}

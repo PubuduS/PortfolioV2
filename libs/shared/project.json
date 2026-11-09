@@ -20,6 +20,17 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/shared/src/lib/styles/_colors.scss",
+          "libs/shared/src/lib/styles/_mixins.scss",
+          "libs/shared/src/lib/styles/_layout.scss",
+          "libs/shared/src/lib/styles/styles.scss"
+        ]
+      }
     }
   }
 }

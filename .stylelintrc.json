@@ -1,5 +1,4 @@
 {
-  "ignoreFiles": ["**/*"],
   "overrides": [
     {
       "files": ["**/*.scss"],

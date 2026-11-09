@@ -68,7 +68,11 @@ describe('AdminExperienceComponent', () => {
   });
 
   it('should create', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
     expect(component).toBeTruthy();
+    expect(root.querySelector('.experience-section .tabs-wrapper > .nav')).not.toBeNull();
+    expect(root.querySelector('p.field-error')).toBeNull();
   });
 
   it('should open the experience listener when the page opens', () => {
