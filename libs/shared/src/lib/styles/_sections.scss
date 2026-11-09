@@ -1,0 +1,114 @@
+@use 'colors' as *;
+@use 'mixins' as *;
+@use 'layout' as *;
+
+/// Yellow skills section. Admin adds the editor controls beside this.
+@mixin skills-section {
+  @include section-shell($golden-bloom);
+
+  overflow: auto;
+
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+
+    @include from-width(md) {
+      font-size: 2.5rem;
+      line-height: 3rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.8rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    line-height: 1.2rem;
+  }
+
+  h6 {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+
+  p {
+    font-size: 1.15rem;
+
+    @include from-width(md) {
+      font-size: 1.3rem;
+    }
+  }
+
+  li {
+    color: $nocturne-navy;
+    font-size: 1.05rem;
+
+    @include from-width(md) {
+      font-size: 1.2rem;
+    }
+  }
+
+  .progress {
+    height: 2rem;
+
+    .progress-bar {
+      background-color: $nocturne-navy;
+    }
+  }
+}
+
+/// Project tiles: one column on a phone, two from md, three from lg.
+@mixin project-grid {
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    flex: 1 1 100%;
+    min-width: 0;
+    margin-block-end: 2.5rem;
+    text-align: center;
+    color: $ghost-gray;
+  }
+
+  @include from-width(md) {
+    li {
+      flex-basis: 50%;
+    }
+  }
+
+  @include from-width(lg) {
+    li {
+      flex-basis: 33.333%;
+      margin-block-end: 3.75rem;
+    }
+  }
+}
+
+/// Portfolio page shell and the tile grid.
+@mixin portfolio-section {
+  @include section-shell($midnigh-graphite);
+
+  .section-title {
+    margin-block-end: 2.5rem;
+    text-align: center;
+
+    h2 {
+      @include section-title;
+
+      color: $icy-petal;
+    }
+  }
+
+  .my-projects {
+    @include project-grid;
+  }
+}

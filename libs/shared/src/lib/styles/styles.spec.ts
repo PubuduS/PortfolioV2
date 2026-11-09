@@ -47,6 +47,27 @@ describe('shared styles', () => {
     expect(css).not.toContain('max-width');
   });
 
+  it('should stack featured projects until the lg breakpoint', () => {
+    const css = compileFixture('.cards { @include featured-projects-all; }');
+    const stacked = css.indexOf('flex-direction: column');
+    const overlay = css.indexOf('position: absolute');
+
+    expect(stacked).toBeGreaterThan(-1);
+    expect(overlay).toBeGreaterThan(stacked);
+    expect(css).toContain('@media (min-width: 64rem)');
+    expect(css).not.toContain('-webkit-backdrop-filter');
+    expect(css).not.toContain('78px');
+  });
+
+  it('should keep portfolio tiles in one column until md', () => {
+    const css = compileFixture('.grid { @include project-grid; }');
+
+    expect(css).toContain('flex: 1 1 100%');
+    expect(css).toContain('@media (min-width: 48rem)');
+    expect(css).toContain('flex-basis: 33.333%');
+    expect(css.indexOf('flex: 1 1 100%')).toBeLessThan(css.indexOf('flex-basis: 33.333%'));
+  });
+
   it('should stack experience tabs until the lg breakpoint', () => {
     const css = compileFixture('.tabs { @include experience-tabs; }');
 

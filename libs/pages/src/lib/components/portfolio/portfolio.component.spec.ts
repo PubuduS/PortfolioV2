@@ -47,7 +47,10 @@ describe('PortfolioComponent', () => {
   });
 
   it('should create', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
     expect(component).toBeTruthy();
+    expect(root.querySelector('.projects-full .my-projects > ul')).not.toBeNull();
   });
 
   it('should connect the portfolio tiles when the page opens', () => {

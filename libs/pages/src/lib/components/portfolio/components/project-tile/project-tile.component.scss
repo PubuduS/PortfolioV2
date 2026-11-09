@@ -1,23 +1,22 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'styles' as *;
 
 :host {
   display: contents;
 }
 
-// These rules used to live on the page. Emulated encapsulation stops that
-// stylesheet from reaching markup owned by this component.
 :host-context(.my-projects) a {
-  max-width: 310px;
   display: block;
+  max-width: 20rem;
+  margin-inline: auto;
 }
 
 :host-context(.my-projects) button {
-  margin-bottom: 20%;
+  margin-block-end: 1rem;
 }
 
 :host-context(.my-projects) img {
-  margin-top: 40%;
-  transition: all 0.4s ease-in-out;
+  margin-block-start: 1.5rem;
+  transition: transform 0.4s ease-in-out;
 }
 
 :host-context(li:hover) img {
@@ -25,25 +24,41 @@
 }
 
 :host-context(.my-projects) h3 {
-  margin: 16px 0;
-  font-size: 24px;
-  line-height: 29px;
+  margin-block: 1rem;
+  margin-inline: 0;
+  font-size: 1.25rem;
+  line-height: 1.5rem;
   color: $ghost-gray;
 }
 
 :host-context(.my-projects) p {
   margin: 0;
-  line-height: 19px;
+  line-height: 1.2rem;
   color: $ghost-gray;
 }
 
-:host-context(li:nth-child(2)) a,
-:host-context(li:nth-child(5)) a,
-:host-context(li:nth-child(7)) a,
-:host-context(li:nth-child(8)) a {
-  margin: 0 auto;
-}
+@include from-width(lg) {
+  :host-context(.my-projects) img {
+    margin-block-start: 40%;
+  }
 
-:host-context(li:nth-child(3n)) a {
-  margin-left: auto;
+  :host-context(.my-projects) button {
+    margin-block-end: 20%;
+  }
+
+  :host-context(.my-projects) h3 {
+    font-size: 1.5rem;
+    line-height: 1.8rem;
+  }
+
+  :host-context(li:nth-child(2)) a,
+  :host-context(li:nth-child(5)) a,
+  :host-context(li:nth-child(7)) a,
+  :host-context(li:nth-child(8)) a {
+    margin-inline: auto;
+  }
+
+  :host-context(li:nth-child(3n)) a {
+    margin-inline: auto 0;
+  }
 }

@@ -25,7 +25,10 @@
       "executor": "nx-stylelint:lint",
       "options": {
         "lintFilePatterns": [
-          "libs/admin/admin-components/src/lib/experience/experience.component.scss"
+          "libs/admin/admin-components/src/lib/experience/experience.component.scss",
+          "libs/admin/admin-components/src/lib/skills/skills.component.scss",
+          "libs/admin/admin-components/src/lib/portfolio/portfolio.component.scss",
+          "libs/admin/admin-components/src/lib/portfolio/components/featured-projects/featured-projects.component.scss"
         ]
       }
     }
