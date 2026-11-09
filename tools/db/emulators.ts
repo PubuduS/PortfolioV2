@@ -34,6 +34,10 @@ function buildFunctions(): void {
     cwd: REPO_ROOT,
     stdio: 'inherit',
   });
+  execFileSync(process.execPath, [path.join(REPO_ROOT, 'functions', 'rewrite-contract-paths.mjs')], {
+    cwd: REPO_ROOT,
+    stdio: 'inherit',
+  });
 }
 
 /**

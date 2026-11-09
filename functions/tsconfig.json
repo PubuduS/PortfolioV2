@@ -15,7 +15,11 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "noUncheckedSideEffectImports": false
+    "noUncheckedSideEffectImports": false,
+    "baseUrl": "..",
+    "paths": {
+      "@portfolio-v2/contracts/contact-limits": ["libs/contracts/contact-limits.ts"]
+    }
   },
   "include": ["src", "../libs/contracts"],
   "exclude": ["src/**/*.spec.ts"]

@@ -76,6 +76,19 @@ describe('SkillsComponent', () => {
   it('should open the skills listener when the page opens', () => {
     expect(store.dispatch).toHaveBeenCalledWith(StateActions.skillsStateConnect());
   });
+
+  it('should show the save failure next to Save', async () => {
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+    mockUtilityService.breakStringToParagraphs.mockReturnValue(['line']);
+    writer.save.mockRejectedValue(new Error('offline'));
+
+    await component['updateData']();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent?.trim()).toBe(
+      'Skills could not be saved.',
+    );
+  });
 });
 
 describe('SkillsComponent when the record arrives after the page opens', () => {

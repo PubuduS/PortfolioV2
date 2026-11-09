@@ -104,6 +104,7 @@ export default [
       plugins: ['jasmine', 'import', 'jsdoc'],
       settings: {
         'import/core-modules': ['rxjs/operators'],
+        'import/internal-regex': '^@portfolio-v2/',
         'import/resolver': {
           typescript: {},
         },
@@ -221,7 +222,7 @@ export default [
               },
               {
                 sourceTag: 'scope:functions',
-                onlyDependOnLibsWithTags: [],
+                onlyDependOnLibsWithTags: ['scope:contracts'],
               },
             ],
           },

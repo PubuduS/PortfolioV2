@@ -70,4 +70,24 @@ describe('ChangeLanguageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show the save failure next to Save', async () => {
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+    mockUtilityService.breakStringToParagraphs.mockReturnValue([
+      'some language1',
+      'some language2',
+      'some language3',
+      'some language4',
+      'some language5',
+      'some language6',
+    ]);
+    writer.save.mockRejectedValue(new Error('offline'));
+
+    await component.saveLanguageKeys();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent?.trim()).toBe(
+      'Skills could not be saved.',
+    );
+  });
 });

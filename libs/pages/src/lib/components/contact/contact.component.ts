@@ -124,8 +124,8 @@ export class ContactComponent {
   protected readonly senderValidatorMsgs: ISenderNameValidatorMsgs = {
     senderReqError: 'Please enter your name.',
     senderMinLenError: `A name should have at least ${this.nameMinLen} letters.`,
-    senderMaxLenError: `A name should not exceed ${this.nameMaxLen} letters.`,
-    senderPttrnError: 'The name can only contain letters.',
+    senderMaxLenError: `A name should not exceed ${this.nameMaxLen} characters.`,
+    senderPttrnError: 'The name can only contain letters and spaces.',
   };
 
   /** Message text field validator messages */

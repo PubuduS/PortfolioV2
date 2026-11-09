@@ -6,7 +6,7 @@
     "node": "22"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && node rewrite-contract-paths.mjs"
   },
   "dependencies": {
     "@google-analytics/data": "^7.3.0",

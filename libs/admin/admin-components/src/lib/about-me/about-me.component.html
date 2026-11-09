@@ -155,6 +155,10 @@
               }
             </div>
 
+            @if (saveError(); as error) {
+              <p class="save-error mt-3" role="alert">{{ error }}</p>
+            }
+
             <!-- Link Validators Message -->
             <div class="row">
               @if (hasError(aboutMeForm.linkField, 'required')) {
