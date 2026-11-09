@@ -80,7 +80,10 @@ describe('ExperienceComponent', () => {
       store.refreshState();
       await fixture.whenStable();
 
-      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+      const root = fixture.nativeElement as HTMLElement;
+      const text = root.textContent ?? '';
+      expect(root.querySelector('.experience-section .tabs-wrapper > .nav')).not.toBeNull();
+      expect(root.querySelector('.tab-content')).not.toBeNull();
       expect(text).toContain('some employer');
       expect(text).toContain('some position');
       expect(text).toContain('2 Years');

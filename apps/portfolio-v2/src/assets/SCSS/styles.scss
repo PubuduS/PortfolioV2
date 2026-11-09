@@ -3,6 +3,10 @@
 /* You can add global styles to this file, and also import other style files */
 @charset "UTF-8";
 @use 'colors' as *;
+
+:root {
+  --site-header-block: 7.5rem;
+}
 @import 'bootstrap/dist/css/bootstrap.css';
 @import 'font-awesome/css/font-awesome.css';
 @import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap';

@@ -35,6 +35,14 @@
           "libs/pages/**/*.html"
         ]
       }
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/pages/src/lib/components/experience/**/*.scss"
+        ]
+      }
     }
   }
 }
