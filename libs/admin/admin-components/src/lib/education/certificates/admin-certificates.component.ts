@@ -47,7 +47,7 @@ import {
 })
 export class AdminCertificatesComponent implements OnInit {
   /** Icon on every card, the same one the public page uses. */
-  protected readonly certificateIconUrl = 'assets/images/certificate_Icon/certificate.png';
+  protected readonly certificateIconUrl = 'assets/images/certificate-icon/certificate.png';
 
   /** Application store. */
   private readonly store = inject(Store);

@@ -27,13 +27,13 @@
       "@portfolio-v2/environment/model": ["libs/environment/src/environment.model.ts"],
       "@portfolio-v2/portfolio-pages": ["libs/pages/src/index.ts"],
       "@portfolio-v2/portfolio-pages/education-main": [
-        "libs/pages/src/lib/components/education_main/education_main.component.ts"
+        "libs/pages/src/lib/components/education-main/education-main.component.ts"
       ],
       "@portfolio-v2/portfolio-pages/landing-banner": [
-        "libs/pages/src/lib/components/landing_banner/landing_banner.component.ts"
+        "libs/pages/src/lib/components/landing-banner/landing-banner.component.ts"
       ],
       "@portfolio-v2/portfolio-pages/page-not-found": [
-        "libs/pages/src/lib/components/page_not_found/page_not_found.component.ts"
+        "libs/pages/src/lib/components/page-not-found/page-not-found.component.ts"
       ],
       "@portfolio-v2/portfolio-pages/page-routes": [
         "libs/pages/src/lib/components/page.route.ts"

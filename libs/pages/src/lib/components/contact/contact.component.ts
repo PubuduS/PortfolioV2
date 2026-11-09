@@ -36,7 +36,7 @@ import {
 } from '@portfolio-v2/state/dataModels';
 import { StateActions } from '@portfolio-v2/state';
 import { socialMediaSelector } from '@portfolio-v2/state/selectors';
-import { ContactPopupComponent } from './components/contact_popup/contact_popup.component';
+import { ContactPopupComponent } from './components/contact-popup/contact-popup.component';
 
 /** Values posted from the public contact form, including the honeypot. */
 interface ContactValues {

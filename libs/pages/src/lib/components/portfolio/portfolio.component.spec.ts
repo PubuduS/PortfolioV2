@@ -16,7 +16,7 @@ import { StateActions } from '@portfolio-v2/state';
 import { IProjectView } from '@portfolio-v2/state/dataModels';
 import { portfolioCardsSelector } from '@portfolio-v2/state/selectors';
 import { PortfolioComponent } from './portfolio.component';
-import { ProjectCardComponent } from './components/project_card/project_card.component';
+import { ProjectCardComponent } from './components/project-card/project-card.component';
 
 describe('PortfolioComponent', () => {
   let component: PortfolioComponent;
