@@ -100,7 +100,7 @@
       "executor": "nx-stylelint:lint",
       "options": {
         "lintFilePatterns": [
-          "apps/portfolio-v2/src/assets/SCSS/colors.scss"
+          "apps/portfolio-v2/src/assets/SCSS/styles.scss"
         ]
       }
     },

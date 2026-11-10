@@ -1,4 +1,4 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'colors' as *;
 
 .admin-panel {
   background: linear-gradient(to right, $nocturne-navy, $electric-teal);
