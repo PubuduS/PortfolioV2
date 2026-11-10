@@ -16,26 +16,30 @@ svg#flower-frame {
   width: 100%;
 }
 
-#Footer_group_1_,
-[id^='PinkFlowerGroup'],
-[id^='BaseGroup'] path,
-[id^='LeafGroup'] path,
-path[id^='Stroke'],
-g[id^='BudGroup'] g[id^='BudGroup'] g[id^='Bud'],
-#Bud8_1_,
-#Bud10_1_,
-#Bud23_1_,
-#Bud26_1_,
-[id^='Dots'],
-[id^='Flourish'] {
+#footer-group-1,
+[id^='pink-flower-group'],
+[id^='base-group'] path,
+[id^='leaf-group'] path,
+path[id^='stroke'],
+g[id^='bud-group'] g[id^='bud-group'] g[id^='bud'],
+#bud-8-1,
+#bud-10-1,
+#bud-23-1,
+#bud-26-1,
+[id^='dots'],
+[id^='flourish'] {
   visibility: hidden;
 }
 
-/*education-full*/
+/* education-full */
 .education-full {
   background-color: $midnight-steel;
-  padding: 100px 0 40px;
-  padding-top: 10%;
+  min-block-size: 100vh;
+  padding-block: 2.5rem;
+  padding-block-start: calc(
+    var(--site-header-height, var(--site-header-block)) + 1.5rem
+  );
+  padding-inline: 0;
 }
 
 h2 {
@@ -43,11 +47,12 @@ h2 {
   color: $ghost-gray;
 }
 
-/*section-title*/
+/* section-title */
 .section-title {
   text-align: center;
   margin-bottom: 10px;
 }
+
 .section-title h2 {
   font-weight: 800;
   font-size: 40px;

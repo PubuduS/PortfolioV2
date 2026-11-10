@@ -33,4 +33,26 @@ describe('AppComponent', () => {
 
     expect(setFont).toHaveBeenCalledWith('material-symbols-outlined');
   });
+
+  it('should publish the navbar height for the pages under it', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const header = fixture.nativeElement.querySelector('.pw-header-wrap');
+    header.getBoundingClientRect = (): DOMRect => ({
+      height: 104.5,
+      width: 0,
+      top: 0,
+      left: 0,
+      bottom: 104.5,
+      right: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(document.documentElement.style.getPropertyValue('--site-header-height')).toBe('104.5px');
+    document.documentElement.style.removeProperty('--site-header-height');
+  });
 });

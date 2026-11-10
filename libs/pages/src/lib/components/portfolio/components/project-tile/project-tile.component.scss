@@ -11,10 +11,14 @@
 }
 
 :host-context(.my-projects) button {
+  height: auto;
   margin-block-end: 1rem;
+  padding-block: 0;
+  line-height: 0;
 }
 
 :host-context(.my-projects) img {
+  display: block;
   margin-block-start: 1.5rem;
   transition: transform 0.4s ease-in-out;
 }

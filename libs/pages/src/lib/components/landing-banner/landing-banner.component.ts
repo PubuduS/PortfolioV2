@@ -88,7 +88,16 @@ export class LandingBannerComponent implements AfterViewInit {
     if (!video) {
       return;
     }
+    const start = (): void => {
+      video.muted = true;
+      video.play()?.catch(() => undefined);
+    };
+    video.muted = true;
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      start();
+      return;
+    }
+    video.addEventListener('loadeddata', start, { once: true });
     video.load();
-    video.play()?.catch(() => undefined);
   }
 }

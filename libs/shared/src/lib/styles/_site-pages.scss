@@ -148,6 +148,8 @@
 @mixin cover-letter-page {
   .cover-letter-full {
     @include section-shell($nocturne-navy);
+
+    min-block-size: 100vh;
   }
 
   h2 {

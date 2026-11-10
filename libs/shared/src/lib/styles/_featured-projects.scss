@@ -28,6 +28,12 @@
 }
 
 @mixin featured-projects-cards {
+  .featured-project > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
   .featured-project > ul > li {
     margin-block-end: 2.5rem;
     padding-inline: 0;

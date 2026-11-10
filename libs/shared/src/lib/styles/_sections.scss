@@ -63,8 +63,8 @@
 @mixin project-grid {
   ul {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-flow: row wrap;
+    justify-content: flex-start;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -81,13 +81,13 @@
 
   @include from-width(md) {
     li {
-      flex-basis: 50%;
+      flex: 0 0 calc(100% / 2);
     }
   }
 
   @include from-width(lg) {
     li {
-      flex-basis: 33.333%;
+      flex: 0 0 calc(100% / 3);
       margin-block-end: 3.75rem;
     }
   }
@@ -95,7 +95,7 @@
 
 /// Portfolio page shell and the tile grid.
 @mixin portfolio-section {
-  @include section-shell($midnigh-graphite);
+  @include section-shell($nocturne-navy);
 
   .section-title {
     margin-block-end: 2.5rem;

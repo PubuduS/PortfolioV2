@@ -1,9 +1,9 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'styles' as *;
 
 .analytics {
   background-color: $midnight-steel;
   color: $white;
-  min-height: calc(100vh - 14vh);
+  min-block-size: 100vh;
 
   h2,
   h3,
@@ -12,7 +12,7 @@
   }
 
   .content {
-    margin-top: 14vh;
+    @include page-offset;
   }
 
   .summary-note,

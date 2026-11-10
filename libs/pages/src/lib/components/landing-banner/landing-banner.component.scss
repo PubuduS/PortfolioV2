@@ -1,7 +1,30 @@
+.home-screen {
+  position: relative;
+  overflow: clip;
+  min-block-size: calc(100dvh - var(--site-header-height, var(--site-header-block)));
+  margin-top: var(--site-header-height, var(--site-header-block));
+}
+
+.banner-fill-wrap {
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+  inset: 0;
+}
+
+.banner-fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(28px);
+  transform: scale(1.12);
+}
+
 .banner {
   display: grid;
+  position: relative;
+  z-index: 1;
   aspect-ratio: 3 / 2;
-  margin-top: 7.5rem;
 
   picture,
   video {

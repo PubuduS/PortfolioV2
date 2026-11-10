@@ -1,22 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
-
-/* You can add global styles to this file, and also import other style files */
 @charset "UTF-8";
 @use 'colors' as *;
-
-:root {
-  --site-header-block: 7.5rem;
-}
 @import 'bootstrap/dist/css/bootstrap.css';
 @import 'font-awesome/css/font-awesome.css';
 @import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap';
 
-* {
-  margin: 0;
-  padding: 0;
+:root {
+  --site-header-block: 7.5rem;
 }
 
 body {
+  margin: 0;
   background-color: $white;
   color: $nocturne-navy;
   font-family: Montserrat, sans-serif;
@@ -37,28 +31,9 @@ body h6 {
   margin: 0 0 8px;
 }
 
-h1 {
-  font-size: 26px;
-}
-
-h2 {
-  font-size: 24px;
-}
-
-h3 {
-  font-size: 22px;
-}
-
-h4 {
-  font-size: 20px;
-}
-
-h5 {
-  font-size: 18px;
-}
-
-h6 {
-  font-size: 16px;
+a {
+  color: $nocturne-navy;
+  text-decoration: none;
 }
 
 h1 a,
@@ -77,11 +52,6 @@ p a {
 p {
   line-height: 24px;
   margin-bottom: 10px;
-}
-
-a {
-  color: $nocturne-navy;
-  text-decoration: none;
 }
 
 a:hover,
@@ -187,15 +157,12 @@ ol li {
 table {
   background-color: transparent;
   max-width: 100%;
+  margin-bottom: 15px;
+  width: 100%;
 }
 
 th {
   text-align: left;
-}
-
-table {
-  margin-bottom: 15px;
-  width: 100%;
 }
 
 table > thead > tr > th,
@@ -217,27 +184,9 @@ table thead tr th {
   text-transform: capitalize;
 }
 
-.table > caption + thead > tr:first-child > th,
-.table > colgroup + thead > tr:first-child > th,
-.table > thead:first-child > tr:first-child > th,
-.table > caption + thead > tr:first-child > td,
-.table > colgroup + thead > tr:first-child > td,
-.table > thead:first-child > tr:first-child > td {
-  border-top: 1px solid $cloud-gray;
-}
-
 table > thead > tr > th {
   border-bottom: 2px solid $cloud-gray;
   vertical-align: bottom;
-}
-
-table > caption + thead > tr:first-child > th,
-table > colgroup + thead > tr:first-child > th,
-table > thead:first-child > tr:first-child > th,
-table > caption + thead > tr:first-child > td,
-table > colgroup + thead > tr:first-child > td,
-table > thead:first-child > tr:first-child > td {
-  border-bottom: 0 none;
 }
 
 table > tbody + tbody {
@@ -253,6 +202,24 @@ table > tbody + tbody {
   padding: 6px 10px;
 }
 
+table > caption + thead > tr:first-child > th,
+table > colgroup + thead > tr:first-child > th,
+table > thead:first-child > tr:first-child > th,
+table > caption + thead > tr:first-child > td,
+table > colgroup + thead > tr:first-child > td,
+table > thead:first-child > tr:first-child > td {
+  border-bottom: 0 none;
+}
+
+.table > caption + thead > tr:first-child > th,
+.table > colgroup + thead > tr:first-child > th,
+.table > thead:first-child > tr:first-child > th,
+.table > caption + thead > tr:first-child > td,
+.table > colgroup + thead > tr:first-child > td,
+.table > thead:first-child > tr:first-child > td {
+  border-top: 1px solid $cloud-gray;
+}
+
 p ins {
   color: $lemon-grass;
 }
@@ -263,17 +230,6 @@ dl dd {
 
 address {
   font-style: italic;
-}
-
-/* CSS */
-.mr-auto,
-.mx-auto {
-  /* margin-right: auto!important; */
-}
-
-.ml-auto,
-.mx-auto {
-  margin-left: auto !important;
 }
 
 .pw-main-section {
@@ -294,42 +250,6 @@ address {
   overflow: hidden;
 }
 
-/* header-wrapper */
-.navbar,
-.navbar-nav li a {
-  padding: 0 !important;
-  transition: all 0.4s ease-in-out;
-  position: relative;
-  color: $ghost-gray;
-}
-
-.navbar-nav li {
-  margin-left: 32px;
-}
-
-.navbar-nav li a.active,
-.navbar-nav li.active a,
-.navbar-nav li:hover a {
-  color: $white;
-}
-
-.navbar-nav li:hover a::before,
-.navbar-nav li a.active::before {
-  left: 0;
-  width: 100%;
-}
-
-.navbar-nav li a::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  transition: all 0.4s ease-in-out;
-  background-color: $golden-bloom;
-}
-
 .pw-header-wrap {
   transition: all 0.4s ease-in-out;
   position: fixed;
@@ -347,11 +267,6 @@ address {
 
 .container {
   max-width: 1280px;
-}
-
-.pw-sticky .pw-header-wrap {
-  padding: 10px 126px;
-  box-shadow: 0 0 5px $obsidian-veil;
 }
 
 .header-btn {
@@ -382,12 +297,6 @@ body {
   height: 100%;
 }
 
-body {
-  margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
-}
-
 .material-symbols-outlined {
   font-feature-settings: 'liga';
-  -webkit-font-feature-settings: 'liga';
 }
