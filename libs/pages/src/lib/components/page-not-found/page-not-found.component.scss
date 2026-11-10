@@ -1,9 +1,19 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
-@import url('https://fonts.googleapis.com/css?family=Audiowide&display=swap');
+@use 'colors' as *;
+@use 'mixins' as *;
+@import 'https://fonts.googleapis.com/css?family=Audiowide&display=swap';
+@import 'https://fonts.googleapis.com/css?family=Montserrat&display=swap';
+
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  margin-block-start: var(--site-header-height, var(--site-header-block));
+  block-size: calc(100vh - var(--site-header-height, var(--site-header-block)));
+}
 
 html,
 body {
-  margin: 0px;
+  margin: 0;
   overflow: hidden;
 }
 
@@ -14,7 +24,7 @@ body {
   left: 0%;
   height: 100%;
   width: 100%;
-  margin: 0px;
+  margin: 0;
   overflow: hidden;
 }
 
@@ -40,30 +50,62 @@ h2 {
   display: block;
   color: $diesel;
   font-weight: 300;
-  font-family: Audiowide;
-  text-shadow: 0px 0px 4px $diesel;
+  font-family: Audiowide, sans-serif;
+  text-shadow: 0 0 4px $diesel;
   animation:
-    fadeInText 3s ease-in 3.5s forwards,
+    fade-in-text 3s ease-in 3.5s forwards,
     flicker4 5s linear 7.5s infinite,
-    hueRotate 6s ease-in-out 3s infinite;
+    hue-rotate 6s ease-in-out 3s infinite;
 }
 
-.gifimgLeft {
-  position: relative;
-  margin-top: 15%;
-  margin-left: 65%;
-  transform: scaleX(1);
+.gif-img-left,
+.gif-img-right {
+  position: absolute;
+  z-index: 1;
+  inline-size: auto;
+  block-size: auto;
+  max-inline-size: 58%;
+  max-block-size: 42%;
+  margin: 0;
+  inset-block-start: 50%;
 }
 
-.gifimgRight {
-  position: relative;
-  margin-top: 15%;
-  margin-left: 2%;
-  transform: scaleX(-1);
+.gif-img-left {
+  inset-inline-end: 0;
+  transform: translateY(-50%) scaleX(1);
 }
 
-#svgWrap_1,
-#svgWrap_2 {
+.gif-img-right {
+  inset-inline-start: 0;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+@include from-width(md) {
+  .gif-img-left,
+  .gif-img-right {
+    position: relative;
+    z-index: auto;
+    max-inline-size: none;
+    max-block-size: none;
+    inset-block-start: auto;
+    margin-block-start: 15%;
+  }
+
+  .gif-img-left {
+    inset-inline-end: auto;
+    margin-inline-start: 65%;
+    transform: scaleX(1);
+  }
+
+  .gif-img-right {
+    inset-inline-start: auto;
+    margin-inline-start: 2%;
+    transform: scaleX(-1);
+  }
+}
+
+#svg-wrap-1,
+#svg-wrap-2 {
   position: absolute;
   height: auto;
   width: 600px;
@@ -73,78 +115,80 @@ h2 {
   transform: translate(-50%, -50%);
 }
 
-#svgWrap_1,
-#svgWrap_2,
+#svg-wrap-1,
+#svg-wrap-2,
 .missing-backdrop {
-  animation: hueRotate 6s ease-in-out 3s infinite;
+  animation: hue-rotate 6s ease-in-out 3s infinite;
 }
 
-#id1_1,
-#id2_1,
-#id3_1 {
+#id-1-1,
+#id-2-1,
+#id-3-1 {
   stroke: $hot-flamingoes;
   stroke-width: 3px;
   fill: transparent;
-  /* filter: url(#glow); */
 }
 
-#id1_2,
-#id2_2,
-#id3_2 {
+#id-1-2,
+#id-2-2,
+#id-3-2 {
   stroke: $diesel;
   stroke-width: 3px;
   fill: transparent;
-  filter: url(#glow);
+  filter: url('#glow');
 }
 
-#id3_1 {
+#id-3-1 {
   stroke-dasharray: 940px;
   stroke-dashoffset: -940px;
   animation:
-    drawLine3 2.5s ease-in-out 0s forwards,
+    draw-line-3 2.5s ease-in-out 0s forwards,
     flicker3 4s linear 4s infinite;
 }
 
-#id2_1 {
+#id-2-1 {
   stroke-dasharray: 735px;
   stroke-dashoffset: -735px;
   animation:
-    drawLine2 2.5s ease-in-out 0.5s forwards,
+    draw-line-2 2.5s ease-in-out 0.5s forwards,
     flicker2 4s linear 4.5s infinite;
 }
 
-#id1_1 {
+#id-1-1 {
   stroke-dasharray: 940px;
   stroke-dashoffset: -940px;
   animation:
-    drawLine1 2.5s ease-in-out 1s forwards,
+    draw-line-1 2.5s ease-in-out 1s forwards,
     flicker1 4s linear 5s infinite;
 }
 
-@keyframes drawLine1 {
+@keyframes draw-line-1 {
   0% {
     stroke-dashoffset: -940px;
   }
+
   100% {
-    stroke-dashoffset: 0px;
+    stroke-dashoffset: 0;
   }
 }
 
-@keyframes drawLine2 {
+@keyframes draw-line-2 {
   0% {
     stroke-dashoffset: -735px;
   }
+
   100% {
-    stroke-dashoffset: 0px;
+    stroke-dashoffset: 0;
   }
 }
 
-@keyframes drawLine3 {
+@keyframes draw-line-3 {
   0% {
     stroke-dashoffset: -940px;
   }
+
   100% {
-    stroke-dashoffset: 0px;
+    stroke-dashoffset: 0;
   }
 }
 
@@ -152,27 +196,35 @@ h2 {
   0% {
     stroke: $hot-flamingoes;
   }
+
   1% {
     stroke: transparent;
   }
+
   3% {
     stroke: transparent;
   }
+
   4% {
     stroke: $hot-flamingoes;
   }
+
   6% {
     stroke: $hot-flamingoes;
   }
+
   7% {
     stroke: transparent;
   }
+
   13% {
     stroke: transparent;
   }
+
   14% {
     stroke: $hot-flamingoes;
   }
+
   100% {
     stroke: $hot-flamingoes;
   }
@@ -182,18 +234,23 @@ h2 {
   0% {
     stroke: $hot-flamingoes;
   }
+
   50% {
     stroke: $hot-flamingoes;
   }
+
   51% {
     stroke: transparent;
   }
+
   61% {
     stroke: transparent;
   }
+
   62% {
     stroke: $hot-flamingoes;
   }
+
   100% {
     stroke: $hot-flamingoes;
   }
@@ -203,27 +260,35 @@ h2 {
   0% {
     stroke: $hot-flamingoes;
   }
+
   1% {
     stroke: transparent;
   }
+
   10% {
     stroke: transparent;
   }
+
   11% {
     stroke: $hot-flamingoes;
   }
+
   40% {
     stroke: $hot-flamingoes;
   }
+
   41% {
     stroke: transparent;
   }
+
   45% {
     stroke: transparent;
   }
+
   46% {
     stroke: $hot-flamingoes;
   }
+
   100% {
     stroke: $hot-flamingoes;
   }
@@ -232,97 +297,117 @@ h2 {
 @keyframes flicker4 {
   0% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   30% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   31% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   32% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   36% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   37% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   41% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   42% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   85% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   86% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   95% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   96% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
+
   100% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
 }
 
-@keyframes fadeInText {
+@keyframes fade-in-text {
   1% {
     color: $diesel;
-    text-shadow: 0px 0px 4px $diesel;
+    text-shadow: 0 0 4px $diesel;
   }
+
   70% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 14px $hot-flamingoes;
+    text-shadow: 0 0 14px $hot-flamingoes;
   }
+
   100% {
     color: $hot-flamingoes;
-    text-shadow: 0px 0px 4px $hot-flamingoes;
+    text-shadow: 0 0 4px $hot-flamingoes;
   }
 }
 
-@keyframes hueRotate {
+@keyframes hue-rotate {
   0% {
     filter: hue-rotate(0deg);
   }
+
   50% {
     filter: hue-rotate(-120deg);
   }
+
   100% {
     filter: hue-rotate(0deg);
   }
 }
 
-/*Quote*/
-@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
-
+/* Quote */
 * {
   padding: 0;
   margin: 0;
 }
 
 .quote {
-  margin-top: 12%;
-  margin-left: 25%;
+  position: absolute;
+  z-index: 2;
+  inset-block-end: calc(50% + 8.5rem);
+  inset-inline: 0;
+  width: min(40ch, calc(100% - 2rem));
+  margin-block: 0;
+  margin-inline: auto;
   color: aqua;
+  text-align: center;
 }
 
 .quote span {
@@ -342,7 +427,7 @@ body {
 }
 
 h1 {
-  font-family: 'Montserrat Medium';
+  font-family: 'Montserrat Medium', sans-serif;
   max-width: 40ch;
   text-align: center;
   transform: scale(0.94);
