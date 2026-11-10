@@ -79,7 +79,9 @@ describe('LandingBannerComponent', () => {
     it('should wait to fetch the clip until the poster has loaded', () => {
       let isPosterReady = false;
       jest.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockImplementation(() => isPosterReady);
+      jest.spyOn(HTMLMediaElement.prototype, 'readyState', 'get').mockReturnValue(HTMLMediaElement.HAVE_NOTHING);
       jest.mocked(HTMLVideoElement.prototype.load).mockClear();
+      jest.mocked(HTMLVideoElement.prototype.play).mockClear();
       render(11);
 
       expect(HTMLVideoElement.prototype.load).not.toHaveBeenCalled();
@@ -88,6 +90,12 @@ describe('LandingBannerComponent', () => {
       fixture.nativeElement.querySelector('img')?.dispatchEvent(new Event('load'));
 
       expect(HTMLVideoElement.prototype.load).toHaveBeenCalled();
+      expect(HTMLVideoElement.prototype.play).not.toHaveBeenCalled();
+
+      const video = fixture.nativeElement.querySelector<HTMLVideoElement>('video');
+      video?.dispatchEvent(new Event('loadeddata'));
+
+      expect(video?.muted).toBe(true);
       expect(HTMLVideoElement.prototype.play).toHaveBeenCalled();
     });
 

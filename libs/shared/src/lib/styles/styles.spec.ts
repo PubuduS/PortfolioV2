@@ -30,7 +30,7 @@ describe('shared styles', () => {
   it('should give a section shell the same header offset', () => {
     const css = compileFixture('.shell { @include section-shell($midnigh-graphite); }');
 
-    expect(css).toContain('padding-block-start: var(--site-header-block)');
+    expect(css).toContain('padding-block-start: calc(var(--site-header-height, var(--site-header-block)) + 1.5rem)');
     expect(css).toContain('background-color: #35495e');
   });
 
@@ -55,6 +55,7 @@ describe('shared styles', () => {
     expect(stacked).toBeGreaterThan(-1);
     expect(overlay).toBeGreaterThan(stacked);
     expect(css).toContain('@media (min-width: 64rem)');
+    expect(css).toContain('padding: 0');
     expect(css).not.toContain('-webkit-backdrop-filter');
     expect(css).not.toContain('78px');
   });
@@ -64,17 +65,23 @@ describe('shared styles', () => {
 
     expect(css).toContain('flex: 1 1 100%');
     expect(css).toContain('@media (min-width: 48rem)');
-    expect(css).toContain('flex-basis: 33.333%');
-    expect(css.indexOf('flex: 1 1 100%')).toBeLessThan(css.indexOf('flex-basis: 33.333%'));
+    expect(css).toContain('flex: 0 0 50%');
+    expect(css).toContain('flex: 0 0 33.3333333333%');
+    expect(css.indexOf('flex: 1 1 100%')).toBeLessThan(css.indexOf('flex: 0 0 33.3333333333%'));
+
+    const page = compileFixture('.page { @include portfolio-section; }');
+
+    expect(page).toContain('background-color: #0a192f');
   });
 
   it('should clear the header on the education and cover letter pages', () => {
     const education = compileFixture('.page { @include education-section; }');
     const cover = compileFixture('.page { @include cover-letter-page; }');
 
-    expect(education).toContain('padding-block-start: var(--site-header-block)');
+    expect(education).toContain('padding-block-start: calc(var(--site-header-height, var(--site-header-block)) + 1.5rem)');
     expect(education).toContain('background-color: #facf5a');
-    expect(cover).toContain('padding-block-start: var(--site-header-block)');
+    expect(cover).toContain('padding-block-start: calc(var(--site-header-height, var(--site-header-block)) + 1.5rem)');
+    expect(cover).toContain('min-block-size: 100vh');
     expect(cover).not.toContain('padding-top');
   });
 

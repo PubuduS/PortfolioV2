@@ -1,4 +1,5 @@
-@use 'apps/portfolio-v2/src/assets/SCSS/colors.scss' as *;
+@use 'sass:color';
+@use 'styles' as *;
 
 .landing {
   --bs-body-bg: #{$midnight-steel};
@@ -7,9 +8,10 @@
   --bs-secondary-bg: #{$dune};
   --bs-secondary-color: #{$cloud-gray};
   --bs-tertiary-bg: #{$slate-grey};
+
   background-color: $midnight-steel;
   color: $white;
-  min-height: calc(100vh - 14vh);
+  min-height: calc(100vh - var(--site-header-block));
   z-index: 300;
 
   h2 {
@@ -21,19 +23,20 @@
   }
 
   .content {
-    margin-top: 14vh;
+    @include page-offset;
+
     width: 100%;
 
     .admin-form {
+      // Arrow stroke is $electric-teal. Bootstrap bakes it into the image.
+      .form-select {
+        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2361f8d5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      }
+
       .form-control:focus,
       .form-select:focus {
         border-color: $electric-teal;
         box-shadow: 0 0 0 0.25rem rgba($electric-teal, 0.25);
-      }
-
-      // Arrow stroke is $electric-teal. Bootstrap bakes it into the image.
-      .form-select {
-        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2361f8d5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
       }
 
       option {
@@ -48,7 +51,7 @@
         --mdc-linear-progress-track-color: #{$slate-grey};
       }
 
-      .imagePreview {
+      .image-preview {
         max-width: 60%;
         max-height: 60%;
       }
@@ -60,13 +63,14 @@
         --bs-btn-hover-color: #{$midnight-steel};
         --bs-btn-hover-bg: #{$electric-aloe};
         --bs-btn-hover-border-color: #{$electric-aloe};
-        --bs-btn-focus-shadow-rgb: #{red($electric-teal)}, #{green($electric-teal)}, #{blue($electric-teal)};
+        --bs-btn-focus-shadow-rgb: #{color.red($electric-teal)}, #{color.green($electric-teal)}, #{color.blue($electric-teal)};
         --bs-btn-active-color: #{$midnight-steel};
         --bs-btn-active-bg: #{$tropical-jade};
         --bs-btn-active-border-color: #{$tropical-jade};
         --bs-btn-disabled-color: #{$cloud-gray};
         --bs-btn-disabled-bg: #{$slate-grey};
         --bs-btn-disabled-border-color: #{$slate-grey};
+
         border-radius: 3px;
       }
 

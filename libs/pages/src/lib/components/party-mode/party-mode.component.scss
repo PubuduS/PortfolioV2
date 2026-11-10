@@ -1,4 +1,5 @@
 .entire-container {
+  display: flow-root;
   animation: 1s ease-in-out infinite color-change;
 }
 
@@ -12,18 +13,23 @@
   0% {
     background-color: teal;
   }
+
   20% {
     background-color: gold;
   }
+
   40% {
     background-color: red;
   }
+
   60% {
     background-color: violet;
   }
+
   80% {
     background-color: green;
   }
+
   100% {
     background-color: blue;
   }
@@ -33,21 +39,22 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 #title {
-  margin-top: 6.6%;
+  margin-top: var(--site-header-height, var(--site-header-block));
 }
 
-.Intro-desc1 {
+.intro-desc1 {
   animation-name: textzoom;
   animation-duration: 7s;
 }
 
-.Intro-desc2 {
+.intro-desc2 {
   animation-name: textzoom2;
   animation-duration: 7s;
   animation-delay: 7s;
@@ -57,9 +64,11 @@
   0% {
     font-size: 25px;
   }
+
   50% {
     font-size: 50px;
   }
+
   100% {
     font-size: 25px;
   }
@@ -69,9 +78,11 @@
   0% {
     font-size: 25px;
   }
+
   50% {
     font-size: 50px;
   }
+
   100% {
     font-size: 25px;
   }

@@ -2,12 +2,11 @@
 
 .admin-panel {
   background: linear-gradient(to right, $nocturne-navy, $electric-teal);
-  background-color: $white;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgb(0 0 0 / 10%);
   overflow: hidden;
   position: fixed;
-  top: 12%;
-  height: calc(100vh - 12%);
+  inset: 0;
+  padding-block-start: var(--site-header-height, var(--site-header-block));
 
   .login-form {
     box-sizing: border-box;

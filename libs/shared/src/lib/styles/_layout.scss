@@ -18,11 +18,10 @@
   height: auto;
   background-color: $background;
   padding-block: 2.5rem;
-  padding-block-start: calc(var(--site-header-block) + 2.5rem);
+  padding-block-start: calc(var(--site-header-height, var(--site-header-block)) + 1.5rem);
 
   @include from-width(md) {
-    padding-block: 4rem;
-    padding-block-start: calc(var(--site-header-block) + 4rem);
+    padding-block-end: 4rem;
   }
 }
 

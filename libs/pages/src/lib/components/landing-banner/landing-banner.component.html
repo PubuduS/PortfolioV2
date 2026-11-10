@@ -1,42 +1,47 @@
-<div class="banner w-100" id="section_1" data-anchor="home">
-  <picture [class.banner-covered]="motionVisible">
-    <source
-      media="(min-width: 768px)"
-      [srcset]="media.posterDesktop"
-      type="image/webp"
-    />
-    <img
-      #poster
-      [src]="media.posterMobile"
-      alt="Seasonal scene at the window"
-      width="1200"
-      height="800"
-      fetchpriority="high"
-      data-banner-img="sesonal-img"
-      (load)="playMotionAfterPoster()"
-      (error)="playMotionAfterPoster()"
-    />
-  </picture>
-  <video
-    #motion
-    muted
-    loop
-    playsinline
-    preload="none"
-    aria-hidden="true"
-    (playing)="showMotion()"
-  >
-    <source
-      media="(min-width: 768px)"
-      [src]="media.desktopWebm"
-      type="video/webm"
-    />
-    <source
-      media="(min-width: 768px)"
-      [src]="media.desktopMp4"
-      type="video/mp4"
-    />
-    <source [src]="media.mobileWebm" type="video/webm" />
-    <source [src]="media.mobileMp4" type="video/mp4" />
-  </video>
+<div class="home-screen w-100" id="section_1" data-anchor="home">
+  <div class="banner">
+    <picture [class.banner-covered]="motionVisible">
+      <source
+        media="(min-width: 768px)"
+        [srcset]="media.posterDesktop"
+        type="image/webp"
+      />
+      <img
+        #poster
+        [src]="media.posterMobile"
+        alt="Seasonal scene at the window"
+        width="1200"
+        height="800"
+        fetchpriority="high"
+        data-banner-img="sesonal-img"
+        (load)="playMotionAfterPoster()"
+        (error)="playMotionAfterPoster()"
+      />
+    </picture>
+    <video
+      #motion
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      (playing)="showMotion()"
+    >
+      <source
+        media="(min-width: 768px)"
+        [src]="media.desktopWebm"
+        type="video/webm"
+      />
+      <source
+        media="(min-width: 768px)"
+        [src]="media.desktopMp4"
+        type="video/mp4"
+      />
+      <source [src]="media.mobileWebm" type="video/webm" />
+      <source [src]="media.mobileMp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="banner-fill-wrap" aria-hidden="true">
+    <img class="banner-fill" [src]="media.posterMobile" alt="" />
+  </div>
 </div>

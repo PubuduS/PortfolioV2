@@ -1,7 +1,9 @@
 @use 'styles' as *;
 
 .experience-section {
-  @include section-shell($midnigh-graphite);
+  @include section-shell($nocturne-navy);
+
+  min-block-size: 100vh;
 
   h2 {
     color: $icy-petal;
